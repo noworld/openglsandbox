@@ -1,0 +1,8 @@
+<resources>
+    
+    <!-- Must be in specific order: Position, Color, Normal, (optional) Texcoord -->
+    <array name="models">
+        <item >@raw/sphere</item> 
+    </array>   
+    
+</resources>

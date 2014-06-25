@@ -1,0 +1,33 @@
+<resources>
+    
+    <array name="shaderPrograms">
+        <item>@array/basicShaders</item>
+        <item>@array/basicTextureShaders</item>
+        <item>@array/pointShaders</item>
+    </array>
+    
+    <array name="basicShaders">
+        <item >v_model_diffuse</item> 
+        <item >f_model_empty</item>  
+    </array>
+    
+    <array name="pointShaders">
+        <item >v_point</item> 
+        <item >f_model_empty</item>  
+    </array>
+    
+    <array name="basicTextureShaders">
+        <item >v_tex_and_light</item> 
+        <item >f_tex_and_light</item>  
+    </array>
+    
+    <!-- Must be in specific order: Position, Color, Normal, (optional) Texcoord -->
+    <array name="shaders">
+        <item >@raw/v_model_diffuse</item>
+        <item >@raw/f_model_empty</item>
+        <item >@raw/v_tex_and_light</item>
+        <item >@raw/f_tex_and_light</item>
+    </array>   
+
+    
+</resources>
