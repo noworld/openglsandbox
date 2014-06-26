@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.70.0 commit date:2014-04-10, commit time:11:49, hash:f93bc76</authoring_tool>
+    </contributor>
+    <created>2014-06-10T13:05:36</created>
+    <modified>2014-06-10T13:05:36</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_images/>
+  <library_effects>
+    <effect id="skirtMat-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <color sid="diffuse">0.64 0.64 0.64 1</color>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.5 0.5 0.5 1</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">50</float>
+            </shininess>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </phong>
+        </technique>
+        <extra>
+          <technique profile="GOOGLEEARTH">
+            <double_sided>1</double_sided>
+          </technique>
+        </extra>
+      </profile_COMMON>
+      <extra><technique profile="MAX3D"><double_sided>1</double_sided></technique></extra>
+    </effect>
+  </library_effects>
+  <library_materials>
+    <material id="skirtMat-material" name="skirtMat">
+      <instance_effect url="#skirtMat-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="SideSkirt-mesh" name="SideSkirt">
+      <mesh>
+        <source id="SideSkirt-mesh-positions">
+          <float_array id="SideSkirt-mesh-positions-array" count="102">-6.522341 -3.707531 2.463458 -6.52234 -3.707531 2.591508 7.693587 -3.707531 2.60051 -5.361673 -3.707531 1.13795 -5.317598 -3.707531 2.892254 -6.519193 -3.707531 2.591508 2.574851 -3.707531 1.13795 2.618925 -3.707531 2.892254 7.693587 -3.707531 2.892254 -5.361673 -3.607531 1.13795 -5.317598 -3.607531 2.892254 -6.522341 -3.607531 2.463458 -6.519193 -3.607531 2.591508 2.574851 -3.607531 1.13795 2.618925 -3.607531 2.892254 7.693587 -3.607531 2.60051 7.693587 -3.607531 2.892254 -6.522341 3.707531 2.463458 -6.52234 3.707531 2.591508 7.693587 3.707531 2.60051 -5.361673 3.707531 1.13795 -5.317598 3.707531 2.892254 -6.519193 3.707531 2.591508 2.574851 3.707531 1.13795 2.618925 3.707531 2.892254 7.693587 3.707531 2.892254 -5.361673 3.607531 1.13795 -5.317598 3.607531 2.892254 -6.522341 3.607531 2.463458 -6.519193 3.607531 2.591508 2.574851 3.607531 1.13795 2.618925 3.607531 2.892254 7.693587 3.607531 2.60051 7.693587 3.607531 2.892254</float_array>
+          <technique_common>
+            <accessor source="#SideSkirt-mesh-positions-array" count="34" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="SideSkirt-mesh-normals">
+          <float_array id="SideSkirt-mesh-normals-array" count="132">0 0 -1 0 0 1 -0.2421957 0.007621049 0.9701976 0 -1 1.35709e-7 0 -1 1.35905e-7 1 0 0 0.2747322 0 -0.9615208 0 -1 1.37131e-7 -0.752338 0 -0.6587773 0 0 1 -1 0 1.11715e-5 0 0 -1 0 0 1 -0.2427996 0 0.9700765 0 1 0 0 1 1.35905e-7 1 0 0 0.2747322 0 -0.9615208 0 1 0 -0.752338 0 -0.6587773 0 0 1 -1 0 1.11715e-5 0 0 -1 0 0 1 -0.2427996 0 0.9700765 0 -1 0 0 -1 1.35905e-7 1 0 0 0.2747322 0 -0.9615208 0 -1 0 -0.7523379 0 -0.6587774 0 0 1 -0.9992037 0.03144145 0.02456516 0 0 -1 0 0 1 -0.2421957 -0.007621049 0.9701976 0 1 1.35709e-7 0 1 1.35905e-7 1 0 0 0.2747322 0 -0.9615208 0 1 1.37131e-7 -0.752338 0 -0.6587773 0 0 1 -0.9992037 -0.03144145 0.02456516</float_array>
+          <technique_common>
+            <accessor source="#SideSkirt-mesh-normals-array" count="44" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="SideSkirt-mesh-map-0">
+          <float_array id="SideSkirt-mesh-map-0-array" count="264">0.08748346 0.009648203 0.08753007 4.02646e-5 0.6380245 3.75354e-5 0.9930258 0.1313253 0.9930258 0.1382615 0.641036 0.1382637 0.00550282 0.1172519 0.006977379 0.1104707 0.090541 0.1313309 0.6410359 0.1313279 0.637978 0.009645521 0.9930254 0.1110888 0.637978 0.009645521 0.6410359 0.1313279 0.090541 0.1313309 0.9930254 0.1110888 0.9999617 0.1110886 0.9999625 0.1313251 0.637978 0.009645521 0.6398835 0.002976119 0.9949309 0.1044196 0.00697726 0.1015887 0.08748346 0.009648203 0.090541 0.1313309 0.00697726 0.1015887 0.001758813 0.09701907 0.08226501 0.005078732 0.09049445 0.1409388 0.090541 0.1313309 0.6410359 0.1313279 4.08171e-5 0.1015887 0.00697726 0.1015887 0.006977379 0.1104707 0.08748346 0.009648203 0.637978 0.009645521 0.6380245 3.75354e-5 0.9930258 0.1313253 0.6410359 0.1313279 0.641036 0.1382637 0.00550282 0.1172519 0.0888611 0.1380606 0.090541 0.1313309 0.6410359 0.1313279 0.9930258 0.1313253 0.9930254 0.1110888 0.090541 0.1313309 0.6410359 0.1313279 0.637978 0.009645521 0.9930254 0.1110888 0.9930258 0.1313253 0.9999625 0.1313251 0.637978 0.009645521 0.9930254 0.1110888 0.9949309 0.1044196 0.00697726 0.1015887 0.006977379 0.1104707 0.090541 0.1313309 0.00697726 0.1015887 0.08748346 0.009648203 0.08226501 0.005078732 0.09049445 0.1409388 0.6409894 0.140936 0.6410359 0.1313279 0.006977379 0.1104707 0.00697726 0.1015887 4.08171e-5 0.1015887 0.637978 0.009645521 0.08748346 0.009648203 0.6380245 3.75354e-5 0.6410359 0.1313279 0.9930258 0.1313253 0.641036 0.1382637 0.0888611 0.1380606 0.00550282 0.1172519 0.090541 0.1313309 0.9930258 0.1313253 0.6410359 0.1313279 0.9930254 0.1110888 0.08748346 0.009648203 0.637978 0.009645521 0.090541 0.1313309 0.9930258 0.1313253 0.9930254 0.1110888 0.9999625 0.1313251 0.9930254 0.1110888 0.637978 0.009645521 0.9949309 0.1044196 0.006977379 0.1104707 0.00697726 0.1015887 0.090541 0.1313309 0.08748346 0.009648203 0.00697726 0.1015887 0.08226501 0.005078732 0.6409894 0.140936 0.09049445 0.1409388 0.6410359 0.1313279 3.75354e-5 0.1104735 4.08171e-5 0.1015887 0.006977379 0.1104707 0.08753007 4.02646e-5 0.08748346 0.009648203 0.6380245 3.75354e-5 0.9930258 0.1382615 0.9930258 0.1313253 0.641036 0.1382637 0.006977379 0.1104707 0.00550282 0.1172519 0.090541 0.1313309 0.637978 0.009645521 0.6410359 0.1313279 0.9930254 0.1110888 0.08748346 0.009648203 0.090541 0.1313309 0.637978 0.009645521 0.9999617 0.1110886 0.9930254 0.1110888 0.9999625 0.1313251 0.6398835 0.002976119 0.637978 0.009645521 0.9949309 0.1044196 0.08748346 0.009648203 0.00697726 0.1015887 0.090541 0.1313309 0.001758813 0.09701907 0.00697726 0.1015887 0.08226501 0.005078732 0.090541 0.1313309 0.09049445 0.1409388 0.6410359 0.1313279 3.75354e-5 0.1104735 0.006977379 0.1104707 4.08171e-5 0.1015887</float_array>
+          <technique_common>
+            <accessor source="#SideSkirt-mesh-map-0-array" count="132" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="SideSkirt-mesh-vertices">
+          <input semantic="POSITION" source="#SideSkirt-mesh-positions"/>
+        </vertices>
+        <lines count="2">
+          <input semantic="VERTEX" source="#SideSkirt-mesh-vertices" offset="0"/>
+          <p>1 5 18 22</p>
+        </lines>
+        <polylist material="skirtMat-material" count="44">
+          <input semantic="VERTEX" source="#SideSkirt-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#SideSkirt-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#SideSkirt-mesh-map-0" offset="2" set="0"/>
+          <vcount>3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 </vcount>
+          <p>3 0 0 9 0 1 13 0 2 8 1 3 16 1 4 14 1 5 12 2 6 1 2 7 4 2 8 7 3 9 6 3 10 2 3 11 6 4 12 7 4 13 4 4 14 2 5 15 15 5 16 16 5 17 6 6 18 13 6 19 15 6 20 0 7 21 3 7 22 4 7 23 0 8 24 11 8 25 9 8 26 10 9 27 4 9 28 7 9 29 11 10 30 0 10 31 1 10 32 20 11 33 23 11 34 30 11 35 25 12 36 24 12 37 31 12 38 29 13 39 27 13 40 21 13 41 24 14 42 25 14 43 19 14 44 21 15 45 24 15 46 23 15 47 19 16 48 25 16 49 33 16 50 23 17 51 19 17 52 32 17 53 17 18 54 18 18 55 21 18 56 17 19 57 20 19 58 26 19 59 27 20 60 31 20 61 24 20 62 18 21 63 17 21 64 28 21 65 6 22 66 3 22 67 13 22 68 7 23 69 8 23 70 14 23 71 10 24 72 12 24 73 4 24 74 8 25 75 7 25 76 2 25 77 3 26 78 6 26 79 4 26 80 8 27 81 2 27 82 16 27 83 2 28 84 6 28 85 15 28 86 1 29 87 0 29 88 4 29 89 3 30 90 0 30 91 9 30 92 14 31 93 10 31 94 7 31 95 12 32 96 11 32 97 1 32 98 26 33 99 20 33 100 30 33 101 33 34 102 25 34 103 31 34 104 18 35 105 29 35 106 21 35 107 23 36 108 24 36 109 19 36 110 20 37 111 21 37 112 23 37 113 32 38 114 19 38 115 33 38 116 30 39 117 23 39 118 32 39 119 20 40 120 17 40 121 21 40 122 28 41 123 17 41 124 26 41 125 21 42 126 27 42 127 24 42 128 29 43 129 18 43 130 28 43 131</p>
+        </polylist>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers/>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="SideSkirtObj" name="SideSkirtObj" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <instance_geometry url="#SideSkirt-mesh">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="skirtMat-material" target="#skirtMat-material">
+                <bind_vertex_input semantic="UVMap" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>
