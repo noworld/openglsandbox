@@ -22,9 +22,9 @@ import android.util.Log;
 
 import com.solesurvivor.util.SSArrayUtil;
 
-public class PackedArrayGLTextureRenderer implements GLSurfaceView.Renderer {
+public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 
-	private static final String TAG = PackedArrayGLTextureRenderer.class.getSimpleName();
+	private static final String TAG = PackedArrayZipGLTextureRenderer.class.getSimpleName();
 	
 	private static final boolean DRAW_LIGHT = true;
 
@@ -71,7 +71,7 @@ public class PackedArrayGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	protected int mReportedError;
 
-	public PackedArrayGLTextureRenderer(Context context) {
+	public PackedArrayZipGLTextureRenderer(Context context) {
 		this.mContext = context;
 	}
 
