@@ -64,7 +64,7 @@ import com.solesurvivor.model.util.Log4JLogUtil;
 public class ModelConverter implements DrawingConstants, GeometryFormatConstants {
 
 	private static final boolean PARSE_ON = true;
-	private static final boolean FLIP_AND_ROTATE = false;
+	private static final boolean FLIP_TEXTURE_Y = true;
 	private static final boolean LOAD_DEFAULT_DESCRIPTORS = false;
 
 	private static final String DATA_DIR = "data/";
@@ -302,8 +302,8 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		vbpg.mNrmOffset = vbpg.mPosSize * BYTES_PER_FLOAT;
 		vbpg.mTxcOffset = (vbpg.mPosSize + vbpg.mNrmSize) * BYTES_PER_FLOAT;
 		
-		if(FLIP_AND_ROTATE) {
-			raw.vertexData[2].remappedData = flipAndRotateTexture(raw.vertexData[2].remappedData);
+		if(FLIP_TEXTURE_Y) {
+			raw.vertexData[2].remappedData = flipTextureY(raw.vertexData[2].remappedData);
 		}
 		
 		//For each polygon in the vcount list
@@ -379,45 +379,52 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		vbpg.mIndexes = ArrayUtils.toPrimitive(iboData.toArray(new Short[iboData.size()]));
 		
 		/*DEBUG CODE*/
-//		FileOutputStream fos = null;								
-//		try {
-//			fos = new FileOutputStream("C:\\Users\\nicholas.waun\\git\\openglsandbox\\ModelConverter\\res\\out\\texcoords.txt");
-//
-//			//Rebuld tc from packed data
-//			List<Float> txcList = new ArrayList<Float>();
-//			for(int i = 0; i < vbpg.mIndexes.length; i++) {
-//				short baseIndex = vbpg.mIndexes[i];
-//				int coordIndex = (baseIndex * 8) + 6;
-//				
-//				txcList.add(vbpg.mData[coordIndex]);
-//				txcList.add(vbpg.mData[coordIndex+1]);
-//			}
-//			float[] tc =  ArrayUtils.toPrimitive(txcList.toArray(new Float[txcList.size()]));
-//			fos.write(String.format("%s\n",tc.length).getBytes());
-//			for(int i = 0; i < tc.length; i++) {
-//				fos.write(String.format("%sf\n",tc[i]).getBytes());
-//			}
-//			
-//			
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} finally {
-//			IOUtils.closeQuietly(fos);
-//		}
+		FileOutputStream fos = null;								
+		try {
+			fos = new FileOutputStream("C:\\Users\\nicholas.waun\\git\\openglsandbox\\ModelConverter\\res\\out\\texcoords.txt");
+
+			//Rebuld tc from packed data
+			List<Float> txcList = new ArrayList<Float>();
+			for(int i = 0; i < vbpg.mIndexes.length; i++) {
+				short baseIndex = vbpg.mIndexes[i];
+				int coordIndex = (baseIndex * 8) + 6;
+				
+				txcList.add(vbpg.mData[coordIndex]);
+				txcList.add(vbpg.mData[coordIndex+1]);
+			}
+			float[] tc =  ArrayUtils.toPrimitive(txcList.toArray(new Float[txcList.size()]));
+			fos.write(String.format("%s\n",tc.length).getBytes());
+			for(int i = 0; i < tc.length; i++) {
+				fos.write(String.format("%sf\n",tc[i]).getBytes());
+			}
+			
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			IOUtils.closeQuietly(fos);
+		}
 		/*DEBUG CODE*/
 
 		return vbpg;
 	}
 
-	private static float[] flipAndRotateTexture(float[] remappedData) {
+	private static float[] flipTextureY(float[] remappedData) {
 		float[] flippedData = new float[remappedData.length];
 		
-		for(int i = 0; i < remappedData.length; i++) {
-			flippedData[i] = 1 - remappedData[i];
+		for(int i = 0; i < remappedData.length; i ++) {
+			if(i % 2 == 0) {
+				//U
+				flippedData[i] = remappedData[i];
+			} else {
+				//V
+				flippedData[i] = 1 - remappedData[i];
+			}
+			
 		}
 		
 		return flippedData;
