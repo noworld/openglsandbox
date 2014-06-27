@@ -66,6 +66,7 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 	private static final boolean PARSE_ON = true;
 	private static final boolean FLIP_TEXTURE_Y = true;
 	private static final boolean LOAD_DEFAULT_DESCRIPTORS = false;
+	private static final boolean WRITE_TEXCOORD_FILE = false;
 
 	private static final String DATA_DIR = "data/";
 	private static final String UNDERSCORE = "_";
@@ -379,34 +380,36 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		vbpg.mIndexes = ArrayUtils.toPrimitive(iboData.toArray(new Short[iboData.size()]));
 		
 		/*DEBUG CODE*/
-		FileOutputStream fos = null;								
-		try {
-			fos = new FileOutputStream("C:\\Users\\nicholas.waun\\git\\openglsandbox\\ModelConverter\\res\\out\\texcoords.txt");
+		if(WRITE_TEXCOORD_FILE) {
+			FileOutputStream fos = null;								
+			try {
+				fos = new FileOutputStream("C:\\Users\\nicholas.waun\\git\\openglsandbox\\ModelConverter\\res\\out\\texcoords.txt");
 
-			//Rebuld tc from packed data
-			List<Float> txcList = new ArrayList<Float>();
-			for(int i = 0; i < vbpg.mIndexes.length; i++) {
-				short baseIndex = vbpg.mIndexes[i];
-				int coordIndex = (baseIndex * 8) + 6;
-				
-				txcList.add(vbpg.mData[coordIndex]);
-				txcList.add(vbpg.mData[coordIndex+1]);
+				//Rebuld tc from packed data
+				List<Float> txcList = new ArrayList<Float>();
+				for(int i = 0; i < vbpg.mIndexes.length; i++) {
+					short baseIndex = vbpg.mIndexes[i];
+					int coordIndex = (baseIndex * 8) + 6;
+
+					txcList.add(vbpg.mData[coordIndex]);
+					txcList.add(vbpg.mData[coordIndex+1]);
+				}
+				float[] tc =  ArrayUtils.toPrimitive(txcList.toArray(new Float[txcList.size()]));
+				fos.write(String.format("%s\n",tc.length).getBytes());
+				for(int i = 0; i < tc.length; i++) {
+					fos.write(String.format("%sf\n",tc[i]).getBytes());
+				}
+
+
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				IOUtils.closeQuietly(fos);
 			}
-			float[] tc =  ArrayUtils.toPrimitive(txcList.toArray(new Float[txcList.size()]));
-			fos.write(String.format("%s\n",tc.length).getBytes());
-			for(int i = 0; i < tc.length; i++) {
-				fos.write(String.format("%sf\n",tc[i]).getBytes());
-			}
-			
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			IOUtils.closeQuietly(fos);
 		}
 		/*DEBUG CODE*/
 

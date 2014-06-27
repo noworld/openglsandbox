@@ -37,7 +37,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class drawable {
         public static final int flipped_spheretex=0x7f020000;
         public static final int ic_launcher=0x7f020001;
-        public static final int spheretex=0x7f020002;
+        public static final int monkeytex=0x7f020002;
+        public static final int spheretex=0x7f020003;
     }
     public static final class id {
         public static final int fullscreen_content=0x7f090000;
@@ -51,15 +52,16 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class raw {
         public static final int f_model_empty=0x7f040000;
         public static final int f_tex_and_light=0x7f040001;
-        public static final int point_fragment_shader=0x7f040002;
-        public static final int point_vertex_shader=0x7f040003;
-        public static final int quadsphere_normal=0x7f040004;
-        public static final int quadsphere_position=0x7f040005;
-        public static final int quadsphere_texcoord=0x7f040006;
-        public static final int sphere=0x7f040007;
-        public static final int v_model_diffuse=0x7f040008;
-        public static final int v_point=0x7f040009;
-        public static final int v_tex_and_light=0x7f04000a;
+        public static final int monkey=0x7f040002;
+        public static final int point_fragment_shader=0x7f040003;
+        public static final int point_vertex_shader=0x7f040004;
+        public static final int quadsphere_normal=0x7f040005;
+        public static final int quadsphere_position=0x7f040006;
+        public static final int quadsphere_texcoord=0x7f040007;
+        public static final int sphere=0x7f040008;
+        public static final int v_model_diffuse=0x7f040009;
+        public static final int v_point=0x7f04000a;
+        public static final int v_tex_and_light=0x7f04000b;
     }
     public static final class string {
         public static final int app_name=0x7f050000;

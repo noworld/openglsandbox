@@ -209,7 +209,7 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void loadTextures() {
-		mTextureHandle = loadTexture(R.drawable.spheretex);
+		mTextureHandle = loadTexture(R.drawable.monkeytex);
 	}
 
 	protected void loadModel() {
