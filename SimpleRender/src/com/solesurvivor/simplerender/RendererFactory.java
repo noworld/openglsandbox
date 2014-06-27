@@ -15,7 +15,7 @@ public class RendererFactory {
 		return mContext;
 	}
 
-	public static GLSurfaceView.Renderer getRenderer(RendererType rType) {
+	public static GLSurfaceView.Renderer getRenderer(RendererType rType, String model) {
 		 GLSurfaceView.Renderer renderer = null;
 		 
 		 switch(rType) {
@@ -23,7 +23,7 @@ public class RendererFactory {
 			break;
 		case PACKED_ARRAY: renderer = new PackedArrayGLTextureRenderer(mContext);
 			break;
-		case PACKED_ARRAY_ZIP: renderer = new PackedArrayZipGLTextureRenderer(mContext);
+		case PACKED_ARRAY_ZIP: renderer = new PackedArrayZipGLTextureRenderer(mContext, model);
 			break;
 		case SIMPLE: renderer = new SimpleGLRenderer(mContext);
 			break;

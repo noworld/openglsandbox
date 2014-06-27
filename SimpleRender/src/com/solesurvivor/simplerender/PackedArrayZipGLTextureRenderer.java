@@ -59,9 +59,11 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 	protected float[] mLightModelMatrix = new float[16];	
 
 	protected int mReportedError;
+	protected String mModelName;
 
-	public PackedArrayZipGLTextureRenderer(Context context) {
+	public PackedArrayZipGLTextureRenderer(Context context, String model) {
 		this.mContext = context;
+		this.mModelName = model;
 	}
 
 	@Override
@@ -209,35 +211,70 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void loadTextures() {
-		mTextureHandle = loadTexture(R.drawable.monkeytex);
+		
+		int texId = -1;
+		
+		if(mModelName.equals("monkey")) {
+			texId = R.drawable.monkeytex;
+		} else if(mModelName.equals("ncfb")) {
+			texId = R.drawable.ncfb;
+		} else if(mModelName.equals("toruscone")) {
+			texId = R.drawable.uvgrid;
+		} else if(mModelName.equals("sphere")) {
+			texId = R.drawable.spheretex;
+		}
+		
+		mTextureHandle = loadTexture(texId);
 	}
 
 	protected void loadModel() {
 		Log.d(TAG, "Loading models...");
 		Resources res =  mContext.getResources();
 		
-		TypedArray models = res.obtainTypedArray(R.array.models);
+		int rid = -1;
 		
-//		for(int i = 0; i < models.length(); i++) {
-		//TODO: Handle more than 1 model
-		for(int i = 0; i < 1; i++) {
-			String resourceName = models.getString(i);
-			int resourceId = models.getResourceId(i, 0);
-			Log.d(TAG, String.format("Loading resource: %s.", resourceName));
-			InputStream is = res.openRawResource(resourceId);
-			try {
-				parseGeometry(is);
-			} catch (IOException e) {
-				Log.e(TAG, String.format("Error loading resource %s.", resourceName), e);
-			} finally {
-				IOUtils.closeQuietly(is);
-			}
-		
+		if(mModelName.equals("monkey")) {
+			rid = R.raw.monkey;
+		} else if(mModelName.equals("ncfb")) {
+			rid = R.raw.ncfb;
+		} else if(mModelName.equals("toruscone")) {
+			rid = R.raw.toruscone;
+		} else if(mModelName.equals("sphere")) {
+			rid = R.raw.sphere;
 		}
 		
+//		String resourceName = models.getString(i);
+//		int resourceId = models.getResourceId(i, 0);
+//		Log.d(TAG, String.format("Loading resource: %s.", resourceName));
+		InputStream is = res.openRawResource(rid);
+		try {
+			parseGeometry(is);
+		} catch (IOException e) {
+			Log.e(TAG,"Error loading resource.", e);
+		} finally {
+			IOUtils.closeQuietly(is);
+		}
 		
-		
-		models.recycle();
+//		TypedArray models = res.obtainTypedArray(R.array.models);
+//		
+////		for(int i = 0; i < models.length(); i++) {
+//		//TODO: Handle more than 1 model
+//		for(int i = 0; i < 1; i++) {
+//			String resourceName = models.getString(i);
+//			int resourceId = models.getResourceId(i, 0);
+//			Log.d(TAG, String.format("Loading resource: %s.", resourceName));
+//			InputStream is = res.openRawResource(resourceId);
+//			try {
+//				parseGeometry(is);
+//			} catch (IOException e) {
+//				Log.e(TAG, String.format("Error loading resource %s.", resourceName), e);
+//			} finally {
+//				IOUtils.closeQuietly(is);
+//			}
+//		
+//		}
+			
+//		models.recycle();
 	}
 
 	private Geometry parseGeometry(InputStream is) throws IOException {

@@ -39,7 +39,7 @@ public class SimpleRenderActivity extends Activity {
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
 	 */
-	private static final boolean AUTO_HIDE = false;
+	private static final boolean AUTO_HIDE = true;
 
 	/**
 	 * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -157,6 +157,18 @@ public class SimpleRenderActivity extends Activity {
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, spinnerValues);
 		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(dataAdapter);
+		
+		
+		final Spinner models = (Spinner)findViewById(R.id.modelSpinner);
+		List<String> modelvals = new ArrayList<String>();
+		modelvals.add("monkey");
+		modelvals.add("ncfb");
+		modelvals.add("sphere");
+		modelvals.add("toruscone");
+
+		ArrayAdapter<String> modela = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, modelvals);
+		modela.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		models.setAdapter(modela);
 
 		final Button startButton = (Button)findViewById(R.id.startButton);
 		RendererFactory.setContext(mContext);
@@ -169,7 +181,8 @@ public class SimpleRenderActivity extends Activity {
         			mGLSurfaceView.setEGLContextClientVersion(2);
         			// Set the renderer to our demo renderer, defined below.
         			RendererType rt = RendererType.valueOf(spinner.getSelectedItem().toString());
-        			mRenderer = RendererFactory.getRenderer(rt);
+        			String model = models.getSelectedItem().toString();
+        			mRenderer = RendererFactory.getRenderer(rt, model);
         			mGLSurfaceView.setRenderer(mRenderer);
         			setContentView(mGLSurfaceView);
         			mStarted = true;

@@ -2,7 +2,7 @@
     
     <!-- Must be in specific order: Position, Color, Normal, (optional) Texcoord -->
     <array name="models">
-        <item >@raw/monkey</item> 
+        <item >@raw/ncfb</item> 
     </array>   
     
 </resources>
