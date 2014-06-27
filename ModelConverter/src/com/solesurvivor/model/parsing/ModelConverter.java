@@ -11,8 +11,8 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,14 +51,9 @@ import com.solesurvivor.drawing.DrawingConstants;
 import com.solesurvivor.drawing.GeometryFormatConstants;
 import com.solesurvivor.model.exceptions.SizeLimitExceededException;
 import com.solesurvivor.model.exceptions.UnsupportedDrawableException;
-import com.solesurvivor.model.parsing.RawGeometry.Semantic;
 import com.solesurvivor.model.parsing.RawGeometry.VertexData;
 import com.solesurvivor.model.util.ConversionUtils;
 import com.solesurvivor.model.util.Log4JLogUtil;
-import com.solesurvivor.scene.BufferedGeometry;
-import com.solesurvivor.scene.BufferedIboGeometry;
-import com.solesurvivor.scene.GameNode;
-import com.solesurvivor.scene.Scene;
 
 /**
  * (C)2014 Nicholas Waun. All rights reserved.
@@ -68,7 +63,9 @@ import com.solesurvivor.scene.Scene;
  */
 public class ModelConverter implements DrawingConstants, GeometryFormatConstants {
 
-	private static final Boolean PARSE_ON = true;
+	private static final boolean PARSE_ON = true;
+	private static final boolean FLIP_AND_ROTATE = false;
+	private static final boolean LOAD_DEFAULT_DESCRIPTORS = false;
 
 	private static final String DATA_DIR = "data/";
 	private static final String UNDERSCORE = "_";
@@ -131,6 +128,8 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		}
 
 		ModelConverter mc = new ModelConverter(pArgs);
+		
+		LOG.d(String.format("Java byte order: %s", ByteOrder.nativeOrder().toString()));
 
 		for(File f : inputFiles) {
 			String[] fileNameParts = f.getName().split(DOT_REGEX);
@@ -179,154 +178,154 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		return collada;
 	}
 
-	public static com.solesurvivor.scene.Scene parseSceneFromCollada(COLLADA collada, String modelName) {
+//	public static com.solesurvivor.scene.Scene parseSceneFromCollada(COLLADA collada, String modelName) {
+//
+//		//This is the object we are populating
+//		com.solesurvivor.scene.Scene scene = new com.solesurvivor.scene.Scene();
+//
+//		//Save off the Asset element as String xml.
+//		//We will include this in the file for copyright purposes.
+//		try {
+//			scene.mAsset = serializeAssetsXml(collada.getAsset());
+//		} catch (JAXBException e) {
+//			LOG.e(String.format("Error serializing Asset for %s.", modelName), e);
+//		}
+//
+//		//Build a nav map for getting references
+//		ModelNavMap mnm = new ModelNavMap(collada);
+//
+//		//Pull the scene instance
+//		VisualScene visualScene = mnm.getObject(collada.getScene().getInstanceVisualScene().getUrl());
+//		scene.mName = visualScene.getName();
+//
+//		//Make a list for storing the nodes
+//		List<GameNode> nodes = new ArrayList<GameNode>();
+//
+//		//For each node in the scene
+//		for(Node node : visualScene.getNodes()) {
+//
+//			//We only care if the node has geometry
+//			for(InstanceGeometry ig : node.getInstanceGeometries()) {
+//				RawGeometry raw = parseRawGeometry(ig, mnm);
+//
+//				if(raw == null) {
+//					LOG.i("No Geometry/Mesh found for instance %s.", ig.getName());
+//					continue;
+//				}
+//
+//				com.solesurvivor.scene.BufferedGeometry gNode = parseGeometry(raw);
+//				nodes.add(gNode);
+//
+//			}
+//		}
+//
+//		scene.mChildren = nodes.toArray(new GameNode[nodes.size()]);
+//
+//		LOG.d(String.format("Visual scene: %s",visualScene.getName()));
+//
+//		return scene;
+//	}
 
-		//This is the object we are populating
-		com.solesurvivor.scene.Scene scene = new com.solesurvivor.scene.Scene();
-
-		//Save off the Asset element as String xml.
-		//We will include this in the file for copyright purposes.
-		try {
-			scene.mAsset = serializeAssetsXml(collada.getAsset());
-		} catch (JAXBException e) {
-			LOG.e(String.format("Error serializing Asset for %s.", modelName), e);
-		}
-
-		//Build a nav map for getting references
-		ModelNavMap mnm = new ModelNavMap(collada);
-
-		//Pull the scene instance
-		VisualScene visualScene = mnm.getObject(collada.getScene().getInstanceVisualScene().getUrl());
-		scene.mName = visualScene.getName();
-
-		//Make a list for storing the nodes
-		List<GameNode> nodes = new ArrayList<GameNode>();
-
-		//For each node in the scene
-		for(Node node : visualScene.getNodes()) {
-
-			//We only care if the node has geometry
-			for(InstanceGeometry ig : node.getInstanceGeometries()) {
-				RawGeometry raw = parseRawGeometry(ig, mnm);
-
-				if(raw == null) {
-					LOG.i("No Geometry/Mesh found for instance %s.", ig.getName());
-					continue;
-				}
-
-				com.solesurvivor.scene.BufferedGeometry gNode = parseGeometry(raw);
-				nodes.add(gNode);
-
-			}
-		}
-
-		scene.mChildren = nodes.toArray(new GameNode[nodes.size()]);
-
-		LOG.d(String.format("Visual scene: %s",visualScene.getName()));
-
-		return scene;
-	}
-
-	/*This is where the magic happens*/
-	public static com.solesurvivor.scene.BufferedGeometry parseGeometry(RawGeometry raw) {
-		GeometryWithReadPostition geo = new GeometryWithReadPostition();
-
-		if(StringUtils.isBlank(raw.name)) {
-			LOG.w("RawGeometry name was null in parseGeometry(RawGeometry).");
-		}
-		geo.mName = raw.name;
-
-
-		int totalVCount = 0;
-		if(raw.vcount != null) {			
-			for(int i = 0; i < raw.vcount.length; ++i) {
-				totalVCount += raw.vcount[i];
-			}
-			LOG.d("(%s) Total VCount: %s", raw.name, totalVCount);
-			geo.mNumElements = totalVCount;
-			geo.mNumPolys = raw.vcount.length;
-		} else {
-			LOG.d("raw.vcount was null.");
-		}
-
-		/*
-		 * Iterate over vcount. Each element of vcount contains an integer.
-		 * This is the number of vertexes for the current polygon.
-		 */
-		for(int vcountPos = 0, primitivePos = 0; vcountPos < raw.vcount.length; vcountPos++) {
-			int verts = raw.vcount[vcountPos]; //Get the number of vertexes in the current polygon
-
-			/*
-			 * Once for each vertex in the polygon
-			 * Should go 0, 1, 2
-			 */
-			for(int polyVertex = 0; polyVertex < verts; polyVertex++) {
-
-				/*
-				 * For vertex, grab the position, normal, and texcoord data as appropriate
-				 * should go 0 (POSITION), 1 (NORMAL), 2(TEXCOORD)
-				 */
-				for(int inputPos = 0; inputPos < raw.vertexData.length; inputPos++, primitivePos++) {
-					//					LOG.t("PrimitivePos Formula: %s", primitivePos == (polyVertex * vcountPos) + vertDataPos);
-
-					//Get the proper data
-					RawGeometry.VertexData vd = raw.vertexData[inputPos];
-
-					int startSourceElement = raw.p[primitivePos] * vd.stride; //line 471
-
-					/*
-					 * The stride field tells us how much data we need per vertex
-					 * POS and NORM both use 3 (x, y, z), but TEXCOORD is 2 (u, v)
-					 */
-					for(int j = 0; j < vd.stride; j++) {
-
-						if(LOG.isDebugEnabled() && inputPos == 0) {
-							StringBuilder debugString = new StringBuilder();
-							debugString.append("Primitive Value: ").append(raw.p[primitivePos]).append("; ");					
-							debugString.append("Data Point: ").append(getDebugValue("data point", j)).append(" = ").append(vd.data[startSourceElement + j]);
-
-							LOG.d("(%s) - %s", raw.name, debugString.toString());
-						}
-
-						/*
-						 * Need to know the input semantic to make sure that
-						 * the data ends up in the right field of the 
-						 * Geometry object
-						 */
-						if(vd.semantic.equals(RawGeometry.Semantic.VERTEX)
-								|| vd.semantic.equals(RawGeometry.Semantic.POSITION)) {
-							if(geo.mPosArray == null) {
-								geo.mPosArray = new float[totalVCount * vd.stride];
-								geo.mPosStride = vd.stride;
-							}
-
-							geo.mPosArray[geo.mPositionsReadCount++] = vd.data[startSourceElement + j];
-
-						} else if(vd.semantic.equals(RawGeometry.Semantic.NORMAL)) {
-							if(geo.mNrmArray == null) {
-								geo.mNrmArray = new float[totalVCount * vd.stride];
-								geo.mNrmStride = vd.stride;
-							}
-
-							geo.mNrmArray[geo.mNormalsReadCount++] = vd.data[startSourceElement + j];
-
-						} else if(vd.semantic.equals(RawGeometry.Semantic.TEXCOORD)) {
-							if(geo.mTxcArray == null) {
-								geo.mTxcArray = new float[totalVCount * vd.stride];
-								geo.mTxcStride = vd.stride;
-							}
-
-							geo.mTxcArray[geo.mTexcoordsReadCount++] = vd.data[startSourceElement + j];
-
-						}
-
-					}
-				}
-			}
-		}
-
-		return geo;
-	}
+//	/*This is where the magic happens*/
+//	public static com.solesurvivor.scene.BufferedGeometry parseGeometry(RawGeometry raw) {
+//		GeometryWithReadPostition geo = new GeometryWithReadPostition();
+//
+//		if(StringUtils.isBlank(raw.name)) {
+//			LOG.w("RawGeometry name was null in parseGeometry(RawGeometry).");
+//		}
+//		geo.mName = raw.name;
+//
+//
+//		int totalVCount = 0;
+//		if(raw.vcount != null) {			
+//			for(int i = 0; i < raw.vcount.length; ++i) {
+//				totalVCount += raw.vcount[i];
+//			}
+//			LOG.d("(%s) Total VCount: %s", raw.name, totalVCount);
+//			geo.mNumElements = totalVCount;
+//			geo.mNumPolys = raw.vcount.length;
+//		} else {
+//			LOG.d("raw.vcount was null.");
+//		}
+//
+//		/*
+//		 * Iterate over vcount. Each element of vcount contains an integer.
+//		 * This is the number of vertexes for the current polygon.
+//		 */
+//		for(int vcountPos = 0, primitivePos = 0; vcountPos < raw.vcount.length; vcountPos++) {
+//			int verts = raw.vcount[vcountPos]; //Get the number of vertexes in the current polygon
+//
+//			/*
+//			 * Once for each vertex in the polygon
+//			 * Should go 0, 1, 2
+//			 */
+//			for(int polyVertex = 0; polyVertex < verts; polyVertex++) {
+//
+//				/*
+//				 * For vertex, grab the position, normal, and texcoord data as appropriate
+//				 * should go 0 (POSITION), 1 (NORMAL), 2(TEXCOORD)
+//				 */
+//				for(int inputPos = 0; inputPos < raw.vertexData.length; inputPos++, primitivePos++) {
+//					//					LOG.t("PrimitivePos Formula: %s", primitivePos == (polyVertex * vcountPos) + vertDataPos);
+//
+//					//Get the proper data
+//					RawGeometry.VertexData vd = raw.vertexData[inputPos];
+//
+//					int startSourceElement = raw.p[primitivePos] * vd.stride; //line 471
+//
+//					/*
+//					 * The stride field tells us how much data we need per vertex
+//					 * POS and NORM both use 3 (x, y, z), but TEXCOORD is 2 (u, v)
+//					 */
+//					for(int j = 0; j < vd.stride; j++) {
+//
+//						if(LOG.isDebugEnabled() && inputPos == 0) {
+//							StringBuilder debugString = new StringBuilder();
+//							debugString.append("Primitive Value: ").append(raw.p[primitivePos]).append("; ");					
+//							debugString.append("Data Point: ").append(getDebugValue("data point", j)).append(" = ").append(vd.data[startSourceElement + j]);
+//
+//							LOG.d("(%s) - %s", raw.name, debugString.toString());
+//						}
+//
+//						/*
+//						 * Need to know the input semantic to make sure that
+//						 * the data ends up in the right field of the 
+//						 * Geometry object
+//						 */
+//						if(vd.semantic.equals(RawGeometry.Semantic.VERTEX)
+//								|| vd.semantic.equals(RawGeometry.Semantic.POSITION)) {
+//							if(geo.mPosArray == null) {
+//								geo.mPosArray = new float[totalVCount * vd.stride];
+//								geo.mPosStride = vd.stride;
+//							}
+//
+//							geo.mPosArray[geo.mPositionsReadCount++] = vd.data[startSourceElement + j];
+//
+//						} else if(vd.semantic.equals(RawGeometry.Semantic.NORMAL)) {
+//							if(geo.mNrmArray == null) {
+//								geo.mNrmArray = new float[totalVCount * vd.stride];
+//								geo.mNrmStride = vd.stride;
+//							}
+//
+//							geo.mNrmArray[geo.mNormalsReadCount++] = vd.data[startSourceElement + j];
+//
+//						} else if(vd.semantic.equals(RawGeometry.Semantic.TEXCOORD)) {
+//							if(geo.mTxcArray == null) {
+//								geo.mTxcArray = new float[totalVCount * vd.stride];
+//								geo.mTxcStride = vd.stride;
+//							}
+//
+//							geo.mTxcArray[geo.mTexcoordsReadCount++] = vd.data[startSourceElement + j];
+//
+//						}
+//
+//					}
+//				}
+//			}
+//		}
+//
+//		return geo;
+//	}
 
 	public static VboIboObject parseGeometryFromCollada(COLLADA collada, String modelName) throws SizeLimitExceededException {
 
@@ -401,12 +400,8 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 			LOG.d("raw.vcount was null.");
 		}
 
-		//Total up the data we will be storing
-		int totalDataLength = 0;
-		for(int i = 0; i < raw.vertexData.length; i++) {
-			totalDataLength += raw.vertexData[i].remappedData.length;
-		}
-
+		//Just to check if my meshes get big enough
+		//to start using ints
 		if(vbpg.mNumElements > Short.MAX_VALUE) {
 			String message = String.format("Number of elements to be drawn exceeds Short.MAX_VALUE: %s", 
 					vbpg.mNumElements);
@@ -423,6 +418,15 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		vbpg.mPosSize = raw.vertexData[0].stride;
 		vbpg.mNrmSize = raw.vertexData[1].stride;
 		vbpg.mTxcSize = raw.vertexData[2].stride;
+		
+		vbpg.mTotalStride = (vbpg.mPosSize + vbpg.mNrmSize + vbpg.mTxcSize) * BYTES_PER_FLOAT;
+		vbpg.mPosOffset = 0;
+		vbpg.mNrmOffset = vbpg.mPosSize * BYTES_PER_FLOAT;
+		vbpg.mTxcOffset = (vbpg.mPosSize + vbpg.mNrmSize) * BYTES_PER_FLOAT;
+		
+		if(FLIP_AND_ROTATE) {
+			raw.vertexData[2].remappedData = flipAndRotateTexture(raw.vertexData[2].remappedData);
+		}
 		
 		//For each polygon in the vcount list
 		for(int vcountPos = 0, primitivePos = 0; vcountPos < raw.vcount.length; vcountPos++) {
@@ -497,6 +501,16 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		vbpg.mIndexes = ArrayUtils.toPrimitive(iboData.toArray(new Short[iboData.size()]));
 
 		return vbpg;
+	}
+
+	private static float[] flipAndRotateTexture(float[] remappedData) {
+		float[] flippedData = new float[remappedData.length];
+		
+		for(int i = 0; i < remappedData.length; i++) {
+			flippedData[i] = 1 - remappedData[i];
+		}
+		
+		return flippedData;
 	}
 
 	protected static List<Float> getVertexDataAt(VertexData vertexData, int index) {
@@ -779,7 +793,7 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 
 			Map<String,String> descriptors = null;
 			InputStream inStream = null;
-			String descFileName = DATA_DIR + (modelName + DESC_FILE_EXT).trim();
+			String descFileName = DATA_DIR + (modelName + DSC_FILE_EXT).trim();
 			try {
 				inStream = ModelConverter.class.getClassLoader().getResourceAsStream(descFileName);
 				if(inStream != null) {
@@ -805,8 +819,13 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 
 				//VBO
 				if(geo.mData != null) {
-					fileName = name + VBO_FILE_EXT;
+					fileName = name + V_FILE_EXT;
 					byte[] fileContents = floatToByteArray(geo.mData);
+					
+					for(int i = 0; i < 32*4; i+=4) {
+						LOG.d("Float: %s %s %s %s", fileContents[i],fileContents[i+1],fileContents[i+2],fileContents[i+3]);
+					}
+					
 					indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
 					writeZipEntry(zos, fileName, fileContents);
 				} else {
@@ -815,8 +834,13 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 
 				//IBO
 				if(geo.mIndexes != null) {
-					fileName = name + IBO_FILE_EXT;
+					fileName = name + I_FILE_EXT;
 					byte[] fileContents = shortToByteArray(geo.mIndexes);
+					
+					for(int i = 0; i < 12*2; i+=2) {
+						LOG.d("Short: %s %s", fileContents[i],fileContents[i+1]);
+					}
+					
 					indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
 					writeZipEntry(zos, fileName, fileContents);
 				} else {
@@ -827,11 +851,16 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 				Map<String,String> meshDesc = new HashMap<String,String>();
 
 				//Pull in some defaults
-//				if(descriptors != null && descriptors.size() > 0) {
-//					meshDesc.putAll(descriptors);
-//				}
+				if(LOAD_DEFAULT_DESCRIPTORS) {
+					if(descriptors != null && descriptors.size() > 0) {
+						meshDesc.putAll(descriptors);
+					}
+				}
 
-				meshDesc.put("numElements",String.valueOf(geo.mNumElements));
+				meshDesc.put("name",name);
+				
+				meshDesc.put("num_elements",String.valueOf(geo.mNumElements));
+				meshDesc.put("element_stride",String.valueOf(geo.mTotalStride));
 
 				meshDesc.put("pos_size",String.valueOf(geo.mPosSize));
 				meshDesc.put("nrm_size",String.valueOf(geo.mNrmSize));
@@ -872,123 +901,123 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 
 	}
 
-	protected void writeSceneToZip(Scene scene, String modelName) throws IOException {
-		scene = (Scene)convertToIbo(scene);
-
-		if(scene == null) {
-			throw new IllegalArgumentException("Param 'scene' cannot be null.");
-		}
-
-		if(modelName == null || modelName.trim().equals("")) {
-			throw new IllegalArgumentException("Param 'modelName' cannot be null.");
-		}
-
-		String zipFile = mProgArgs.mOutputDir + File.separator + modelName + ZIP_FILE_EXT;
-
-		FileOutputStream fos = new FileOutputStream(zipFile);
-		ZipOutputStream zos = new ZipOutputStream(fos);
-		StringBuilder indexFile = new StringBuilder();
-
-		try {
-
-			Map<String,String> descriptors = null;
-			InputStream inStream = null;
-			String descFileName = DATA_DIR + (modelName + DESC_FILE_EXT).trim();
-			try {
-				inStream = ModelConverter.class.getClassLoader().getResourceAsStream(descFileName);
-				if(inStream != null) {
-					String descFile = IOUtils.toString(inStream);
-					descriptors = parseMap(descFile);
-				}
-			} finally {
-				IOUtils.closeQuietly(inStream);
-			}
-
-
-
-			if(scene.mAsset != null) {
-				LOG.t("Writing asset to zip.");
-				writeZipEntry(zos, ASSETS_FILE_NAME, scene.mAsset);
-			}
-
-			for(GameNode g : scene.mChildren) {
-				LOG.t("Writing GameNode: %s - %s", g.mName, g.getClass().getSimpleName());
-				if(g instanceof com.solesurvivor.scene.BufferedIboGeometry){
-					com.solesurvivor.scene.BufferedIboGeometry geo = (com.solesurvivor.scene.BufferedIboGeometry)g;
-					String name = ConversionUtils.chopPound(geo.mName);
-					indexFile.append(L1_SYM).append(name).append(LINE_SEP);
-
-					String fileName = null;
-
-					//VBO
-					if(geo.mDataArray != null) {
-						fileName = name + VBO_FILE_EXT;
-						byte[] fileContents = floatToByteArray(geo.mDataArray);
-						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
-						writeZipEntry(zos, fileName, fileContents);
-					} else {
-						LOG.w("Positions array was null for geometry %s.",geo.mName);
-					}
-
-					//IBO
-					if(geo.mIndexArray != null) {
-						fileName = name + IBO_FILE_EXT;
-						byte[] fileContents = shortToByteArray(geo.mIndexArray);
-						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
-						writeZipEntry(zos, fileName, fileContents);
-					} else {
-						LOG.w("Positions array was null for geometry %s.",geo.mName);
-					}
-
-					//MESH DESCRIPTOR
-					Map<String,String> meshDesc = new HashMap<String,String>();
-
-					//Pull in some defaults
-					if(descriptors != null && descriptors.size() > 0) {
-						meshDesc.putAll(descriptors);
-					}
-
-					meshDesc.put("numElements",String.valueOf(geo.mNumElements));
-					meshDesc.put("posSize",String.valueOf(geo.mPositionsSize));
-					meshDesc.put("colSize",String.valueOf(geo.mColorsSize));
-					meshDesc.put("txcSize",String.valueOf(geo.mTexcoordsSize));
-					meshDesc.put("nrmSize",String.valueOf(geo.mNormalsSize));
-					meshDesc.put("posOffset",String.valueOf(geo.mPositionsOffset));
-					meshDesc.put("colOffset",String.valueOf(geo.mColorsOffset));
-					meshDesc.put("txcOffset",String.valueOf(geo.mTexcoordsOffset));
-					meshDesc.put("nrmOffset",String.valueOf(geo.mNormalsOffset));
-
-					fileName = name + DESC_FILE_EXT;
-					String fileContents = parseMap(meshDesc);
-					indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
-					writeZipEntry(zos, fileName, fileContents);
-
-				}
-			}
-
-			LOG.t("Writing index.");
-			writeZipEntry(zos, INDEX_FILE_NAME, indexFile.toString());
-
-			//			LOG.t("Writing descriptor.");
-			//			InputStream inStream = null;
-			//			String descFileName = DATA_DIR + (modelName + DESC_FILE_EXT).trim();
-			//			try {
-			//				
-			//					writeZipEntry(zos, DESCRIPTOR_FILE_NAME, descFile);
-			//				} else {
-			//					LOG.w("Could not read descriptor: %s.",descFileName);
-			//				}
-			//			} finally {
-			//				IOUtils.closeQuietly(inStream);
-			//			}
-
-
-			LOG.d(String.format("Writing model zip: %s",zipFile));
-		} finally {
-			if(zos != null){zos.close();}
-		}
-
-	}
+//	protected void writeSceneToZip(Scene scene, String modelName) throws IOException {
+//		scene = (Scene)convertToIbo(scene);
+//
+//		if(scene == null) {
+//			throw new IllegalArgumentException("Param 'scene' cannot be null.");
+//		}
+//
+//		if(modelName == null || modelName.trim().equals("")) {
+//			throw new IllegalArgumentException("Param 'modelName' cannot be null.");
+//		}
+//
+//		String zipFile = mProgArgs.mOutputDir + File.separator + modelName + ZIP_FILE_EXT;
+//
+//		FileOutputStream fos = new FileOutputStream(zipFile);
+//		ZipOutputStream zos = new ZipOutputStream(fos);
+//		StringBuilder indexFile = new StringBuilder();
+//
+//		try {
+//
+//			Map<String,String> descriptors = null;
+//			InputStream inStream = null;
+//			String descFileName = DATA_DIR + (modelName + DESC_FILE_EXT).trim();
+//			try {
+//				inStream = ModelConverter.class.getClassLoader().getResourceAsStream(descFileName);
+//				if(inStream != null) {
+//					String descFile = IOUtils.toString(inStream);
+//					descriptors = parseMap(descFile);
+//				}
+//			} finally {
+//				IOUtils.closeQuietly(inStream);
+//			}
+//
+//
+//
+//			if(scene.mAsset != null) {
+//				LOG.t("Writing asset to zip.");
+//				writeZipEntry(zos, ASSETS_FILE_NAME, scene.mAsset);
+//			}
+//
+//			for(GameNode g : scene.mChildren) {
+//				LOG.t("Writing GameNode: %s - %s", g.mName, g.getClass().getSimpleName());
+//				if(g instanceof com.solesurvivor.scene.BufferedIboGeometry){
+//					com.solesurvivor.scene.BufferedIboGeometry geo = (com.solesurvivor.scene.BufferedIboGeometry)g;
+//					String name = ConversionUtils.chopPound(geo.mName);
+//					indexFile.append(L1_SYM).append(name).append(LINE_SEP);
+//
+//					String fileName = null;
+//
+//					//VBO
+//					if(geo.mDataArray != null) {
+//						fileName = name + VBO_FILE_EXT;
+//						byte[] fileContents = floatToByteArray(geo.mDataArray);
+//						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
+//						writeZipEntry(zos, fileName, fileContents);
+//					} else {
+//						LOG.w("Positions array was null for geometry %s.",geo.mName);
+//					}
+//
+//					//IBO
+//					if(geo.mIndexArray != null) {
+//						fileName = name + IBO_FILE_EXT;
+//						byte[] fileContents = shortToByteArray(geo.mIndexArray);
+//						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
+//						writeZipEntry(zos, fileName, fileContents);
+//					} else {
+//						LOG.w("Positions array was null for geometry %s.",geo.mName);
+//					}
+//
+//					//MESH DESCRIPTOR
+//					Map<String,String> meshDesc = new HashMap<String,String>();
+//
+//					//Pull in some defaults
+//					if(descriptors != null && descriptors.size() > 0) {
+//						meshDesc.putAll(descriptors);
+//					}
+//
+//					meshDesc.put("numElements",String.valueOf(geo.mNumElements));
+//					meshDesc.put("posSize",String.valueOf(geo.mPositionsSize));
+//					meshDesc.put("colSize",String.valueOf(geo.mColorsSize));
+//					meshDesc.put("txcSize",String.valueOf(geo.mTexcoordsSize));
+//					meshDesc.put("nrmSize",String.valueOf(geo.mNormalsSize));
+//					meshDesc.put("posOffset",String.valueOf(geo.mPositionsOffset));
+//					meshDesc.put("colOffset",String.valueOf(geo.mColorsOffset));
+//					meshDesc.put("txcOffset",String.valueOf(geo.mTexcoordsOffset));
+//					meshDesc.put("nrmOffset",String.valueOf(geo.mNormalsOffset));
+//
+//					fileName = name + DESC_FILE_EXT;
+//					String fileContents = parseMap(meshDesc);
+//					indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
+//					writeZipEntry(zos, fileName, fileContents);
+//
+//				}
+//			}
+//
+//			LOG.t("Writing index.");
+//			writeZipEntry(zos, INDEX_FILE_NAME, indexFile.toString());
+//
+//			//			LOG.t("Writing descriptor.");
+//			//			InputStream inStream = null;
+//			//			String descFileName = DATA_DIR + (modelName + DESC_FILE_EXT).trim();
+//			//			try {
+//			//				
+//			//					writeZipEntry(zos, DESCRIPTOR_FILE_NAME, descFile);
+//			//				} else {
+//			//					LOG.w("Could not read descriptor: %s.",descFileName);
+//			//				}
+//			//			} finally {
+//			//				IOUtils.closeQuietly(inStream);
+//			//			}
+//
+//
+//			LOG.d(String.format("Writing model zip: %s",zipFile));
+//		} finally {
+//			if(zos != null){zos.close();}
+//		}
+//
+//	}
 
 	protected String parseMap(Map<String, String> mappy) {
 		StringBuilder sb = new StringBuilder();
@@ -1048,156 +1077,156 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		return bytes;
 	}
 
-	@Deprecated
-	protected GameNode convertToIbo(GameNode gn) {
-		if(gn == null) return null;
+//	@Deprecated
+//	protected GameNode convertToIbo(GameNode gn) {
+//		if(gn == null) return null;
+//
+//		if(gn.mChildren != null) {
+//			for(int i = 0; i < gn.mChildren.length; i++) {
+//				gn.mChildren[i] = convertToIbo(gn.mChildren[i]);
+//			}
+//		}
+//
+//		if(gn instanceof BufferedGeometry) {
+//			BufferedIboGeometry big = parseSeparateBuffersToIbo((BufferedGeometry)gn);
+//			big.mName = gn.mName;
+//			big.mChildren = gn.mChildren;
+//
+//			return big;
+//		}
+//
+//		return gn;
+//	}
 
-		if(gn.mChildren != null) {
-			for(int i = 0; i < gn.mChildren.length; i++) {
-				gn.mChildren[i] = convertToIbo(gn.mChildren[i]);
-			}
-		}
+//	/**
+//	 * NOT RECURSIVE. This only handles the data, not the children.
+//	 * @param bg
+//	 * @return
+//	 */
+//	@Deprecated
+//	protected BufferedIboGeometry parseSeparateBuffersToIbo(BufferedGeometry bg) {
+//		BufferedIboGeometry big = new BufferedIboGeometry();
+//
+//		int totalSize = bg.mPosArray.length + bg.mNrmArray.length + bg.mTxcArray.length;
+//		big.mDataArray = new float[totalSize];
+//		big.mIndexArray = new short[bg.mNumElements];
+//		big.mNumElements = bg.mNumElements;
+//
+//		big.mPositionsOffset = 0;
+//		big.mNormalsOffset = bg.mPosArray.length;
+//		big.mTexcoordsOffset = bg.mPosArray.length + bg.mNrmArray.length;
+//
+//		big.mPositionsSize = bg.mPosStride;
+//		big.mNormalsSize = bg.mNrmStride;
+//		big.mTexcoordsSize = bg.mTxcStride;
+//
+//		System.arraycopy(bg.mPosArray, 0, big.mDataArray, big.mPositionsOffset, bg.mPosArray.length);
+//		System.arraycopy(bg.mNrmArray, 0, big.mDataArray, big.mNormalsOffset, bg.mNrmArray.length);
+//		System.arraycopy(bg.mTxcArray, 0, big.mDataArray, big.mTexcoordsOffset, bg.mTxcArray.length);
+//
+//		//They are already in order from the parsing I think...
+//		for(short i = 0; i < bg.mNumElements; i++) {
+//			big.mIndexArray[i] = i;
+//		}
+//
+//		return big;
+//	}
 
-		if(gn instanceof BufferedGeometry) {
-			BufferedIboGeometry big = parseSeparateBuffersToIbo((BufferedGeometry)gn);
-			big.mName = gn.mName;
-			big.mChildren = gn.mChildren;
-
-			return big;
-		}
-
-		return gn;
-	}
-
-	/**
-	 * NOT RECURSIVE. This only handles the data, not the children.
-	 * @param bg
-	 * @return
-	 */
-	@Deprecated
-	protected BufferedIboGeometry parseSeparateBuffersToIbo(BufferedGeometry bg) {
-		BufferedIboGeometry big = new BufferedIboGeometry();
-
-		int totalSize = bg.mPosArray.length + bg.mNrmArray.length + bg.mTxcArray.length;
-		big.mDataArray = new float[totalSize];
-		big.mIndexArray = new short[bg.mNumElements];
-		big.mNumElements = bg.mNumElements;
-
-		big.mPositionsOffset = 0;
-		big.mNormalsOffset = bg.mPosArray.length;
-		big.mTexcoordsOffset = bg.mPosArray.length + bg.mNrmArray.length;
-
-		big.mPositionsSize = bg.mPosStride;
-		big.mNormalsSize = bg.mNrmStride;
-		big.mTexcoordsSize = bg.mTxcStride;
-
-		System.arraycopy(bg.mPosArray, 0, big.mDataArray, big.mPositionsOffset, bg.mPosArray.length);
-		System.arraycopy(bg.mNrmArray, 0, big.mDataArray, big.mNormalsOffset, bg.mNrmArray.length);
-		System.arraycopy(bg.mTxcArray, 0, big.mDataArray, big.mTexcoordsOffset, bg.mTxcArray.length);
-
-		//They are already in order from the parsing I think...
-		for(short i = 0; i < bg.mNumElements; i++) {
-			big.mIndexArray[i] = i;
-		}
-
-		return big;
-	}
-
-	protected void writeGeometryZip(com.solesurvivor.scene.Scene scene, String modelName) throws IOException {
-
-		if(scene == null) {
-			throw new IllegalArgumentException("Param 'scene' cannot be null.");
-		}
-
-		if(modelName == null || modelName.trim().equals("")) {
-			throw new IllegalArgumentException("Param 'modelName' cannot be null.");
-		}
-
-		String zipFile = mProgArgs.mOutputDir + File.separator + modelName + ZIP_FILE_EXT;
-
-		FileOutputStream fos = new FileOutputStream(zipFile);
-		ZipOutputStream zos = new ZipOutputStream(fos);
-		StringBuilder indexFile = new StringBuilder();
-
-		try {
-
-			if(scene.mAsset != null) {
-				LOG.t("Writing asset to zip.");
-				writeZipEntry(zos, ASSETS_FILE_NAME, scene.mAsset);
-			}
-
-			for(GameNode g : scene.mChildren) {
-				LOG.t("Writing GameNode: %s - %s", g.mName, g.getClass().getSimpleName());
-				if(g instanceof com.solesurvivor.scene.BufferedIboGeometry){
-					com.solesurvivor.scene.BufferedGeometry geo = (com.solesurvivor.scene.BufferedGeometry)g;
-					String name = ConversionUtils.chopPound(geo.mName);
-					indexFile.append(L1_SYM).append(name).append(LINE_SEP);
-
-					String fileName = null;
-
-					//POSITIONS
-					if(geo.mPosArray != null) {
-						fileName = name + POS_FILE_EXT;
-						String fileContents = buildDataString(geo.mPosStride, geo.mPosArray);
-						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
-						writeZipEntry(zos, fileName, fileContents);
-					} else {
-						LOG.w("Positions array was null for geometry %s.",geo.mName);
-					}
-
-					//NORMALS
-					if(geo.mNrmArray != null) {
-						fileName = name + NRM_FILE_EXT;
-						String fileContents = buildDataString(geo.mNrmStride, geo.mNrmArray);
-						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
-						writeZipEntry(zos, fileName, fileContents);
-					}
-
-					//TEXCOORDS
-					if(geo.mTxcArray != null) {
-						fileName = name + TXC_FILE_EXT;
-						String fileContents = buildDataString(geo.mTxcStride, geo.mTxcArray);
-						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
-						writeZipEntry(zos, fileName, fileContents);
-					}
-
-					//COLORS
-					if(geo.mColArray != null) {
-						fileName = name + COL_FILE_EXT;
-						String fileContents = buildDataString(geo.mColStride, geo.mColArray);
-						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
-						writeZipEntry(zos, fileName, fileContents);
-					}
-
-
-				}
-			}
-
-			LOG.t("Writing index.");
-			writeZipEntry(zos, INDEX_FILE_NAME, indexFile.toString());
-
-			LOG.t("Writing descriptor.");
-			InputStream inStream = null;
-			String descFileName = DATA_DIR + (modelName + DESC_FILE_EXT).trim();
-			try {
-				inStream = ModelConverter.class.getClassLoader().getResourceAsStream(descFileName);
-				if(inStream != null) {
-					String descFile = IOUtils.toString(inStream);
-					writeZipEntry(zos, DESCRIPTOR_FILE_NAME, descFile);
-				} else {
-					LOG.w("Could not read descriptor: %s.",descFileName);
-				}
-			} finally {
-				IOUtils.closeQuietly(inStream);
-			}
-
-
-			LOG.d(String.format("Writing model zip: %s",zipFile));
-		} finally {
-			if(zos != null){zos.close();}
-		}
-
-	}
+//	protected void writeGeometryZip(com.solesurvivor.scene.Scene scene, String modelName) throws IOException {
+//
+//		if(scene == null) {
+//			throw new IllegalArgumentException("Param 'scene' cannot be null.");
+//		}
+//
+//		if(modelName == null || modelName.trim().equals("")) {
+//			throw new IllegalArgumentException("Param 'modelName' cannot be null.");
+//		}
+//
+//		String zipFile = mProgArgs.mOutputDir + File.separator + modelName + ZIP_FILE_EXT;
+//
+//		FileOutputStream fos = new FileOutputStream(zipFile);
+//		ZipOutputStream zos = new ZipOutputStream(fos);
+//		StringBuilder indexFile = new StringBuilder();
+//
+//		try {
+//
+//			if(scene.mAsset != null) {
+//				LOG.t("Writing asset to zip.");
+//				writeZipEntry(zos, ASSETS_FILE_NAME, scene.mAsset);
+//			}
+//
+//			for(GameNode g : scene.mChildren) {
+//				LOG.t("Writing GameNode: %s - %s", g.mName, g.getClass().getSimpleName());
+//				if(g instanceof com.solesurvivor.scene.BufferedIboGeometry){
+//					com.solesurvivor.scene.BufferedGeometry geo = (com.solesurvivor.scene.BufferedGeometry)g;
+//					String name = ConversionUtils.chopPound(geo.mName);
+//					indexFile.append(L1_SYM).append(name).append(LINE_SEP);
+//
+//					String fileName = null;
+//
+//					//POSITIONS
+//					if(geo.mPosArray != null) {
+//						fileName = name + POS_FILE_EXT;
+//						String fileContents = buildDataString(geo.mPosStride, geo.mPosArray);
+//						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
+//						writeZipEntry(zos, fileName, fileContents);
+//					} else {
+//						LOG.w("Positions array was null for geometry %s.",geo.mName);
+//					}
+//
+//					//NORMALS
+//					if(geo.mNrmArray != null) {
+//						fileName = name + NRM_FILE_EXT;
+//						String fileContents = buildDataString(geo.mNrmStride, geo.mNrmArray);
+//						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
+//						writeZipEntry(zos, fileName, fileContents);
+//					}
+//
+//					//TEXCOORDS
+//					if(geo.mTxcArray != null) {
+//						fileName = name + TXC_FILE_EXT;
+//						String fileContents = buildDataString(geo.mTxcStride, geo.mTxcArray);
+//						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
+//						writeZipEntry(zos, fileName, fileContents);
+//					}
+//
+//					//COLORS
+//					if(geo.mColArray != null) {
+//						fileName = name + COL_FILE_EXT;
+//						String fileContents = buildDataString(geo.mColStride, geo.mColArray);
+//						indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
+//						writeZipEntry(zos, fileName, fileContents);
+//					}
+//
+//
+//				}
+//			}
+//
+//			LOG.t("Writing index.");
+//			writeZipEntry(zos, INDEX_FILE_NAME, indexFile.toString());
+//
+//			LOG.t("Writing descriptor.");
+//			InputStream inStream = null;
+//			String descFileName = DATA_DIR + (modelName + DESC_FILE_EXT).trim();
+//			try {
+//				inStream = ModelConverter.class.getClassLoader().getResourceAsStream(descFileName);
+//				if(inStream != null) {
+//					String descFile = IOUtils.toString(inStream);
+//					writeZipEntry(zos, DESCRIPTOR_FILE_NAME, descFile);
+//				} else {
+//					LOG.w("Could not read descriptor: %s.",descFileName);
+//				}
+//			} finally {
+//				IOUtils.closeQuietly(inStream);
+//			}
+//
+//
+//			LOG.d(String.format("Writing model zip: %s",zipFile));
+//		} finally {
+//			if(zos != null){zos.close();}
+//		}
+//
+//	}
 
 	protected String buildDataString(int stride, float[] data) {
 		StringBuilder sb;

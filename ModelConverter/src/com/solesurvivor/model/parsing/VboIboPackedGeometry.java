@@ -8,6 +8,8 @@ public class VboIboPackedGeometry {
 	public float[] mData;
 	public short[] mIndexes;
 	
+	public int mTotalStride;
+	
 	public int mPosSize;
 	public int mNrmSize;
 	public int mTxcSize;

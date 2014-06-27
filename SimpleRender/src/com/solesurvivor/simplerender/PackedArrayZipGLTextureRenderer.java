@@ -3,8 +3,7 @@ package com.solesurvivor.simplerender;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.Map;
@@ -50,24 +49,6 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	/*New - Components in an object*/
 	Geometry mGeo = new Geometry();
-	
-//	protected float[] mPositions;
-//	protected float[] mNormals;
-//	protected float[] mTexCoords;
-//	protected float[] mCombinedArray;
-	
-//	protected FloatBuffer mDataBuf;
-//	protected int mDataBufIdx;
-//	protected int mPosOffset;
-//	protected int mNrmOffset;
-//	protected int mTxcOffset;
-//	
-//	protected int mNumElements;
-//	protected short[] mIndexes;
-//	protected ShortBuffer mIdxBuf;
-//	protected int mIndexBufIdx;
-//	protected int mNumIdxElements;
-	/*New - Components in an object*/
 	
 	protected float[] mModelMatrix = new float[16];
 	protected float[] mViewMatrix = new float[16];	
@@ -320,39 +301,35 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		}
 
 		bufIdx = buffers[0];
+		Buffer buf = null;
+		int dataSize = -1;
 	
 		
 		if(glType == GLES20.GL_UNSIGNED_SHORT) {
-
-			short[] ibo = new short[bytes.length / BYTES_PER_SHORT];
-			ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).asShortBuffer().get(ibo);		
-			ShortBuffer iboBuf = SSArrayUtil.arrayToShortBuffer(BYTES_PER_FLOAT, ibo);
+		
+			ShortBuffer iboBuf = SSArrayUtil.bytesToShortBufBigEndian(bytes);
+			buf = iboBuf;
+			dataSize = BYTES_PER_SHORT;
 			
-			GLES20.glBindBuffer(glTarget, bufIdx);
-			GLES20.glBufferData(glTarget, iboBuf.capacity() * BYTES_PER_SHORT, iboBuf, GLES20.GL_STATIC_DRAW);
-			GLES20.glBindBuffer(glTarget, 0);
+//			GLES20.glBindBuffer(glTarget, bufIdx);
+//			GLES20.glBufferData(glTarget, iboBuf.capacity() * BYTES_PER_SHORT, iboBuf, GLES20.GL_STATIC_DRAW);
+//			GLES20.glBindBuffer(glTarget, 0);
 
 		} else if(glType == GLES20.GL_FLOAT) {
 
-			float[] vbo = SSArrayUtil.byteToFloatArray(bytes);
+			FloatBuffer vboBuf = SSArrayUtil.bytesToFloatBufBigEndian(bytes);
+			buf = vboBuf;
+			dataSize = BYTES_PER_FLOAT;
 			
-			
-			float[] floats = new float[bytes.length / BYTES_PER_FLOAT];
-			ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).asFloatBuffer().get(floats);		
-			FloatBuffer fboBuf = SSArrayUtil.arrayToFloatBuffer(BYTES_PER_FLOAT, floats);
-			
-			Log.d("DEBUG VBO", String.format("VBO LENGTH: %s", floats.length));
-//			System.out.println(String.format("VBO LENGTH: %s", vbo.length));
-			for(int i = 0; i < floats.length; i++) {
-				Log.d("DEBUG VBO", String.format("FLOAT[%s]: %s", i, floats[i]));
-//				System.out.println(String.format("FLOAT[%s]: %s", i, vbo[i]));
-			}
-			
-			GLES20.glBindBuffer(glTarget, bufIdx);
-			GLES20.glBufferData(glTarget, fboBuf.capacity() * BYTES_PER_FLOAT, fboBuf, GLES20.GL_STATIC_DRAW);
-			GLES20.glBindBuffer(glTarget, 0);
+//			GLES20.glBindBuffer(glTarget, bufIdx);
+//			GLES20.glBufferData(glTarget, vboBuf.capacity() * BYTES_PER_FLOAT, vboBuf, GLES20.GL_STATIC_DRAW);
+//			GLES20.glBindBuffer(glTarget, 0);
 			
 		}
+		
+		GLES20.glBindBuffer(glTarget, bufIdx);
+		GLES20.glBufferData(glTarget, buf.capacity() * dataSize, buf, GLES20.GL_STATIC_DRAW);
+		GLES20.glBindBuffer(glTarget, 0);
 				
 		return bufIdx;
 	}

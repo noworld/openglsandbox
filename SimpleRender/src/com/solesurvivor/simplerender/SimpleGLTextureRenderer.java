@@ -26,7 +26,6 @@ public class SimpleGLTextureRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = SimpleGLTextureRenderer.class.getSimpleName();
 
 	private static final String NEWLINE = "\n";
-	private static final int BYTES_PER_FLOAT = 4;
 	private static final int T_DATA_SIZE = 2;
 	private static final int V_DATA_SIZE = 3;
 	private static final int TRIANGLE_NUM_SIDES = 3;
@@ -211,16 +210,16 @@ public class SimpleGLTextureRenderer implements GLSurfaceView.Renderer {
 		Log.d(TAG, "Loading positions.");
 		mPositions = stringToFloatArray(positions);
 		Log.d(TAG, "Loading positions --> buffer...");
-		mPosBuf = SSArrayUtil.arrayToFloatBuffer(BYTES_PER_FLOAT, mPositions);
+		mPosBuf = SSArrayUtil.arrayToFloatBuffer(mPositions);
 		Log.d(TAG, "Loading normals.");
 		mNormals = stringToFloatArray(normals);
 		Log.d(TAG, "Loading normals --> buffer...");
-		mNrmBuf = SSArrayUtil.arrayToFloatBuffer(BYTES_PER_FLOAT, mNormals);
+		mNrmBuf = SSArrayUtil.arrayToFloatBuffer(mNormals);
 		Log.d(TAG, "Loading texture coordinates.");
 		mTexCoords = stringToFloatArray(texCoords);
 		denormalize(mTexCoords, IMAGE_H, IMAGE_W);
 		Log.d(TAG, "Loading texture coordinates--> buffer...");
-		mTxcBuf = SSArrayUtil.arrayToFloatBuffer(BYTES_PER_FLOAT, mTexCoords);
+		mTxcBuf = SSArrayUtil.arrayToFloatBuffer(mTexCoords);
 		Log.d(TAG, "Models loaded.");
 	}
 

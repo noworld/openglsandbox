@@ -299,7 +299,7 @@ public class PackedArrayGLTextureRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		
-		mDataBuf = SSArrayUtil.arrayToFloatBuffer(BYTES_PER_FLOAT, mCombinedArray);
+		mDataBuf = SSArrayUtil.arrayToFloatBuffer(mCombinedArray);
 		/*New - one big array*/
 		Log.d(TAG, "Models loaded.");
 		
@@ -312,7 +312,7 @@ public class PackedArrayGLTextureRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		mNumIdxElements = mIndexes.length;
-		mIdxBuf = SSArrayUtil.arrayToShortBuffer(BYTES_PER_SHORT, mIndexes);
+		mIdxBuf = SSArrayUtil.arrayToShortBuffer(mIndexes);
 
 		final int buffers[] = new int[2];
 		GLES20.glGenBuffers(2, buffers, 0);

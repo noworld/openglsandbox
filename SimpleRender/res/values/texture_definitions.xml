@@ -1,7 +1,7 @@
 <resources>
     
     <array name="textures">
-        <item>@drawable/flipped_spheretex</item>
+        <item>@drawable/spheretex</item>
     </array>
 
     

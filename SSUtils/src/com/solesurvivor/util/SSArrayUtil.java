@@ -12,6 +12,25 @@ public class SSArrayUtil {
 	
 	public static final int BYTES_PER_FLOAT = 4;
 	public static final int BYTES_PER_SHORT = 2;
+	public static final int BYTES_PER_INT = 4;
+	
+	public static FloatBuffer bytesToFloatBufBigEndian(byte[] bytes) {
+		float[] floats = new float[bytes.length / BYTES_PER_FLOAT];
+		ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).asFloatBuffer().get(floats);		
+		FloatBuffer fBuf = SSArrayUtil.arrayToFloatBuffer(floats);
+		fBuf.rewind();
+		return fBuf;
+		
+	}
+	
+	public static ShortBuffer bytesToShortBufBigEndian(byte[] bytes) {
+		short[] ibo = new short[bytes.length / BYTES_PER_SHORT];
+		ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).asShortBuffer().get(ibo);		
+		ShortBuffer sBuf = SSArrayUtil.arrayToShortBuffer(ibo);
+		sBuf.rewind();
+		return sBuf;
+		
+	}
 	
 	public static int[] parseIntArray(String s, String delimiter) {
 		String[] strings = s.split(delimiter);
@@ -93,20 +112,32 @@ public class SSArrayUtil {
 		return floats;
 	}
 	
-	public static FloatBuffer arrayToFloatBuffer(final int bytesPerFloat, float[] inputArray) {
-		FloatBuffer fBuf = ByteBuffer.allocateDirect(inputArray.length * bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+	public static ShortBuffer arrayToShortBuffer(byte[] inputArray) {
+		ByteBuffer bBuf = ByteBuffer.allocateDirect(inputArray.length).order(ByteOrder.nativeOrder());		
+		bBuf.put(inputArray).rewind();
+		return bBuf.asShortBuffer();
+	}
+	
+	public static FloatBuffer arrayToFloatBuffer(byte[] inputArray) {
+		ByteBuffer bBuf = ByteBuffer.allocateDirect(inputArray.length).order(ByteOrder.nativeOrder());		
+		bBuf.put(inputArray).rewind();		
+		return bBuf.asFloatBuffer();
+	}
+	
+	public static FloatBuffer arrayToFloatBuffer(float[] inputArray) {
+		FloatBuffer fBuf = ByteBuffer.allocateDirect(inputArray.length * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		fBuf.put(inputArray).position(0);
 		return fBuf;
 	}
 	
-	public static ShortBuffer arrayToShortBuffer(final int bytesPerShort, short[] inputArray) {
-		ShortBuffer sBuf = ByteBuffer.allocateDirect(inputArray.length * bytesPerShort).order(ByteOrder.nativeOrder()).asShortBuffer();
+	public static ShortBuffer arrayToShortBuffer(short[] inputArray) {
+		ShortBuffer sBuf = ByteBuffer.allocateDirect(inputArray.length * BYTES_PER_SHORT).order(ByteOrder.nativeOrder()).asShortBuffer();
 		sBuf.put(inputArray).position(0);
 		return sBuf;
 	}
 	
-	public static IntBuffer arrayToIntBuffer(final int bytesPerInt, int[] inputArray) {
-		IntBuffer iBuf = ByteBuffer.allocateDirect(inputArray.length * bytesPerInt).order(ByteOrder.nativeOrder()).asIntBuffer();
+	public static IntBuffer arrayToIntBuffer(int[] inputArray) {
+		IntBuffer iBuf = ByteBuffer.allocateDirect(inputArray.length * BYTES_PER_INT).order(ByteOrder.nativeOrder()).asIntBuffer();
 		iBuf.put(inputArray).position(0);
 		return iBuf;
 	}

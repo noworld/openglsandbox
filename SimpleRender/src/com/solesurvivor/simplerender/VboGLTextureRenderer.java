@@ -234,16 +234,16 @@ public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
 		Log.d(TAG, "Loading positions.");
 		mPositions = stringToFloatArray(positions);
 		Log.d(TAG, "Loading positions --> buffer...");
-		mPosBuf = SSArrayUtil.arrayToFloatBuffer(BYTES_PER_FLOAT, mPositions);
+		mPosBuf = SSArrayUtil.arrayToFloatBuffer(mPositions);
 		Log.d(TAG, "Loading normals.");
 		mNormals = stringToFloatArray(normals);
 		Log.d(TAG, "Loading normals --> buffer...");
-		mNrmBuf = SSArrayUtil.arrayToFloatBuffer(BYTES_PER_FLOAT, mNormals);
+		mNrmBuf = SSArrayUtil.arrayToFloatBuffer(mNormals);
 		Log.d(TAG, "Loading texture coordinates.");
 		mTexCoords = stringToFloatArray(texCoords);
 		denormalize(mTexCoords, IMAGE_H, IMAGE_W);
 		Log.d(TAG, "Loading texture coordinates--> buffer...");
-		mTxcBuf = SSArrayUtil.arrayToFloatBuffer(BYTES_PER_FLOAT, mTexCoords);
+		mTxcBuf = SSArrayUtil.arrayToFloatBuffer(mTexCoords);
 		Log.d(TAG, "Models loaded.");
 		
 		/*New - Load to VBO*/
