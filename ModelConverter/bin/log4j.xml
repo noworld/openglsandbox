@@ -10,7 +10,7 @@
     </appender>
 
     <logger name="com.solesurvivor">
-    	<level value="TRACE"/>
+    	<level value="INFO"/>
     	<appender-ref ref="console"/>
     </logger>
     
