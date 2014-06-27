@@ -102,7 +102,6 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 			 * DRAW LIGHT FOR DEBUGGING
 			 * */
 			
-	        
 			GLES20.glUseProgram(mLightShaderHandle);  
 			final int pointMVPMatrixHandle = GLES20.glGetUniformLocation(mLightShaderHandle, "u_MVPMatrix");
 	        final int pointPositionHandle = GLES20.glGetAttribLocation(mLightShaderHandle, "a_Position");
@@ -171,7 +170,7 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		// --LightPos--
 
 		/* Pass in the light position in eye space.	*/	
-		//Switching to world space...
+		//Switching to view space...
 		GLES20.glUniform3f(u_lightpos, mLightPosInEyeSpace[0], mLightPosInEyeSpace[1], mLightPosInEyeSpace[2]);
 
 		// Draw
@@ -310,20 +309,12 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 			ShortBuffer iboBuf = SSArrayUtil.bytesToShortBufBigEndian(bytes);
 			buf = iboBuf;
 			dataSize = BYTES_PER_SHORT;
-			
-//			GLES20.glBindBuffer(glTarget, bufIdx);
-//			GLES20.glBufferData(glTarget, iboBuf.capacity() * BYTES_PER_SHORT, iboBuf, GLES20.GL_STATIC_DRAW);
-//			GLES20.glBindBuffer(glTarget, 0);
 
 		} else if(glType == GLES20.GL_FLOAT) {
 
 			FloatBuffer vboBuf = SSArrayUtil.bytesToFloatBufBigEndian(bytes);
 			buf = vboBuf;
 			dataSize = BYTES_PER_FLOAT;
-			
-//			GLES20.glBindBuffer(glTarget, bufIdx);
-//			GLES20.glBufferData(glTarget, vboBuf.capacity() * BYTES_PER_FLOAT, vboBuf, GLES20.GL_STATIC_DRAW);
-//			GLES20.glBindBuffer(glTarget, 0);
 			
 		}
 		
@@ -334,20 +325,6 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		return bufIdx;
 	}
 	
-
-	protected float[] stringToFloatArray(String data) {
-		String[] values = data.split(NEWLINE);
-		float[] floats = new float[Integer.parseInt(values[0])];
-		int tenPct = floats.length / 10;
-		for(int i = 0; i < floats.length; i++) {
-			if(i % tenPct == 0) {
-				Log.d(TAG, String.format("Percent complete: %s", (i/tenPct)*10));
-			}
-			floats[i] = Float.parseFloat(values[i + 1]);
-		}
-		return floats;
-	}
-
 	protected void loadShaders() {
 		Log.d(TAG, "Loading shaders...");
 		Resources res =  mContext.getResources();
@@ -358,10 +335,8 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		String fShadCode = null;
 		
 		try {
-//			vShadIn = res.openRawResource(R.raw.v_model_diffuse);
 			vShadIn = res.openRawResource(R.raw.v_tex_and_light);
 			vShadCode = IOUtils.toString(vShadIn);
-//			fShadIn = res.openRawResource(R.raw.f_model_empty);
 			fShadIn = res.openRawResource(R.raw.f_tex_and_light);
 			fShadCode = IOUtils.toString(fShadIn);
 		} catch (IOException e) {
@@ -374,7 +349,6 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		int vShadHand = compileShader(GLES20.GL_VERTEX_SHADER, vShadCode);
 		int fShadHand = compileShader(GLES20.GL_FRAGMENT_SHADER, fShadCode);
 
-//		mShaderHandle = createAndLinkProgram(vShadHand, fShadHand, new String[]{"a_Position", "a_Normal"});
 		mShaderHandle = createAndLinkProgram(vShadHand, fShadHand, new String[]{"a_Position", "a_Normal", "a_TexCoordinate"});
 		
 		
@@ -384,10 +358,8 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		String fPointShadCode = null;
 		
 		try {
-//			vShadIn = res.openRawResource(R.raw.v_model_diffuse);
 			vPointShadIn = res.openRawResource(R.raw.point_vertex_shader);
 			vPointShadCode = IOUtils.toString(vPointShadIn);
-//			fShadIn = res.openRawResource(R.raw.f_model_empty);
 			fPointShadIn = res.openRawResource(R.raw.point_fragment_shader);
 			fPointShadCode = IOUtils.toString(fPointShadIn);
 		} catch (IOException e) {
@@ -400,7 +372,6 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		int vPointShaderHand = compileShader(GLES20.GL_VERTEX_SHADER, vPointShadCode);
 		int fPointShadHand = compileShader(GLES20.GL_FRAGMENT_SHADER, fPointShadCode);
 
-//		mShaderHandle = createAndLinkProgram(vShadHand, fShadHand, new String[]{"a_Position", "a_Normal"});
 		mLightShaderHandle = createAndLinkProgram(vPointShaderHand, fPointShadHand, new String[]{"a_Position"});
 		
 		
