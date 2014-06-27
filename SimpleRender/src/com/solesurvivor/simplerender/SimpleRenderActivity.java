@@ -147,12 +147,12 @@ public class SimpleRenderActivity extends Activity {
 		
 		final Spinner spinner = (Spinner)findViewById(R.id.rendererSpinner);
 		List<String> spinnerValues = new ArrayList<String>();
+		spinnerValues.add(RendererType.PACKED_ARRAY_ZIP.toString());
 		spinnerValues.add(RendererType.PACKED_ARRAY.toString());
 		spinnerValues.add(RendererType.SIMPLE.toString());
 		spinnerValues.add(RendererType.TEXTURE.toString());
 		spinnerValues.add(RendererType.VBO.toString());
-		spinnerValues.add(RendererType.IBO.toString());
-		spinnerValues.add(RendererType.PACKED_NP_ARRAY.toString());
+		spinnerValues.add(RendererType.IBO.toString());		
 
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, spinnerValues);
 		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -291,6 +291,13 @@ public class PackedArrayGLTextureRenderer implements GLSurfaceView.Renderer {
 			txcPos += 2;
 		}
 		
+		Log.d("DEBUG VBO", String.format("VBO LENGTH: %s", mCombinedArray.length));
+//		System.out.println(String.format("VBO LENGTH: %s", mCombinedArray.length));
+		for(int i = 0; i < mCombinedArray.length; i++) {
+			Log.d("DEBUG VBO", String.format("FLOAT[%s]: %s", i, mCombinedArray[i]));
+//			System.out.println(String.format("FLOAT[%s]: %s", i, mCombinedArray[i]));
+		}
+		
 		
 		mDataBuf = SSArrayUtil.arrayToFloatBuffer(BYTES_PER_FLOAT, mCombinedArray);
 		/*New - one big array*/

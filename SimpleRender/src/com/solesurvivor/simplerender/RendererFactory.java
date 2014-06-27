@@ -23,7 +23,7 @@ public class RendererFactory {
 			break;
 		case PACKED_ARRAY: renderer = new PackedArrayGLTextureRenderer(mContext);
 			break;
-		case PACKED_NP_ARRAY: renderer = new PackedNPArrayGLTextureRenderer(mContext);
+		case PACKED_ARRAY_ZIP: renderer = new PackedArrayZipGLTextureRenderer(mContext);
 			break;
 		case SIMPLE: renderer = new SimpleGLRenderer(mContext);
 			break;

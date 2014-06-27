@@ -6,7 +6,7 @@ public enum RendererType {
 	SIMPLE,
 	IBO,
 	PACKED_ARRAY,
-	PACKED_NP_ARRAY,
+	PACKED_ARRAY_ZIP,
 	TEXTURE,
 	VBO
 }

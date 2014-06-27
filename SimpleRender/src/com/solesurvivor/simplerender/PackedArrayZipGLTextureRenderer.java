@@ -1,9 +1,15 @@
 package com.solesurvivor.simplerender;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -12,6 +18,7 @@ import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
@@ -21,6 +28,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.solesurvivor.util.SSArrayUtil;
+import com.solesurvivor.util.SSPropertyUtil;
 
 public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 
@@ -31,8 +39,6 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 	private static final String NEWLINE = "\n";
 	private static final int BYTES_PER_FLOAT = 4;
 	private static final int BYTES_PER_SHORT = 2;
-	private static final int T_DATA_SIZE = 2;
-	private static final int V_DATA_SIZE = 3;
 
 	protected float[] mProjectionMatrix = new float[16];
 	protected float[] mMVPMatrix = new float[16]; 
@@ -42,24 +48,26 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	protected Context mContext;
 
-	protected float[] mPositions;
-	protected float[] mNormals;
-	protected float[] mTexCoords;
-	protected float[] mCombinedArray;
-
-	/*New - Hold index of each
-	 * component in the unified buffer*/
-	protected FloatBuffer mDataBuf;
-	protected int mDataBufIdx;
-	protected int mPosOffset;
-	protected int mNrmOffset;
-	protected int mTxcOffset;
+	/*New - Components in an object*/
+	Geometry mGeo = new Geometry();
 	
-	protected int mNumElements;
-	protected short[] mIndexes;
-	protected ShortBuffer mIdxBuf;
-	protected int mIndexBufIdx;
-	protected int mNumIdxElements;
+//	protected float[] mPositions;
+//	protected float[] mNormals;
+//	protected float[] mTexCoords;
+//	protected float[] mCombinedArray;
+	
+//	protected FloatBuffer mDataBuf;
+//	protected int mDataBufIdx;
+//	protected int mPosOffset;
+//	protected int mNrmOffset;
+//	protected int mTxcOffset;
+//	
+//	protected int mNumElements;
+//	protected short[] mIndexes;
+//	protected ShortBuffer mIdxBuf;
+//	protected int mIndexBufIdx;
+//	protected int mNumIdxElements;
+	/*New - Components in an object*/
 	
 	protected float[] mModelMatrix = new float[16];
 	protected float[] mViewMatrix = new float[16];	
@@ -147,19 +155,16 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glUniform1i(u_texsampler, 0);
 
 		/* New - Only 1 call to bind buffer for vertex attribs*/
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mDataBufIdx);
-		
-		//(xyz + xyz + uv) * 4
-		int stride = (V_DATA_SIZE + V_DATA_SIZE + T_DATA_SIZE) * BYTES_PER_FLOAT;
-		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGeo.mDatBufIndex);
+
 		GLES20.glEnableVertexAttribArray(a_pos);
-		GLES20.glVertexAttribPointer(a_pos, V_DATA_SIZE, GLES20.GL_FLOAT, false, stride, mPosOffset);
+		GLES20.glVertexAttribPointer(a_pos, mGeo.mPosSize, GLES20.GL_FLOAT, false, mGeo.mElementStride, mGeo.mPosOffset);
 
 		GLES20.glEnableVertexAttribArray(a_nrm);
-		GLES20.glVertexAttribPointer(a_nrm, V_DATA_SIZE, GLES20.GL_FLOAT, false, stride, mNrmOffset);
+		GLES20.glVertexAttribPointer(a_nrm, mGeo.mNrmSize, GLES20.GL_FLOAT, false, mGeo.mElementStride, mGeo.mNrmOffset);
 
 		GLES20.glEnableVertexAttribArray(a_txc);
-		GLES20.glVertexAttribPointer(a_txc, T_DATA_SIZE, GLES20.GL_FLOAT, false, stride, mTxcOffset);
+		GLES20.glVertexAttribPointer(a_txc, mGeo.mTxcSize, GLES20.GL_FLOAT, false, mGeo.mElementStride, mGeo.mTxcOffset);
 		
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		
@@ -191,9 +196,8 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		// Draw
 		
 		/* Draw the arrays as triangles */
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIndexBufIdx);
-//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNumIdxElements, GLES20.GL_UNSIGNED_SHORT, 0);
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNumIdxElements, GLES20.GL_UNSIGNED_SHORT, 0);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeo.mIdxBufIndex);
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, mGeo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 				
@@ -231,109 +235,128 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 	protected void loadModel() {
 		Log.d(TAG, "Loading models...");
 		Resources res =  mContext.getResources();
-		String positions = null;
-		String normals = null;
-		String texCoords = null;
-		InputStream posIn = null;
-		InputStream nrmIn = null;
-		InputStream txcIn = null;
-
-		try {
-			posIn = res.openRawResource(R.raw.quadsphere_position);
-			positions = IOUtils.toString(posIn);
-			nrmIn = res.openRawResource(R.raw.quadsphere_normal);
-			normals = IOUtils.toString(nrmIn);
-			txcIn = res.openRawResource(R.raw.quadsphere_texcoord);
-			texCoords = IOUtils.toString(txcIn);
-		} catch (IOException e) {
-			Log.e(TAG, "Error loading model.", e);
-		} finally {
-			IOUtils.closeQuietly(posIn);
-			IOUtils.closeQuietly(nrmIn);
-			IOUtils.closeQuietly(txcIn);
-		}
-
-		Log.d(TAG, "Loading positions.");
-		mPositions = stringToFloatArray(positions);
-		Log.d(TAG, "Loading normals.");
-		mNormals = stringToFloatArray(normals);
-		Log.d(TAG, "Loading texture coordinates.");
-		mTexCoords = stringToFloatArray(texCoords);
-
-		/*New - one big array*/
-		Log.d(TAG, "Merging arrays.");
-		int combinedSize = mPositions.length + mNormals.length + mTexCoords.length;
-		mCombinedArray = new float[combinedSize];		
-		mPosOffset = 0;
-		mNrmOffset = V_DATA_SIZE * BYTES_PER_FLOAT;
-//		mNrmOffset = 0;
-		mTxcOffset = (V_DATA_SIZE + V_DATA_SIZE) * BYTES_PER_FLOAT;
-//		mTxcOffset = 0;
-
-		int posPos = 0;
-		int nrmPos = 0;
-		int txcPos = 0;
-		int stride = (V_DATA_SIZE + V_DATA_SIZE + T_DATA_SIZE);
-		for(int i = 0; i < combinedSize; i += stride)
-		{                       
-			mCombinedArray[i] = mPositions[posPos];
-			mCombinedArray[i+1] = mPositions[posPos+1];
-			mCombinedArray[i+2] = mPositions[posPos+2];
-			posPos += 3;
-			
-			mCombinedArray[i+3] = mNormals[nrmPos];
-			mCombinedArray[i+4] = mNormals[nrmPos+1];
-			mCombinedArray[i+5] = mNormals[nrmPos+2];
-			nrmPos += 3;
-			
-			mCombinedArray[i+6] = mTexCoords[txcPos];
-			mCombinedArray[i+7] = mTexCoords[txcPos+1];
-			txcPos += 2;
-		}
 		
+		TypedArray models = res.obtainTypedArray(R.array.models);
 		
-		mDataBuf = SSArrayUtil.arrayToFloatBuffer(BYTES_PER_FLOAT, mCombinedArray);
-		/*New - one big array*/
-		Log.d(TAG, "Models loaded.");
-		
-		/*Build the IBO*/
-//		mIndexes = new short[mPositions.length /  TRIANGLE_NUM_SIDES];
-		mIndexes = new short[mCombinedArray.length/stride];
-		//Buffers are already in order...
-		for(short i = 0; i < mIndexes.length; i++) {
-			mIndexes[i] = i;			
-		}
-		
-		mNumIdxElements = mIndexes.length;
-		mIdxBuf = SSArrayUtil.arrayToShortBuffer(BYTES_PER_SHORT, mIndexes);
-
-		final int buffers[] = new int[2];
-		GLES20.glGenBuffers(2, buffers, 0);
-		
-		for(int i = 0; i < buffers.length; i++) {
-			if(buffers[i] < 1) {
-				Log.e(TAG, String.format("Buffer not created at index %s.", i));
+//		for(int i = 0; i < models.length(); i++) {
+		//TODO: Handle more than 1 model
+		for(int i = 0; i < 1; i++) {
+			String resourceName = models.getString(i);
+			int resourceId = models.getResourceId(i, 0);
+			Log.d(TAG, String.format("Loading resource: %s.", resourceName));
+			InputStream is = res.openRawResource(resourceId);
+			try {
+				parseGeometry(is);
+			} catch (IOException e) {
+				Log.e(TAG, String.format("Error loading resource %s.", resourceName), e);
+			} finally {
+				IOUtils.closeQuietly(is);
 			}
+		
+		}
+		
+		
+		
+		models.recycle();
+	}
+
+	private Geometry parseGeometry(InputStream is) throws IOException {
+		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));	
+
+		//Pretending like each zip has only one model
+		ZipEntry ze;
+		while ((ze = zis.getNextEntry()) != null) {
+			String filename = ze.getName();
+			
+			if(filename.endsWith(".desc") || filename.endsWith(".dsc")){
+				String descriptor = IOUtils.toString(zis);
+				Map<String,String> properties = SSPropertyUtil.parseFromString(descriptor);
+				
+				mGeo.mName = properties.get("pos_size");
+				
+				mGeo.mPosSize = Integer.valueOf(properties.get("pos_size"));
+				mGeo.mPosOffset = Integer.valueOf(properties.get("pos_offset"));
+				
+				mGeo.mNrmSize = Integer.valueOf(properties.get("nrm_size"));
+				mGeo.mNrmOffset = Integer.valueOf(properties.get("nrm_offset"));
+				
+				mGeo.mTxcSize = Integer.valueOf(properties.get("txc_size"));
+				mGeo.mTxcOffset = Integer.valueOf(properties.get("txc_offset"));
+				
+				mGeo.mNumElements = Integer.valueOf(properties.get("num_elements"));
+				mGeo.mElementStride = Integer.valueOf(properties.get("element_stride"));
+				
+			} else if(filename.endsWith(".ibo") || filename.endsWith(".i")) {
+				byte[] iboBytes = IOUtils.toByteArray(zis);
+				mGeo.mIdxBufIndex = loadToIbo(iboBytes); 
+			} else if(filename.endsWith(".vbo") || filename.endsWith(".v")) {
+				byte[] vboBbytes = IOUtils.toByteArray(zis);
+				mGeo.mDatBufIndex = loadToVbo(vboBbytes); 
+			} else if(filename.equals("asset.xml")) {
+				String asset = IOUtils.toString(zis);
+				mGeo.mAssetXml = asset;
+			}
+			
+		}
+		
+		return mGeo;
+	}
+
+	private int loadToIbo(byte[] iboBytes) {
+		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes);
+	}
+
+	private int loadToVbo(byte[] vboBbytes) {
+		return loadGLBuffer(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes);
+	}
+	
+	private int loadGLBuffer(int glTarget, int glType, byte[] bytes) {
+		int bufIdx = -1;
+
+		final int buffers[] = new int[1];
+		GLES20.glGenBuffers(1, buffers, 0);		
+		if(buffers[0] < 1) {
+			Log.e(TAG, "IBO buffer could not be created.");
+		}
+
+		bufIdx = buffers[0];
+	
+		
+		if(glType == GLES20.GL_UNSIGNED_SHORT) {
+
+			short[] ibo = new short[bytes.length / BYTES_PER_SHORT];
+			ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).asShortBuffer().get(ibo);		
+			ShortBuffer iboBuf = SSArrayUtil.arrayToShortBuffer(BYTES_PER_FLOAT, ibo);
+			
+			GLES20.glBindBuffer(glTarget, bufIdx);
+			GLES20.glBufferData(glTarget, iboBuf.capacity() * BYTES_PER_SHORT, iboBuf, GLES20.GL_STATIC_DRAW);
+			GLES20.glBindBuffer(glTarget, 0);
+
+		} else if(glType == GLES20.GL_FLOAT) {
+
+			float[] vbo = SSArrayUtil.byteToFloatArray(bytes);
+			
+			
+			float[] floats = new float[bytes.length / BYTES_PER_FLOAT];
+			ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).asFloatBuffer().get(floats);		
+			FloatBuffer fboBuf = SSArrayUtil.arrayToFloatBuffer(BYTES_PER_FLOAT, floats);
+			
+			Log.d("DEBUG VBO", String.format("VBO LENGTH: %s", floats.length));
+//			System.out.println(String.format("VBO LENGTH: %s", vbo.length));
+			for(int i = 0; i < floats.length; i++) {
+				Log.d("DEBUG VBO", String.format("FLOAT[%s]: %s", i, floats[i]));
+//				System.out.println(String.format("FLOAT[%s]: %s", i, vbo[i]));
+			}
+			
+			GLES20.glBindBuffer(glTarget, bufIdx);
+			GLES20.glBufferData(glTarget, fboBuf.capacity() * BYTES_PER_FLOAT, fboBuf, GLES20.GL_STATIC_DRAW);
+			GLES20.glBindBuffer(glTarget, 0);
+			
 		}
 				
-		/* New - Only 2 buffers now.*/
-		mDataBufIdx = buffers[0];
-		mIndexBufIdx = buffers[1];
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mDataBufIdx);
-		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mDataBuf.capacity() * BYTES_PER_FLOAT, mDataBuf, GLES20.GL_STATIC_DRAW);
-
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIndexBufIdx);
-		GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIdxBuf.capacity() * BYTES_PER_SHORT, mIdxBuf, GLES20.GL_STATIC_DRAW);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-		
-		mNumElements = mIdxBuf.capacity();
-		
-		Log.d(TAG, String.format("Number of indexes: %s", mNumIdxElements));
-		
+		return bufIdx;
 	}
+	
 
 	protected float[] stringToFloatArray(String data) {
 		String[] values = data.split(NEWLINE);
