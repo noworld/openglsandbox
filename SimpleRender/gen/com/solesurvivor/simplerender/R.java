@@ -10,6 +10,7 @@ package com.solesurvivor.simplerender;
 public final class R {
     public static final class array {
         public static final int alphaPngModels=0x7f080001;
+        public static final int alphaShaders=0x7f080006;
         public static final int basicShaders=0x7f080003;
         public static final int basicTextureShaders=0x7f080005;
         /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
@@ -17,10 +18,8 @@ public final class R {
         public static final int models=0x7f080000;
         public static final int pointShaders=0x7f080004;
         public static final int shaderPrograms=0x7f080002;
-        /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
-         */
-        public static final int shaders=0x7f080006;
-        public static final int textures=0x7f080007;
+        public static final int shaders=0x7f080007;
+        public static final int textures=0x7f080008;
     }
     public static final class attr {
         /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
@@ -59,18 +58,20 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int alphapng=0x7f040000;
         public static final int f_model_empty=0x7f040001;
         public static final int f_tex_and_light=0x7f040002;
-        public static final int monkey=0x7f040003;
-        public static final int ncfb=0x7f040004;
-        public static final int point_fragment_shader=0x7f040005;
-        public static final int point_vertex_shader=0x7f040006;
-        public static final int quadsphere_normal=0x7f040007;
-        public static final int quadsphere_position=0x7f040008;
-        public static final int quadsphere_texcoord=0x7f040009;
-        public static final int sphere=0x7f04000a;
-        public static final int toruscone=0x7f04000b;
-        public static final int v_model_diffuse=0x7f04000c;
-        public static final int v_point=0x7f04000d;
-        public static final int v_tex_and_light=0x7f04000e;
+        public static final int f_tex_and_light_alpha=0x7f040003;
+        public static final int monkey=0x7f040004;
+        public static final int ncfb=0x7f040005;
+        public static final int point_fragment_shader=0x7f040006;
+        public static final int point_vertex_shader=0x7f040007;
+        public static final int quadsphere_normal=0x7f040008;
+        public static final int quadsphere_position=0x7f040009;
+        public static final int quadsphere_texcoord=0x7f04000a;
+        public static final int sphere=0x7f04000b;
+        public static final int toruscone=0x7f04000c;
+        public static final int v_model_diffuse=0x7f04000d;
+        public static final int v_point=0x7f04000e;
+        public static final int v_tex_and_light=0x7f04000f;
+        public static final int v_tex_and_light_alpha=0x7f040010;
     }
     public static final class string {
         public static final int app_name=0x7f050000;

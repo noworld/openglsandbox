@@ -24,6 +24,7 @@ public class Geometry {
 	/* New - for drawing multiple models*/
 	public float[] mModelMatrix = new float[16];
 	public int mTextureHandle;
+	public int mShaderHandle;
 	public float mAccumScale = 1.0f;
 	public float mAccumRot = 0.0f;
 	
