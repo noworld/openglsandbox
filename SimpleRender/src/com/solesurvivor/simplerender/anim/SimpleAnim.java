@@ -30,7 +30,9 @@ public class SimpleAnim {
 		} else if(geo.mName.equals("backplane-mesh")) {
 			Matrix.translateM(geo.mModelMatrix, 0, 0.0f, 0.0f, -8.0f);
 		} else if(geo.mName.equals("gobutton-mesh")) {
+//			Matrix.translateM(geo.mModelMatrix, 0, 0.0f, 0.0f, 0.0f);
 			Matrix.translateM(geo.mModelMatrix, 0, 0.0f, 0.0f, -4.0f);
+			Matrix.scaleM(geo.mModelMatrix, 0, 0.1f, 0.1f, 0.0f);
 		} else {
 			if(geo.mAccumScale > 0.01f) {
 				geo.mAccumScale -= 0.005f;

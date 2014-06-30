@@ -48,6 +48,7 @@ public class TwoDeeUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	private static final int BYTES_PER_SHORT = 2;
 
 	protected float[] mProjectionMatrix = new float[16];
+	protected float[] mUIMatrix = new float[16];
 	protected float[] mMVPMatrix = new float[16]; 
 	protected int mLightShaderHandle = -1;
 
@@ -128,7 +129,18 @@ public class TwoDeeUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		
 		for(Geometry geo : mGeos) {
 			
+			float[] temp = null;
+			
+			if(geo.mName.equals("gobutton-mesh")) {
+				temp = mProjectionMatrix;
+				mProjectionMatrix = mUIMatrix;
+			}
+			
 			drawGeometry(geo);
+			
+			if(geo.mName.equals("gobutton-mesh") && temp !=  null) {				
+				mProjectionMatrix = temp;
+			}
 
 			/* Check for errors */
 			if(GLES20.glGetError() != GLES20.GL_NO_ERROR
@@ -620,6 +632,8 @@ public class TwoDeeUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		final float far = 200.0f;
 
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
+		Matrix.orthoM(mUIMatrix, 0, left, right, bottom, top, near, far);
+		
 	}
 	
 	private void initCamera() {
