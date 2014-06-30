@@ -1,14 +1,8 @@
-package com.solesurvivor.simplerender;
+package com.solesurvivor.simplerender.renderer;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.Buffer;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -17,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
@@ -26,44 +19,52 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.solesurvivor.simplerender.R;
+import com.solesurvivor.simplerender.R.drawable;
+import com.solesurvivor.simplerender.R.raw;
 import com.solesurvivor.util.SSArrayUtil;
-import com.solesurvivor.util.SSPropertyUtil;
 
-public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
+public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
 
-	private static final String TAG = PackedArrayZipGLTextureRenderer.class.getSimpleName();
-	
-	private static final boolean DRAW_LIGHT = true;
+	private static final String TAG = VboGLTextureRenderer.class.getSimpleName();
 
 	private static final String NEWLINE = "\n";
 	private static final int BYTES_PER_FLOAT = 4;
-	private static final int BYTES_PER_SHORT = 2;
+	private static final int T_DATA_SIZE = 2;
+	private static final int V_DATA_SIZE = 3;
+	private static final int TRIANGLE_NUM_SIDES = 3;
+	private static final float IMAGE_W = 640.0f;
+	private static final float IMAGE_H = 640.0f;
 
 	protected float[] mProjectionMatrix = new float[16];
 	protected float[] mMVPMatrix = new float[16]; 
-	protected int mLightShaderHandle = -1;
 	protected int mShaderHandle = -1;
 	protected int mTextureHandle = -1;
 
 	protected Context mContext;
 
-	/*New - Components in an object*/
-	Geometry mGeo = new Geometry();
+	protected float[] mPositions;
+	protected float[] mNormals;
+	protected float[] mTexCoords;
+	protected FloatBuffer mPosBuf;
+	protected FloatBuffer mNrmBuf;
+	protected FloatBuffer mTxcBuf;
+	
+	/*New - Load to VBO*/
+	protected int mPosBufIdx;
+	protected int mNrmBufIdx;
+	protected int mTxcBufIdx;
+	/*New - Load to VBO*/
 	
 	protected float[] mModelMatrix = new float[16];
 	protected float[] mViewMatrix = new float[16];	
 
-	protected float[] mLightPosInModelSpace = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
-	protected final float[] mLightPosInWorldSpace = new float[4];
-	protected final float[] mLightPosInEyeSpace = new float[4];
-	protected float[] mLightModelMatrix = new float[16];	
+	protected float[] mLightPos = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
 
 	protected int mReportedError;
-	protected String mModelName;
 
-	public PackedArrayZipGLTextureRenderer(Context context, String model) {
+	public VboGLTextureRenderer(Context context) {
 		this.mContext = context;
-		this.mModelName = model;
 	}
 
 	@Override
@@ -86,40 +87,6 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 	}
 
 	protected void drawScene() {
-		
-		// Calculate position of the light. Rotate and then push into the distance.
-        Matrix.setIdentityM(mLightModelMatrix, 0);
-        Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
-        Matrix.rotateM(mLightModelMatrix, 0, 20, 0.0f, 1.0f, 0.0f);
-        Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
-               
-        Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
-        Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);   
-		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mLightModelMatrix, 0);
-		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-        
-		
-		if(DRAW_LIGHT) {
-			/*
-			 * DRAW LIGHT FOR DEBUGGING
-			 * */
-			
-			GLES20.glUseProgram(mLightShaderHandle);  
-			final int pointMVPMatrixHandle = GLES20.glGetUniformLocation(mLightShaderHandle, "u_MVPMatrix");
-	        final int pointPositionHandle = GLES20.glGetAttribLocation(mLightShaderHandle, "a_Position");
-	        
-			// Pass in the position.
-			GLES20.glVertexAttrib3f(pointPositionHandle, mLightPosInModelSpace[0], mLightPosInModelSpace[1], mLightPosInModelSpace[2]);
-
-			// Since we are not using a buffer object, disable vertex arrays for this attribute.
-	        GLES20.glDisableVertexAttribArray(pointPositionHandle);  
-			
-			// Pass in the transformation matrix.
-			GLES20.glUniformMatrix4fv(pointMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-			
-			// Draw the point.
-			GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
-		}
 
 		GLES20.glUseProgram(mShaderHandle);
 		
@@ -132,25 +99,45 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		int a_nrm = GLES20.glGetAttribLocation(mShaderHandle, "a_Normal");
 		int a_txc = GLES20.glGetAttribLocation(mShaderHandle, "a_TexCoordinate");
 		
+		/* Activate the texture*/
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureHandle);
 		GLES20.glUniform1i(u_texsampler, 0);
 
-		/* New - Only 1 call to bind buffer for vertex attribs*/
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGeo.mDatBufIndex);
+		mPosBuf.position(0);
+		mNrmBuf.position(0);
+		mTxcBuf.position(0);
 
+		/* Pass in the position information */
+//		GLES20.glVertexAttribPointer(a_pos, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mPosBuf);        
+//		GLES20.glEnableVertexAttribArray(a_pos); 
+//
+//		/* Pass in the normal information */
+//		GLES20.glVertexAttribPointer(a_nrm, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mNrmBuf);        
+//		GLES20.glEnableVertexAttribArray(a_nrm); 
+//		
+//		/* Pass in the texture information */
+//		GLES20.glVertexAttribPointer(a_txc, T_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mTxcBuf);        
+//		GLES20.glEnableVertexAttribArray(a_txc); 
+		
+		/*New - Bind to VBO*/
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mPosBufIdx);
 		GLES20.glEnableVertexAttribArray(a_pos);
-		GLES20.glVertexAttribPointer(a_pos, mGeo.mPosSize, GLES20.GL_FLOAT, false, mGeo.mElementStride, mGeo.mPosOffset);
-
+		GLES20.glVertexAttribPointer(a_pos, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, 0);
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mNrmBufIdx);
 		GLES20.glEnableVertexAttribArray(a_nrm);
-		GLES20.glVertexAttribPointer(a_nrm, mGeo.mNrmSize, GLES20.GL_FLOAT, false, mGeo.mElementStride, mGeo.mNrmOffset);
-
+		GLES20.glVertexAttribPointer(a_nrm, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, 0);
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mTxcBufIdx);
 		GLES20.glEnableVertexAttribArray(a_txc);
-		GLES20.glVertexAttribPointer(a_txc, mGeo.mTxcSize, GLES20.GL_FLOAT, false, mGeo.mElementStride, mGeo.mTxcOffset);
+		GLES20.glVertexAttribPointer(a_txc, T_DATA_SIZE, GLES20.GL_FLOAT, false, 0, 0);
 		
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-		
-		//Rotate the ball
+		/*New - Bind to VBO*/
+
+		/*Update the model matrix... animation could go here*/
+		updateViewMatrix();
 		updateModelMatrix();
 
 		// --MV--
@@ -172,17 +159,16 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		// --LightPos--
 
 		/* Pass in the light position in eye space.	*/	
-		//Switching to view space...
-		GLES20.glUniform3f(u_lightpos, mLightPosInEyeSpace[0], mLightPosInEyeSpace[1], mLightPosInEyeSpace[2]);
+//		GLES20.glUniform3f(u_lightpos, mLightPos[0], mLightPos[1], mLightPos[2]);
+		//Switching to model space...
+		float[] result = new float[4];		
+		Matrix.multiplyMV(result, 0, mViewMatrix, 0, mLightPos, 0);
+		GLES20.glUniform3f(u_lightpos, result[0], result[1], result[2]);
 
 		// Draw
 		
 		/* Draw the arrays as triangles */
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeo.mIdxBufIndex);
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, mGeo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
-
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-				
+		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, mPosBuf.capacity() / TRIANGLE_NUM_SIDES);
 
 		/* Check for errors */
 		if(GLES20.glGetError() != GLES20.GL_NO_ERROR
@@ -192,14 +178,23 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		}
 
 	}
-
+	
+	private void updateViewMatrix() {
+//		float[] viewMovementMatrix = new float[16];
+//		float[] tempMatrix = new float[16];
+//		Matrix.setIdentityM(viewMovementMatrix, 0);
+//		Matrix.translateM(viewMovementMatrix, 0, 0.0f, 0.0f, -0.01f);
+//		Matrix.multiplyMM(tempMatrix, 0, viewMovementMatrix, 0, mViewMatrix, 0);
+//		System.arraycopy(tempMatrix, 0, mViewMatrix, 0, 16);
+	}
+	
 	private void initModelMatrix() {
 		Matrix.setIdentityM(mModelMatrix, 0);
 		Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -7.0f); 
 	}
 
 	private void updateModelMatrix() {
-		Matrix.rotateM(mModelMatrix, 0, 0.5f, 0.5f, 0.5f, 0.0f);
+		Matrix.rotateM(mModelMatrix, 0, 0.5f, 0.75f, 0.25f, 0.0f);
 	}
 
 	protected void loadScene() {
@@ -211,157 +206,113 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void loadTextures() {
-		
-		int texId = -1;
-		
-		if(mModelName.equals("monkey")) {
-			texId = R.drawable.monkeytex;
-		} else if(mModelName.equals("ncfb")) {
-			texId = R.drawable.ncfb;
-		} else if(mModelName.equals("toruscone")) {
-			texId = R.drawable.uvgrid;
-		} else if(mModelName.equals("sphere")) {
-			texId = R.drawable.spheretex;
-		}
-		
-		mTextureHandle = loadTexture(texId);
+		mTextureHandle = loadTexture(R.drawable.flipped_spheretex);
 	}
 
 	protected void loadModel() {
 		Log.d(TAG, "Loading models...");
 		Resources res =  mContext.getResources();
-		
-		int rid = -1;
-		
-		if(mModelName.equals("monkey")) {
-			rid = R.raw.monkey;
-		} else if(mModelName.equals("ncfb")) {
-			rid = R.raw.ncfb;
-		} else if(mModelName.equals("toruscone")) {
-			rid = R.raw.toruscone;
-		} else if(mModelName.equals("sphere")) {
-			rid = R.raw.sphere;
-		}
-		
-//		String resourceName = models.getString(i);
-//		int resourceId = models.getResourceId(i, 0);
-//		Log.d(TAG, String.format("Loading resource: %s.", resourceName));
-		InputStream is = res.openRawResource(rid);
+		String positions = null;
+		String normals = null;
+		String texCoords = null;
+		InputStream posIn = null;
+		InputStream nrmIn = null;
+		InputStream txcIn = null;
+
 		try {
-			parseGeometry(is);
+			posIn = res.openRawResource(R.raw.quadsphere_position);
+			positions = IOUtils.toString(posIn);
+			nrmIn = res.openRawResource(R.raw.quadsphere_normal);
+			normals = IOUtils.toString(nrmIn);
+			txcIn = res.openRawResource(R.raw.quadsphere_texcoord);
+			texCoords = IOUtils.toString(txcIn);
 		} catch (IOException e) {
-			Log.e(TAG,"Error loading resource.", e);
+			Log.e(TAG, "Error loading model.", e);
 		} finally {
-			IOUtils.closeQuietly(is);
+			IOUtils.closeQuietly(posIn);
+			IOUtils.closeQuietly(nrmIn);
+			IOUtils.closeQuietly(txcIn);
 		}
+
+		Log.d(TAG, "Loading positions.");
+		mPositions = stringToFloatArray(positions);
+		Log.d(TAG, "Loading positions --> buffer...");
+		mPosBuf = SSArrayUtil.arrayToFloatBuffer(mPositions);
+		Log.d(TAG, "Loading normals.");
+		mNormals = stringToFloatArray(normals);
+		Log.d(TAG, "Loading normals --> buffer...");
+		mNrmBuf = SSArrayUtil.arrayToFloatBuffer(mNormals);
+		Log.d(TAG, "Loading texture coordinates.");
+		mTexCoords = stringToFloatArray(texCoords);
+		denormalize(mTexCoords, IMAGE_H, IMAGE_W);
+		Log.d(TAG, "Loading texture coordinates--> buffer...");
+		mTxcBuf = SSArrayUtil.arrayToFloatBuffer(mTexCoords);
+		Log.d(TAG, "Models loaded.");
 		
-//		TypedArray models = res.obtainTypedArray(R.array.models);
-//		
-////		for(int i = 0; i < models.length(); i++) {
-//		//TODO: Handle more than 1 model
-//		for(int i = 0; i < 1; i++) {
-//			String resourceName = models.getString(i);
-//			int resourceId = models.getResourceId(i, 0);
-//			Log.d(TAG, String.format("Loading resource: %s.", resourceName));
-//			InputStream is = res.openRawResource(resourceId);
-//			try {
-//				parseGeometry(is);
-//			} catch (IOException e) {
-//				Log.e(TAG, String.format("Error loading resource %s.", resourceName), e);
-//			} finally {
-//				IOUtils.closeQuietly(is);
-//			}
-//		
-//		}
-			
-//		models.recycle();
+		/*New - Load to VBO*/
+		final int buffers[] = new int[3];
+		GLES20.glGenBuffers(3, buffers, 0);
+		mPosBufIdx = buffers[0];
+		mNrmBufIdx = buffers[1];
+		mTxcBufIdx = buffers[2];
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mPosBufIdx);
+		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mPosBuf.capacity() * BYTES_PER_FLOAT, mPosBuf, GLES20.GL_STATIC_DRAW);
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mNrmBufIdx);
+		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mNrmBuf.capacity() * BYTES_PER_FLOAT, mNrmBuf, GLES20.GL_STATIC_DRAW);
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mTxcBufIdx);
+		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mTxcBuf.capacity() * BYTES_PER_FLOAT, mTxcBuf, GLES20.GL_STATIC_DRAW);
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+		/*New - Load to VBO*/
+
 	}
 
-	private Geometry parseGeometry(InputStream is) throws IOException {
-		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));	
-
-		//Pretending like each zip has only one model
-		ZipEntry ze;
-		while ((ze = zis.getNextEntry()) != null) {
-			String filename = ze.getName();
-			
-			if(filename.endsWith(".desc") || filename.endsWith(".dsc")){
-				String descriptor = IOUtils.toString(zis);
-				Map<String,String> properties = SSPropertyUtil.parseFromString(descriptor);
-				
-				mGeo.mName = properties.get("pos_size");
-				
-				mGeo.mPosSize = Integer.valueOf(properties.get("pos_size"));
-				mGeo.mPosOffset = Integer.valueOf(properties.get("pos_offset"));
-				
-				mGeo.mNrmSize = Integer.valueOf(properties.get("nrm_size"));
-				mGeo.mNrmOffset = Integer.valueOf(properties.get("nrm_offset"));
-				
-				mGeo.mTxcSize = Integer.valueOf(properties.get("txc_size"));
-				mGeo.mTxcOffset = Integer.valueOf(properties.get("txc_offset"));
-				
-				mGeo.mNumElements = Integer.valueOf(properties.get("num_elements"));
-				mGeo.mElementStride = Integer.valueOf(properties.get("element_stride"));
-				
-			} else if(filename.endsWith(".ibo") || filename.endsWith(".i")) {
-				byte[] iboBytes = IOUtils.toByteArray(zis);
-				mGeo.mIdxBufIndex = loadToIbo(iboBytes); 
-			} else if(filename.endsWith(".vbo") || filename.endsWith(".v")) {
-				byte[] vboBbytes = IOUtils.toByteArray(zis);
-				mGeo.mDatBufIndex = loadToVbo(vboBbytes); 
-			} else if(filename.equals("asset.xml")) {
-				String asset = IOUtils.toString(zis);
-				mGeo.mAssetXml = asset;
+	protected float[] denormalize(float[] data, float imageH, float imageW) {
+		float[] denorm = new float[data.length];
+		
+		for(int i = 0; i < data.length; i++) {
+			if(i % 2 == 0) {
+				//Even, Y
+				denorm[i] = data[i] * imageH;
+			} else {
+				//Odd, X
+				denorm[i] = data[i] * imageW;
 			}
-			
 		}
 		
-		return mGeo;
-	}
-
-	private int loadToIbo(byte[] iboBytes) {
-		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes);
-	}
-
-	private int loadToVbo(byte[] vboBbytes) {
-		return loadGLBuffer(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes);
-	}
-	
-	private int loadGLBuffer(int glTarget, int glType, byte[] bytes) {
-		int bufIdx = -1;
-
-		final int buffers[] = new int[1];
-		GLES20.glGenBuffers(1, buffers, 0);		
-		if(buffers[0] < 1) {
-			Log.e(TAG, "IBO buffer could not be created.");
+		/*DEBUGGING TEXTURE DISPLAY*/
+//		int tStartIndex = 1304;
+//		int vStartIndex = 1956;
+		int tStartIndex = 0;
+		int vStartIndex = 0;
+		int length = (9*3);
+		for(int i = 0, j = 0; i < length; i+=2, j+=3) {
+			int tIdx = i + tStartIndex;
+			int vIdx = j + vStartIndex;
+			Log.d("POSITION", String.format("VIDX:%s\nX:%s\nY:%s\nZ:%s\n", vIdx, mPositions[vIdx], mPositions[vIdx+1], mPositions[vIdx+2]));
+			Log.d("TEXCOORD", String.format("TIDX:%s\nU:%s\nV:%s\n", tIdx, denorm[tIdx], denorm[tIdx+1]));
 		}
-
-		bufIdx = buffers[0];
-		Buffer buf = null;
-		int dataSize = -1;
-	
+		/*DEBUGGING TEXTURE DISPLAY*/
 		
-		if(glType == GLES20.GL_UNSIGNED_SHORT) {
-		
-			ShortBuffer iboBuf = SSArrayUtil.bytesToShortBufBigEndian(bytes);
-			buf = iboBuf;
-			dataSize = BYTES_PER_SHORT;
-
-		} else if(glType == GLES20.GL_FLOAT) {
-
-			FloatBuffer vboBuf = SSArrayUtil.bytesToFloatBufBigEndian(bytes);
-			buf = vboBuf;
-			dataSize = BYTES_PER_FLOAT;
-			
-		}
-		
-		GLES20.glBindBuffer(glTarget, bufIdx);
-		GLES20.glBufferData(glTarget, buf.capacity() * dataSize, buf, GLES20.GL_STATIC_DRAW);
-		GLES20.glBindBuffer(glTarget, 0);
-				
-		return bufIdx;
+		return denorm;
 	}
-	
+
+	protected float[] stringToFloatArray(String data) {
+		String[] values = data.split(NEWLINE);
+		float[] floats = new float[Integer.parseInt(values[0])];
+		int tenPct = floats.length / 10;
+		for(int i = 0; i < floats.length; i++) {
+			if(i % tenPct == 0) {
+				Log.d(TAG, String.format("Percent complete: %s", (i/tenPct)*10));
+			}
+			floats[i] = Float.parseFloat(values[i + 1]);
+		}
+		return floats;
+	}
+
 	protected void loadShaders() {
 		Log.d(TAG, "Loading shaders...");
 		Resources res =  mContext.getResources();
@@ -370,10 +321,11 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		InputStream fShadIn = null;
 		String vShadCode = null;
 		String fShadCode = null;
-		
 		try {
+//			vShadIn = res.openRawResource(R.raw.v_model_diffuse);
 			vShadIn = res.openRawResource(R.raw.v_tex_and_light);
 			vShadCode = IOUtils.toString(vShadIn);
+//			fShadIn = res.openRawResource(R.raw.f_model_empty);
 			fShadIn = res.openRawResource(R.raw.f_tex_and_light);
 			fShadCode = IOUtils.toString(fShadIn);
 		} catch (IOException e) {
@@ -386,32 +338,8 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		int vShadHand = compileShader(GLES20.GL_VERTEX_SHADER, vShadCode);
 		int fShadHand = compileShader(GLES20.GL_FRAGMENT_SHADER, fShadCode);
 
+//		mShaderHandle = createAndLinkProgram(vShadHand, fShadHand, new String[]{"a_Position", "a_Normal"});
 		mShaderHandle = createAndLinkProgram(vShadHand, fShadHand, new String[]{"a_Position", "a_Normal", "a_TexCoordinate"});
-		
-		
-		InputStream vPointShadIn = null;
-		InputStream fPointShadIn = null;
-		String vPointShadCode = null;
-		String fPointShadCode = null;
-		
-		try {
-			vPointShadIn = res.openRawResource(R.raw.point_vertex_shader);
-			vPointShadCode = IOUtils.toString(vPointShadIn);
-			fPointShadIn = res.openRawResource(R.raw.point_fragment_shader);
-			fPointShadCode = IOUtils.toString(fPointShadIn);
-		} catch (IOException e) {
-			Log.e(TAG, "Error loading point shaders.", e);
-		} finally {
-			IOUtils.closeQuietly(vPointShadIn);
-			IOUtils.closeQuietly(fPointShadIn);
-		}
-
-		int vPointShaderHand = compileShader(GLES20.GL_VERTEX_SHADER, vPointShadCode);
-		int fPointShadHand = compileShader(GLES20.GL_FRAGMENT_SHADER, fPointShadCode);
-
-		mLightShaderHandle = createAndLinkProgram(vPointShaderHand, fPointShadHand, new String[]{"a_Position"});
-		
-		
 		Log.d(TAG, "Shaders loaded.");
 
 	}
@@ -598,6 +526,7 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 		case GLES20.GL_INVALID_FRAMEBUFFER_OPERATION: return "GL_INVALID_FRAMEBUFFER_OPERATION";
 		case GLES20.GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY";
 		}
+
 
 		return "Error code unrecognized: " + errNum;
 	}	

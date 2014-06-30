@@ -2,7 +2,12 @@
     
     <!-- Must be in specific order: Position, Color, Normal, (optional) Texcoord -->
     <array name="models">
-        <item >@raw/ncfb</item> 
+        <item >@raw/monkey</item>
+        <item >@raw/sphere</item>  
     </array>   
+    
+    <array name="alphaPngModels">
+        <item >@raw/monkey</item> 
+    </array>  
     
 </resources>

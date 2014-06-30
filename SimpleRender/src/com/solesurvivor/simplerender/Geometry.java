@@ -21,4 +21,9 @@ public class Geometry {
 	public int mNumElements;
 	public int mElementStride;
 	
+	/* New - for drawing multiple models*/
+	public float[] mModelMatrix = new float[16];
+	public float mAccumScale = 1.0f;
+	public float mAccumRot = 0.0f;
+	
 }

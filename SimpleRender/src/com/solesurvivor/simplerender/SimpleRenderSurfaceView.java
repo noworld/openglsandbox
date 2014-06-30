@@ -1,5 +1,7 @@
 package com.solesurvivor.simplerender;
 
+import com.solesurvivor.simplerender.renderer.SimpleGLRenderer;
+
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.Log;

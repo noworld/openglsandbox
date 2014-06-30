@@ -9,17 +9,18 @@ package com.solesurvivor.simplerender;
 
 public final class R {
     public static final class array {
-        public static final int basicShaders=0x7f080002;
-        public static final int basicTextureShaders=0x7f080004;
+        public static final int alphaPngModels=0x7f080001;
+        public static final int basicShaders=0x7f080003;
+        public static final int basicTextureShaders=0x7f080005;
         /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
          */
         public static final int models=0x7f080000;
-        public static final int pointShaders=0x7f080003;
-        public static final int shaderPrograms=0x7f080001;
+        public static final int pointShaders=0x7f080004;
+        public static final int shaderPrograms=0x7f080002;
         /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
          */
-        public static final int shaders=0x7f080005;
-        public static final int textures=0x7f080006;
+        public static final int shaders=0x7f080006;
+        public static final int textures=0x7f080007;
     }
     public static final class attr {
         /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"

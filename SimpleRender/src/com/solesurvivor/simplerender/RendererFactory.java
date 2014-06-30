@@ -1,5 +1,13 @@
 package com.solesurvivor.simplerender;
 
+import com.solesurvivor.simplerender.renderer.IboGLTextureRenderer;
+import com.solesurvivor.simplerender.renderer.MultiModelGLTextureRenderer;
+import com.solesurvivor.simplerender.renderer.PackedArrayGLTextureRenderer;
+import com.solesurvivor.simplerender.renderer.PackedArrayZipGLTextureRenderer;
+import com.solesurvivor.simplerender.renderer.SimpleGLRenderer;
+import com.solesurvivor.simplerender.renderer.SimpleGLTextureRenderer;
+import com.solesurvivor.simplerender.renderer.VboGLTextureRenderer;
+
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 
@@ -30,6 +38,8 @@ public class RendererFactory {
 		case TEXTURE: renderer = new SimpleGLTextureRenderer(mContext);
 			break;
 		case VBO: renderer = new VboGLTextureRenderer(mContext);
+			break;
+		case MULTI_MODEL: renderer = new MultiModelGLTextureRenderer(mContext);
 			break;
 		default: renderer = new SimpleGLRenderer(mContext);
 			break;

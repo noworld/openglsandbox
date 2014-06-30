@@ -147,6 +147,7 @@ public class SimpleRenderActivity extends Activity {
 		
 		final Spinner spinner = (Spinner)findViewById(R.id.rendererSpinner);
 		List<String> spinnerValues = new ArrayList<String>();
+		spinnerValues.add(RendererType.MULTI_MODEL.toString());
 		spinnerValues.add(RendererType.PACKED_ARRAY_ZIP.toString());
 		spinnerValues.add(RendererType.PACKED_ARRAY.toString());
 		spinnerValues.add(RendererType.SIMPLE.toString());

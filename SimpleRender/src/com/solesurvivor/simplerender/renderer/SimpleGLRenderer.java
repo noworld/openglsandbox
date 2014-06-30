@@ -1,4 +1,4 @@
-package com.solesurvivor.simplerender;
+package com.solesurvivor.simplerender.renderer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +16,8 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.solesurvivor.simplerender.R;
+import com.solesurvivor.simplerender.R.raw;
 import com.solesurvivor.util.SSArrayUtil;
 
 public class SimpleGLRenderer implements GLSurfaceView.Renderer {

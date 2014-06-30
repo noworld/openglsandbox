@@ -1,8 +1,9 @@
-package com.solesurvivor.simplerender;
+package com.solesurvivor.simplerender.renderer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -19,22 +20,26 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.solesurvivor.simplerender.R;
+import com.solesurvivor.simplerender.R.drawable;
+import com.solesurvivor.simplerender.R.raw;
 import com.solesurvivor.util.SSArrayUtil;
 
-public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
+public class PackedArrayGLTextureRenderer implements GLSurfaceView.Renderer {
 
-	private static final String TAG = VboGLTextureRenderer.class.getSimpleName();
+	private static final String TAG = PackedArrayGLTextureRenderer.class.getSimpleName();
+	
+	private static final boolean DRAW_LIGHT = true;
 
 	private static final String NEWLINE = "\n";
 	private static final int BYTES_PER_FLOAT = 4;
+	private static final int BYTES_PER_SHORT = 2;
 	private static final int T_DATA_SIZE = 2;
 	private static final int V_DATA_SIZE = 3;
-	private static final int TRIANGLE_NUM_SIDES = 3;
-	private static final float IMAGE_W = 640.0f;
-	private static final float IMAGE_H = 640.0f;
 
 	protected float[] mProjectionMatrix = new float[16];
 	protected float[] mMVPMatrix = new float[16]; 
+	protected int mLightShaderHandle = -1;
 	protected int mShaderHandle = -1;
 	protected int mTextureHandle = -1;
 
@@ -43,24 +48,33 @@ public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
 	protected float[] mPositions;
 	protected float[] mNormals;
 	protected float[] mTexCoords;
-	protected FloatBuffer mPosBuf;
-	protected FloatBuffer mNrmBuf;
-	protected FloatBuffer mTxcBuf;
+	protected float[] mCombinedArray;
+
+	/*New - Hold index of each
+	 * component in the unified buffer*/
+	protected FloatBuffer mDataBuf;
+	protected int mDataBufIdx;
+	protected int mPosOffset;
+	protected int mNrmOffset;
+	protected int mTxcOffset;
 	
-	/*New - Load to VBO*/
-	protected int mPosBufIdx;
-	protected int mNrmBufIdx;
-	protected int mTxcBufIdx;
-	/*New - Load to VBO*/
+	protected int mNumElements;
+	protected short[] mIndexes;
+	protected ShortBuffer mIdxBuf;
+	protected int mIndexBufIdx;
+	protected int mNumIdxElements;
 	
 	protected float[] mModelMatrix = new float[16];
 	protected float[] mViewMatrix = new float[16];	
 
-	protected float[] mLightPos = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
+	protected float[] mLightPosInModelSpace = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
+	protected final float[] mLightPosInWorldSpace = new float[4];
+	protected final float[] mLightPosInEyeSpace = new float[4];
+	protected float[] mLightModelMatrix = new float[16];	
 
 	protected int mReportedError;
 
-	public VboGLTextureRenderer(Context context) {
+	public PackedArrayGLTextureRenderer(Context context) {
 		this.mContext = context;
 	}
 
@@ -84,6 +98,41 @@ public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
 	}
 
 	protected void drawScene() {
+		
+		// Calculate position of the light. Rotate and then push into the distance.
+        Matrix.setIdentityM(mLightModelMatrix, 0);
+        Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
+        Matrix.rotateM(mLightModelMatrix, 0, 20, 0.0f, 1.0f, 0.0f);
+        Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+               
+        Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
+        Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);   
+		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mLightModelMatrix, 0);
+		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+        
+		
+		if(DRAW_LIGHT) {
+			/*
+			 * DRAW LIGHT FOR DEBUGGING
+			 * */
+			
+	        
+			GLES20.glUseProgram(mLightShaderHandle);  
+			final int pointMVPMatrixHandle = GLES20.glGetUniformLocation(mLightShaderHandle, "u_MVPMatrix");
+	        final int pointPositionHandle = GLES20.glGetAttribLocation(mLightShaderHandle, "a_Position");
+	        
+			// Pass in the position.
+			GLES20.glVertexAttrib3f(pointPositionHandle, mLightPosInModelSpace[0], mLightPosInModelSpace[1], mLightPosInModelSpace[2]);
+
+			// Since we are not using a buffer object, disable vertex arrays for this attribute.
+	        GLES20.glDisableVertexAttribArray(pointPositionHandle);  
+			
+			// Pass in the transformation matrix.
+			GLES20.glUniformMatrix4fv(pointMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+			
+			// Draw the point.
+			GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
+		}
 
 		GLES20.glUseProgram(mShaderHandle);
 		
@@ -96,45 +145,28 @@ public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
 		int a_nrm = GLES20.glGetAttribLocation(mShaderHandle, "a_Normal");
 		int a_txc = GLES20.glGetAttribLocation(mShaderHandle, "a_TexCoordinate");
 		
-		/* Activate the texture*/
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureHandle);
 		GLES20.glUniform1i(u_texsampler, 0);
 
-		mPosBuf.position(0);
-		mNrmBuf.position(0);
-		mTxcBuf.position(0);
-
-		/* Pass in the position information */
-//		GLES20.glVertexAttribPointer(a_pos, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mPosBuf);        
-//		GLES20.glEnableVertexAttribArray(a_pos); 
-//
-//		/* Pass in the normal information */
-//		GLES20.glVertexAttribPointer(a_nrm, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mNrmBuf);        
-//		GLES20.glEnableVertexAttribArray(a_nrm); 
-//		
-//		/* Pass in the texture information */
-//		GLES20.glVertexAttribPointer(a_txc, T_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mTxcBuf);        
-//		GLES20.glEnableVertexAttribArray(a_txc); 
+		/* New - Only 1 call to bind buffer for vertex attribs*/
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mDataBufIdx);
 		
-		/*New - Bind to VBO*/
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mPosBufIdx);
+		//(xyz + xyz + uv) * 4
+		int stride = (V_DATA_SIZE + V_DATA_SIZE + T_DATA_SIZE) * BYTES_PER_FLOAT;
+		
 		GLES20.glEnableVertexAttribArray(a_pos);
-		GLES20.glVertexAttribPointer(a_pos, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, 0);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mNrmBufIdx);
+		GLES20.glVertexAttribPointer(a_pos, V_DATA_SIZE, GLES20.GL_FLOAT, false, stride, mPosOffset);
+
 		GLES20.glEnableVertexAttribArray(a_nrm);
-		GLES20.glVertexAttribPointer(a_nrm, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, 0);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mTxcBufIdx);
+		GLES20.glVertexAttribPointer(a_nrm, V_DATA_SIZE, GLES20.GL_FLOAT, false, stride, mNrmOffset);
+
 		GLES20.glEnableVertexAttribArray(a_txc);
-		GLES20.glVertexAttribPointer(a_txc, T_DATA_SIZE, GLES20.GL_FLOAT, false, 0, 0);
+		GLES20.glVertexAttribPointer(a_txc, T_DATA_SIZE, GLES20.GL_FLOAT, false, stride, mTxcOffset);
 		
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-		/*New - Bind to VBO*/
-
-		/*Update the model matrix... animation could go here*/
-		updateViewMatrix();
+		
+		//Rotate the ball
 		updateModelMatrix();
 
 		// --MV--
@@ -156,16 +188,18 @@ public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
 		// --LightPos--
 
 		/* Pass in the light position in eye space.	*/	
-//		GLES20.glUniform3f(u_lightpos, mLightPos[0], mLightPos[1], mLightPos[2]);
-		//Switching to model space...
-		float[] result = new float[4];		
-		Matrix.multiplyMV(result, 0, mViewMatrix, 0, mLightPos, 0);
-		GLES20.glUniform3f(u_lightpos, result[0], result[1], result[2]);
+		//Switching to world space...
+		GLES20.glUniform3f(u_lightpos, mLightPosInEyeSpace[0], mLightPosInEyeSpace[1], mLightPosInEyeSpace[2]);
 
 		// Draw
 		
 		/* Draw the arrays as triangles */
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, mPosBuf.capacity() / TRIANGLE_NUM_SIDES);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIndexBufIdx);
+//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNumIdxElements, GLES20.GL_UNSIGNED_SHORT, 0);
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNumIdxElements, GLES20.GL_UNSIGNED_SHORT, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+				
 
 		/* Check for errors */
 		if(GLES20.glGetError() != GLES20.GL_NO_ERROR
@@ -175,23 +209,14 @@ public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
 		}
 
 	}
-	
-	private void updateViewMatrix() {
-//		float[] viewMovementMatrix = new float[16];
-//		float[] tempMatrix = new float[16];
-//		Matrix.setIdentityM(viewMovementMatrix, 0);
-//		Matrix.translateM(viewMovementMatrix, 0, 0.0f, 0.0f, -0.01f);
-//		Matrix.multiplyMM(tempMatrix, 0, viewMovementMatrix, 0, mViewMatrix, 0);
-//		System.arraycopy(tempMatrix, 0, mViewMatrix, 0, 16);
-	}
-	
+
 	private void initModelMatrix() {
 		Matrix.setIdentityM(mModelMatrix, 0);
 		Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -7.0f); 
 	}
 
 	private void updateModelMatrix() {
-		Matrix.rotateM(mModelMatrix, 0, 0.5f, 0.75f, 0.25f, 0.0f);
+		Matrix.rotateM(mModelMatrix, 0, 0.5f, 0.5f, 0.5f, 0.0f);
 	}
 
 	protected void loadScene() {
@@ -233,68 +258,91 @@ public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
 
 		Log.d(TAG, "Loading positions.");
 		mPositions = stringToFloatArray(positions);
-		Log.d(TAG, "Loading positions --> buffer...");
-		mPosBuf = SSArrayUtil.arrayToFloatBuffer(mPositions);
 		Log.d(TAG, "Loading normals.");
 		mNormals = stringToFloatArray(normals);
-		Log.d(TAG, "Loading normals --> buffer...");
-		mNrmBuf = SSArrayUtil.arrayToFloatBuffer(mNormals);
 		Log.d(TAG, "Loading texture coordinates.");
 		mTexCoords = stringToFloatArray(texCoords);
-		denormalize(mTexCoords, IMAGE_H, IMAGE_W);
-		Log.d(TAG, "Loading texture coordinates--> buffer...");
-		mTxcBuf = SSArrayUtil.arrayToFloatBuffer(mTexCoords);
+
+		/*New - one big array*/
+		Log.d(TAG, "Merging arrays.");
+		int combinedSize = mPositions.length + mNormals.length + mTexCoords.length;
+		mCombinedArray = new float[combinedSize];		
+		mPosOffset = 0;
+		mNrmOffset = V_DATA_SIZE * BYTES_PER_FLOAT;
+//		mNrmOffset = 0;
+		mTxcOffset = (V_DATA_SIZE + V_DATA_SIZE) * BYTES_PER_FLOAT;
+//		mTxcOffset = 0;
+
+		int posPos = 0;
+		int nrmPos = 0;
+		int txcPos = 0;
+		int stride = (V_DATA_SIZE + V_DATA_SIZE + T_DATA_SIZE);
+		for(int i = 0; i < combinedSize; i += stride)
+		{                       
+			mCombinedArray[i] = mPositions[posPos];
+			mCombinedArray[i+1] = mPositions[posPos+1];
+			mCombinedArray[i+2] = mPositions[posPos+2];
+			posPos += 3;
+			
+			mCombinedArray[i+3] = mNormals[nrmPos];
+			mCombinedArray[i+4] = mNormals[nrmPos+1];
+			mCombinedArray[i+5] = mNormals[nrmPos+2];
+			nrmPos += 3;
+			
+			mCombinedArray[i+6] = mTexCoords[txcPos];
+			mCombinedArray[i+7] = mTexCoords[txcPos+1];
+			txcPos += 2;
+		}
+		
+		Log.d("DEBUG VBO", String.format("VBO LENGTH: %s", mCombinedArray.length));
+//		System.out.println(String.format("VBO LENGTH: %s", mCombinedArray.length));
+		for(int i = 0; i < mCombinedArray.length; i++) {
+			Log.d("DEBUG VBO", String.format("FLOAT[%s]: %s", i, mCombinedArray[i]));
+//			System.out.println(String.format("FLOAT[%s]: %s", i, mCombinedArray[i]));
+		}
+		
+		
+		mDataBuf = SSArrayUtil.arrayToFloatBuffer(mCombinedArray);
+		/*New - one big array*/
 		Log.d(TAG, "Models loaded.");
 		
-		/*New - Load to VBO*/
-		final int buffers[] = new int[3];
-		GLES20.glGenBuffers(3, buffers, 0);
-		mPosBufIdx = buffers[0];
-		mNrmBufIdx = buffers[1];
-		mTxcBufIdx = buffers[2];
+		/*Build the IBO*/
+//		mIndexes = new short[mPositions.length /  TRIANGLE_NUM_SIDES];
+		mIndexes = new short[mCombinedArray.length/stride];
+		//Buffers are already in order...
+		for(short i = 0; i < mIndexes.length; i++) {
+			mIndexes[i] = i;			
+		}
 		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mPosBufIdx);
-		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mPosBuf.capacity() * BYTES_PER_FLOAT, mPosBuf, GLES20.GL_STATIC_DRAW);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mNrmBufIdx);
-		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mNrmBuf.capacity() * BYTES_PER_FLOAT, mNrmBuf, GLES20.GL_STATIC_DRAW);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mTxcBufIdx);
-		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mTxcBuf.capacity() * BYTES_PER_FLOAT, mTxcBuf, GLES20.GL_STATIC_DRAW);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-		/*New - Load to VBO*/
+		mNumIdxElements = mIndexes.length;
+		mIdxBuf = SSArrayUtil.arrayToShortBuffer(mIndexes);
 
-	}
-
-	protected float[] denormalize(float[] data, float imageH, float imageW) {
-		float[] denorm = new float[data.length];
+		final int buffers[] = new int[2];
+		GLES20.glGenBuffers(2, buffers, 0);
 		
-		for(int i = 0; i < data.length; i++) {
-			if(i % 2 == 0) {
-				//Even, Y
-				denorm[i] = data[i] * imageH;
-			} else {
-				//Odd, X
-				denorm[i] = data[i] * imageW;
+		for(int i = 0; i < buffers.length; i++) {
+			if(buffers[i] < 1) {
+				Log.e(TAG, String.format("Buffer not created at index %s.", i));
 			}
 		}
+				
+		/* New - Only 2 buffers now.*/
+		mDataBufIdx = buffers[0];
+		mIndexBufIdx = buffers[1];
 		
-		/*DEBUGGING TEXTURE DISPLAY*/
-//		int tStartIndex = 1304;
-//		int vStartIndex = 1956;
-		int tStartIndex = 0;
-		int vStartIndex = 0;
-		int length = (9*3);
-		for(int i = 0, j = 0; i < length; i+=2, j+=3) {
-			int tIdx = i + tStartIndex;
-			int vIdx = j + vStartIndex;
-			Log.d("POSITION", String.format("VIDX:%s\nX:%s\nY:%s\nZ:%s\n", vIdx, mPositions[vIdx], mPositions[vIdx+1], mPositions[vIdx+2]));
-			Log.d("TEXCOORD", String.format("TIDX:%s\nU:%s\nV:%s\n", tIdx, denorm[tIdx], denorm[tIdx+1]));
-		}
-		/*DEBUGGING TEXTURE DISPLAY*/
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mDataBufIdx);
+		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mDataBuf.capacity() * BYTES_PER_FLOAT, mDataBuf, GLES20.GL_STATIC_DRAW);
+
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIndexBufIdx);
+		GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIdxBuf.capacity() * BYTES_PER_SHORT, mIdxBuf, GLES20.GL_STATIC_DRAW);
 		
-		return denorm;
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		mNumElements = mIdxBuf.capacity();
+		
+		Log.d(TAG, String.format("Number of indexes: %s", mNumIdxElements));
+		
 	}
 
 	protected float[] stringToFloatArray(String data) {
@@ -318,6 +366,7 @@ public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
 		InputStream fShadIn = null;
 		String vShadCode = null;
 		String fShadCode = null;
+		
 		try {
 //			vShadIn = res.openRawResource(R.raw.v_model_diffuse);
 			vShadIn = res.openRawResource(R.raw.v_tex_and_light);
@@ -337,6 +386,34 @@ public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
 
 //		mShaderHandle = createAndLinkProgram(vShadHand, fShadHand, new String[]{"a_Position", "a_Normal"});
 		mShaderHandle = createAndLinkProgram(vShadHand, fShadHand, new String[]{"a_Position", "a_Normal", "a_TexCoordinate"});
+		
+		
+		InputStream vPointShadIn = null;
+		InputStream fPointShadIn = null;
+		String vPointShadCode = null;
+		String fPointShadCode = null;
+		
+		try {
+//			vShadIn = res.openRawResource(R.raw.v_model_diffuse);
+			vPointShadIn = res.openRawResource(R.raw.point_vertex_shader);
+			vPointShadCode = IOUtils.toString(vPointShadIn);
+//			fShadIn = res.openRawResource(R.raw.f_model_empty);
+			fPointShadIn = res.openRawResource(R.raw.point_fragment_shader);
+			fPointShadCode = IOUtils.toString(fPointShadIn);
+		} catch (IOException e) {
+			Log.e(TAG, "Error loading point shaders.", e);
+		} finally {
+			IOUtils.closeQuietly(vPointShadIn);
+			IOUtils.closeQuietly(fPointShadIn);
+		}
+
+		int vPointShaderHand = compileShader(GLES20.GL_VERTEX_SHADER, vPointShadCode);
+		int fPointShadHand = compileShader(GLES20.GL_FRAGMENT_SHADER, fPointShadCode);
+
+//		mShaderHandle = createAndLinkProgram(vShadHand, fShadHand, new String[]{"a_Position", "a_Normal"});
+		mLightShaderHandle = createAndLinkProgram(vPointShaderHand, fPointShadHand, new String[]{"a_Position"});
+		
+		
 		Log.d(TAG, "Shaders loaded.");
 
 	}
@@ -523,7 +600,6 @@ public class VboGLTextureRenderer implements GLSurfaceView.Renderer {
 		case GLES20.GL_INVALID_FRAMEBUFFER_OPERATION: return "GL_INVALID_FRAMEBUFFER_OPERATION";
 		case GLES20.GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY";
 		}
-
 
 		return "Error code unrecognized: " + errNum;
 	}	

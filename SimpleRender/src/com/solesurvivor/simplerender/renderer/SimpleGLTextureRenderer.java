@@ -1,9 +1,8 @@
-package com.solesurvivor.simplerender;
+package com.solesurvivor.simplerender.renderer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -20,20 +19,21 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.solesurvivor.simplerender.R;
+import com.solesurvivor.simplerender.R.drawable;
+import com.solesurvivor.simplerender.R.raw;
 import com.solesurvivor.util.SSArrayUtil;
 
-public class IboGLTextureRenderer implements GLSurfaceView.Renderer {
+public class SimpleGLTextureRenderer implements GLSurfaceView.Renderer {
 
-	private static final String TAG = IboGLTextureRenderer.class.getSimpleName();
+	private static final String TAG = SimpleGLTextureRenderer.class.getSimpleName();
 
 	private static final String NEWLINE = "\n";
-	private static final int BYTES_PER_FLOAT = 4;
-	private static final int BYTES_PER_SHORT = 2;
 	private static final int T_DATA_SIZE = 2;
 	private static final int V_DATA_SIZE = 3;
 	private static final int TRIANGLE_NUM_SIDES = 3;
-//	private static final float IMAGE_W = 640.0f;
-//	private static final float IMAGE_H = 640.0f;
+	private static final float IMAGE_W = 640.0f;
+	private static final float IMAGE_H = 640.0f;
 
 	protected float[] mProjectionMatrix = new float[16];
 	protected float[] mMVPMatrix = new float[16]; 
@@ -48,19 +48,6 @@ public class IboGLTextureRenderer implements GLSurfaceView.Renderer {
 	protected FloatBuffer mPosBuf;
 	protected FloatBuffer mNrmBuf;
 	protected FloatBuffer mTxcBuf;
-	
-	/*New - Load to VBO*/
-	protected int mPosBufIdx;
-	protected int mNrmBufIdx;
-	protected int mTxcBufIdx;
-	protected int mNumElements;
-	/*New - Use an IBO*/
-	protected short[] mIndexes;
-	protected ShortBuffer mIdxBuf;
-	protected int mIndexBufIdx;
-	protected int mNumIdxElements;
-	/*New - Load to VBO*/
-	
 	protected float[] mModelMatrix = new float[16];
 	protected float[] mViewMatrix = new float[16];	
 
@@ -68,7 +55,7 @@ public class IboGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	protected int mReportedError;
 
-	public IboGLTextureRenderer(Context context) {
+	public SimpleGLTextureRenderer(Context context) {
 		this.mContext = context;
 	}
 
@@ -109,37 +96,21 @@ public class IboGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureHandle);
 		GLES20.glUniform1i(u_texsampler, 0);
 
-//		mPosBuf.position(0);
-//		mNrmBuf.position(0);
-//		mTxcBuf.position(0);
+		mPosBuf.position(0);
+		mNrmBuf.position(0);
+		mTxcBuf.position(0);
 
 		/* Pass in the position information */
-//		GLES20.glVertexAttribPointer(a_pos, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mPosBuf);        
-//		GLES20.glEnableVertexAttribArray(a_pos); 
-//
-//		/* Pass in the normal information */
-//		GLES20.glVertexAttribPointer(a_nrm, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mNrmBuf);        
-//		GLES20.glEnableVertexAttribArray(a_nrm); 
-//		
-//		/* Pass in the texture information */
-//		GLES20.glVertexAttribPointer(a_txc, T_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mTxcBuf);        
-//		GLES20.glEnableVertexAttribArray(a_txc); 
+		GLES20.glVertexAttribPointer(a_pos, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mPosBuf);        
+		GLES20.glEnableVertexAttribArray(a_pos); 
+
+		/* Pass in the normal information */
+		GLES20.glVertexAttribPointer(a_nrm, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mNrmBuf);        
+		GLES20.glEnableVertexAttribArray(a_nrm); 
 		
-		/*New - Bind to VBO*/
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mPosBufIdx);
-		GLES20.glEnableVertexAttribArray(a_pos);
-		GLES20.glVertexAttribPointer(a_pos, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, 0);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mNrmBufIdx);
-		GLES20.glEnableVertexAttribArray(a_nrm);
-		GLES20.glVertexAttribPointer(a_nrm, V_DATA_SIZE, GLES20.GL_FLOAT, false, 0, 0);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mTxcBufIdx);
-		GLES20.glEnableVertexAttribArray(a_txc);
-		GLES20.glVertexAttribPointer(a_txc, T_DATA_SIZE, GLES20.GL_FLOAT, false, 0, 0);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-		/*New - Bind to VBO*/
+		/* Pass in the texture information */
+		GLES20.glVertexAttribPointer(a_txc, T_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mTxcBuf);        
+		GLES20.glEnableVertexAttribArray(a_txc); 
 
 		/*Update the model matrix... animation could go here*/
 		updateViewMatrix();
@@ -173,11 +144,7 @@ public class IboGLTextureRenderer implements GLSurfaceView.Renderer {
 		// Draw
 		
 		/* Draw the arrays as triangles */
-		/* New - Draw with IBO */
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIndexBufIdx);
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNumIdxElements, GLES20.GL_UNSIGNED_SHORT, 0);
-//		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, mNumElements);
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, mPosBuf.capacity() / TRIANGLE_NUM_SIDES);
 
 		/* Check for errors */
 		if(GLES20.glGetError() != GLES20.GL_NO_ERROR
@@ -253,63 +220,10 @@ public class IboGLTextureRenderer implements GLSurfaceView.Renderer {
 		mNrmBuf = SSArrayUtil.arrayToFloatBuffer(mNormals);
 		Log.d(TAG, "Loading texture coordinates.");
 		mTexCoords = stringToFloatArray(texCoords);
-//		denormalize(mTexCoords, IMAGE_H, IMAGE_W);
+		denormalize(mTexCoords, IMAGE_H, IMAGE_W);
 		Log.d(TAG, "Loading texture coordinates--> buffer...");
 		mTxcBuf = SSArrayUtil.arrayToFloatBuffer(mTexCoords);
 		Log.d(TAG, "Models loaded.");
-		
-		/*New - Build the IBO*/
-		mIndexes = new short[mPosBuf.capacity()];
-		//Buffers are already in order...
-		for(short i = 0; i < mIndexes.length; i++) {
-			mIndexes[i] = i;			
-		}
-		mNumIdxElements = mIndexes.length;
-		mIdxBuf = SSArrayUtil.arrayToShortBuffer(mIndexes);
-		/*New - Build the IBO*/
-		
-		/*New - Load to VBO*/
-		final int buffers[] = new int[4];
-		GLES20.glGenBuffers(4, buffers, 0);
-		
-		for(int i = 0; i < buffers.length; i++) {
-			if(buffers[i] < 1) {
-				Log.e(TAG, String.format("Buffer not created at index %s.", i));
-			}
-		}
-		
-		mPosBufIdx = buffers[0];
-		mNrmBufIdx = buffers[1];
-		mTxcBufIdx = buffers[2];
-		mIndexBufIdx = buffers[3];
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mPosBufIdx);
-		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mPosBuf.capacity() * BYTES_PER_FLOAT, mPosBuf, GLES20.GL_STATIC_DRAW);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mNrmBufIdx);
-		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mNrmBuf.capacity() * BYTES_PER_FLOAT, mNrmBuf, GLES20.GL_STATIC_DRAW);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mTxcBufIdx);
-		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mTxcBuf.capacity() * BYTES_PER_FLOAT, mTxcBuf, GLES20.GL_STATIC_DRAW);
-
-		/*New - Load the IBO*/
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIndexBufIdx);
-		GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIdxBuf.capacity() * BYTES_PER_SHORT, mIdxBuf, GLES20.GL_STATIC_DRAW);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-		
-		mNumElements = mPosBuf.capacity() / TRIANGLE_NUM_SIDES;
-		/*New - Load to VBO*/
-		
-		/*New - Free Buffers*/
-		mPosBuf = null;
-		mNrmBuf = null;
-		mTxcBuf = null;
-		mIdxBuf = null;
-		System.gc();
-		/*New - Free Buffers*/
-		
 	}
 
 	protected float[] denormalize(float[] data, float imageH, float imageW) {
@@ -568,6 +482,7 @@ public class IboGLTextureRenderer implements GLSurfaceView.Renderer {
 		case GLES20.GL_INVALID_FRAMEBUFFER_OPERATION: return "GL_INVALID_FRAMEBUFFER_OPERATION";
 		case GLES20.GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY";
 		}
+
 
 		return "Error code unrecognized: " + errNum;
 	}	
