@@ -141,6 +141,14 @@ public class AlphaPngGLTextureRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void drawGeometry(Geometry geo) {
+				
+		/* New - Alpha channel fix: turn on/off as needed */ 
+		if(geo.mShaderHandle == mShaders.get("alphaShaders")) {
+			GLES20.glEnable(GLES20.GL_BLEND);
+		} else {
+			GLES20.glDisable(GLES20.GL_BLEND);
+		}
+		
 		GLES20.glUseProgram(geo.mShaderHandle);
 		
 		int u_mvp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVPMatrix");
@@ -593,8 +601,8 @@ public class AlphaPngGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 		
 		//Enable alpha channels
-		GLES20.glEnable(GLES20.GL_BLEND);
-		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+//		GLES20.glEnable(GLES20.GL_BLEND);
+//		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	protected void resizeViewport(int width, int height) {
