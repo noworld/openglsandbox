@@ -25,6 +25,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.opengl.ETC1Util;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
@@ -101,7 +102,6 @@ public class AlphaPngGLTextureRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);   
 		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mLightModelMatrix, 0);
 		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-        
 		
 		if(DRAW_LIGHT) {
 			/*
@@ -211,6 +211,10 @@ public class AlphaPngGLTextureRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void loadTextures() {
+		
+		Log.i(TAG, String.format("Supports ETC1 Textures: %s", ETC1Util.isETC1Supported()));
+		
+		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_SRC_ALPHA);
 		
 		Resources res =  mContext.getResources();
 
@@ -386,7 +390,7 @@ public class AlphaPngGLTextureRenderer implements GLSurfaceView.Renderer {
 		Log.d(TAG, "Loading shaders...");
 		Resources res =  mContext.getResources();
 		
-		TypedArray shaderPrograms = res.obtainTypedArray(R.array.shaderPrograms);
+		TypedArray shaderPrograms = res.obtainTypedArray(R.array.shaderPrograms);		
 		
 		for(int i = 0; i < shaderPrograms.length(); i++) {			
 			int resourceId = shaderPrograms.getResourceId(i, 0);
@@ -587,6 +591,10 @@ public class AlphaPngGLTextureRenderer implements GLSurfaceView.Renderer {
 
 		// Enable Z-buffer?
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		
+		//Enable alpha channels
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	protected void resizeViewport(int width, int height) {

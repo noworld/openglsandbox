@@ -1,2 +1,2 @@
 texture_name=backplane
-shader_name=alphaShaders
+shader_name=basicTextureShaders
