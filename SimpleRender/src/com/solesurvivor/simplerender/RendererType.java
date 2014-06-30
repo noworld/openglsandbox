@@ -10,5 +10,6 @@ public enum RendererType {
 	TEXTURE,
 	VBO,
 	MULTI_MODEL,
-	ALPHA_PNG
+	ALPHA_PNG,
+	TWO_D_UI
 }

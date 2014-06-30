@@ -4,6 +4,7 @@
         <item>@drawable/spheretex</item>
         <item>@drawable/backplane</item>
         <item>@drawable/foreplane</item>
+        <item>@drawable/go</item>
     </array>
 
     

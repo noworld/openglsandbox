@@ -10,6 +10,7 @@ import com.solesurvivor.simplerender.renderer.PackedArrayGLTextureRenderer;
 import com.solesurvivor.simplerender.renderer.PackedArrayZipGLTextureRenderer;
 import com.solesurvivor.simplerender.renderer.SimpleGLRenderer;
 import com.solesurvivor.simplerender.renderer.SimpleGLTextureRenderer;
+import com.solesurvivor.simplerender.renderer.TwoDeeUiGLTextureRenderer;
 import com.solesurvivor.simplerender.renderer.VboGLTextureRenderer;
 
 public class RendererFactory {
@@ -43,6 +44,8 @@ public class RendererFactory {
 		case MULTI_MODEL: renderer = new MultiModelGLTextureRenderer(mContext);
 			break;
 		case ALPHA_PNG: renderer = new AlphaPngGLTextureRenderer(mContext);
+			break;
+		case TWO_D_UI: renderer = new TwoDeeUiGLTextureRenderer(mContext);
 			break;
 		default: renderer = new SimpleGLRenderer(mContext);
 			break;

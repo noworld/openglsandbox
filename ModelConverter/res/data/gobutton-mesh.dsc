@@ -1,0 +1,2 @@
+texture_name=go
+shader_name=alphaShaders

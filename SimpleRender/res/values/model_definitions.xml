@@ -10,4 +10,9 @@
         <item >@raw/alphapng</item> 
     </array>  
     
+    <array name="uiModels">
+        <item >@raw/alphapng</item>
+        <item >@raw/buttons</item>  
+    </array> 
+    
 </resources>
