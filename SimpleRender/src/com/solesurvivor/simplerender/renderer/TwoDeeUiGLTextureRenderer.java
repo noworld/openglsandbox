@@ -81,6 +81,8 @@ public class TwoDeeUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onSurfaceChanged(GL10 arg0, int width, int height) {
 		Log.d(TAG, "Renderer.onSurfaceChanged");
+		SimpleAnim.mScreenWidth = width;
+		SimpleAnim.mScreenHeight = height;
 		resizeViewport(width, height);
 	}
 
@@ -630,9 +632,17 @@ public class TwoDeeUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		final float top = 1.0f;
 		final float near = 1.0f;
 		final float far = 200.0f;
+		
+		final float left_ortho = -(width/2);
+		final float right_ortho = (width/2);
+		final float bottom_ortho = -(height/2);
+		final float top_ortho = (height/2);
+		final float near_ortho = 1.0f;
+		final float far_ortho = 200.0f;
 
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-		Matrix.orthoM(mUIMatrix, 0, left, right, bottom, top, near, far);
+//		Matrix.orthoM(mUIMatrix, 0, left, right, bottom, top, near, far);
+		Matrix.orthoM(mUIMatrix, 0, left_ortho, right_ortho, bottom_ortho, top_ortho, near_ortho, far_ortho);
 		
 	}
 	
@@ -657,7 +667,7 @@ public class TwoDeeUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		// Set the view matrix. This matrix can be said to represent the camera position.
 		// NOTE: In OpenGL 1, a ModelView matrix is used, which is a combination of a model and
 		// view matrix. In OpenGL 2, we can keep track of these matrices separately if we choose.
-		Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);	
+		Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
 
 	}
 
