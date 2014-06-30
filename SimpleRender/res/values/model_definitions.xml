@@ -15,4 +15,8 @@
         <item >@raw/buttons</item>  
     </array> 
     
+    <array name="betterUiModels">
+        <item >@raw/sprites</item>
+    </array> 
+    
 </resources>

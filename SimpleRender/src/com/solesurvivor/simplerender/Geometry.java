@@ -1,5 +1,8 @@
 package com.solesurvivor.simplerender;
 
+import com.solesurvivor.simplerender.animui.HAlignType;
+import com.solesurvivor.simplerender.animui.VAlignType;
+
 public class Geometry {
 	
 	public String mName;
@@ -27,5 +30,13 @@ public class Geometry {
 	public int mShaderHandle;
 	public float mAccumScale = 1.0f;
 	public float mAccumRot = 0.0f;
+	
+	/* New - for drawing ui elements*/
+	public float mXSize;
+	public float mYSize;
+	public float mZSize;
+	
+	public HAlignType mHAlign;
+	public VAlignType mVAlign;
 	
 }

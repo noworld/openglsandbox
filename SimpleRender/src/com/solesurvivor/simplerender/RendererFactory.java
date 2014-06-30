@@ -4,6 +4,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 
 import com.solesurvivor.simplerender.renderer.AlphaPngGLTextureRenderer;
+import com.solesurvivor.simplerender.renderer.BetterUiGLTextureRenderer;
 import com.solesurvivor.simplerender.renderer.IboGLTextureRenderer;
 import com.solesurvivor.simplerender.renderer.MultiModelGLTextureRenderer;
 import com.solesurvivor.simplerender.renderer.PackedArrayGLTextureRenderer;
@@ -46,6 +47,8 @@ public class RendererFactory {
 		case ALPHA_PNG: renderer = new AlphaPngGLTextureRenderer(mContext);
 			break;
 		case TWO_D_UI: renderer = new TwoDeeUiGLTextureRenderer(mContext);
+			break;
+		case BETTER_UI: renderer = new BetterUiGLTextureRenderer(mContext);
 			break;
 		default: renderer = new SimpleGLRenderer(mContext);
 			break;

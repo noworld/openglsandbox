@@ -371,6 +371,21 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 				vboData.addAll(betterT);
 				iboData.add(currentDataIndex);
 				currentDataIndex++;			
+				
+				/* New - Find the min/max values*/
+				float x = betterP.get(0);
+				float y = betterP.get(1);
+				float z = betterP.get(2);
+				
+				if(vbpg.mXMin > x){vbpg.mXMin=x;}
+				if(vbpg.mXMax < x){vbpg.mXMax=x;}
+				
+				if(vbpg.mYMin > y){vbpg.mYMin=y;}
+				if(vbpg.mYMax < y){vbpg.mYMax=y;}
+				
+				if(vbpg.mZMin > z){vbpg.mZMin=z;}
+				if(vbpg.mZMax < z){vbpg.mZMax=z;}
+				
 			}
 
 
@@ -718,6 +733,10 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 				meshDesc.put("pos_offset",String.valueOf(geo.mPosOffset));
 				meshDesc.put("txc_offset",String.valueOf(geo.mTxcOffset));
 				meshDesc.put("nrm_offset",String.valueOf(geo.mNrmOffset));
+				
+				meshDesc.put("x_size",boundAndConvert(geo.mXMax - geo.mXMin));
+				meshDesc.put("y_size",boundAndConvert(geo.mYMax - geo.mYMin));
+				meshDesc.put("z_size",boundAndConvert(geo.mZMax - geo.mZMin));				
 
 				fileName = name + DSC_FILE_EXT;
 				String fileContents = parseMap(meshDesc);
@@ -734,6 +753,14 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 			if(zos != null){zos.close();}
 		}
 
+	}
+
+	private String boundAndConvert(float fl) {
+		if((fl > 0 && fl < 0.000001f)
+				|| (fl < 0 && fl > -0.000001f)) {
+			return String.valueOf(0.0f);
+		}
+		return String.valueOf(fl);
 	}
 
 	protected String parseMap(Map<String, String> mappy) {

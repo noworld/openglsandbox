@@ -1,4 +1,4 @@
-package com.solesurvivor.simplerender.anim;
+package com.solesurvivor.simplerender.animui;
 
 import android.opengl.Matrix;
 

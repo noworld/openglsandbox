@@ -11,5 +11,6 @@ public enum RendererType {
 	VBO,
 	MULTI_MODEL,
 	ALPHA_PNG,
-	TWO_D_UI
+	TWO_D_UI,
+	BETTER_UI
 }

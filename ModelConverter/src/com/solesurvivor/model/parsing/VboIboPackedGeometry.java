@@ -22,4 +22,13 @@ public class VboIboPackedGeometry {
 	public int mNumElements;
 	public int mNumPolys;
 	
+	/*For other drawing purposes*/
+	public float mXMin = Float.MAX_VALUE;
+	public float mYMin = Float.MAX_VALUE;
+	public float mZMin = Float.MAX_VALUE;
+	
+	public float mXMax = Float.MIN_VALUE;
+	public float mYMax = Float.MIN_VALUE;
+	public float mZMax = Float.MIN_VALUE;
+	
 }

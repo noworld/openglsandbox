@@ -7,6 +7,10 @@ public class RawGeometry {
 	public int[] p;
 	public int[] vcount;
 	
+	public int mXSize;
+	public int mYSize;
+	public int mZSize;
+	
 	public RawGeometry(int count) {
 		vertexData = new VertexData[count];
 	}

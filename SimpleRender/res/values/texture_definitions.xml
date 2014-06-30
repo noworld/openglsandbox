@@ -4,6 +4,10 @@
         <item>@drawable/spheretex</item>
         <item>@drawable/backplane</item>
         <item>@drawable/foreplane</item>
+        <item>@drawable/buttona</item>
+        <item>@drawable/buttonb</item>
+        <item>@drawable/dpad</item>
+        <item>@drawable/santaspritesheet</item>
         <item>@drawable/go</item>
     </array>
 

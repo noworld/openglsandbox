@@ -33,7 +33,7 @@ import android.util.Log;
 
 import com.solesurvivor.simplerender.Geometry;
 import com.solesurvivor.simplerender.R;
-import com.solesurvivor.simplerender.anim.SimpleAnim;
+import com.solesurvivor.simplerender.animui.SimpleAnim;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
