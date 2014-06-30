@@ -9,5 +9,6 @@ public enum RendererType {
 	PACKED_ARRAY_ZIP,
 	TEXTURE,
 	VBO,
-	MULTI_MODEL
+	MULTI_MODEL,
+	ALPHA_PNG
 }

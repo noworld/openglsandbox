@@ -65,7 +65,7 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 
 	private static final boolean PARSE_ON = true;
 	private static final boolean FLIP_TEXTURE_Y = true;
-	private static final boolean LOAD_DEFAULT_DESCRIPTORS = false;
+	private static final boolean LOAD_DEFAULT_DESCRIPTORS = true;
 	private static final boolean WRITE_TEXCOORD_FILE = false;
 
 	private static final String DATA_DIR = "data/";
@@ -636,19 +636,6 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 
 		try {
 
-			Map<String,String> descriptors = null;
-			InputStream inStream = null;
-			String descFileName = DATA_DIR + (modelName + DSC_FILE_EXT).trim();
-			try {
-				inStream = ModelConverter.class.getClassLoader().getResourceAsStream(descFileName);
-				if(inStream != null) {
-					String descFile = IOUtils.toString(inStream);
-					descriptors = parseMap(descFile);
-				}
-			} finally {
-				IOUtils.closeQuietly(inStream);
-			}
-
 			if(StringUtils.isNotBlank(vboObj.mAssetXml)) {
 				LOG.t("Writing asset to zip.");
 				writeZipEntry(zos, ASSETS_FILE_NAME, vboObj.mAssetXml);
@@ -683,6 +670,9 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 					byte[] fileContents = shortToByteArray(geo.mIndexes);
 					
 					for(int i = 0; i < 12*2; i+=2) {
+						if(i+1 >= fileContents.length) {
+							break;
+						}
 						LOG.d("Short: %s %s", fileContents[i],fileContents[i+1]);
 					}
 					
@@ -697,6 +687,20 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 
 				//Pull in some defaults
 				if(LOAD_DEFAULT_DESCRIPTORS) {
+					
+					Map<String,String> descriptors = null;
+					InputStream inStream = null;
+					String descFileName = DATA_DIR + (name + DSC_FILE_EXT).trim();
+					try {
+						inStream = ModelConverter.class.getClassLoader().getResourceAsStream(descFileName);
+						if(inStream != null) {
+							String descFile = IOUtils.toString(inStream);
+							descriptors = parseMap(descFile);
+						}
+					} finally {
+						IOUtils.closeQuietly(inStream);
+					}
+			
 					if(descriptors != null && descriptors.size() > 0) {
 						meshDesc.putAll(descriptors);
 					}
@@ -715,7 +719,7 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 				meshDesc.put("txc_offset",String.valueOf(geo.mTxcOffset));
 				meshDesc.put("nrm_offset",String.valueOf(geo.mNrmOffset));
 
-				fileName = name + DESC_FILE_EXT;
+				fileName = name + DSC_FILE_EXT;
 				String fileContents = parseMap(meshDesc);
 				indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
 				writeZipEntry(zos, fileName, fileContents);

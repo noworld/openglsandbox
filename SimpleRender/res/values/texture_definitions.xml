@@ -2,6 +2,8 @@
     
     <array name="textures">
         <item>@drawable/spheretex</item>
+        <item>@drawable/backplane</item>
+        <item>@drawable/foreplane</item>
     </array>
 
     

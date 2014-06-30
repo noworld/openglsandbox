@@ -7,7 +7,7 @@
     </array>   
     
     <array name="alphaPngModels">
-        <item >@raw/monkey</item> 
+        <item >@raw/alphapng</item> 
     </array>  
     
 </resources>
