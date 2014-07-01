@@ -33,6 +33,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.solesurvivor.simplerender.Geometry;
+import com.solesurvivor.simplerender.InputHandler;
 import com.solesurvivor.simplerender.R;
 import com.solesurvivor.simplerender.animui.HAlignType;
 import com.solesurvivor.simplerender.animui.BetterAnim;
@@ -87,6 +88,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		BetterAnim.mScreenWidth = width;
 		BetterAnim.mScreenHeight = height;
 		resizeViewport(width, height);
+		InputHandler.mInputs.clear();
 		for(Geometry ui : mUis) {
 			BetterAnim.positionUI(ui);
 		}

@@ -32,18 +32,33 @@ public class SimpleRenderSurfaceView extends GLSurfaceView {
 
 	public boolean onTouchEvent(MotionEvent event) {
 
-		InputHandler.reset();
-		if(event.getPointerCount() > 0) {
-			for(int i = 0; i < event.getPointerCount(); i++) {
-				int xPos = (int)MotionEventCompat.getX(event, i);
-				int yPos = (int)MotionEventCompat.getY(event, i);
-				
-				InputHandler.touch(xPos, yPos);
-			}
+		int action = MotionEventCompat.getActionMasked(event);
+
+		switch(action) {
+		case MotionEvent.ACTION_DOWN:
+		case MotionEvent.ACTION_POINTER_DOWN:
+			handlePointerEvent(event, false);
+			break;
+		case MotionEvent.ACTION_POINTER_UP:
+		case MotionEvent.ACTION_UP:
+			handlePointerEvent(event, true);
+			break;
 		}
 
 		return true;
 	}
-
+	
+	public void handlePointerEvent(MotionEvent event, boolean up) {
+		int index = MotionEventCompat.getActionIndex(event);
+		InputHandler.reset();
+		if(event.getPointerCount() > 0) {
+			for(int i = 0; i < event.getPointerCount(); i++) {
+				if(up && i == index) continue;
+				int xPos = (int)MotionEventCompat.getX(event, i);
+				int yPos = (int)MotionEventCompat.getY(event, i);				
+				InputHandler.touch(xPos, yPos);
+			}
+		}
+	}
 
 }
