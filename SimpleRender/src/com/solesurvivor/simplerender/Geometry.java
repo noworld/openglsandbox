@@ -38,6 +38,7 @@ public class Geometry {
 	
 	public float mXOffset;
 	public float mYOffset;
+	public int mPriority = 1;
 	
 	public HAlignType mHAlign;
 	public VAlignType mVAlign;

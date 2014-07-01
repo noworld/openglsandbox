@@ -19,9 +19,11 @@ public final class R {
         public static final int models=0x7f080000;
         public static final int pointShaders=0x7f080006;
         public static final int shaderPrograms=0x7f080004;
-        public static final int shaders=0x7f080009;
-        public static final int textures=0x7f08000a;
+        public static final int shaders=0x7f08000b;
+        public static final int spriteShader=0x7f08000a;
+        public static final int textures=0x7f08000c;
         public static final int uiModels=0x7f080002;
+        public static final int uiShader=0x7f080009;
     }
     public static final class attr {
         /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
@@ -65,22 +67,26 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int alphapng=0x7f040000;
         public static final int buttons=0x7f040001;
         public static final int f_model_empty=0x7f040002;
-        public static final int f_tex_and_light=0x7f040003;
-        public static final int f_tex_and_light_alpha=0x7f040004;
-        public static final int monkey=0x7f040005;
-        public static final int ncfb=0x7f040006;
-        public static final int point_fragment_shader=0x7f040007;
-        public static final int point_vertex_shader=0x7f040008;
-        public static final int quadsphere_normal=0x7f040009;
-        public static final int quadsphere_position=0x7f04000a;
-        public static final int quadsphere_texcoord=0x7f04000b;
-        public static final int sphere=0x7f04000c;
-        public static final int sprites=0x7f04000d;
-        public static final int toruscone=0x7f04000e;
-        public static final int v_model_diffuse=0x7f04000f;
-        public static final int v_point=0x7f040010;
-        public static final int v_tex_and_light=0x7f040011;
-        public static final int v_tex_and_light_alpha=0x7f040012;
+        public static final int f_sprite=0x7f040003;
+        public static final int f_tex_and_light=0x7f040004;
+        public static final int f_tex_and_light_alpha=0x7f040005;
+        public static final int f_ui=0x7f040006;
+        public static final int monkey=0x7f040007;
+        public static final int ncfb=0x7f040008;
+        public static final int point_fragment_shader=0x7f040009;
+        public static final int point_vertex_shader=0x7f04000a;
+        public static final int quadsphere_normal=0x7f04000b;
+        public static final int quadsphere_position=0x7f04000c;
+        public static final int quadsphere_texcoord=0x7f04000d;
+        public static final int sphere=0x7f04000e;
+        public static final int sprites=0x7f04000f;
+        public static final int toruscone=0x7f040010;
+        public static final int v_model_diffuse=0x7f040011;
+        public static final int v_point=0x7f040012;
+        public static final int v_sprite=0x7f040013;
+        public static final int v_tex_and_light=0x7f040014;
+        public static final int v_tex_and_light_alpha=0x7f040015;
+        public static final int v_ui=0x7f040016;
     }
     public static final class string {
         public static final int app_name=0x7f050000;

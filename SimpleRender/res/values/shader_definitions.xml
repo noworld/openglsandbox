@@ -5,6 +5,8 @@
         <item>@array/basicTextureShaders</item>
         <item>@array/pointShaders</item>
         <item>@array/alphaShaders</item>
+        <item>@array/uiShader</item>
+        <item>@array/spriteShader</item>
     </array>
     
     <array name="basicShaders">
@@ -26,6 +28,16 @@
         <item >@raw/v_tex_and_light_alpha</item> 
         <item >@raw/f_tex_and_light_alpha</item>  
     </array>
+    
+    <array name="uiShader">
+        <item >@raw/v_ui</item> 
+        <item >@raw/f_ui</item>  
+    </array>    
+    
+    <array name="spriteShader">
+        <item >@raw/v_sprite</item> 
+        <item >@raw/f_sprite</item>  
+    </array> 
     
     <array name="shaders">
         <item >@raw/v_model_diffuse</item>

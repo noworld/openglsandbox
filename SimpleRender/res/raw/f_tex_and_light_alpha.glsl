@@ -34,8 +34,8 @@ void main()
 //		color.r = 1.0;
 //	}
 
-	if (color.a < 0.5) //for example, change to any value suitable
-     discard;
+//	if (color.a < 0.5) //for example, change to any value suitable
+//    discard;
 	
     gl_FragColor = color;                        		
   }                                                                     	

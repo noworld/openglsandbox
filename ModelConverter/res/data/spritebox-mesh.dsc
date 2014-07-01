@@ -1,3 +1,3 @@
 texture_name=santaspritesheet
-shader_name=alphaShaders
+shader_name=spriteShader
 obj_type=sprite
