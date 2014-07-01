@@ -67,6 +67,7 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 	private static final boolean FLIP_TEXTURE_Y = true;
 	private static final boolean LOAD_DEFAULT_DESCRIPTORS = true;
 	private static final boolean WRITE_TEXCOORD_FILE = false;
+	private static final boolean LOG_VALUES = false;
 
 	private static final String DATA_DIR = "data/";
 	private static final String UNDERSCORE = "_";
@@ -218,27 +219,29 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 					continue;
 				}
 				
-//				/*DEBUG CODE*/
-//				FileOutputStream fos = null;								
-//				try {
-//					fos = new FileOutputStream("C:\\Users\\nicholas.waun\\git\\openglsandbox\\ModelConverter\\res\\out\\texcoords.txt");
-//					float[] tc = raw.vertexData[2].data;
-//					fos.write(String.format("%s\n",tc.length).getBytes());
-//					for(int i = 0; i < tc.length; i++) {
-//						fos.write(String.format("%sf\n",tc[i]).getBytes());
-//					}
-//					
-//					
-//				} catch (FileNotFoundException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} finally {
-//					IOUtils.closeQuietly(fos);
-//				}
-//				/*DEBUG CODE*/
+				/*DEBUG CODE*/
+				if(LOG_VALUES) {
+					FileOutputStream fos = null;								
+					try {
+						fos = new FileOutputStream("C:\\Users\\nicholas.waun\\git\\openglsandbox\\ModelConverter\\res\\out\\texcoords.txt");
+						float[] tc = raw.vertexData[2].data;
+						fos.write(String.format("%s\n",tc.length).getBytes());
+						for(int i = 0; i < tc.length; i++) {
+							fos.write(String.format("%sf\n",tc[i]).getBytes());
+						}
+
+
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} finally {
+						IOUtils.closeQuietly(fos);
+					}
+				}
+				/*DEBUG CODE*/
 				
 
 				VboIboPackedGeometry gNode = parseVboIboGeometry(raw);
@@ -347,22 +350,24 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 				List<Float> betterT = getBetterVertexDataAt(vd2, betterTIndex);
 				
 				/*New - Log the changes for the remapping*/
-				LOG.d("Mapping P Index: %s -> %s", currentPIndex, betterPIndex);
-				LOG.d("P Value Comparison: %s -> %s", ArrayUtils.toString(currentP), ArrayUtils.toString(betterP));
-				if(!ArrayUtils.isEquals(currentP,betterP)) {
-					LOG.e("ARRAYS NOT EQUAL! %s -> %s", ArrayUtils.toString(currentP), ArrayUtils.toString(betterP));
-				}
-				
-				LOG.d("Mapping N Index: %s -> %s", currentNIndex, betterNIndex);
-				LOG.d("N Value Comparison: %s -> %s", ArrayUtils.toString(currentN), ArrayUtils.toString(betterN));
-				if(!ArrayUtils.isEquals(currentN,betterN)) {
-					LOG.e("ARRAYS NOT EQUAL! %s -> %s", ArrayUtils.toString(currentN), ArrayUtils.toString(betterN));
-				}
-				
-				LOG.d("Mapping T Index: %s -> %s", currentTIndex, betterTIndex);
-				LOG.d("T Value Comparison: %s -> %s", ArrayUtils.toString(currentT), ArrayUtils.toString(betterT));
-				if(!ArrayUtils.isEquals(currentT,betterT)) {
-					LOG.e("ARRAYS NOT EQUAL! %s -> %s", ArrayUtils.toString(currentT), ArrayUtils.toString(betterT));
+				if(LOG_VALUES) {
+					LOG.d("Mapping P Index: %s -> %s", currentPIndex, betterPIndex);
+					LOG.d("P Value Comparison: %s -> %s", ArrayUtils.toString(currentP), ArrayUtils.toString(betterP));
+					if(!ArrayUtils.isEquals(currentP,betterP)) {
+						LOG.e("ARRAYS NOT EQUAL! %s -> %s", ArrayUtils.toString(currentP), ArrayUtils.toString(betterP));
+					}
+
+					LOG.d("Mapping N Index: %s -> %s", currentNIndex, betterNIndex);
+					LOG.d("N Value Comparison: %s -> %s", ArrayUtils.toString(currentN), ArrayUtils.toString(betterN));
+					if(!ArrayUtils.isEquals(currentN,betterN)) {
+						LOG.e("ARRAYS NOT EQUAL! %s -> %s", ArrayUtils.toString(currentN), ArrayUtils.toString(betterN));
+					}
+
+					LOG.d("Mapping T Index: %s -> %s", currentTIndex, betterTIndex);
+					LOG.d("T Value Comparison: %s -> %s", ArrayUtils.toString(currentT), ArrayUtils.toString(betterT));
+					if(!ArrayUtils.isEquals(currentT,betterT)) {
+						LOG.e("ARRAYS NOT EQUAL! %s -> %s", ArrayUtils.toString(currentT), ArrayUtils.toString(betterT));
+					}
 				}
 				
 				//TODO: Fix this indexing so that it is not 1 data entry per index.
@@ -598,25 +603,25 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 			newIndex[indexFromP] = indexFromMap;		
 			
 			/*Test what we just did*/
-						
-			int testIndex = newIndex[indexFromP];
-			LOG.d("New index mapping: %s -> %s", indexFromP, testIndex);
-			
-			float testX = remappedData.get(testIndex*vd.stride);
-			float testY = remappedData.get((testIndex*vd.stride) + 1);
-			float origX = values.get(0);
-			float origY = values.get(1);
-			
-			LOG.d("Vertex comparison: %s,%s -> %s,%s", origX, origY, testX, testY);
-			
-			if(origX != testX) {
-				LOG.d("X values do not match! %s -> %s", origX, testX);
+			if(LOG_VALUES) {
+				int testIndex = newIndex[indexFromP];
+				LOG.d("New index mapping: %s -> %s", indexFromP, testIndex);
+
+				float testX = remappedData.get(testIndex*vd.stride);
+				float testY = remappedData.get((testIndex*vd.stride) + 1);
+				float origX = values.get(0);
+				float origY = values.get(1);
+
+				LOG.d("Vertex comparison: %s,%s -> %s,%s", origX, origY, testX, testY);
+
+				if(origX != testX) {
+					LOG.d("X values do not match! %s -> %s", origX, testX);
+				}
+
+				if(origY != testY) {
+					LOG.d("Y values do not match! %s -> %s", origY, testY);
+				}
 			}
-			
-			if(origY != testY) {
-				LOG.d("Y values do not match! %s -> %s", origY, testY);
-			}
-			
 			/*Test what we just did*/
 		}
 		
@@ -669,8 +674,10 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 					fileName = name + V_FILE_EXT;
 					byte[] fileContents = floatToByteArray(geo.mData);
 					
-					for(int i = 0; i < 32*4; i+=4) {
-						LOG.d("Float: %s %s %s %s", fileContents[i],fileContents[i+1],fileContents[i+2],fileContents[i+3]);
+					if(LOG_VALUES) {
+						for(int i = 0; i < 32*4; i+=4) {
+							LOG.d("Float: %s %s %s %s", fileContents[i],fileContents[i+1],fileContents[i+2],fileContents[i+3]);
+						}
 					}
 					
 					indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
@@ -684,11 +691,13 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 					fileName = name + I_FILE_EXT;
 					byte[] fileContents = shortToByteArray(geo.mIndexes);
 					
-					for(int i = 0; i < 12*2; i+=2) {
-						if(i+1 >= fileContents.length) {
-							break;
+					if(LOG_VALUES) {
+						for(int i = 0; i < 12*2; i+=2) {
+							if(i+1 >= fileContents.length) {
+								break;
+							}
+							LOG.d("Short: %s %s", fileContents[i],fileContents[i+1]);
 						}
-						LOG.d("Short: %s %s", fileContents[i],fileContents[i+1]);
 					}
 					
 					indexFile.append(L2_SYM).append(fileName).append(LINE_SEP);
@@ -714,6 +723,14 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 						}
 					} finally {
 						IOUtils.closeQuietly(inStream);
+					}
+					
+					//Allow commenting out
+					for(String key : descriptors.keySet()) {
+						if(key.trim().startsWith("#")
+								|| key.trim().startsWith("//")) {
+							descriptors.remove(key);
+						}
 					}
 			
 					if(descriptors != null && descriptors.size() > 0) {

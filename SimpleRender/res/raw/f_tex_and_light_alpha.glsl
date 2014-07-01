@@ -24,7 +24,7 @@ void main()
     diffuse = diffuse * (1.0 / (1.0 + (0.25 * distance)));
     
     // Add ambient lighting
-    diffuse = diffuse + 0.5;  
+    diffuse = diffuse + 0.7;  
 
 	// Multiply the color by the diffuse illumination level and texture value to get final output color.
 	vec4 color = (diffuse * texture2D(u_Texture, v_TexCoordinate));
@@ -33,6 +33,9 @@ void main()
 //	if(color.a < 1.0) {
 //		color.r = 1.0;
 //	}
+
+	if (color.a < 0.5) //for example, change to any value suitable
+     discard;
 	
     gl_FragColor = color;                        		
   }                                                                     	

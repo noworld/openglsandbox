@@ -1,0 +1,3 @@
+texture_name=santaspritesheet
+shader_name=alphaShaders
+obj_type=sprite

@@ -36,6 +36,9 @@ public class Geometry {
 	public float mYSize;
 	public float mZSize;
 	
+	public float mXOffset;
+	public float mYOffset;
+	
 	public HAlignType mHAlign;
 	public VAlignType mVAlign;
 	
