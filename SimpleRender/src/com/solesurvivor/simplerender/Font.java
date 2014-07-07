@@ -1,8 +1,9 @@
 package com.solesurvivor.simplerender;
 
 import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
-import android.graphics.Point;
 import android.opengl.Matrix;
 
 
@@ -35,6 +36,10 @@ public class Font {
 	
 	/* New - Draw fonts based on supplied measurements */
 	
+	//Characters supported on the atlas
+//	public String mChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()<>?/{}[]\\;':\"`~_+-=";
+	public String mChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!";
+	
 	public float mAtlasSzX = 1024.0f; //Font atlas size
 	public float mAtlasSzY = 1024.0f;
 	
@@ -43,13 +48,28 @@ public class Font {
 //	public float mBBLeft = 2.0f;   //Left X of first glyph bounding box
 //	public float mBBRight = 43.0f;  //Right X of first glyph bounding box
 	
-	public float mBBTop = 263.0f;    //Top Y of first glyph bounding box
-	public float mBBBottom = 317.0f; //Bottom Y of first glyph bounding box
-	public float mBBLeft = 11.0f;   //Left X of first glyph bounding box
-	public float mBBRight = 38.0f;  //Right X of first glyph bounding box
+	public float mBBTop = 15.0f;    //Top Y of first glyph bounding box
+	public float mBBBottom = 42.0f; //Bottom Y of first glyph bounding box
+	public float mBBLeft = 9.0f;   //Left X of first glyph bounding box
+	public float mBBRight = 23.0f;  //Right X of first glyph bounding box
 	
+	public float mStride = 19.0f; //X Distance between characters
+	
+	public Map<Character,FloatBuffer> mGlyphs = new HashMap<Character,FloatBuffer>(mChars.length());
+	
+	private float mTop = 1 - ((mAtlasSzY - mBBTop) / mAtlasSzY);  //Use top left coordinates, then Flip Y
+	private float mBottom = 1 - ((mAtlasSzY - mBBBottom) / mAtlasSzY); //Use top left coordinates, then Flip Y
+	private float mLeft = mBBLeft / mAtlasSzX;
+	private float mRight = mBBRight / mAtlasSzX;
+			
 	public Font() {
 		Matrix.setIdentityM(mModelMatrix, 0);
+		
+		for(int i = 0; i < mChars.length(); i++) {
+			char c = mChars.charAt(i);
+			mGlyphs.put(c, loadTxc(i));
+		}
+		
 		loadFont();
 	}
 	
@@ -58,11 +78,6 @@ public class Font {
 	}
 	
 	private void loadFont() {
-		
-		float mTop = 1 - ((mAtlasSzY - mBBTop) / mAtlasSzY);  //Use top left coordinates, then Flip Y
-		float mBottom = 1 - ((mAtlasSzY - mBBBottom) / mAtlasSzY); //Use top left coordinates, then Flip Y
-		float mLeft = mBBLeft / mAtlasSzX;
-		float mRight = mBBRight / mAtlasSzX;
 		
 		mIdx[0] = 0;
 		
@@ -159,6 +174,12 @@ public class Font {
 //		mTxc[11] = 0.2507475f;
 		mTxc[10] = mRight;
 		mTxc[11] = mTop;
+		
+	}
+	
+	private FloatBuffer loadTxc(int index) {
+		
+		return null;
 		
 	}
 	
