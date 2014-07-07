@@ -200,15 +200,16 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glVertexAttribPointer(a_nrm, font.mNrmSize, GLES20.GL_FLOAT, false, font.mElementStride, font.mNrmOffset);
 
 		/* For fonts we will be changing the TXCs quite a bit so don't buffer */
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, font.mTxcBufIndex);
-		GLES20.glEnableVertexAttribArray(a_txc);
-		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, 8, 0);
+//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, font.mTxcBufIndex);
+//		GLES20.glEnableVertexAttribArray(a_txc);
+//		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, 8, 0);
 		
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		
 		/* Pass in the texture information */
-//		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, 0, font.mTxcBuffer);        
-//		GLES20.glEnableVertexAttribArray(a_txc); 
+		FloatBuffer glyph = font.getCoords('D');
+		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, 0, glyph);        
+		GLES20.glEnableVertexAttribArray(a_txc); 
 		
 		Matrix.setIdentityM(font.mModelMatrix, 0);
 		Matrix.translateM(font.mModelMatrix, 0, 100.0f, 100.0f, -4.0f);
@@ -387,11 +388,11 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		mFont = new Font();
 		
 		mFont.mPosNrmBufIndex = loadToVbo(SSArrayUtil.floatToByteArray(mFont.mPosNrm));
-		mFont.mTxcBufIndex = loadToVbo(SSArrayUtil.floatToByteArray(mFont.mTxc));
+//		mFont.mTxcBufIndex = loadToVbo(SSArrayUtil.floatToByteArray(mFont.mTxc));
 		mFont.mIdxBufIndex = loadToIbo(SSArrayUtil.shortToByteArray(mFont.mIdx));		
 		mFont.mTextureHandle = mTextures.get("fonts");
 		mFont.mShaderHandle = mShaders.get("uiShader");
-		mFont.mTxcBuffer = SSArrayUtil.arrayToFloatBuffer(mFont.mTxc);
+//		mFont.mTxcBuffer = SSArrayUtil.arrayToFloatBuffer(mFont.mTxc);
 		
 	}
 

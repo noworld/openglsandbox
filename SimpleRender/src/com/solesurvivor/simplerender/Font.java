@@ -4,6 +4,8 @@ import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.solesurvivor.util.SSArrayUtil;
+
 import android.opengl.Matrix;
 
 
@@ -15,18 +17,18 @@ public class Font {
 	
 	
 	public float[] mPosNrm = new float[36];	
-	public float[] mTxc = new float[12];	
+//	public float[] mTxc = new float[12];	
 	public short[] mIdx = new short[6];
 	
 	public int mShaderHandle = 0;
 	public int mTextureHandle = 0;
 	public int mPosNrmBufIndex = 0;
-	public int mTxcBufIndex = 0;
+//	public int mTxcBufIndex = 0;
 	public int mIdxBufIndex = 0;
 	public int mElementStride = 24;
 	public int mPosOffset = 0;
 	public int mNrmOffset = 12;
-	public FloatBuffer mTxcBuffer = null;
+//	public FloatBuffer mTxcBuffer = null;
 	public int mNumElements = 6; 
 	
 	public int mPosSize = 3;
@@ -57,10 +59,10 @@ public class Font {
 	
 	public Map<Character,FloatBuffer> mGlyphs = new HashMap<Character,FloatBuffer>(mChars.length());
 	
-	private float mTop = 1 - ((mAtlasSzY - mBBTop) / mAtlasSzY);  //Use top left coordinates, then Flip Y
-	private float mBottom = 1 - ((mAtlasSzY - mBBBottom) / mAtlasSzY); //Use top left coordinates, then Flip Y
-	private float mLeft = mBBLeft / mAtlasSzX;
-	private float mRight = mBBRight / mAtlasSzX;
+//	private float mTop = 1 - ((mAtlasSzY - mBBTop) / mAtlasSzY);  //Use top left coordinates, then Flip Y
+//	private float mBottom = 1 - ((mAtlasSzY - mBBBottom) / mAtlasSzY); //Use top left coordinates, then Flip Y
+//	private float mLeft = mBBLeft / mAtlasSzX;
+//	private float mRight = mBBRight / mAtlasSzX;
 			
 	public Font() {
 		Matrix.setIdentityM(mModelMatrix, 0);
@@ -73,30 +75,28 @@ public class Font {
 		loadFont();
 	}
 	
-	public void draw() {
-		
+	public FloatBuffer getCoords(char c) {
+		return mGlyphs.get(c);
 	}
 	
 	private void loadFont() {
 		
-		mIdx[0] = 0;
+		for(int i = 0; i < mIdx.length; i++) {
+			mIdx[i] = (short)i;
+		}
 		
+//		Bottom Left Vertex
+		//Pos
 		mPosNrm[0] = -2.5f;
 		mPosNrm[1] = -4.5f;
 		mPosNrm[2] = 0.0f;
 		
+		//Nrm
 		mPosNrm[3] = 0.0f;
 		mPosNrm[4] = 0.0f;
 		mPosNrm[5] = 1.0f;
-
-//		Bottom Left Coordinate
-//		mTxc[0] = 0.01171875f;
-//		mTxc[1] = 0.31482393f;
-		mTxc[0] = mLeft;
-		mTxc[1] = mBottom;
 		
-		mIdx[1] = 1;
-		
+//		Bottom Right
 		mPosNrm[6] = 2.5f;
 		mPosNrm[7] = -4.5f;
 		mPosNrm[8] = 0.0f;
@@ -104,15 +104,8 @@ public class Font {
 		mPosNrm[9] = 0.0f;
 		mPosNrm[10] = 0.0f;
 		mPosNrm[11] = 1.0f;
-
-//		Bottom Right
-//		mTxc[2] = 0.04236412f;
-//		mTxc[3] = 0.3148241f;
-		mTxc[2] = mRight;
-		mTxc[3] = mBottom;
-		
-		mIdx[2] = 2;
-		
+	
+//		Top Right
 		mPosNrm[12] = 2.5f;
 		mPosNrm[13] = 4.5f;
 		mPosNrm[14] = 0.0f;
@@ -120,15 +113,8 @@ public class Font {
 		mPosNrm[15] = 0.0f;
 		mPosNrm[16] = 0.0f;
 		mPosNrm[17] = 1.0f;
-
-//		Top Right
-//		mTxc[4] = 0.04236418f;
-//		mTxc[5] = 0.2507475f;
-		mTxc[4] = mRight;
-		mTxc[5] = mTop;
-
-		mIdx[3] = 3;
 		
+//		Top Left
 		mPosNrm[18] = -2.5f;
 		mPosNrm[19] = 4.5f;
 		mPosNrm[20] = 0.0f;
@@ -136,15 +122,8 @@ public class Font {
 		mPosNrm[21] = 0.0f;
 		mPosNrm[22] = 0.0f;
 		mPosNrm[23] = 1.0f;
-
-//		Top Left
-//		mTxc[6] = 0.001887559f;
-//		mTxc[7] = 0.25074738f;
-		mTxc[6] = mLeft;
-		mTxc[7] = mTop;
-
-		mIdx[4] = 4;
 		
+//		Bottom Left
 		mPosNrm[24] = -2.5f;
 		mPosNrm[25] = -4.5f;
 		mPosNrm[26] = 0.0f;
@@ -152,15 +131,8 @@ public class Font {
 		mPosNrm[27] = 0.0f;
 		mPosNrm[28] = 0.0f;
 		mPosNrm[29] = 1.0f;
-
-//		Bottom Left
-//		mTxc[8] = 0.00188744f;
-//		mTxc[9] = 0.31482393f;
-		mTxc[8] = mLeft;
-		mTxc[9] = mBottom;
-
-		mIdx[5] = 5;
 		
+//		Top Right
 		mPosNrm[30] = 2.5f;
 		mPosNrm[31] = 4.5f;
 		mPosNrm[32] = 0.0f;
@@ -168,18 +140,44 @@ public class Font {
 		mPosNrm[33] = 0.0f;
 		mPosNrm[34] = 0.0f;
 		mPosNrm[35] = 1.0f;
-
-//		Top Right
-//		mTxc[10] = 0.04236418f;
-//		mTxc[11] = 0.2507475f;
-		mTxc[10] = mRight;
-		mTxc[11] = mTop;
 		
 	}
 	
 	private FloatBuffer loadTxc(int index) {
 		
-		return null;
+		float totalStride = mStride * index;
+		float top = 1 - ((mAtlasSzY - (mBBTop)) / mAtlasSzY);  //Use top left coordinates, then Flip Y
+		float bottom = 1 - ((mAtlasSzY - (mBBBottom)) / mAtlasSzY); //Use top left coordinates, then Flip Y
+		float left = (mBBLeft + totalStride) / mAtlasSzX;
+		float right = (mBBRight + totalStride) / mAtlasSzX;
+		
+		float[] txc = new float[12];
+		
+//		Bottom Left Coordinate
+		txc[0] = left;
+		txc[1] = bottom;
+		
+//		Bottom Right
+		txc[2] = right;
+		txc[3] = bottom;
+		
+//		Top Right
+		txc[4] = right;
+		txc[5] = top;
+		
+//		Top Left
+		txc[6] = left;
+		txc[7] = top;
+		
+//		Bottom Left
+		txc[8] = left;
+		txc[9] = bottom;
+		
+//		Top Right
+		txc[10] = right;
+		txc[11] = top;
+		
+		return SSArrayUtil.arrayToFloatBuffer(txc);
 		
 	}
 	
