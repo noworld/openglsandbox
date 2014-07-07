@@ -32,11 +32,12 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.solesurvivor.simplerender.Font;
 import com.solesurvivor.simplerender.Geometry;
 import com.solesurvivor.simplerender.InputHandler;
 import com.solesurvivor.simplerender.R;
-import com.solesurvivor.simplerender.animui.HAlignType;
 import com.solesurvivor.simplerender.animui.BetterAnim;
+import com.solesurvivor.simplerender.animui.HAlignType;
 import com.solesurvivor.simplerender.animui.VAlignType;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
@@ -46,6 +47,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = BetterUiGLTextureRenderer.class.getSimpleName();
 	
 	private static final boolean DRAW_LIGHT = true;
+	private static final boolean DRAW_GLYPH = true;
 
 	private static final int BYTES_PER_FLOAT = 4;
 	private static final int BYTES_PER_SHORT = 2;
@@ -58,10 +60,13 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	protected Context mContext;
 
 	/*New - Components in an object*/
-	List<Geometry> mGeos = new ArrayList<Geometry>();
-	List<Geometry> mUis = new ArrayList<Geometry>();
-	Map<String,Integer> mTextures = new HashMap<String,Integer>();
-	Map<String,Integer> mShaders = new HashMap<String,Integer>();
+	private List<Geometry> mGeos = new ArrayList<Geometry>();
+	private List<Geometry> mUis = new ArrayList<Geometry>();
+	private Map<String,Integer> mTextures = new HashMap<String,Integer>();
+	private Map<String,Integer> mShaders = new HashMap<String,Integer>();
+	
+	/* New - a Font */
+	private Font mFont;
 
 	protected float[] mViewMatrix = new float[16];	
 
@@ -139,7 +144,6 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 			GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
 		}
 
-		
 		for(Geometry geo : mGeos) {
 			drawGeometry(geo);
 
@@ -162,7 +166,84 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 				mReportedError = GLES20.glGetError();
 			}
 		}
+		
+		if(DRAW_GLYPH) {
+			drawGlyph(mFont);
+		}
 
+	}
+	
+	private void drawGlyph(Font font) {
+		/* New - Alpha channel fix: turn on/off as needed */ 
+		
+		GLES20.glUseProgram(font.mShaderHandle);
+		
+		int u_mvp = GLES20.glGetUniformLocation(font.mShaderHandle, "u_MVPMatrix");
+		int u_mv = GLES20.glGetUniformLocation(font.mShaderHandle, "u_MVMatrix");
+		int u_lightpos = GLES20.glGetUniformLocation(font.mShaderHandle, "u_LightPos");
+		int u_texsampler = GLES20.glGetUniformLocation(font.mShaderHandle, "u_Texture");
+
+		int a_pos = GLES20.glGetAttribLocation(font.mShaderHandle, "a_Position");
+		int a_nrm = GLES20.glGetAttribLocation(font.mShaderHandle, "a_Normal");
+		int a_txc = GLES20.glGetAttribLocation(font.mShaderHandle, "a_TexCoordinate");
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, font.mTextureHandle);
+		GLES20.glUniform1i(u_texsampler, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, font.mPosNrmBufIndex);
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, font.mPosSize, GLES20.GL_FLOAT, false, font.mElementStride, font.mPosOffset);
+
+		GLES20.glEnableVertexAttribArray(a_nrm);
+		GLES20.glVertexAttribPointer(a_nrm, font.mNrmSize, GLES20.GL_FLOAT, false, font.mElementStride, font.mNrmOffset);
+
+		/* For fonts we will be changing the TXCs quite a bit so don't buffer */
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, font.mTxcBufIndex);
+		GLES20.glEnableVertexAttribArray(a_txc);
+		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, 8, 0);
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+		
+		/* Pass in the texture information */
+//		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, 0, font.mTxcBuffer);        
+//		GLES20.glEnableVertexAttribArray(a_txc); 
+		
+		Matrix.setIdentityM(font.mModelMatrix, 0);
+		Matrix.translateM(font.mModelMatrix, 0, 100.0f, 100.0f, -4.0f);
+		Matrix.scaleM(font.mModelMatrix, 0, 100.0f, 100.0f, 0.0f);
+		
+		// --MV--
+
+		/* Get the MV Matrix: Multiply V * M  = MV */
+		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, font.mModelMatrix, 0);
+		//MVP matrix is *actually MV* at this point
+		GLES20.glUniformMatrix4fv(u_mv, 1, false, mMVPMatrix, 0); //1282
+
+		// --MVP--
+
+		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+		float[] tempMatrix = new float[16];
+		Matrix.multiplyMM(tempMatrix, 0, mUIMatrix, 0, mMVPMatrix, 0);
+		System.arraycopy(tempMatrix, 0, mMVPMatrix, 0, 16);
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mMVPMatrix, 0);
+
+		// --LightPos--
+
+		/* Pass in the light position in eye space.	*/	
+		//Switching to view space...
+		GLES20.glUniform3f(u_lightpos, mLightPosInEyeSpace[0], mLightPosInEyeSpace[1], mLightPosInEyeSpace[2]);
+
+		// Draw
+		
+		/* Draw the arrays as triangles */
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, font.mIdxBufIndex);
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, font.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
 	}
 
 	private void drawUI(Geometry geo) {
@@ -298,7 +379,20 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		Log.d(TAG, "Loading scene.");
 		loadShaders();
 		loadTextures();
-		loadModel();		
+		loadModel();	
+		loadFonts();
+	}
+
+	private void loadFonts() {
+		mFont = new Font();
+		
+		mFont.mPosNrmBufIndex = loadToVbo(SSArrayUtil.floatToByteArray(mFont.mPosNrm));
+		mFont.mTxcBufIndex = loadToVbo(SSArrayUtil.floatToByteArray(mFont.mTxc));
+		mFont.mIdxBufIndex = loadToIbo(SSArrayUtil.shortToByteArray(mFont.mIdx));		
+		mFont.mTextureHandle = mTextures.get("fonts");
+		mFont.mShaderHandle = mShaders.get("uiShader");
+		mFont.mTxcBuffer = SSArrayUtil.arrayToFloatBuffer(mFont.mTxc);
+		
 	}
 
 	private void loadTextures() {
