@@ -43,10 +43,10 @@ public class Font {
 //	public float mBBLeft = 2.0f;   //Left X of first glyph bounding box
 //	public float mBBRight = 43.0f;  //Right X of first glyph bounding box
 	
-	public float mBBTop = 767.0f;    //Top Y of first glyph bounding box
-	public float mBBBottom = 702.0f; //Bottom Y of first glyph bounding box
-	public float mBBLeft = 2.0f;   //Left X of first glyph bounding box
-	public float mBBRight = 43.0f;  //Right X of first glyph bounding box
+	public float mBBTop = 263.0f;    //Top Y of first glyph bounding box
+	public float mBBBottom = 317.0f; //Bottom Y of first glyph bounding box
+	public float mBBLeft = 11.0f;   //Left X of first glyph bounding box
+	public float mBBRight = 38.0f;  //Right X of first glyph bounding box
 	
 	public Font() {
 		Matrix.setIdentityM(mModelMatrix, 0);
@@ -59,8 +59,8 @@ public class Font {
 	
 	private void loadFont() {
 		
-		float mTop = 1 - (mBBTop / mAtlasSzY);  //Flip Y
-		float mBottom = 1 - (mBBBottom / mAtlasSzY); //Flip Y
+		float mTop = 1 - ((mAtlasSzY - mBBTop) / mAtlasSzY);  //Use top left coordinates, then Flip Y
+		float mBottom = 1 - ((mAtlasSzY - mBBBottom) / mAtlasSzY); //Use top left coordinates, then Flip Y
 		float mLeft = mBBLeft / mAtlasSzX;
 		float mRight = mBBRight / mAtlasSzX;
 		
