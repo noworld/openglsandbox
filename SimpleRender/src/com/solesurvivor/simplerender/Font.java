@@ -1,184 +1,194 @@
 package com.solesurvivor.simplerender;
 
-import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import com.solesurvivor.util.SSArrayUtil;
+import org.apache.commons.lang.ArrayUtils;
 
 import android.opengl.Matrix;
 
+import com.solesurvivor.util.SSArrayUtil;
+
 
 public class Font {
+	
+	public static final String GLYPH_PREFIX = "glyph_";
+	public static final String EQUALS_CODE = "eq";
+	public static final int NUM_ELEMENTS = 6; 
+	public static final int ELEMENTS_STRIDE = 32;
+	public static final int POS_OFFSET = 0;
+	public static final int NRM_OFFSET = 12;
+	public static final int TXC_OFFSET = 24;
 		
-
-	public String mName = "praeFont";
-	public float[] mModelMatrix = new float[16];
-	
-	
-	public float[] mPosNrm = new float[36];	
-//	public float[] mTxc = new float[12];	
-	public short[] mIdx = new short[6];
+	public String mAsset;
+	public String mName;
+	public float[] mModelMatrix = new float[16];	
 	
 	public int mShaderHandle = 0;
 	public int mTextureHandle = 0;
-	public int mPosNrmBufIndex = 0;
-//	public int mTxcBufIndex = 0;
-	public int mIdxBufIndex = 0;
-	public int mElementStride = 24;
-	public int mPosOffset = 0;
-	public int mNrmOffset = 12;
-//	public FloatBuffer mTxcBuffer = null;
-	public int mNumElements = 6; 
+	public int mVboIndex = 0;
+	public int mIboIndex = 0;
 	
 	public int mPosSize = 3;
 	public int mNrmSize = 3;
 	public int mTxcSize = 2;
 	
+	public float mAtlasWidth = 1024.0f; //Font atlas size
+	public float mAtlasHeight = 1024.0f;
 	
-	/* New - Draw fonts based on supplied measurements */
+	public Map<Character,Integer> mGlyphs = null;
 	
-	//Characters supported on the atlas
-//	public String mChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()<>?/{}[]\\;':\"`~_+-=";
-	public String mChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!";
-	
-	public float mAtlasSzX = 1024.0f; //Font atlas size
-	public float mAtlasSzY = 1024.0f;
-	
-//	public float mBBTop = 767.0f;    //Top Y of first glyph bounding box
-//	public float mBBBottom = 702.0f; //Bottom Y of first glyph bounding box
-//	public float mBBLeft = 2.0f;   //Left X of first glyph bounding box
-//	public float mBBRight = 43.0f;  //Right X of first glyph bounding box
-	
-	public float mBBTop = 15.0f;    //Top Y of first glyph bounding box
-	public float mBBBottom = 42.0f; //Bottom Y of first glyph bounding box
-	public float mBBLeft = 9.0f;   //Left X of first glyph bounding box
-	public float mBBRight = 23.0f;  //Right X of first glyph bounding box
-	
-	public float mStride = 19.0f; //X Distance between characters
-	
-	public Map<Character,FloatBuffer> mGlyphs = new HashMap<Character,FloatBuffer>(mChars.length());
-	
-//	private float mTop = 1 - ((mAtlasSzY - mBBTop) / mAtlasSzY);  //Use top left coordinates, then Flip Y
-//	private float mBottom = 1 - ((mAtlasSzY - mBBBottom) / mAtlasSzY); //Use top left coordinates, then Flip Y
-//	private float mLeft = mBBLeft / mAtlasSzX;
-//	private float mRight = mBBRight / mAtlasSzX;
+	private List<Float> mData = new ArrayList<Float>();
+	private List<Short> mIdx = new ArrayList<Short>();
+	private int mRunningOffset = 0;
 			
-	public Font() {
+	public Font(Map<String,String> glyphProperties) {
 		Matrix.setIdentityM(mModelMatrix, 0);
 		
-		for(int i = 0; i < mChars.length(); i++) {
-			char c = mChars.charAt(i);
-			mGlyphs.put(c, loadTxc(i));
+		mGlyphs = new HashMap<Character,Integer>(glyphProperties.size());
+		
+		for(String s : glyphProperties.keySet()) {
+			if(s.startsWith(GLYPH_PREFIX)) {
+				String values = glyphProperties.get(s);
+				String glyph = s.substring(GLYPH_PREFIX.length());
+				
+				//If length is 1, then we have a single character
+				//Else, we have a code
+				if(glyph.length() > 1) {
+					if(glyph.equals(EQUALS_CODE)) {
+						glyph = "=";
+					}
+				}				
+				
+				mGlyphs.put(glyph.charAt(0), mRunningOffset);
+				loadGlyphIntoList(values);
+			}
 		}
 		
-		loadFont();
+		this.mAsset = glyphProperties.get("asset");
+		this.mName = glyphProperties.get("name");
+		this.mAtlasWidth = Float.parseFloat(glyphProperties.get("atlas_width"));
+		this.mAtlasHeight = Float.parseFloat(glyphProperties.get("atlas_height"));
+			
 	}
 	
-	public FloatBuffer getCoords(char c) {
-		return mGlyphs.get(c);
+	public byte[] getVbo() {
+		return SSArrayUtil.floatToByteArray(ArrayUtils.toPrimitive(mData.toArray(new Float[mData.size()])));
 	}
 	
-	private void loadFont() {
+	public byte[] getIbo() {
+		return SSArrayUtil.shortToByteArray(ArrayUtils.toPrimitive(mIdx.toArray(new Short[mIdx.size()])));
+	}
+	
+	public int getGlyphIndex(char glyph) {
+		return mGlyphs.get(glyph);
+	}
+	
+	private void loadGlyphIntoList(String values) {
+		String[] bbStr = values.split(",");
 		
-		for(int i = 0; i < mIdx.length; i++) {
-			mIdx[i] = (short)i;
+		if(bbStr.length != 4) {
+			throw new IllegalArgumentException("Glyphs must have exactly left, top, right, bottom.");
 		}
+		
+		float[] bb = new float[4];
+		bb[0] = Float.parseFloat(bbStr[0]);
+		bb[1] = Float.parseFloat(bbStr[1]);
+		bb[2] = Float.parseFloat(bbStr[2]);
+		bb[3] = Float.parseFloat(bbStr[3]);
+		
+		loadGlyphToVboList(bb);
+		loadGlyphToIboList();
+	}
+	
+	private void loadGlyphToIboList() {
+		//Each glyph is drawn on a rectangle	
+		//2 triangles = 6 vertices
+		for(int i = 0; i < NUM_ELEMENTS; i++) {			
+			mIdx.add((short)(mRunningOffset++));
+		}
+	}
+
+	private void loadGlyphToVboList(float[] bb) {
+		
+		float bbLeft = bb[0];
+		float bbTop = bb[1];
+		float bbRight = bb[2];
+		float bbBottom = bb[3];
+		
+		float top = 1 - ((mAtlasHeight - bbTop) / mAtlasHeight);  //Use top left coordinates, then Flip Y
+		float bottom = 1 - ((mAtlasHeight - bbBottom) / mAtlasHeight); //Use top left coordinates, then Flip Y
+		float left = bbLeft / mAtlasWidth;
+		float right = bbRight / mAtlasWidth;
+		
+		float halfW = (bbRight-bbLeft)/2;
+		float halfH = (bbBottom-bbTop)/2;
 		
 //		Bottom Left Vertex
 		//Pos
-		mPosNrm[0] = -2.5f;
-		mPosNrm[1] = -4.5f;
-		mPosNrm[2] = 0.0f;
-		
+		mData.add(-(halfW));
+		mData.add(-(halfH));
+		mData.add(0.0f);		
 		//Nrm
-		mPosNrm[3] = 0.0f;
-		mPosNrm[4] = 0.0f;
-		mPosNrm[5] = 1.0f;
+		mData.add(0.0f);
+		mData.add(0.0f);
+		mData.add(1.0f);
+		//Txc
+		mData.add(left);
+		mData.add(bottom);
 		
 //		Bottom Right
-		mPosNrm[6] = 2.5f;
-		mPosNrm[7] = -4.5f;
-		mPosNrm[8] = 0.0f;
-
-		mPosNrm[9] = 0.0f;
-		mPosNrm[10] = 0.0f;
-		mPosNrm[11] = 1.0f;
+		mData.add((halfW));
+		mData.add(-(halfH));
+		mData.add(0.0f);
+		mData.add(0.0f);
+		mData.add(0.0f);
+		mData.add(1.0f);
+		mData.add(right);
+		mData.add(bottom);
 	
 //		Top Right
-		mPosNrm[12] = 2.5f;
-		mPosNrm[13] = 4.5f;
-		mPosNrm[14] = 0.0f;
-
-		mPosNrm[15] = 0.0f;
-		mPosNrm[16] = 0.0f;
-		mPosNrm[17] = 1.0f;
+		mData.add((halfW));
+		mData.add((halfH));
+		mData.add(0.0f);
+		mData.add(0.0f);
+		mData.add(0.0f);
+		mData.add(1.0f);
+		mData.add(right);
+		mData.add(top);
 		
 //		Top Left
-		mPosNrm[18] = -2.5f;
-		mPosNrm[19] = 4.5f;
-		mPosNrm[20] = 0.0f;
-
-		mPosNrm[21] = 0.0f;
-		mPosNrm[22] = 0.0f;
-		mPosNrm[23] = 1.0f;
+		mData.add(-(halfW));
+		mData.add((halfH));
+		mData.add(0.0f);
+		mData.add(0.0f);
+		mData.add(0.0f);
+		mData.add(1.0f);
+		mData.add(left);
+		mData.add(top);
 		
 //		Bottom Left
-		mPosNrm[24] = -2.5f;
-		mPosNrm[25] = -4.5f;
-		mPosNrm[26] = 0.0f;
+		mData.add(-(halfW));
+		mData.add(-(halfH));
+		mData.add(0.0f);
+		mData.add(0.0f);
+		mData.add(0.0f);
+		mData.add(1.0f);
+		mData.add(left);
+		mData.add(bottom);
+		
+//		Top Right
+		mData.add((halfW));
+		mData.add((halfH));
+		mData.add(0.0f);
+		mData.add(0.0f);
+		mData.add(0.0f);
+		mData.add(1.0f);
+		mData.add(right);
+		mData.add(top);
 
-		mPosNrm[27] = 0.0f;
-		mPosNrm[28] = 0.0f;
-		mPosNrm[29] = 1.0f;
-		
-//		Top Right
-		mPosNrm[30] = 2.5f;
-		mPosNrm[31] = 4.5f;
-		mPosNrm[32] = 0.0f;
-
-		mPosNrm[33] = 0.0f;
-		mPosNrm[34] = 0.0f;
-		mPosNrm[35] = 1.0f;
-		
-	}
-	
-	private FloatBuffer loadTxc(int index) {
-		
-		float totalStride = mStride * index;
-		float top = 1 - ((mAtlasSzY - (mBBTop)) / mAtlasSzY);  //Use top left coordinates, then Flip Y
-		float bottom = 1 - ((mAtlasSzY - (mBBBottom)) / mAtlasSzY); //Use top left coordinates, then Flip Y
-		float left = (mBBLeft + totalStride) / mAtlasSzX;
-		float right = (mBBRight + totalStride) / mAtlasSzX;
-		
-		float[] txc = new float[12];
-		
-//		Bottom Left Coordinate
-		txc[0] = left;
-		txc[1] = bottom;
-		
-//		Bottom Right
-		txc[2] = right;
-		txc[3] = bottom;
-		
-//		Top Right
-		txc[4] = right;
-		txc[5] = top;
-		
-//		Top Left
-		txc[6] = left;
-		txc[7] = top;
-		
-//		Bottom Left
-		txc[8] = left;
-		txc[9] = bottom;
-		
-//		Top Right
-		txc[10] = right;
-		txc[11] = top;
-		
-		return SSArrayUtil.arrayToFloatBuffer(txc);
-		
 	}
 	
 }

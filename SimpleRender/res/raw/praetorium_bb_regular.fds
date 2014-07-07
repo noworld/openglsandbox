@@ -1,0 +1,11 @@
+asset=http://www.blambot.com/font_praetorium.shtml
+name=Praetorium BB Regular
+texture=praetorium_bb_regular_36
+shader=uiShader
+atlas_width=640.0f
+atlas_height=72.0f
+glyph_A=0,0,13,27
+glyph_B=14,0,26,27
+glyph_C=26,0,38,27
+glyph_D=39,0,50,27
+glyph_E=50,0,62,27

@@ -2,15 +2,7 @@
     
     <!-- Must be in specific order: Position, Color, Normal, (optional) Texcoord -->
     <array name="fonts">
-        <item >@array/praeFont</item>
+        <item >@raw/praetorium_bb_regular</item>
     </array>   
-    
-    <array name="praeFont">
-        <item >@drawable/fonts</item> 
-    </array>  
-    
-    <array name="momFont">
-        <item >@drawable/fonts</item>
-    </array> 
     
 </resources>

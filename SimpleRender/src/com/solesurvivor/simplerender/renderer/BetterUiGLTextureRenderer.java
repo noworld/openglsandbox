@@ -66,7 +66,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	private Map<String,Integer> mShaders = new HashMap<String,Integer>();
 	
 	/* New - a Font */
-	private Font mFont;
+	private Map<String,Font> mFonts = new HashMap<String,Font>();
 
 	protected float[] mViewMatrix = new float[16];	
 
@@ -168,7 +168,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		if(DRAW_GLYPH) {
-			drawGlyph(mFont);
+			drawGlyph(mFonts.get("Praetorium BB Regular"));
 		}
 
 	}
@@ -191,29 +191,27 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, font.mTextureHandle);
 		GLES20.glUniform1i(u_texsampler, 0);
 
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, font.mPosNrmBufIndex);
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, font.mVboIndex);
 
 		GLES20.glEnableVertexAttribArray(a_pos);
-		GLES20.glVertexAttribPointer(a_pos, font.mPosSize, GLES20.GL_FLOAT, false, font.mElementStride, font.mPosOffset);
+		GLES20.glVertexAttribPointer(a_pos, font.mPosSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.POS_OFFSET);
 
 		GLES20.glEnableVertexAttribArray(a_nrm);
-		GLES20.glVertexAttribPointer(a_nrm, font.mNrmSize, GLES20.GL_FLOAT, false, font.mElementStride, font.mNrmOffset);
+		GLES20.glVertexAttribPointer(a_nrm, font.mNrmSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.NRM_OFFSET);
 
-		/* For fonts we will be changing the TXCs quite a bit so don't buffer */
-//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, font.mTxcBufIndex);
-//		GLES20.glEnableVertexAttribArray(a_txc);
-//		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, 8, 0);
+		GLES20.glEnableVertexAttribArray(a_txc);
+		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.TXC_OFFSET);
 		
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		
 		/* Pass in the texture information */
-		FloatBuffer glyph = font.getCoords('D');
-		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, 0, glyph);        
-		GLES20.glEnableVertexAttribArray(a_txc); 
+//		FloatBuffer glyph = font.getCoords('D');
+//		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, 0, glyph);        
+//		GLES20.glEnableVertexAttribArray(a_txc); 
 		
 		Matrix.setIdentityM(font.mModelMatrix, 0);
 		Matrix.translateM(font.mModelMatrix, 0, 100.0f, 100.0f, -4.0f);
-		Matrix.scaleM(font.mModelMatrix, 0, 100.0f, 100.0f, 0.0f);
+		Matrix.scaleM(font.mModelMatrix, 0, 20.0f, 20.0f, 0.0f);
 		
 		// --MV--
 
@@ -240,8 +238,8 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		// Draw
 		
 		/* Draw the arrays as triangles */
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, font.mIdxBufIndex);
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, font.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, font.mIboIndex);
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Font.NUM_ELEMENTS, GLES20.GL_UNSIGNED_SHORT, BYTES_PER_SHORT * font.getGlyphIndex('A')); //BYTES_PER_SHORT * font.getGlyphOffset('A')
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		
@@ -385,15 +383,49 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void loadFonts() {
-		mFont = new Font();
 		
-		mFont.mPosNrmBufIndex = loadToVbo(SSArrayUtil.floatToByteArray(mFont.mPosNrm));
-//		mFont.mTxcBufIndex = loadToVbo(SSArrayUtil.floatToByteArray(mFont.mTxc));
-		mFont.mIdxBufIndex = loadToIbo(SSArrayUtil.shortToByteArray(mFont.mIdx));		
-		mFont.mTextureHandle = mTextures.get("fonts");
-		mFont.mShaderHandle = mShaders.get("uiShader");
-//		mFont.mTxcBuffer = SSArrayUtil.arrayToFloatBuffer(mFont.mTxc);
 		
+		Resources res =  mContext.getResources();
+
+		TypedArray fonts = res.obtainTypedArray(R.array.fonts);
+		
+		for(int i = 0; i < fonts.length(); i++) {			
+			int resourceId = fonts.getResourceId(i, 0);
+			Font f = loadFont(resourceId);
+			mFonts.put(f.mName, f);			
+		}
+		
+		fonts.recycle();				
+	}
+
+	private Font loadFont(int resourceId) {
+		
+		Resources res =  mContext.getResources();
+		
+		InputStream is = null;
+		String resourceName = res.getResourceEntryName(resourceId);
+		Font font = null;
+		 
+		try {
+			
+			is = res.openRawResource(resourceId);
+			String fontDescriptor = IOUtils.toString(is);
+			Map<String,String> props = SSPropertyUtil.parseFromString(fontDescriptor);
+
+			font = new Font(props);
+			font.mShaderHandle = mShaders.get(props.get("shader"));
+			font.mTextureHandle = mTextures.get(props.get("texture"));
+			font.mIboIndex = loadToIbo(font.getIbo());
+			font.mVboIndex = loadToVbo(font.getVbo());
+					
+			
+		} catch (IOException e) {
+			Log.e(TAG, String.format("Error loading resource %s.", resourceName), e);
+		} finally {
+			IOUtils.closeQuietly(is);
+		}
+		
+		return font;
 	}
 
 	private void loadTextures() {
