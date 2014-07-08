@@ -1,4 +1,4 @@
-package com.solesurvivor.simplerender;
+package com.solesurvivor.simplerender.text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,11 +27,6 @@ public class Font {
 		
 	public String mAsset;
 	public String mName;
-	public float[] mModelMatrix = new float[16];
-	public float[] mUiLightPos = new float[4];
-	private float[] mLightMatrix = new float[16];
-	private float[] mViewMatrix = new float[16];	
-//	public float[] mUIMatrix = new float[16];
 	
 	public int mShaderHandle = 0;
 	public int mTextureHandle = 0;
@@ -52,8 +47,7 @@ public class Font {
 	private int mRunningOffset = 0;
 			
 	public Font(Map<String,String> glyphProperties) {
-		Matrix.setIdentityM(mModelMatrix, 0);
-
+		
 		this.mAsset = glyphProperties.get("asset");
 		this.mName = glyphProperties.get("name");
 		this.mAtlasWidth = Float.parseFloat(glyphProperties.get("atlas_width"));

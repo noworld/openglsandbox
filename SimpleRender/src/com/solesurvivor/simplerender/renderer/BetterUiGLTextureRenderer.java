@@ -35,13 +35,14 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.solesurvivor.simplerender.Font;
 import com.solesurvivor.simplerender.Geometry;
 import com.solesurvivor.simplerender.InputHandler;
 import com.solesurvivor.simplerender.R;
 import com.solesurvivor.simplerender.animui.BetterAnim;
 import com.solesurvivor.simplerender.animui.HAlignType;
 import com.solesurvivor.simplerender.animui.VAlignType;
+import com.solesurvivor.simplerender.text.Cursor;
+import com.solesurvivor.simplerender.text.Font;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
@@ -73,6 +74,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	
 	/* New - a Font */
 	private Map<String,Font> mFonts = new HashMap<String,Font>();
+	private Cursor mCursor;
 
 	protected float[] mViewMatrix = new float[16];	
 
@@ -144,9 +146,8 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		//Text Drawing
-		if(DRAW_GLYPH) {
-			Font font = mFonts.get("Praetorium BB Regular");
-			drawGlyph(font, 'b');
+		if(DRAW_GLYPH) {			
+			drawGlyph(mCursor, 'b');
 		}
 
 	}
@@ -175,7 +176,8 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
 	}
 
-	public void drawGlyph(Font font, char glyph) {
+	public void drawGlyph(Cursor cursor, char glyph) {
+		Font font = cursor.mFont;
 
 		GLES20.glUseProgram(font.mShaderHandle);
 		
@@ -198,13 +200,13 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.TXC_OFFSET);
 		
 		//TODO: Move this logic to the Cursor class
-		Matrix.setIdentityM(font.mModelMatrix, 0);
-		Matrix.translateM(font.mModelMatrix, 0, 100.0f, 0.0f, -4.0f);
-		Matrix.scaleM(font.mModelMatrix, 0, 10.0f, 10.0f, 0.0f);
+		Matrix.setIdentityM(cursor.mModelMatrix, 0);
+		Matrix.translateM(cursor.mModelMatrix, 0, 100.0f, 0.0f, -4.0f);
+		Matrix.scaleM(cursor.mModelMatrix, 0, 10.0f, 10.0f, 0.0f);
 		
 		// --MV--
 		//make mMVPMatrix MV
-		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, font.mModelMatrix, 0);
+		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, cursor.mModelMatrix, 0);
 		//make mMVPMatrix MVP
 		Matrix.multiplyMM(mMVPMatrix, 0, mUIMatrix, 0, mMVPMatrix, 0);
 		//MVP is MVP at this point
@@ -344,6 +346,9 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 			Font f = loadFont(resourceId);
 			mFonts.put(f.mName, f);			
 		}
+		
+		mCursor = new Cursor();
+		mCursor.mFont = mFonts.get("Praetorium BB Regular");
 		
 		fonts.recycle();				
 	}

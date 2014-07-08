@@ -67,7 +67,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int startButton=0x7f090002;
     }
     public static final class layout {
-        public static final int activity_simple_render=0x7f030000;
+        public static final int activity_better_render=0x7f030000;
+        public static final int activity_simple_render=0x7f030001;
     }
     public static final class raw {
         public static final int alphapng=0x7f040000;
@@ -78,23 +79,24 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int f_ui=0x7f040005;
         public static final int f_white=0x7f040006;
         public static final int font=0x7f040007;
-        public static final int monkey=0x7f040008;
-        public static final int ncfb=0x7f040009;
-        public static final int point_fragment_shader=0x7f04000a;
-        public static final int point_vertex_shader=0x7f04000b;
-        public static final int praetorium_bb_regular=0x7f04000c;
-        public static final int quadsphere_normal=0x7f04000d;
-        public static final int quadsphere_position=0x7f04000e;
-        public static final int quadsphere_texcoord=0x7f04000f;
-        public static final int sphere=0x7f040010;
-        public static final int sprites=0x7f040011;
-        public static final int toruscone=0x7f040012;
-        public static final int v_model_diffuse=0x7f040013;
-        public static final int v_point=0x7f040014;
-        public static final int v_sprite=0x7f040015;
-        public static final int v_tex_and_light=0x7f040016;
-        public static final int v_tex_and_light_alpha=0x7f040017;
-        public static final int v_ui=0x7f040018;
+        public static final int glyphs=0x7f040008;
+        public static final int monkey=0x7f040009;
+        public static final int ncfb=0x7f04000a;
+        public static final int point_fragment_shader=0x7f04000b;
+        public static final int point_vertex_shader=0x7f04000c;
+        public static final int praetorium_bb_regular=0x7f04000d;
+        public static final int quadsphere_normal=0x7f04000e;
+        public static final int quadsphere_position=0x7f04000f;
+        public static final int quadsphere_texcoord=0x7f040010;
+        public static final int sphere=0x7f040011;
+        public static final int sprites=0x7f040012;
+        public static final int toruscone=0x7f040013;
+        public static final int v_model_diffuse=0x7f040014;
+        public static final int v_point=0x7f040015;
+        public static final int v_sprite=0x7f040016;
+        public static final int v_tex_and_light=0x7f040017;
+        public static final int v_tex_and_light_alpha=0x7f040018;
+        public static final int v_ui=0x7f040019;
     }
     public static final class string {
         public static final int app_name=0x7f050000;
