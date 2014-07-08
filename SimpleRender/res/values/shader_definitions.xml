@@ -3,21 +3,21 @@
     <array name="shaderPrograms">
         <item>@array/basicShaders</item>
         <item>@array/basicTextureShaders</item>
-        <item>@array/pointShaders</item>
+        <item>@array/point_shader</item>
         <item>@array/alphaShaders</item>
-        <item>@array/uiShader</item>
-        <item>@array/spriteShader</item>
+        <item>@array/ui_shader</item>
+        <item>@array/sprite_shader</item>
         <item>@array/text_shader</item>
     </array>
     
     <array name="basicShaders">
         <item >@raw/v_model_diffuse</item> 
-        <item >@raw/f_model_empty</item>  
+        <item >@raw/f_white</item>  
     </array>
     
-    <array name="pointShaders">
+    <array name="point_shader">
         <item >@raw/v_point</item> 
-        <item >@raw/f_model_empty</item>  
+        <item >@raw/f_white</item>  
     </array>
     
     <array name="basicTextureShaders">
@@ -30,24 +30,24 @@
         <item >@raw/f_tex_and_light_alpha</item>  
     </array>
     
-    <array name="uiShader">
+    <array name="ui_shader">
         <item >@raw/v_ui</item> 
         <item >@raw/f_ui</item>  
     </array>    
     
-    <array name="spriteShader">
+    <array name="sprite_shader">
         <item >@raw/v_sprite</item> 
         <item >@raw/f_sprite</item>  
     </array> 
     
     <array name="text_shader">
-        <item >@raw/v_text</item> 
-        <item >@raw/f_text</item>  
+        <item >@raw/v_ui</item> 
+        <item >@raw/f_ui</item>  
     </array>
     
     <array name="shaders">
         <item >@raw/v_model_diffuse</item>
-        <item >@raw/f_model_empty</item>
+        <item >@raw/f_white</item>
         <item >@raw/v_tex_and_light</item>
         <item >@raw/f_tex_and_light</item>
     </array>   

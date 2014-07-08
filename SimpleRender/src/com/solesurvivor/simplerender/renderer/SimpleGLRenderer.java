@@ -17,7 +17,6 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.solesurvivor.simplerender.R;
-import com.solesurvivor.simplerender.R.raw;
 import com.solesurvivor.util.SSArrayUtil;
 
 public class SimpleGLRenderer implements GLSurfaceView.Renderer {
@@ -194,7 +193,7 @@ public class SimpleGLRenderer implements GLSurfaceView.Renderer {
 		try {
 			vShadIn = res.openRawResource(R.raw.v_model_diffuse);
 			vShadCode = IOUtils.toString(vShadIn);
-			fShadIn = res.openRawResource(R.raw.f_model_empty);
+			fShadIn = res.openRawResource(R.raw.f_white);
 			fShadCode = IOUtils.toString(fShadIn);
 		} catch (IOException e) {
 			Log.e(TAG, "Error loading shaders.", e);

@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -117,39 +119,12 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		
-		// Calculate position of the light. Rotate and then push into the distance.
-        Matrix.setIdentityM(mLightModelMatrix, 0);
-        Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
-        Matrix.rotateM(mLightModelMatrix, 0, 20, 0.0f, 1.0f, 0.0f);
-        Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
-               
-        Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
-        Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);   
-		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mLightModelMatrix, 0);
-		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-		
+		//Draw light position for debugging
 		if(DRAW_LIGHT) {
-			/*
-			 * DRAW LIGHT FOR DEBUGGING
-			 * */
-			
-			GLES20.glUseProgram(mLightShaderHandle);  
-			final int pointMVPMatrixHandle = GLES20.glGetUniformLocation(mLightShaderHandle, "u_MVPMatrix");
-	        final int pointPositionHandle = GLES20.glGetAttribLocation(mLightShaderHandle, "a_Position");
-	        
-			// Pass in the position.
-			GLES20.glVertexAttrib3f(pointPositionHandle, mLightPosInModelSpace[0], mLightPosInModelSpace[1], mLightPosInModelSpace[2]);
-
-			// Since we are not using a buffer object, disable vertex arrays for this attribute.
-	        GLES20.glDisableVertexAttribArray(pointPositionHandle);  
-			
-			// Pass in the transformation matrix.
-			GLES20.glUniformMatrix4fv(pointMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-			
-			// Draw the point.
-			GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
+			drawLightAsPoint();
 		}
 
+		//Draw loaded geometry
 		for(Geometry geo : mGeos) {
 			drawGeometry(geo);
 
@@ -173,6 +148,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 			}
 		}
 		
+		//Text Drawing
 		if(DRAW_GLYPH) {
 			Font font = mFonts.get("Praetorium BB Regular");
 			drawGlyph(font, 'b');
@@ -180,6 +156,30 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	}
 	
+	private void drawLightAsPoint() {
+
+		GLES20.glUseProgram(mLightShaderHandle);  
+		final int u_mvp = GLES20.glGetUniformLocation(mLightShaderHandle, "u_MVPMatrix");
+		final int a_pos = GLES20.glGetAttribLocation(mLightShaderHandle, "a_Position");
+
+		//TODO: This goes in the scene graph or something
+		// Calculate position of the light. Rotate and then push into the distance.
+		Matrix.setIdentityM(mLightModelMatrix, 0);
+		Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
+		Matrix.rotateM(mLightModelMatrix, 0, 20, 0.0f, 1.0f, 0.0f);
+		Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+		//Build the MVP matrix
+        Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
+        Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);   
+		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mLightModelMatrix, 0);
+		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+
+		GLES20.glVertexAttrib3f(a_pos, mLightPosInModelSpace[0], mLightPosInModelSpace[1], mLightPosInModelSpace[2]);
+		GLES20.glDisableVertexAttribArray(a_pos);  
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mMVPMatrix, 0);
+		GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
+	}
+
 	public void drawGlyph(Font font, char glyph) {
 
 		GLES20.glUseProgram(font.mShaderHandle);
@@ -204,7 +204,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		
 		//TODO: Move this logic to the Cursor class
 		Matrix.setIdentityM(font.mModelMatrix, 0);
-		Matrix.translateM(font.mModelMatrix, 0, 100.0f, 100.0f, -4.0f);
+		Matrix.translateM(font.mModelMatrix, 0, 100.0f, 0.0f, -4.0f);
 		Matrix.scaleM(font.mModelMatrix, 0, 10.0f, 10.0f, 0.0f);
 		
 		// --MV--
@@ -226,17 +226,13 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void drawUI(Geometry geo) {
-		/* New - Alpha channel fix: turn on/off as needed */ 
-		
+
 		GLES20.glUseProgram(geo.mShaderHandle);
 		
 		int u_mvp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVPMatrix");
-		int u_mv = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVMatrix");
-		int u_lightpos = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_LightPos");
 		int u_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Texture");
 
 		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
-		int a_nrm = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Normal");
 		int a_txc = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_TexCoordinate");
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -248,37 +244,16 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glEnableVertexAttribArray(a_pos);
 		GLES20.glVertexAttribPointer(a_pos, geo.mPosSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mPosOffset);
 
-		GLES20.glEnableVertexAttribArray(a_nrm);
-		GLES20.glVertexAttribPointer(a_nrm, geo.mNrmSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mNrmOffset);
-
 		GLES20.glEnableVertexAttribArray(a_txc);
 		GLES20.glVertexAttribPointer(a_txc, geo.mTxcSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mTxcOffset);
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-		
-//		geo = BetterAnim.positionUI(geo);		
-		
+
 		// --MV--
-
-		/* Get the MV Matrix: Multiply V * M  = MV */
+		//make mMVPMatrix MV
 		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, geo.mModelMatrix, 0);
-		//MVP matrix is *actually MV* at this point
-		GLES20.glUniformMatrix4fv(u_mv, 1, false, mMVPMatrix, 0); //1282
-
-		// --MVP--
-
-		/* Get the MVP Matrix: Multiply P * MV = MVP*/
-		float[] tempMatrix = new float[16];
-		Matrix.multiplyMM(tempMatrix, 0, mUIMatrix, 0, mMVPMatrix, 0);
-		System.arraycopy(tempMatrix, 0, mMVPMatrix, 0, 16);
+		//make mMVPMatrix MVP
+		Matrix.multiplyMM(mMVPMatrix, 0, mUIMatrix, 0, mMVPMatrix, 0);
 		//MVP is MVP at this point
 		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mMVPMatrix, 0);
-
-		// --LightPos--
-
-		/* Pass in the light position in eye space.	*/	
-		//Switching to view space...
-		GLES20.glUniform3f(u_lightpos, mLightPosInEyeSpace[0], mLightPosInEyeSpace[1], mLightPosInEyeSpace[2]);
 
 		// Draw
 		
@@ -286,6 +261,8 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
 
+		//unbind budders
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		
 	}
@@ -332,9 +309,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		// --MVP--
 
 		/* Get the MVP Matrix: Multiply P * MV = MVP*/
-		float[] tempMatrix = new float[16];
-		Matrix.multiplyMM(tempMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-		System.arraycopy(tempMatrix, 0, mMVPMatrix, 0, 16);
+		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
 		//MVP is MVP at this point
 		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mMVPMatrix, 0);
 
@@ -532,6 +507,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 				if(StringUtils.isBlank(properties.get("shader_name"))) {
 					geo.mShaderHandle = 1;
 				} else {
+					Log.d(TAG, String.format("Attempting to load shader %s", properties.get("shader_name")));
 					geo.mShaderHandle = mShaders.get(properties.get("shader_name"));
 				}
 				
@@ -619,6 +595,8 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 			
 		shaderPrograms.recycle();
 		
+		mLightShaderHandle = mShaders.get("point_shader");
+		
 		Log.d(TAG, "Shaders loaded.");
 
 	}
@@ -655,32 +633,22 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		int vShadHand = compileShader(GLES20.GL_VERTEX_SHADER, vShadCode);
 		int fShadHand = compileShader(GLES20.GL_FRAGMENT_SHADER, fShadCode);
 
-		shaderHandle = createAndLinkProgram(vShadHand, fShadHand, new String[]{"a_Position", "a_Normal", "a_TexCoordinate"});
-
-		InputStream vPointShadIn = null;
-		InputStream fPointShadIn = null;
-		String vPointShadCode = null;
-		String fPointShadCode = null;
-
-		try {
-			vPointShadIn = res.openRawResource(R.raw.point_vertex_shader);
-			vPointShadCode = IOUtils.toString(vPointShadIn);
-			fPointShadIn = res.openRawResource(R.raw.point_fragment_shader);
-			fPointShadCode = IOUtils.toString(fPointShadIn);
-		} catch (IOException e) {
-			Log.e(TAG, "Error loading point shaders.", e);
-		} finally {
-			IOUtils.closeQuietly(vPointShadIn);
-			IOUtils.closeQuietly(fPointShadIn);
-		}
-
-		int vPointShaderHand = compileShader(GLES20.GL_VERTEX_SHADER, vPointShadCode);
-		int fPointShadHand = compileShader(GLES20.GL_FRAGMENT_SHADER, fPointShadCode);
-
-		mLightShaderHandle = createAndLinkProgram(vPointShaderHand, fPointShadHand, new String[]{"a_Position"});
+		shaderHandle = createAndLinkProgram(vShadHand, fShadHand, parseAttributes(vShadCode));
 		
 		shaders.recycle();
 		return shaderHandle;
+	}
+
+	private String[] parseAttributes(String vShadCode) {
+		Pattern p = Pattern.compile("attribute\\s+[a-zA-Z0-9]+\\s+([a-zA-Z0-9_]+);");
+		Matcher m = p.matcher(vShadCode);
+		List<String> attrs = new ArrayList<String>();
+		
+		while(m.find()) {
+			attrs.add(m.group(1));
+		}
+		
+		return attrs.toArray(new String[attrs.size()]);
 	}
 
 	protected int compileShader(final int shaderType, final String shaderSource) 
@@ -728,6 +696,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 			GLES20.glAttachShader(programHandle, fragmentShaderHandle);
 
 			// Bind attributes
+			//TODO: Find out how to use this properly...
 			if (attributes != null)
 			{
 				final int size = attributes.length;
