@@ -15,7 +15,6 @@ import com.solesurvivor.util.SSArrayUtil;
 
 public class Font {
 	
-	public static final int BYTES_PER_SHORT = 2;
 	public static final String GLYPH_PREFIX = "glyph_";
 	public static final String EQUALS_CODE = "eq";
 	public static final int NUM_ELEMENTS = 6; 
@@ -25,8 +24,6 @@ public class Font {
 	public static final int TXC_OFFSET = 24;
 	
 	private static final String TAG = Font.class.getSimpleName();
-	
-	private static final float[] UI_LIGHT_POS = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
 		
 	public String mAsset;
 	public String mName;
@@ -88,13 +85,6 @@ public class Font {
 	
 	public int getGlyphIndex(char glyph) {
 		return this.mGlyphs.get(glyph);
-	}
-	
-	public void setViewMatrix(float[] viewMatrix) {
-		this.mViewMatrix = viewMatrix;
-		float[] mLightPosInWorldSpace = new float[4];
-		Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightMatrix, 0, UI_LIGHT_POS, 0);
-        Matrix.multiplyMV(mUiLightPos, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);  
 	}
 	
 	public byte[] getVbo() {

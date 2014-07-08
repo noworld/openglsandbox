@@ -1,7 +1,7 @@
 asset=http://www.blambot.com/font_praetorium.shtml
 name=Praetorium BB Regular
 texture=praetorium_bb_regular_36
-shader=uiShader
+shader=text_shader
 atlas_width=840.0f
 atlas_height=48.0f
 glyph_A=0,0,13,29

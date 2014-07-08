@@ -7,6 +7,7 @@
         <item>@array/alphaShaders</item>
         <item>@array/uiShader</item>
         <item>@array/spriteShader</item>
+        <item>@array/text_shader</item>
     </array>
     
     <array name="basicShaders">
@@ -38,6 +39,11 @@
         <item >@raw/v_sprite</item> 
         <item >@raw/f_sprite</item>  
     </array> 
+    
+    <array name="text_shader">
+        <item >@raw/v_text</item> 
+        <item >@raw/f_text</item>  
+    </array>
     
     <array name="shaders">
         <item >@raw/v_model_diffuse</item>

@@ -175,26 +175,19 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		
 		if(DRAW_GLYPH) {
 			Font font = mFonts.get("Praetorium BB Regular");
-			font.setViewMatrix(this.mViewMatrix);
 			drawGlyph(font, 'b');
 		}
 
 	}
 	
 	public void drawGlyph(Font font, char glyph) {
-		/* New - Alpha channel fix: turn on/off as needed */ 
-		
-//		Log.d(TAG, String.format("Drawing glyph: ", glyph));
-		
+
 		GLES20.glUseProgram(font.mShaderHandle);
 		
 		int u_mvp = GLES20.glGetUniformLocation(font.mShaderHandle, "u_MVPMatrix");
-		int u_mv = GLES20.glGetUniformLocation(font.mShaderHandle, "u_MVMatrix");
-		int u_lightpos = GLES20.glGetUniformLocation(font.mShaderHandle, "u_LightPos");
 		int u_texsampler = GLES20.glGetUniformLocation(font.mShaderHandle, "u_Texture");
 
 		int a_pos = GLES20.glGetAttribLocation(font.mShaderHandle, "a_Position");
-		int a_nrm = GLES20.glGetAttribLocation(font.mShaderHandle, "a_Normal");
 		int a_txc = GLES20.glGetAttribLocation(font.mShaderHandle, "a_TexCoordinate");
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -206,51 +199,28 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glEnableVertexAttribArray(a_pos);
 		GLES20.glVertexAttribPointer(a_pos, font.mPosSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.POS_OFFSET);
 
-		GLES20.glEnableVertexAttribArray(a_nrm);
-		GLES20.glVertexAttribPointer(a_nrm, font.mNrmSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.NRM_OFFSET);
-
 		GLES20.glEnableVertexAttribArray(a_txc);
 		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.TXC_OFFSET);
 		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-		
-		/* Pass in the texture information */
-//		FloatBuffer glyph = font.getCoords('D');
-//		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, 0, glyph);        
-//		GLES20.glEnableVertexAttribArray(a_txc); 
-		
+		//TODO: Move this logic to the Cursor class
 		Matrix.setIdentityM(font.mModelMatrix, 0);
 		Matrix.translateM(font.mModelMatrix, 0, 100.0f, 100.0f, -4.0f);
-		Matrix.scaleM(font.mModelMatrix, 0, 20.0f, 20.0f, 0.0f);
+		Matrix.scaleM(font.mModelMatrix, 0, 10.0f, 10.0f, 0.0f);
 		
 		// --MV--
-
-		/* Get the MV Matrix: Multiply V * M  = MV */
+		//make mMVPMatrix MV
 		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, font.mModelMatrix, 0);
-		//MVP matrix is *actually MV* at this point
-		GLES20.glUniformMatrix4fv(u_mv, 1, false, mMVPMatrix, 0); //1282
-
-		// --MVP--
-
-		/* Get the MVP Matrix: Multiply P * MV = MVP*/
-		float[] tempMatrix = new float[16];
-		Matrix.multiplyMM(tempMatrix, 0, mUIMatrix, 0, mMVPMatrix, 0);
-		System.arraycopy(tempMatrix, 0, mMVPMatrix, 0, 16);
+		//make mMVPMatrix MVP
+		Matrix.multiplyMM(mMVPMatrix, 0, mUIMatrix, 0, mMVPMatrix, 0);
 		//MVP is MVP at this point
 		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mMVPMatrix, 0);
 
-		// --LightPos--
-
-		/* Pass in the light position in eye space.	*/	
-		//Switching to view space...
-		GLES20.glUniform3f(u_lightpos, font.mUiLightPos[0], font.mUiLightPos[1], font.mUiLightPos[2]);
-
 		// Draw
-		
-		/* Draw the arrays as triangles */
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, font.mIboIndex);
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Font.NUM_ELEMENTS, GLES20.GL_UNSIGNED_SHORT, BYTES_PER_SHORT * font.getGlyphIndex(glyph)); //BYTES_PER_SHORT * font.getGlyphOffset('A')
-
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Font.NUM_ELEMENTS, GLES20.GL_UNSIGNED_SHORT, BYTES_PER_SHORT * font.getGlyphIndex(glyph));
+		
+		//Unbind buffers
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		
 	}
