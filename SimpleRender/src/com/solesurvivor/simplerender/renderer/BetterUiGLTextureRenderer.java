@@ -10,7 +10,6 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,6 +55,8 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	private static final int BYTES_PER_FLOAT = 4;
 	private static final int BYTES_PER_SHORT = 2;
+	
+	private static final Pattern mGlslAttrPattern = Pattern.compile("attribute\\s+[a-zA-Z0-9]+\\s+([a-zA-Z0-9_]+);");
 
 	protected float[] mProjectionMatrix = new float[16];
 	protected float[] mUIMatrix = new float[16];
@@ -81,12 +82,9 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	protected float[] mLightModelMatrix = new float[16];	
 
 	protected int mReportedError;
-	
-	protected Locale mLocale;
 
 	public BetterUiGLTextureRenderer(Context context) {
 		this.mContext = context;
-		mLocale = context.getResources().getConfiguration().locale;
 	}
 
 	@Override
@@ -115,9 +113,6 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	}
 
 	protected void drawScene() {
-		
-		GLES20.glEnable(GLES20.GL_BLEND);
-		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		
 		//Draw light position for debugging
 		if(DRAW_LIGHT) {
@@ -386,8 +381,6 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		
 		Log.i(TAG, String.format("Supports ETC1 Textures: %s", ETC1Util.isETC1Supported()));
 		
-		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_SRC_ALPHA);
-		
 		Resources res =  mContext.getResources();
 
 		TypedArray textures = res.obtainTypedArray(R.array.textures);
@@ -640,8 +633,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private String[] parseAttributes(String vShadCode) {
-		Pattern p = Pattern.compile("attribute\\s+[a-zA-Z0-9]+\\s+([a-zA-Z0-9_]+);");
-		Matcher m = p.matcher(vShadCode);
+		Matcher m = mGlslAttrPattern.matcher(vShadCode);
 		List<String> attrs = new ArrayList<String>();
 		
 		while(m.find()) {
@@ -697,14 +689,14 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 			// Bind attributes
 			//TODO: Find out how to use this properly...
-			if (attributes != null)
-			{
-				final int size = attributes.length;
-				for (int i = 0; i < size; ++i)
-				{
-					GLES20.glBindAttribLocation(programHandle, i, attributes[i]);
-				}						
-			}
+//			if (attributes != null)
+//			{
+//				final int size = attributes.length;
+//				for (int i = 0; i < size; ++i)
+//				{
+//					GLES20.glBindAttribLocation(programHandle, i, attributes[i]);
+//				}						
+//			}
 
 			// Link the two shaders together into a program.
 			GLES20.glLinkProgram(programHandle);
@@ -779,8 +771,9 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 		
 		//Enable alpha channels
-//		GLES20.glEnable(GLES20.GL_BLEND);
-//		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);	
+		GLES20.glEnable(GLES20.GL_BLEND);
+//		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);	
 	}
 
 	protected void resizeViewport(int width, int height) {
@@ -805,7 +798,6 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		final float far_ortho = 200.0f;
 
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-//		Matrix.orthoM(mUIMatrix, 0, left, right, bottom, top, near, far);
 		Matrix.orthoM(mUIMatrix, 0, left_ortho, right_ortho, bottom_ortho, top_ortho, near_ortho, far_ortho);
 		
 	}
