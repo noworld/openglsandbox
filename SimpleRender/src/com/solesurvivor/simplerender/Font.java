@@ -8,12 +8,14 @@ import java.util.Map;
 import org.apache.commons.lang.ArrayUtils;
 
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.solesurvivor.util.SSArrayUtil;
 
 
 public class Font {
 	
+	public static final int BYTES_PER_SHORT = 2;
 	public static final String GLYPH_PREFIX = "glyph_";
 	public static final String EQUALS_CODE = "eq";
 	public static final int NUM_ELEMENTS = 6; 
@@ -21,10 +23,18 @@ public class Font {
 	public static final int POS_OFFSET = 0;
 	public static final int NRM_OFFSET = 12;
 	public static final int TXC_OFFSET = 24;
+	
+	private static final String TAG = Font.class.getSimpleName();
+	
+	private static final float[] UI_LIGHT_POS = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
 		
 	public String mAsset;
 	public String mName;
-	public float[] mModelMatrix = new float[16];	
+	public float[] mModelMatrix = new float[16];
+	public float[] mUiLightPos = new float[4];
+	private float[] mLightMatrix = new float[16];
+	private float[] mViewMatrix = new float[16];	
+//	public float[] mUIMatrix = new float[16];
 	
 	public int mShaderHandle = 0;
 	public int mTextureHandle = 0;
@@ -46,6 +56,13 @@ public class Font {
 			
 	public Font(Map<String,String> glyphProperties) {
 		Matrix.setIdentityM(mModelMatrix, 0);
+
+		this.mAsset = glyphProperties.get("asset");
+		this.mName = glyphProperties.get("name");
+		this.mAtlasWidth = Float.parseFloat(glyphProperties.get("atlas_width"));
+		this.mAtlasHeight = Float.parseFloat(glyphProperties.get("atlas_height"));
+		
+		Log.d(TAG, String.format("Loading %s font atlas: %s x %s", mName, mAtlasWidth, mAtlasHeight));
 		
 		mGlyphs = new HashMap<Character,Integer>(glyphProperties.size());
 		
@@ -66,12 +83,18 @@ public class Font {
 				loadGlyphIntoList(values);
 			}
 		}
-		
-		this.mAsset = glyphProperties.get("asset");
-		this.mName = glyphProperties.get("name");
-		this.mAtlasWidth = Float.parseFloat(glyphProperties.get("atlas_width"));
-		this.mAtlasHeight = Float.parseFloat(glyphProperties.get("atlas_height"));
 			
+	}
+	
+	public int getGlyphIndex(char glyph) {
+		return this.mGlyphs.get(glyph);
+	}
+	
+	public void setViewMatrix(float[] viewMatrix) {
+		this.mViewMatrix = viewMatrix;
+		float[] mLightPosInWorldSpace = new float[4];
+		Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightMatrix, 0, UI_LIGHT_POS, 0);
+        Matrix.multiplyMV(mUiLightPos, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);  
 	}
 	
 	public byte[] getVbo() {
@@ -80,10 +103,6 @@ public class Font {
 	
 	public byte[] getIbo() {
 		return SSArrayUtil.shortToByteArray(ArrayUtils.toPrimitive(mIdx.toArray(new Short[mIdx.size()])));
-	}
-	
-	public int getGlyphIndex(char glyph) {
-		return mGlyphs.get(glyph);
 	}
 	
 	private void loadGlyphIntoList(String values) {
@@ -118,13 +137,13 @@ public class Font {
 		float bbRight = bb[2];
 		float bbBottom = bb[3];
 		
-		float top = 1 - ((mAtlasHeight - bbTop) / mAtlasHeight);  //Use top left coordinates, then Flip Y
-		float bottom = 1 - ((mAtlasHeight - bbBottom) / mAtlasHeight); //Use top left coordinates, then Flip Y
+		float top = bbTop;
+		float bottom = bbBottom / mAtlasHeight;
 		float left = bbLeft / mAtlasWidth;
 		float right = bbRight / mAtlasWidth;
 		
-		float halfW = (bbRight-bbLeft)/2;
-		float halfH = (bbBottom-bbTop)/2;
+		float halfW = 2.5f;
+		float halfH = 4.5f;
 		
 //		Bottom Left Vertex
 		//Pos

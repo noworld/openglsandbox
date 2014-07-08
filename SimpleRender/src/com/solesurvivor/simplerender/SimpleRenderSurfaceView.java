@@ -17,6 +17,7 @@ public class SimpleRenderSurfaceView extends GLSurfaceView {
 
 	public SimpleRenderSurfaceView(Context context) {		
 		super(context);
+		setEGLContextClientVersion(2);
 		Log.d(TAG, "GLSurfaceView created.");
 	}
 

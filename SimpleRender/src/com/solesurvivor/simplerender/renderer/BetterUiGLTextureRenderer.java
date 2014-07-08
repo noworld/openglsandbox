@@ -10,6 +10,7 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -20,6 +21,7 @@ import javax.microedition.khronos.opengles.GL10;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -42,6 +44,7 @@ import com.solesurvivor.simplerender.animui.VAlignType;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
+@SuppressLint("DefaultLocale")
 public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	private static final String TAG = BetterUiGLTextureRenderer.class.getSimpleName();
@@ -76,9 +79,12 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	protected float[] mLightModelMatrix = new float[16];	
 
 	protected int mReportedError;
+	
+	protected Locale mLocale;
 
 	public BetterUiGLTextureRenderer(Context context) {
 		this.mContext = context;
+		mLocale = context.getResources().getConfiguration().locale;
 	}
 
 	@Override
@@ -168,13 +174,17 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		if(DRAW_GLYPH) {
-			drawGlyph(mFonts.get("Praetorium BB Regular"));
+			Font font = mFonts.get("Praetorium BB Regular");
+			font.setViewMatrix(this.mViewMatrix);
+			drawGlyph(font, 'b');
 		}
 
 	}
 	
-	private void drawGlyph(Font font) {
+	public void drawGlyph(Font font, char glyph) {
 		/* New - Alpha channel fix: turn on/off as needed */ 
+		
+//		Log.d(TAG, String.format("Drawing glyph: ", glyph));
 		
 		GLES20.glUseProgram(font.mShaderHandle);
 		
@@ -233,13 +243,13 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 		/* Pass in the light position in eye space.	*/	
 		//Switching to view space...
-		GLES20.glUniform3f(u_lightpos, mLightPosInEyeSpace[0], mLightPosInEyeSpace[1], mLightPosInEyeSpace[2]);
+		GLES20.glUniform3f(u_lightpos, font.mUiLightPos[0], font.mUiLightPos[1], font.mUiLightPos[2]);
 
 		// Draw
 		
 		/* Draw the arrays as triangles */
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, font.mIboIndex);
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Font.NUM_ELEMENTS, GLES20.GL_UNSIGNED_SHORT, BYTES_PER_SHORT * font.getGlyphIndex('A')); //BYTES_PER_SHORT * font.getGlyphOffset('A')
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Font.NUM_ELEMENTS, GLES20.GL_UNSIGNED_SHORT, BYTES_PER_SHORT * font.getGlyphIndex(glyph)); //BYTES_PER_SHORT * font.getGlyphOffset('A')
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		
@@ -417,7 +427,6 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 			font.mTextureHandle = mTextures.get(props.get("texture"));
 			font.mIboIndex = loadToIbo(font.getIbo());
 			font.mVboIndex = loadToVbo(font.getVbo());
-					
 			
 		} catch (IOException e) {
 			Log.e(TAG, String.format("Error loading resource %s.", resourceName), e);
