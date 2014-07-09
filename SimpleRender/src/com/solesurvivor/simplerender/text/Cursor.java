@@ -35,6 +35,11 @@ public class Cursor implements Iterable<CursorPosition> {
 		private CursorPosition mCursorPosition = new CursorPosition();
 		private float mAdvance = 0;
 		
+		public CursorIterator() {
+			//Left align
+			mAdvance = (mFont.getGlyph(mValue.toCharArray()[0]).mWidth/2) * mScale[0];
+		}
+		
 		@Override
 		public boolean hasNext() {
 			if(StringUtils.isBlank(mValue)) return false;
