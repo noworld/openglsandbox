@@ -55,7 +55,7 @@ public class Cursor implements Iterable<CursorPosition> {
 			Matrix.translateM(temp, 0, mPosition[0] + mAdvance, mPosition[1], mPosition[2]);
 			Matrix.scaleM(temp, 0, mScale[0], mScale[1], mScale[2]);
 			mCursorPosition.mModelMatrix = temp;
-			mAdvance += (glyph.mWidth + mCharPadding) * mScale[0];
+			mAdvance += (glyph.mWidth + mCharPadding + 1) * mScale[0];
 		}
 
 		@Override

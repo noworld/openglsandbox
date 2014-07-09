@@ -16,6 +16,7 @@ public class Font {
 	
 	public static final String GLYPH_PREFIX = "glyph_";
 	public static final String EQUALS_CODE = "eq";
+	public static final String SPACE_CODE = "space";
 	public static final int NUM_ELEMENTS = 6; 
 	public static final int ELEMENTS_STRIDE = 32;
 	public static final int POS_OFFSET = 0;
@@ -66,6 +67,8 @@ public class Font {
 				if(glyph.length() > 1) {
 					if(glyph.equals(EQUALS_CODE)) {
 						glyph = "=";
+					} else if(glyph.equals(SPACE_CODE)) {
+						glyph = " ";
 					}
 				}				
 				
@@ -128,7 +131,7 @@ public class Font {
 		float bbRight = bb[2];
 		float bbBottom = bb[3];
 		
-		float top = bbTop;
+		float top = bbTop / mAtlasHeight;
 		float bottom = bbBottom / mAtlasHeight;
 		float left = bbLeft / mAtlasWidth;
 		float right = bbRight / mAtlasWidth;
