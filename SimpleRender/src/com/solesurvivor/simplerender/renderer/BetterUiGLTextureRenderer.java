@@ -150,22 +150,22 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 			mCursor = new Cursor();
 			mCursor.mFont = mFonts.get("Praetorium BB Regular");
 
-			mCursor.mValue = "ABCDEFGHIJKL";
+			mCursor.mValue = "!@#$%^&*()_+;':";
 			mCursor.mPosition[0] = 200.0f;
 			mCursor.mPosition[1] = 400.0f;
 			mCursor.mScale = new float[]{3.0f,3.0f,1.0f};
 			drawText(mCursor);
 
-			mCursor.mValue = "NOPQRSTUVWXY";
+			mCursor.mValue = "1234567890?";
 			mCursor.mPosition[1] -= 100.0f;
 			drawText(mCursor);
 			
-			mCursor.mValue = "IA";
+			mCursor.mValue = "\"~`{}[]:\"";
 			mCursor.mPosition[1] -= 100.0f;
 			drawText(mCursor);
 			
 			mCursor.mValue = "MADDOG";
-//			mCursor.mCharPadding = 8.0f;
+			mCursor.mCharPadding = 1.0f;
 			mCursor.mPosition[1] -= 100.0f;
 			drawText(mCursor);
 		}
