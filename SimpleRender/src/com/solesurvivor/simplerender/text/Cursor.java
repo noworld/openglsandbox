@@ -49,13 +49,32 @@ public class Cursor implements Iterable<CursorPosition> {
 
 		private void updateCursorPosition() {
 			Glyph glyph =  mFont.getGlyph(mValue.toCharArray()[mCurrentIndex++]);
+			Glyph nextGlyph = null;
+			
+			//*
+			if(mCurrentIndex < mValue.toCharArray().length) {
+				nextGlyph = mFont.getGlyph(mValue.toCharArray()[mCurrentIndex]);
+			} else {
+				nextGlyph = glyph;
+			}
+
 			mCursorPosition.mGlyphIndex = Cursor.BYTES_PER_INDEX * glyph.mOffset;
+			
+			//Left align
+//			mAdvance -= (glyph.mWidth/2) * mScale[0];
+			
 			float[] temp = new float[16];
 			Matrix.setIdentityM(temp, 0);
 			Matrix.translateM(temp, 0, mPosition[0] + mAdvance, mPosition[1], mPosition[2]);
 			Matrix.scaleM(temp, 0, mScale[0], mScale[1], mScale[2]);
 			mCursorPosition.mModelMatrix = temp;
-			mAdvance += (glyph.mWidth + mCharPadding + 1) * mScale[0];
+			
+			//*
+			mAdvance += ((glyph.mWidth/2) + (nextGlyph.mWidth/2) + mCharPadding) * mScale[0];
+			
+			// * This is necessary to account for the fact
+			//that the glyph is centered on 0,0 in model space
+			
 		}
 
 		@Override

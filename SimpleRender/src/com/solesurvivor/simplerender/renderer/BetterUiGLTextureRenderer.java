@@ -43,7 +43,6 @@ import com.solesurvivor.simplerender.animui.HAlignType;
 import com.solesurvivor.simplerender.animui.VAlignType;
 import com.solesurvivor.simplerender.text.Cursor;
 import com.solesurvivor.simplerender.text.Font;
-import com.solesurvivor.simplerender.text.Glyph;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
@@ -147,8 +146,28 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		//Text Drawing
-		if(DRAW_GLYPH) {			
-			drawGlyph(mCursor);
+		if(DRAW_GLYPH) {
+			mCursor = new Cursor();
+			mCursor.mFont = mFonts.get("Praetorium BB Regular");
+
+			mCursor.mValue = "ABCDEFGHIJKL";
+			mCursor.mPosition[0] = 200.0f;
+			mCursor.mPosition[1] = 400.0f;
+			mCursor.mScale = new float[]{3.0f,3.0f,1.0f};
+			drawText(mCursor);
+
+			mCursor.mValue = "NOPQRSTUVWXY";
+			mCursor.mPosition[1] -= 100.0f;
+			drawText(mCursor);
+			
+			mCursor.mValue = "IA";
+			mCursor.mPosition[1] -= 100.0f;
+			drawText(mCursor);
+			
+			mCursor.mValue = "MADDOG";
+//			mCursor.mCharPadding = 8.0f;
+			mCursor.mPosition[1] -= 100.0f;
+			drawText(mCursor);
 		}
 
 	}
@@ -177,7 +196,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
 	}
 
-	public void drawGlyph(Cursor cursor) {
+	public void drawText(Cursor cursor) {
 		Font font = cursor.mFont;
 
 		GLES20.glUseProgram(font.mShaderHandle);
@@ -343,16 +362,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 			int resourceId = fonts.getResourceId(i, 0);
 			Font f = loadFont(resourceId);
 			mFonts.put(f.mName, f);			
-		}
-		
-		mCursor = new Cursor();
-//		mCursor.mValue = "HTNTHTITHTNTHTIITNIITITH";
-		mCursor.mValue = "INIINININININININININININ";
-		mCursor.mPosition[0] -= 200.0f;
-		mCursor.mPosition[1] -= 200.0f;
-//		mCursor.mCharPadding = 5.0f;
-		mCursor.mScale = new float[]{3.0f,3.0f,1.0f};
-		mCursor.mFont = mFonts.get("Praetorium BB Regular");
+		}		
 		
 		fonts.recycle();				
 	}

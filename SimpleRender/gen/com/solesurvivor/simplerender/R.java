@@ -48,16 +48,15 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int buttonb=0x7f020002;
         public static final int dpad=0x7f020003;
         public static final int flipped_spheretex=0x7f020004;
-        public static final int fonts=0x7f020005;
-        public static final int foreplane=0x7f020006;
-        public static final int go=0x7f020007;
-        public static final int ic_launcher=0x7f020008;
-        public static final int monkeytex=0x7f020009;
-        public static final int ncfb=0x7f02000a;
-        public static final int praetorium_bb_regular_36=0x7f02000b;
-        public static final int santaspritesheet=0x7f02000c;
-        public static final int spheretex=0x7f02000d;
-        public static final int uvgrid=0x7f02000e;
+        public static final int foreplane=0x7f020005;
+        public static final int go=0x7f020006;
+        public static final int ic_launcher=0x7f020007;
+        public static final int monkeytex=0x7f020008;
+        public static final int ncfb=0x7f020009;
+        public static final int praetorium_bb_regular_36=0x7f02000a;
+        public static final int santaspritesheet=0x7f02000b;
+        public static final int spheretex=0x7f02000c;
+        public static final int uvgrid=0x7f02000d;
     }
     public static final class id {
         public static final int fullscreen_content=0x7f090000;
