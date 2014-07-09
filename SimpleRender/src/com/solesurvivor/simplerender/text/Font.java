@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import android.opengl.Matrix;
 import android.util.Log;
 
 import com.solesurvivor.util.SSArrayUtil;
@@ -40,7 +39,7 @@ public class Font {
 	public float mAtlasWidth = 1024.0f; //Font atlas size
 	public float mAtlasHeight = 1024.0f;
 	
-	public Map<Character,Integer> mGlyphs = null;
+	public Map<Character,Glyph> mGlyphs = null;
 	
 	private List<Float> mData = new ArrayList<Float>();
 	private List<Short> mIdx = new ArrayList<Short>();
@@ -55,7 +54,7 @@ public class Font {
 		
 		Log.d(TAG, String.format("Loading %s font atlas: %s x %s", mName, mAtlasWidth, mAtlasHeight));
 		
-		mGlyphs = new HashMap<Character,Integer>(glyphProperties.size());
+		mGlyphs = new HashMap<Character,Glyph>(glyphProperties.size());
 		
 		for(String s : glyphProperties.keySet()) {
 			if(s.startsWith(GLYPH_PREFIX)) {
@@ -70,14 +69,13 @@ public class Font {
 					}
 				}				
 				
-				mGlyphs.put(glyph.charAt(0), mRunningOffset);
-				loadGlyphIntoList(values);
+				mGlyphs.put(glyph.charAt(0), loadGlyphIntoList(glyph.charAt(0), values));
 			}
 		}
 			
 	}
 	
-	public int getGlyphIndex(char glyph) {
+	public Glyph getGlyph(char glyph) {
 		return this.mGlyphs.get(glyph);
 	}
 	
@@ -89,7 +87,9 @@ public class Font {
 		return SSArrayUtil.shortToByteArray(ArrayUtils.toPrimitive(mIdx.toArray(new Short[mIdx.size()])));
 	}
 	
-	private void loadGlyphIntoList(String values) {
+	private Glyph loadGlyphIntoList(char c, String values) {
+		
+		
 		String[] bbStr = values.split(",");
 		
 		if(bbStr.length != 4) {
@@ -102,8 +102,15 @@ public class Font {
 		bb[2] = Float.parseFloat(bbStr[2]);
 		bb[3] = Float.parseFloat(bbStr[3]);
 		
+		Glyph glyph = new Glyph();
+		glyph.mGlyph = c;
+		glyph.mWidth = bb[2] - bb[0];
+		glyph.mOffset = mRunningOffset;
+		
 		loadGlyphToVboList(bb);
 		loadGlyphToIboList();
+		
+		return glyph;
 	}
 	
 	private void loadGlyphToIboList() {
@@ -126,8 +133,8 @@ public class Font {
 		float left = bbLeft / mAtlasWidth;
 		float right = bbRight / mAtlasWidth;
 		
-		float halfW = 2.5f;
-		float halfH = 4.5f;
+		float halfW = (bbRight - bbLeft)/2f;
+		float halfH = (bbBottom - bbTop)/2f;
 		
 //		Bottom Left Vertex
 		//Pos

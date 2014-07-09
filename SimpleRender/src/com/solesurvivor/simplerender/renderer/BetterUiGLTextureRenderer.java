@@ -43,6 +43,7 @@ import com.solesurvivor.simplerender.animui.HAlignType;
 import com.solesurvivor.simplerender.animui.VAlignType;
 import com.solesurvivor.simplerender.text.Cursor;
 import com.solesurvivor.simplerender.text.Font;
+import com.solesurvivor.simplerender.text.Glyph;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
@@ -147,7 +148,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		
 		//Text Drawing
 		if(DRAW_GLYPH) {			
-			drawGlyph(mCursor, 'b');
+			drawGlyph(mCursor);
 		}
 
 	}
@@ -176,7 +177,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
 	}
 
-	public void drawGlyph(Cursor cursor, char glyph) {
+	public void drawGlyph(Cursor cursor) {
 		Font font = cursor.mFont;
 
 		GLES20.glUseProgram(font.mShaderHandle);
@@ -198,23 +199,50 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 		GLES20.glEnableVertexAttribArray(a_txc);
 		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.TXC_OFFSET);
-		
-		//TODO: Move this logic to the Cursor class
-		Matrix.setIdentityM(cursor.mModelMatrix, 0);
-		Matrix.translateM(cursor.mModelMatrix, 0, 100.0f, 0.0f, -4.0f);
-		Matrix.scaleM(cursor.mModelMatrix, 0, 10.0f, 10.0f, 0.0f);
-		
-		// --MV--
-		//make mMVPMatrix MV
-		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, cursor.mModelMatrix, 0);
-		//make mMVPMatrix MVP
-		Matrix.multiplyMM(mMVPMatrix, 0, mUIMatrix, 0, mMVPMatrix, 0);
-		//MVP is MVP at this point
-		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mMVPMatrix, 0);
 
 		// Draw
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, font.mIboIndex);
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Font.NUM_ELEMENTS, GLES20.GL_UNSIGNED_SHORT, BYTES_PER_SHORT * font.getGlyphIndex(glyph));
+		
+		// --MV--
+		//make mMVPMatrix MV
+		/*DEBUG*/
+//		float[] mm = new float[16];
+//		float offset = 0.0f;
+//		float scale = 1.0f;
+//		Glyph curG = font.mGlyphs.get('A');
+//		
+//		Matrix.setIdentityM(mm, 0);
+//		Matrix.translateM(mm, 0, offset, 0.0f, -4.0f);
+//		Matrix.scaleM(mm, 0, scale, scale, 0.0f);
+//		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mm, 0);
+//		Matrix.multiplyMM(mMVPMatrix, 0, mUIMatrix, 0, mMVPMatrix, 0);
+//		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mMVPMatrix, 0);
+//		
+//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Font.NUM_ELEMENTS, GLES20.GL_UNSIGNED_SHORT, curG.mOffset * 2);
+//		
+//		offset += curG.mWidth * scale;
+//		curG = font.mGlyphs.get('B');
+//		
+//		Matrix.setIdentityM(mm, 0);
+//		Matrix.translateM(mm, 0, offset, 0.0f, -4.0f);
+//		Matrix.scaleM(mm, 0, scale, scale, 0.0f);
+//		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mm, 0);
+//		Matrix.multiplyMM(mMVPMatrix, 0, mUIMatrix, 0, mMVPMatrix, 0);
+//		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mMVPMatrix, 0);
+//		
+//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Font.NUM_ELEMENTS, GLES20.GL_UNSIGNED_SHORT, curG.mOffset * 2);
+
+		
+		for(Cursor.CursorPosition cp : cursor) {
+			// --MV--
+			//make mMVPMatrix MV
+			Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, cp.mModelMatrix, 0);
+			//make mMVPMatrix MVP
+			Matrix.multiplyMM(mMVPMatrix, 0, mUIMatrix, 0, mMVPMatrix, 0);
+			//MVP is MVP at this point
+			GLES20.glUniformMatrix4fv(u_mvp, 1, false, mMVPMatrix, 0);
+			GLES20.glDrawElements(GLES20.GL_TRIANGLES, Font.NUM_ELEMENTS, GLES20.GL_UNSIGNED_SHORT, cp.mGlyphIndex);
+		}
 		
 		//Unbind buffers
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -348,6 +376,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		mCursor = new Cursor();
+		mCursor.mValue = "ABC";
 		mCursor.mFont = mFonts.get("Praetorium BB Regular");
 		
 		fonts.recycle();				
