@@ -758,16 +758,16 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 					} finally {
 						IOUtils.closeQuietly(inStream);
 					}
-					
-					//Allow commenting out
-					for(String key : descriptors.keySet()) {
-						if(key.trim().startsWith("#")
-								|| key.trim().startsWith("//")) {
-							descriptors.remove(key);
-						}
-					}
-			
+
 					if(descriptors != null && descriptors.size() > 0) {
+						//Allow commenting out
+						for(String key : descriptors.keySet()) {
+							if(key.trim().startsWith("#")
+									|| key.trim().startsWith("//")) {
+								descriptors.remove(key);
+							}
+						}
+						
 						meshDesc.putAll(descriptors);
 					}
 				}
