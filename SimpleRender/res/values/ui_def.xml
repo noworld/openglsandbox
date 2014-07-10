@@ -1,0 +1,8 @@
+<resources>
+    
+    <!-- Must be in specific order: Position, Color, Normal, (optional) Texcoord -->
+    <array name="ui_elements">
+        <item >@raw/kenny_nl_ui1</item>
+    </array>   
+
+</resources>

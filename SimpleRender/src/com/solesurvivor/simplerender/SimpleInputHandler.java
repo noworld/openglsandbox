@@ -6,14 +6,14 @@ import java.util.Map;
 
 import android.util.Log;
 
-public class InputHandler {
+public class SimpleInputHandler {
 	
-	public static final Map<String,InputArea> mInputs = Collections.synchronizedMap(new HashMap<String,InputArea>());
+	public static final Map<String,SimpleInputArea> mInputs = Collections.synchronizedMap(new HashMap<String,SimpleInputArea>());
 	
 	public static synchronized void touch(int x, int y) {
 		Log.d("INPUT RECEIVED", String.format("Input received at location: %s, %s", x, y));
 		
-		for(InputArea ia : mInputs.values()) {			
+		for(SimpleInputArea ia : mInputs.values()) {			
 			if(ia.mRadius > Float.MIN_VALUE) {
 				//Circle
 				if(x >= (ia.mX - ia.mRadius)
@@ -38,13 +38,13 @@ public class InputHandler {
 	}
 	
 	public static void reset() {
-		for(InputArea ia : mInputs.values()) {
+		for(SimpleInputArea ia : mInputs.values()) {
 			ia.mPressed = false;
 		}
 	}
 	
 	
-	public static class InputArea {
+	public static class SimpleInputArea {
 		public float mX; //Center for circles, top left for rectangles
 		public float mY; //Center for circles, top left for rectangles
 		public float mRadius = Float.MIN_VALUE; //For circle buttons

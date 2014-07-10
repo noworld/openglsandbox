@@ -51,13 +51,13 @@ public class SimpleRenderSurfaceView extends GLSurfaceView {
 	
 	public void handlePointerEvent(MotionEvent event, boolean up) {
 		int index = MotionEventCompat.getActionIndex(event);
-		InputHandler.reset();
+		SimpleInputHandler.reset();
 		if(event.getPointerCount() > 0) {
 			for(int i = 0; i < event.getPointerCount(); i++) {
 				if(up && i == index) continue;
 				int xPos = (int)MotionEventCompat.getX(event, i);
 				int yPos = (int)MotionEventCompat.getY(event, i);				
-				InputHandler.touch(xPos, yPos);
+				SimpleInputHandler.touch(xPos, yPos);
 			}
 		}
 	}

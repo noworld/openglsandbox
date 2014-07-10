@@ -3,7 +3,7 @@ package com.solesurvivor.simplerender.animui;
 import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender.Geometry;
-import com.solesurvivor.simplerender.InputHandler;
+import com.solesurvivor.simplerender.SimpleInputHandler;
 
 /* New - for drawing multiple models*/
 public class BetterAnim {	
@@ -23,9 +23,9 @@ public class BetterAnim {
 	
 	public static Geometry updateSprite(Geometry geo) {
 		
-		if(InputHandler.mInputs.get("buttona-mesh").mPressed) {
+		if(SimpleInputHandler.mInputs.get("buttona-mesh").mPressed) {
 			geo.mAccumScale += 0.1;
-		} else if(InputHandler.mInputs.get("buttonb-mesh").mPressed) {
+		} else if(SimpleInputHandler.mInputs.get("buttonb-mesh").mPressed) {
 			geo.mAccumScale -= 0.1;
 		}
 		
@@ -70,7 +70,7 @@ public class BetterAnim {
 		
 		if(ui.mName.toLowerCase().contains("button")) {
 			//Circle Buttons A and B
-			InputHandler.InputArea circleArea = new InputHandler.InputArea();
+			SimpleInputHandler.SimpleInputArea circleArea = new SimpleInputHandler.SimpleInputArea();
 			
 			//Top left
 			circleArea.mX = (mScreenWidth/2) + ui.mXOffset;
@@ -78,10 +78,10 @@ public class BetterAnim {
 			
 			circleArea.mRadius = elWidth/2;
 			
-			InputHandler.mInputs.put(ui.mName, circleArea);
+			SimpleInputHandler.mInputs.put(ui.mName, circleArea);
 		} else {
 			//TODO: 4x Square DPAD buttons
-			InputHandler.InputArea upArea = new InputHandler.InputArea();
+			SimpleInputHandler.SimpleInputArea upArea = new SimpleInputHandler.SimpleInputArea();
 			
 			//Top left
 			upArea.mX = (mScreenWidth/2) + ui.mXOffset - (elWidth/2);
@@ -91,7 +91,7 @@ public class BetterAnim {
 			upArea.mBRX = upArea.mX + elWidth;
 			upArea.mBRY = upArea.mY + elHeight;
 			
-			InputHandler.mInputs.put(ui.mName, upArea);
+			SimpleInputHandler.mInputs.put(ui.mName, upArea);
 		}
 		
 		Matrix.translateM(ui.mModelMatrix, 0, ui.mXOffset, ui.mYOffset, mUiZ);

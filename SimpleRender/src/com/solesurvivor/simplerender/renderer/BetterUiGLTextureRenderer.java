@@ -36,13 +36,15 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.solesurvivor.simplerender.Geometry;
-import com.solesurvivor.simplerender.InputHandler;
 import com.solesurvivor.simplerender.R;
+import com.solesurvivor.simplerender.SimpleInputHandler;
 import com.solesurvivor.simplerender.animui.BetterAnim;
 import com.solesurvivor.simplerender.animui.HAlignType;
 import com.solesurvivor.simplerender.animui.VAlignType;
+import com.solesurvivor.simplerender.model.GeometryLoader;
 import com.solesurvivor.simplerender.text.Cursor;
 import com.solesurvivor.simplerender.text.Font;
+import com.solesurvivor.simplerender.ui.UiManager;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
@@ -65,14 +67,15 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	protected int mLightShaderHandle = -1;
 
 	protected Context mContext;
+	
+	/*New - Updatd UI Handling*/
+	private UiManager mUiManager = new UiManager();
 
-	/*New - Components in an object*/
 	private List<Geometry> mGeos = new ArrayList<Geometry>();
 	private List<Geometry> mUis = new ArrayList<Geometry>();
 	private Map<String,Integer> mTextures = new HashMap<String,Integer>();
 	private Map<String,Integer> mShaders = new HashMap<String,Integer>();
-	
-	/* New - a Font */
+
 	private Map<String,Font> mFonts = new HashMap<String,Font>();
 	private Cursor mCursor;
 
@@ -88,6 +91,14 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	public BetterUiGLTextureRenderer(Context context) {
 		this.mContext = context;
 	}
+	
+	public int getTexture(String name) {
+		return mTextures.get(name);
+	}
+	
+	public int getShader(String name) {
+		return mShaders.get(name);
+	}
 
 	@Override
 	public void onDrawFrame(GL10 arg0) {
@@ -101,10 +112,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		BetterAnim.mScreenWidth = width;
 		BetterAnim.mScreenHeight = height;
 		resizeViewport(width, height);
-		InputHandler.mInputs.clear();
-		for(Geometry ui : mUis) {
-			BetterAnim.positionUI(ui);
-		}
+		SimpleInputHandler.mInputs.clear();
 	}
 
 	@Override
@@ -123,6 +131,11 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 		//Draw loaded geometry
 		for(Geometry geo : mGeos) {
+			
+			Matrix.setIdentityM(geo.mModelMatrix, 0);
+			Matrix.translateM(geo.mModelMatrix, 0, 2.0f, 2.0f, -3.0f);
+			Matrix.scaleM(geo.mModelMatrix, 0, 0.25f, 0.25f, 0.25f);
+			
 			drawGeometry(geo);
 
 			/* Check for errors */
@@ -134,16 +147,13 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		//Always draw UI last
-		for(Geometry ui : mUis) {
-			drawUI(ui);
-			
-			/* Check for errors */
-			if(GLES20.glGetError() != GLES20.GL_NO_ERROR
-					&& GLES20.glGetError() != mReportedError) {			
-				Log.w(TAG, "OpenGL Error Encountered: " + interpretError(GLES20.glGetError()));
-				mReportedError = GLES20.glGetError();
-			}
-		}
+//		for(Geometry ui : mUis) {
+//			
+//			drawUI(ui);
+//
+//		}
+		
+		mUiManager.renderUi();
 		
 		//Text Drawing
 		if(DRAW_GLYPH) {
@@ -239,7 +249,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		
 	}
 
-	private void drawUI(Geometry geo) {
+	public void drawUI(Geometry geo) {
 
 		GLES20.glUseProgram(geo.mShaderHandle);
 		
@@ -279,6 +289,8 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		
+		checkError();
+		
 	}
 
 	private void drawGeometry(Geometry geo) {
@@ -311,7 +323,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		
-		geo = BetterAnim.updateSprite(geo);		
+//		geo = BetterAnim.updateSprite(geo);		
 		
 		// --MV--
 
@@ -345,9 +357,14 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	protected void loadScene() {
 		Log.d(TAG, "Loading scene.");
+		
+		//Shaders and Textures must come first
 		loadShaders();
 		loadTextures();
-		loadModel();	
+		
+		//Then model, UI, fonts
+		loadModel();
+		loadUi();
 		loadFonts();
 	}
 
@@ -412,12 +429,36 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		
 		textures.recycle();
 	}
-
+	
 	protected void loadModel() {
 		Log.d(TAG, "Loading models...");
 		Resources res =  mContext.getResources();
 
-		TypedArray models = res.obtainTypedArray(R.array.betterUiModels);
+		TypedArray models = res.obtainTypedArray(R.array.entity_models);
+		
+		mGeos.addAll(GeometryLoader.loadGeometries(mContext, models));
+		
+		models.recycle();
+	}
+	
+	protected void loadUi() {
+		Log.d(TAG, "Loading models...");
+		Resources res =  mContext.getResources();
+
+		TypedArray uiElements = res.obtainTypedArray(R.array.ui_elements);
+		
+		mUis.addAll(GeometryLoader.loadGeometries(mContext, uiElements));
+		
+		mUiManager.loadUi(mUis);
+		
+		uiElements.recycle();
+	}
+
+	protected void loadModelOld() {
+		Log.d(TAG, "Loading models...");
+		Resources res =  mContext.getResources();
+
+		TypedArray models = res.obtainTypedArray(R.array.entity_models);
 		
 		for(int i = 0; i < models.length(); i++) {			
 			int resourceId = models.getResourceId(i, 0);
@@ -547,11 +588,11 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 				
 	}
 
-	private int loadToIbo(byte[] iboBytes) {
+	public int loadToIbo(byte[] iboBytes) {
 		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes);
 	}
 
-	private int loadToVbo(byte[] vboBbytes) {
+	public int loadToVbo(byte[] vboBbytes) {
 		return loadGLBuffer(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes);
 	}
 	
@@ -848,6 +889,15 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	protected void clearOpenGL() {
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+	}
+	
+	private void checkError() {
+		/* Check for errors */
+		if(GLES20.glGetError() != GLES20.GL_NO_ERROR
+				&& GLES20.glGetError() != mReportedError) {			
+			Log.w(TAG, "OpenGL Error Encountered: " + interpretError(GLES20.glGetError()));
+			mReportedError = GLES20.glGetError();
+		}
 	}
 
 	protected String interpretError(int errNum) {		

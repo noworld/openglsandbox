@@ -10,6 +10,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.solesurvivor.simplerender.renderer.BetterUiGLTextureRenderer;
+import com.solesurvivor.simplerender.renderer.RendererManager;
 import com.solesurvivor.simplerender.util.SystemUiHider;
 
 /**
@@ -25,8 +26,6 @@ public class BetterRenderActivity extends Activity {
 	private static final int GL_VERSION = 0x20000;
 	
 	private Context mContext;
-	private GLSurfaceView mGLSurfaceView;
-	private GLSurfaceView.Renderer mRenderer;
 	private boolean mStarted = false;
 	
 	private Bundle mSavedInstanceState;
@@ -43,17 +42,14 @@ public class BetterRenderActivity extends Activity {
 	    this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		mContext = getApplicationContext();
-		mGLSurfaceView = new SimpleRenderSurfaceView(mContext);
 		
 		final ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 		
 		final boolean es2 = activityManager.getDeviceConfigurationInfo().reqGlEsVersion >= GL_VERSION;
     	if (es2 && !mStarted) {
 			// Request an OpenGL ES 2.0 compatible context.
-			mGLSurfaceView.setEGLContextClientVersion(2);
-			mRenderer = new BetterUiGLTextureRenderer(mContext);
-			mGLSurfaceView.setRenderer(mRenderer);
-			setContentView(mGLSurfaceView);
+			RendererManager.init(mContext);
+			setContentView(RendererManager.getInstance().getSurfaceView());
 			mStarted = true;
     	}
 	}

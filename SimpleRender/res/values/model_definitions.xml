@@ -15,8 +15,8 @@
         <item >@raw/buttons</item>  
     </array> 
     
-    <array name="betterUiModels">
-        <item >@raw/sprites</item>
-    </array> 
+    <array name="entity_models">
+        <item >@raw/monkey</item>
+    </array>
     
 </resources>

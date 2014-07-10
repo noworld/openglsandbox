@@ -7,6 +7,7 @@
         <item>@array/alphaShaders</item>
         <item>@array/ui_shader</item>
         <item>@array/sprite_shader</item>
+        <item>@array/inputarea_shader</item>
         <item>@array/text_shader</item>
     </array>
     
@@ -34,6 +35,11 @@
         <item >@raw/v_ui</item> 
         <item >@raw/f_ui</item>  
     </array>    
+    
+    <array name="inputarea_shader">
+        <item >@raw/v_tex_and_light_alpha</item> 
+        <item >@raw/f_tex_and_light_alpha</item>  
+    </array>
     
     <array name="sprite_shader">
         <item >@raw/v_sprite</item> 
