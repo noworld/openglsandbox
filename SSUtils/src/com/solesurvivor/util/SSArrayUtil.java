@@ -1,5 +1,6 @@
 package com.solesurvivor.util;
 
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -141,5 +142,32 @@ public class SSArrayUtil {
 		iBuf.put(inputArray).position(0);
 		return iBuf;
 	}
+	
+	public static <T> T[] remove(T[] array, int index) {
+        return remove(array, index, 1);
+    }
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T[] remove(T[] array, int index, int stride) {
+        int length = getLength(array);
+        if (index < 0 || index >= length) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + length);
+        }
+
+        Object result = Array.newInstance(array.getClass().getComponentType(), length - stride);
+        System.arraycopy(array, 0, result, 0, index);
+        if (index < length - 1) {
+            System.arraycopy(array, index + stride, result, index, length - index - stride);
+        }
+
+        return (T[])result;
+    }
+	
+	public static int getLength(Object array) {
+        if (array == null) {
+            return 0;
+        }
+        return Array.getLength(array);
+    }
 
 }

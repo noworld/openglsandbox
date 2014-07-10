@@ -29,6 +29,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
+import quickhull3d.Point3d;
+import quickhull3d.QuickHull3D;
+
 import com.solesurvivor.collada.Asset;
 import com.solesurvivor.collada.COLLADA;
 import com.solesurvivor.collada.Geometry;
@@ -769,6 +772,52 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 						}
 						
 						meshDesc.putAll(descriptors);
+					}
+					
+					if(meshDesc.get("obj_type").equals("input_area")) {
+						if(meshDesc.get("input_shape").equals("circle")) {
+							
+							if(StringUtils.isBlank(meshDesc.get("input_center"))) {
+								meshDesc.put("input_center", "0.0f,0.0f");
+							}
+							
+							if(StringUtils.isBlank(meshDesc.get("input_radius"))) {
+								float xRad = (geo.mXMax - geo.mXMin)/2;
+								float yRad = (geo.mYMax - geo.mYMax)/2;
+								float avgRad = (xRad + yRad)/2;
+								meshDesc.put("input_radius", String.valueOf(avgRad));
+							}
+							
+						} else if(meshDesc.get("input_shape").equals("polygon2d")) {
+
+							List<Point3d> points = new ArrayList<Point3d>();
+
+							for(int i = 0; i < geo.mData.length; i += geo.mTotalStride) {
+								points.add(new Point3d(geo.mData[i + geo.mPosOffset], 
+										geo.mData[i + geo.mPosOffset + 1],
+										geo.mData[i + geo.mPosOffset + 2]));
+							}
+							
+							
+							QuickHull3D hull = new QuickHull3D(points.toArray(new Point3d[points.size()]));
+							
+							 LOG.d("Vertices:");
+							 Point3d[] vertices = hull.getVertices();
+							 for (int i = 0; i < vertices.length; i++) {
+								 Point3d pnt = vertices[i];
+								 LOG.d(pnt.x + " " + pnt.y + " " + pnt.z);
+							 }
+
+							 LOG.d("Faces:");
+							 int[][] faceIndices = hull.getFaces();
+							 for (int i = 0; i < vertices.length; i++)  {
+								 for (int k = 0; k < faceIndices[i].length; k++) {
+									 LOG.d(faceIndices[i][k] + " ");
+								 }
+								 LOG.d("");
+							 }
+						}
+
 					}
 				}
 
