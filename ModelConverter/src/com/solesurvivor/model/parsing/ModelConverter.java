@@ -259,12 +259,14 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 
 	public static VboIboPackedGeometry parseVboIboGeometry(RawGeometry raw) throws SizeLimitExceededException {
 		VboIboPackedGeometry vbpg = new VboIboPackedGeometry();
+		
+		
 
 		if(StringUtils.isBlank(raw.name)) {
 			LOG.w("RawGeometry name was null in parseGeometry(RawGeometry).");
 		}
 		vbpg.mName = raw.name;
-
+		boolean hasTxc = raw.vertexData.length > 2;
 
 		//Counts the total number
 		//of vertices that will be drawn.
@@ -299,14 +301,25 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		
 		vbpg.mPosSize = raw.vertexData[0].stride;
 		vbpg.mNrmSize = raw.vertexData[1].stride;
-		vbpg.mTxcSize = raw.vertexData[2].stride;
 		
-		vbpg.mTotalStride = (vbpg.mPosSize + vbpg.mNrmSize + vbpg.mTxcSize) * BYTES_PER_FLOAT;
+		if(hasTxc) {
+			vbpg.mTxcSize = raw.vertexData[2].stride;
+		}
+		
+		if(hasTxc) {
+			vbpg.mTotalStride = (vbpg.mPosSize + vbpg.mNrmSize + vbpg.mTxcSize) * BYTES_PER_FLOAT;
+		} else {
+			vbpg.mTotalStride = (vbpg.mPosSize + vbpg.mNrmSize) * BYTES_PER_FLOAT;
+		}
+		
 		vbpg.mPosOffset = 0;
 		vbpg.mNrmOffset = vbpg.mPosSize * BYTES_PER_FLOAT;
-		vbpg.mTxcOffset = (vbpg.mPosSize + vbpg.mNrmSize) * BYTES_PER_FLOAT;
 		
-		if(FLIP_TEXTURE_Y) {
+		if(hasTxc) {
+			vbpg.mTxcOffset = (vbpg.mPosSize + vbpg.mNrmSize) * BYTES_PER_FLOAT;
+		}
+		
+		if(hasTxc && FLIP_TEXTURE_Y) {
 			raw.vertexData[2].remappedData = flipTextureY(raw.vertexData[2].remappedData);
 		}
 		
@@ -319,18 +332,29 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 				
 				VertexData vd0 = raw.vertexData[0];
 				VertexData vd1 = raw.vertexData[1];
-				VertexData vd2 = raw.vertexData[2];
+				
+				VertexData vd2 = null;
+				if(hasTxc) {
+					vd2 = raw.vertexData[2];
+				}
 
 				//Assuming the order per indexes above
 				currentPIndex = raw.p[primitivePos];
 				currentNIndex = raw.p[primitivePos+1];
-				currentTIndex = raw.p[primitivePos+2];
+				if(hasTxc) {
+					currentTIndex = raw.p[primitivePos+2];
+				}
 				
 				int betterPIndex = vd0.remappedIndex[currentPIndex];
 				int betterNIndex = vd1.remappedIndex[currentNIndex];
-				int betterTIndex = vd2.remappedIndex[currentTIndex];
+				
+				int betterTIndex = -1;				
+				if(hasTxc) {
+					betterTIndex = vd2.remappedIndex[currentTIndex];
+				}
+				
 				//Stride the primitive index
-				primitivePos += 3;
+				primitivePos +=  raw.vertexData.length;
 				
 				
 				//TODO:
@@ -346,8 +370,12 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 				List<Float> betterN = getBetterVertexDataAt(vd1, betterNIndex);
 
 				//Go to the texture coordinate array and get the UV at position currentTIndex
-				List<Float> currentT = getVertexDataAt(vd2, currentTIndex);
-				List<Float> betterT = getBetterVertexDataAt(vd2, betterTIndex);
+				List<Float> currentT = null;
+				List<Float> betterT = null;
+				if(hasTxc) {
+					currentT = getVertexDataAt(vd2, currentTIndex);
+					betterT = getBetterVertexDataAt(vd2, betterTIndex);
+				}
 				
 				/*New - Log the changes for the remapping*/
 				if(LOG_VALUES) {
@@ -363,17 +391,23 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 						LOG.e("ARRAYS NOT EQUAL! %s -> %s", ArrayUtils.toString(currentN), ArrayUtils.toString(betterN));
 					}
 
-					LOG.d("Mapping T Index: %s -> %s", currentTIndex, betterTIndex);
-					LOG.d("T Value Comparison: %s -> %s", ArrayUtils.toString(currentT), ArrayUtils.toString(betterT));
-					if(!ArrayUtils.isEquals(currentT,betterT)) {
-						LOG.e("ARRAYS NOT EQUAL! %s -> %s", ArrayUtils.toString(currentT), ArrayUtils.toString(betterT));
+					if(hasTxc) {
+						LOG.d("Mapping T Index: %s -> %s", currentTIndex, betterTIndex);
+						LOG.d("T Value Comparison: %s -> %s", ArrayUtils.toString(currentT), ArrayUtils.toString(betterT));
+						if(!ArrayUtils.isEquals(currentT,betterT)) {
+							LOG.e("ARRAYS NOT EQUAL! %s -> %s", ArrayUtils.toString(currentT), ArrayUtils.toString(betterT));
+						}
+					} else {
+						LOG.d("No texture coordinates.");
 					}
 				}
 				
 				//TODO: Fix this indexing so that it is not 1 data entry per index.
 				vboData.addAll(betterP);
 				vboData.addAll(betterN);
-				vboData.addAll(betterT);
+				if(hasTxc) {
+					vboData.addAll(betterT);
+				}
 				iboData.add(currentDataIndex);
 				currentDataIndex++;			
 				
@@ -400,7 +434,7 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		vbpg.mIndexes = ArrayUtils.toPrimitive(iboData.toArray(new Short[iboData.size()]));
 		
 		/*DEBUG CODE*/
-		if(WRITE_TEXCOORD_FILE) {
+		if(hasTxc && WRITE_TEXCOORD_FILE) {
 			FileOutputStream fos = null;								
 			try {
 				fos = new FileOutputStream("C:\\Users\\nicholas.waun\\git\\openglsandbox\\ModelConverter\\res\\out\\texcoords.txt");
