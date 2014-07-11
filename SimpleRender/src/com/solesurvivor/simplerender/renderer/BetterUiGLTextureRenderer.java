@@ -680,7 +680,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		
 		TypedArray shaders = res.obtainTypedArray(resourceId);
 		
-		//HACK: For now, assume only 1 v and f shader
+		//XXX HACK: For now, assume only 1 v and f shader
 		
 		int vShadId = shaders.getResourceId(0, 0);		
 		int fShadId = shaders.getResourceId(1, 0);

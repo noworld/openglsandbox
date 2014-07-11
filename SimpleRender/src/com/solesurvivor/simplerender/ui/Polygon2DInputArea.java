@@ -72,13 +72,17 @@ public class Polygon2DInputArea implements InputArea {
 		for(Float[] point : mHull) {
 			if(point[X_INDEX] > right) {
 				right = point[X_INDEX];
-			} else if(point[X_INDEX] < left) {
+			}
+			
+			if(point[X_INDEX] < left) {
 				left = point[X_INDEX];
 			}
 			
 			if(point[Y_INDEX] > top) {
 				top = point[Y_INDEX];
-			} else if(point[Y_INDEX] < bottom) {
+			}
+			
+			if(point[Y_INDEX] < bottom) {
 				bottom = point[Y_INDEX];
 			}
 		}

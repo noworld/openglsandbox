@@ -39,7 +39,7 @@ public class BetterAnim {
 	
 	public static Geometry positionUI(Geometry ui) {
 		Matrix.setIdentityM(ui.mModelMatrix, 0);
-		float elWidth = ui.mXSize * mUiScale; //HACK! Bumping up 1BU = mUiScale px
+		float elWidth = ui.mXSize * mUiScale; //XXX HACK! Bumping up 1BU = mUiScale px
 		float elHeight = ui.mYSize * mUiScale;
 		float elPriority = (((float)(ui.mPriority)) - 1.0f);
 		

@@ -56,7 +56,13 @@ public class UiManager {
 	}
 	
 	public void inputEvent(Point p) {
-		for(InputUiElement iuie : mInputs.values()) {
+//		for(InputUiElement iuie : mInputs.values()) {
+//			iuie.inputEvent(p);
+//		}
+		
+		/*XXX DEBUG*/
+		for(String key : mInputs.keySet()) {
+			InputUiElement iuie = mInputs.get(key);
 			iuie.inputEvent(p);
 		}
 	}
