@@ -117,23 +117,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		int halfH = mScreenDim.y/2;
 		int halfW = mScreenDim.x/2;
 		
-//		int newX = 0;
-//		int newY = 0;
-
-//		if(p.x >= halfW) {
-//			//1900->-950
-//			newX = halfW - p.x;
-//		}
-		
-//		if(p.y >= halfH) {
-//			//1080->-540; 541->-1
-//			newY = halfH - p.y;
-//		} else {
-//			//0->540; 540->0
-//			newY = halfH - p.y;
-//		}
-		
-		return new Point(halfW - p.x, halfH - p.y);
+		return new Point(p.x - halfW, halfH - p.y);
 	}
 
 	@Override
