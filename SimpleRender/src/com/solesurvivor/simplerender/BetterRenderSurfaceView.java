@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import com.solesurvivor.simplerender.renderer.BetterUiGLTextureRenderer;
+import com.solesurvivor.simplerender.ui.InputEventTypeEnum;
 
 public class BetterRenderSurfaceView extends GLSurfaceView {
 
@@ -38,18 +39,22 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 		switch(action) {
 		case MotionEvent.ACTION_DOWN:
 		case MotionEvent.ACTION_POINTER_DOWN:
-			handlePointerEvent(event, false);
+			handlePointerEvent(event, InputEventTypeEnum.PRESS);
 			break;
 		case MotionEvent.ACTION_POINTER_UP:
 		case MotionEvent.ACTION_UP:
-			handlePointerEvent(event, true);
+			handlePointerEvent(event, InputEventTypeEnum.RELEASE);
+			break;
+		case MotionEvent.ACTION_MOVE:
+			handlePointerEvent(event, InputEventTypeEnum.RELEASE);
+			handlePointerEvent(event, InputEventTypeEnum.PRESS);
 			break;
 		}
 
 		return true;
 	}
 	
-	public void handlePointerEvent(MotionEvent event, boolean up) {
+	public void handlePointerEvent(MotionEvent event, InputEventTypeEnum eventType) {
 		int index = MotionEventCompat.getActionIndex(event);
 		if(event.getPointerCount() > 0) {
 			for(int i = 0; i < event.getPointerCount(); i++) {
@@ -58,15 +63,15 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 				Point p = new Point(xPos, yPos);
 				
 				/*DEBUG*/
-				if(up) {
+				if(eventType.equals(InputEventTypeEnum.RELEASE)) {
 					Log.d(TAG, String.format("Liftoff at %s,%s", p.x, p.y));
 				} else {
 					Log.d(TAG, String.format("Touchdown at %s,%s", p.x, p.y));
 				}
 				
-				if(up && mRenderer.mPointers.containsKey(i)) {
+				if(eventType.equals(InputEventTypeEnum.RELEASE) && mRenderer.mPointers.containsKey(i)) {
 					mRenderer.mPointers.remove(i);
-				} else if(!up && ! mRenderer.mPointers.containsKey(i)) {
+				} else if(eventType.equals(InputEventTypeEnum.PRESS) && ! mRenderer.mPointers.containsKey(i)) {
 					mRenderer.mPointers.put(i,p);
 				}
 				
