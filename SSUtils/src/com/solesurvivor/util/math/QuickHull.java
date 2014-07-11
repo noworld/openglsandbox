@@ -91,21 +91,21 @@ public class QuickHull {
 
 		workingHull.add(insertPosition,furthestPoint);
 
-		// Determine who's to the left of AP
+		// Determine who's to the left of lineStart->furthestPoint
 		ArrayList<Float[]> leftStart = new ArrayList<Float[]>();
 		for (int i = 0; i < points.size(); i++) {
-			Float[] M = points.get(i);
-			if (VectorMath.crossZ(lineStart,furthestPoint,M) > 0) {
-				leftStart.add(M);
+			Float[] testPoint = points.get(i);
+			if (VectorMath.crossZ(lineStart,furthestPoint,testPoint) > 0) {
+				leftStart.add(testPoint);
 			}
 		}
 
-		// Determine who's to the left of PB
+		// Determine who's to the left of furthestPoint->lineEnd
 		ArrayList<Float[]> leftEnd = new ArrayList<Float[]>();
 		for (int i = 0; i < points.size(); i++) {
-			Float[] M = points.get(i);
-			if (VectorMath.crossZ(furthestPoint,lineEnd,M) > 0) {
-				leftEnd.add(M);
+			Float[] testPoint = points.get(i);
+			if (VectorMath.crossZ(furthestPoint,lineEnd,testPoint) > 0) {
+				leftEnd.add(testPoint);
 			}
 		}
 

@@ -20,7 +20,7 @@ public class UiManager {
 	private Map<String,InputUiElement> mInputs = new HashMap<String,InputUiElement>();
 	private List<DisplayUiElement> mDisplays = new ArrayList<DisplayUiElement>();
 	
-	public boolean mDrawInputAreas = true;
+	public boolean mDrawInputAreas = false;
 	
 	private UiManager(List<Geometry> uis) {
 		loadUi(uis);

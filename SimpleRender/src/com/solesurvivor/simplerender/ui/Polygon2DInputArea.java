@@ -2,6 +2,8 @@ package com.solesurvivor.simplerender.ui;
 
 import java.util.List;
 
+import com.solesurvivor.util.math.VectorMath;
+
 import android.graphics.Point;
 import android.graphics.PointF;
 
@@ -34,7 +36,30 @@ public class Polygon2DInputArea implements InputArea {
 	}
 
 	private boolean inHull(Point p) {
-		// TODO Auto-generated method stub
+		//TODO: Convert everything to work with PointF or something.
+		Float[] target = new Float[]{(float)p.x, (float)p.y};
+		
+		/*
+		 * Work around all the hull line segments in a loop.
+		 * If p is found to be to the left of any of them
+		 * then return false.
+		 * 
+		 * This assumes the points in mHull are in clockwise order
+		 */
+		for(int i = 0; i < mHull.size(); i++) {
+			if(i == (mHull.size() - 1)) {
+				//Handle special case of looping back to the first
+				if(VectorMath.crossZ(mHull.get(i), mHull.get(0), target) > 0) {
+					return false;
+				}
+			} else {
+				//Test coordinates
+				if(VectorMath.crossZ(mHull.get(i), mHull.get(i+1), target) > 0) {
+					return false;
+				}
+			}
+		}
+		
 		return true;
 	}
 	
