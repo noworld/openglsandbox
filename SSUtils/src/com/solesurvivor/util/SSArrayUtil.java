@@ -54,15 +54,15 @@ public class SSArrayUtil {
 		return ints;
 	}
 
-	public static int[] parseFloatArray(String s, String delimiter) {
+	public static float[] parseFloatArray(String s, String delimiter) {
 		String[] strings = s.split(delimiter);
-		int[] ints = new int[strings.length];
+		float[] floats = new float[strings.length];
 
 		for(int i = 0; i < strings.length; i++) {
-			ints[i] = Integer.parseInt(strings[i]);
+			floats[i] = Float.parseFloat(strings[i]);
 		}
 
-		return ints;
+		return floats;
 	}
 
 	public static float[] parseFloatArray(List<Double> doubles) {

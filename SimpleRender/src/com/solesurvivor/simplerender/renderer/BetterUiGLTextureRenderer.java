@@ -8,6 +8,7 @@ import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.opengl.ETC1Util;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -37,10 +39,6 @@ import android.util.Log;
 
 import com.solesurvivor.simplerender.Geometry;
 import com.solesurvivor.simplerender.R;
-import com.solesurvivor.simplerender.SimpleInputHandler;
-import com.solesurvivor.simplerender.animui.BetterAnim;
-import com.solesurvivor.simplerender.animui.HAlignType;
-import com.solesurvivor.simplerender.animui.VAlignType;
 import com.solesurvivor.simplerender.model.GeometryLoader;
 import com.solesurvivor.simplerender.text.Cursor;
 import com.solesurvivor.simplerender.text.Font;
@@ -67,9 +65,6 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	protected int mLightShaderHandle = -1;
 
 	protected Context mContext;
-	
-	/*New - Updatd UI Handling*/
-	private UiManager mUiManager = new UiManager();
 
 	private List<Geometry> mGeos = new ArrayList<Geometry>();
 	private List<Geometry> mUis = new ArrayList<Geometry>();
@@ -87,6 +82,9 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	protected float[] mLightModelMatrix = new float[16];	
 
 	protected int mReportedError;
+	
+	public Map<Integer, Point> mPointers = Collections.synchronizedMap(new HashMap<Integer, Point>());
+	public Point mScreenDim;
 
 	public BetterUiGLTextureRenderer(Context context) {
 		this.mContext = context;
@@ -103,16 +101,47 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 arg0) {
 		clearOpenGL();
+		handleInput();
 		drawScene();
+	}
+
+	private void handleInput() {
+		UiManager uiM = UiManager.getInstance();
+		for(Point p : mPointers.values()) {
+			uiM.inputEvent(convertCoordinates(p));
+		}
+	}
+
+	private Point convertCoordinates(Point p) {
+		
+		int halfH = mScreenDim.y/2;
+		int halfW = mScreenDim.x/2;
+		
+//		int newX = 0;
+//		int newY = 0;
+
+//		if(p.x >= halfW) {
+//			//1900->-950
+//			newX = halfW - p.x;
+//		}
+		
+//		if(p.y >= halfH) {
+//			//1080->-540; 541->-1
+//			newY = halfH - p.y;
+//		} else {
+//			//0->540; 540->0
+//			newY = halfH - p.y;
+//		}
+		
+		return new Point(halfW - p.x, halfH - p.y);
 	}
 
 	@Override
 	public void onSurfaceChanged(GL10 arg0, int width, int height) {
 		Log.d(TAG, "Renderer.onSurfaceChanged");
-		BetterAnim.mScreenWidth = width;
-		BetterAnim.mScreenHeight = height;
 		resizeViewport(width, height);
-		SimpleInputHandler.mInputs.clear();
+		mScreenDim = new Point(width, height);
+		
 	}
 
 	@Override
@@ -153,7 +182,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 //
 //		}
 		
-		mUiManager.renderUi();
+		UiManager.getInstance().renderUi();
 		
 		//Text Drawing
 		if(DRAW_GLYPH) {
@@ -449,7 +478,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		
 		mUis.addAll(GeometryLoader.loadGeometries(mContext, uiElements));
 		
-		mUiManager.loadUi(mUis);
+		UiManager.init(mUis);
 		
 		uiElements.recycle();
 	}
@@ -506,7 +535,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 			if(s.startsWith("+")) {
 				/* New - for loading multiple models */
 				Geometry geo = new Geometry();
-				geo.mModelMatrix = BetterAnim.initModelMatrix();
+				Matrix.setIdentityM(geo.mModelMatrix, 0);
 				
 				String name = s.substring(1);
 				
@@ -543,13 +572,13 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 					geo.mPriority = Integer.valueOf(properties.get("priority"));
 				}
 				
-				if(StringUtils.isNotBlank(properties.get("h_align"))) {
-					geo.mHAlign = HAlignType.valueOf(properties.get("h_align").toUpperCase());
-				}
-				
-				if(StringUtils.isNotBlank(properties.get("v_align"))) {
-					geo.mVAlign = VAlignType.valueOf(properties.get("v_align").toUpperCase());
-				}
+//				if(StringUtils.isNotBlank(properties.get("h_align"))) {
+//					geo.mHAlign = HAlignType.valueOf(properties.get("h_align").toUpperCase());
+//				}
+//				
+//				if(StringUtils.isNotBlank(properties.get("v_align"))) {
+//					geo.mVAlign = VAlignType.valueOf(properties.get("v_align").toUpperCase());
+//				}
 				
 				if(StringUtils.isBlank(properties.get("texture_name"))) {
 					geo.mTextureHandle = 1;

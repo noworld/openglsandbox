@@ -2,6 +2,7 @@ package com.solesurvivor.simplerender;
 
 import com.solesurvivor.simplerender.animui.HAlignType;
 import com.solesurvivor.simplerender.animui.VAlignType;
+import com.solesurvivor.simplerender.ui.InputArea;
 
 public class Geometry {
 	
@@ -42,5 +43,9 @@ public class Geometry {
 	
 	public HAlignType mHAlign;
 	public VAlignType mVAlign;
+	
+	
+	/* New - For handling input */
+	public InputArea mInputArea;
 	
 }

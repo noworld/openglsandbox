@@ -23,5 +23,4 @@ public abstract class UiElement {
 	public float[] mPosition = new float[]{0.0f, 0.0f,-1.0f};
 	public float[] mScale = new float[]{1.0f, 1.0f, 1.0f};
 	
-	public abstract void update();
 }

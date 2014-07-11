@@ -1,7 +1,9 @@
 package com.solesurvivor.simplerender.ui;
 
+import android.graphics.Point;
+
 public interface InputArea {
 
-	public boolean isPressed(int x, int y);
+	public boolean isPressed(Point p);
 	
 }

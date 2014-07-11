@@ -4,9 +4,16 @@ import com.solesurvivor.simplerender.Geometry;
 
 public class DisplayUiElement extends UiElement {
 	
-	public Geometry mGeo;
+	private Geometry mUiGeo;
+	
+	public DisplayUiElement(Geometry uiGeo) {
+		this.mUiGeo = uiGeo;
+	}
+	
+	public Geometry getGeometry() {
+		return mUiGeo;
+	}
 
-	@Override
 	public void update() {
 		// TODO Auto-generated method stub
 		

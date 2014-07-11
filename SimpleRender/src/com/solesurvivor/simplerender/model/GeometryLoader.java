@@ -12,12 +12,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
@@ -27,6 +29,9 @@ import com.solesurvivor.simplerender.animui.HAlignType;
 import com.solesurvivor.simplerender.animui.VAlignType;
 import com.solesurvivor.simplerender.renderer.BetterUiGLTextureRenderer;
 import com.solesurvivor.simplerender.renderer.RendererManager;
+import com.solesurvivor.simplerender.ui.CircleInputArea;
+import com.solesurvivor.simplerender.ui.Polygon2DInputArea;
+import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
 public class GeometryLoader {
@@ -151,6 +156,31 @@ public class GeometryLoader {
 				} else {
 					Log.d(TAG, String.format("Attempting to load shader %s", properties.get("shader_name")));
 					geo.mShaderHandle = renderer.getShader(properties.get("shader_name"));
+				}
+				
+				if(properties.get("obj_type").equals("input_area")) {
+					if(properties.get("input_shape").equals("circle")) {
+						
+						float[] center = SSArrayUtil.parseFloatArray(properties.get("input_center"), ",");
+						float radius = Float.parseFloat(properties.get("input_radius"));
+						
+						geo.mInputArea = new CircleInputArea(new PointF(center[0], center[1]), radius);
+						
+					} else if(properties.get("input_shape").equals("polygon2d")) {
+						
+						Float[] hullArray = ArrayUtils.toObject(SSArrayUtil.parseFloatArray(properties.get("input_hull"), ","));
+						
+						List<Float[]> hull = new ArrayList<Float[]>(hullArray.length/geo.mPosSize);
+						for(int i = 0; i < hullArray.length; i += geo.mPosSize) {
+							Float[] point = new Float[geo.mPosSize];
+							System.arraycopy(hullArray, i, point, 0, geo.mPosSize);	
+							hull.add(point);
+						}
+						
+						Log.d(TAG, String.format("HULL SIZE: %s", hull.size()));
+						
+						geo.mInputArea = new Polygon2DInputArea(hull);
+					}
 				}
 				
 				

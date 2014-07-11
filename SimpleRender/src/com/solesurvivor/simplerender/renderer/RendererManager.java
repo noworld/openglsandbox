@@ -4,7 +4,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
-import com.solesurvivor.simplerender.SimpleRenderSurfaceView;
+import com.solesurvivor.simplerender.BetterRenderSurfaceView;
 
 public class RendererManager {
 	
@@ -18,7 +18,7 @@ public class RendererManager {
 	
 	private RendererManager(Context context) {
 		this.mContext = context;
-		mGLSurfaceView = new SimpleRenderSurfaceView(mContext);
+		mGLSurfaceView = new BetterRenderSurfaceView(mContext);
 		mGLSurfaceView.setEGLContextClientVersion(2);
 		mRenderer = new BetterUiGLTextureRenderer(mContext);
 		mGLSurfaceView.setRenderer(mRenderer);

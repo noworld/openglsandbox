@@ -778,16 +778,17 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 					if(meshDesc.get("obj_type").equals("input_area")) {
 						if(meshDesc.get("input_shape").equals("circle")) {
 							
-							if(StringUtils.isBlank(meshDesc.get("input_center"))) {
-								meshDesc.put("input_center", "0.0f,0.0f");
-							}
+//							if(StringUtils.isBlank(meshDesc.get("input_center"))) {
+//								meshDesc.put("input_center", "0.0f,0.0f");
+//							}
 							
-							if(StringUtils.isBlank(meshDesc.get("input_radius"))) {
+//							if(StringUtils.isBlank(meshDesc.get("input_radius"))) {
 								float xRad = (geo.mXMax - geo.mXMin)/2;
-								float yRad = (geo.mYMax - geo.mYMax)/2;
+								float yRad = (geo.mYMax - geo.mYMin)/2;
 								float avgRad = (xRad + yRad)/2;
 								meshDesc.put("input_radius", String.valueOf(avgRad));
-							}
+								meshDesc.put("input_center", String.format("%s,%s", geo.mXMin + xRad, geo.mYMin + yRad));
+//							}
 							
 						} else if(meshDesc.get("input_shape").equals("polygon2d")) {
 
