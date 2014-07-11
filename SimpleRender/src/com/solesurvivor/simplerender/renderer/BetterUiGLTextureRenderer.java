@@ -107,8 +107,10 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	private void handleInput() {
 		UiManager uiM = UiManager.getInstance();
-		for(Point p : mPointers.values()) {
-			uiM.inputEvent(convertCoordinates(p));
+		synchronized(mPointers) {
+			for(Point p : mPointers.values()) {
+				uiM.inputEvent(convertCoordinates(p));
+			}
 		}
 	}
 

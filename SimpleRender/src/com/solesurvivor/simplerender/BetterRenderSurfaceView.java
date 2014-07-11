@@ -34,6 +34,8 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 
 	public boolean onTouchEvent(MotionEvent event) {
 
+		//TODO: Ship these events off to a queue to
+		//avoid the concurrent modification exceptions...
 		int action = MotionEventCompat.getActionMasked(event);
 
 		switch(action) {
@@ -53,28 +55,6 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 	}
 	
 	public void handlePointerEvent(MotionEvent event, InputEventTypeEnum eventType) {
-//		int index = MotionEventCompat.getActionIndex(event);
-//		if(event.getPointerCount() > 0) {
-//			for(int i = 0; i < event.getPointerCount(); i++) {
-//				int xPos = (int)MotionEventCompat.getX(event, i);
-//				int yPos = (int)MotionEventCompat.getY(event, i);		
-//				Point p = new Point(xPos, yPos);
-//
-//				/*DEBUG*/
-//				if(eventType.equals(InputEventTypeEnum.RELEASE)) {
-//					Log.d(TAG, String.format("Liftoff at %s,%s", p.x, p.y));
-//				} else if(eventType.equals(InputEventTypeEnum.RELEASE)) {
-//					Log.d(TAG, String.format("Touchdown at %s,%s", p.x, p.y));
-//				}
-//
-//				if(eventType.equals(InputEventTypeEnum.RELEASE) && mRenderer.mPointers.containsKey(i)) {
-//					mRenderer.mPointers.remove(i);
-//				} else {
-//					mRenderer.mPointers.put(i,p);
-//				}
-//
-//			}
-//		}
 
 		int index = MotionEventCompat.getActionIndex(event);
 		if(event.getPointerCount() > 0) {
@@ -89,10 +69,12 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 				Log.d(TAG, String.format("Touchdown at %s,%s", p.x, p.y));
 			}
 
-			if(eventType.equals(InputEventTypeEnum.RELEASE) && mRenderer.mPointers.containsKey(index)) {
-				mRenderer.mPointers.remove(index);
-			} else {
-				mRenderer.mPointers.put(index,p);
+			synchronized(mRenderer.mPointers) {
+				if(eventType.equals(InputEventTypeEnum.RELEASE) && mRenderer.mPointers.containsKey(index)) {
+					mRenderer.mPointers.remove(index);
+				} else {
+					mRenderer.mPointers.put(index,p);
+				}
 			}
 
 		}
