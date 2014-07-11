@@ -8,7 +8,8 @@ public class VboIboPackedGeometry {
 	public float[] mData;
 	public short[] mIndexes;
 	
-	public int mTotalStride;
+	public int mStride; 
+	public int mTotalStride; //stride multiplied by data size
 	
 	public int mPosSize;
 	public int mNrmSize;

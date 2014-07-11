@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="commons-io-2.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/VClip"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SSUtils"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

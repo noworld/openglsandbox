@@ -29,9 +29,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
-import quickhull3d.Point3d;
-import quickhull3d.QuickHull3D;
-
 import com.solesurvivor.collada.Asset;
 import com.solesurvivor.collada.COLLADA;
 import com.solesurvivor.collada.Geometry;
@@ -57,6 +54,7 @@ import com.solesurvivor.model.exceptions.UnsupportedDrawableException;
 import com.solesurvivor.model.parsing.RawGeometry.VertexData;
 import com.solesurvivor.model.util.ConversionUtils;
 import com.solesurvivor.model.util.Log4JLogUtil;
+import com.solesurvivor.util.math.QuickHull;
 
 /**
  * (C)2014 Nicholas Waun. All rights reserved.
@@ -310,8 +308,10 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		}
 		
 		if(hasTxc) {
+			vbpg.mStride = (vbpg.mPosSize + vbpg.mNrmSize + vbpg.mTxcSize);
 			vbpg.mTotalStride = (vbpg.mPosSize + vbpg.mNrmSize + vbpg.mTxcSize) * BYTES_PER_FLOAT;
 		} else {
+			vbpg.mStride = (vbpg.mPosSize + vbpg.mNrmSize);
 			vbpg.mTotalStride = (vbpg.mPosSize + vbpg.mNrmSize) * BYTES_PER_FLOAT;
 		}
 		
@@ -790,32 +790,29 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 							
 						} else if(meshDesc.get("input_shape").equals("polygon2d")) {
 
-							List<Point3d> points = new ArrayList<Point3d>();
-
-							for(int i = 0; i < geo.mData.length; i += geo.mTotalStride) {
-								points.add(new Point3d(geo.mData[i + geo.mPosOffset], 
-										geo.mData[i + geo.mPosOffset + 1],
-										geo.mData[i + geo.mPosOffset + 2]));
+							Map<String, Float[]> uniquePoints = new HashMap<String, Float[]>();
+							
+							for(int i = 0; i < geo.mData.length; i += geo.mStride) {
+								Float[] point = new Float[geo.mPosSize];
+								
+								for(int j = 0; j < geo.mPosSize; j++) {
+									point[j] = geo.mData[i + j + geo.mPosOffset];
+								}
+								
+								uniquePoints.put(String.format("%s-%s-%s", (Object[])point), point);
+								
 							}
 							
+							for(Float[] point : uniquePoints.values()) {
+								LOG.d("ORIGINAL POINT HULL: %s(x), %s(y), %s(z)", (Object[])point);
+							}
 							
-							QuickHull3D hull = new QuickHull3D(points.toArray(new Point3d[points.size()]));
+							List<Float[]> hull = QuickHull.QuickHull2d(new ArrayList<Float[]>(uniquePoints.values()));
 							
-							 LOG.d("Vertices:");
-							 Point3d[] vertices = hull.getVertices();
-							 for (int i = 0; i < vertices.length; i++) {
-								 Point3d pnt = vertices[i];
-								 LOG.d(pnt.x + " " + pnt.y + " " + pnt.z);
-							 }
-
-							 LOG.d("Faces:");
-							 int[][] faceIndices = hull.getFaces();
-							 for (int i = 0; i < vertices.length; i++)  {
-								 for (int k = 0; k < faceIndices[i].length; k++) {
-									 LOG.d(faceIndices[i][k] + " ");
-								 }
-								 LOG.d("");
-							 }
+							for(Float[] point : hull) {
+								LOG.d("CONVEX HULL: %s(x), %s(y), %s(z)", (Object[])point);
+							}
+							
 						}
 
 					}
