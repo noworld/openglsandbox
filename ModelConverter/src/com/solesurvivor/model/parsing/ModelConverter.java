@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -809,9 +810,17 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 							
 							List<Float[]> hull = QuickHull.QuickHull2d(new ArrayList<Float[]>(uniquePoints.values()));
 							
+							StringBuilder inputHull = new StringBuilder();
+							
 							for(Float[] point : hull) {
 								LOG.d("CONVEX HULL: %s(x), %s(y), %s(z)", (Object[])point);
+								if(inputHull.length() > 0) {
+									inputHull.append(",");
+								}
+								inputHull.append(String.format("%s,%s,%s", (Object[])point));
 							}
+							
+							meshDesc.put("input_hull", inputHull.toString());
 							
 						}
 
