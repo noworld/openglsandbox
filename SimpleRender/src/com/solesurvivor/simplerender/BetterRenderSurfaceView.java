@@ -40,14 +40,12 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 		case MotionEvent.ACTION_DOWN:
 		case MotionEvent.ACTION_POINTER_DOWN:
 			handlePointerEvent(event, InputEventTypeEnum.PRESS);
+		case MotionEvent.ACTION_MOVE:			
+			handlePointerEvent(event, InputEventTypeEnum.MOVE);
 			break;
 		case MotionEvent.ACTION_POINTER_UP:
 		case MotionEvent.ACTION_UP:
 			handlePointerEvent(event, InputEventTypeEnum.RELEASE);
-			break;
-		case MotionEvent.ACTION_MOVE:
-			handlePointerEvent(event, InputEventTypeEnum.RELEASE);
-			handlePointerEvent(event, InputEventTypeEnum.PRESS);
 			break;
 		}
 
@@ -55,27 +53,48 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 	}
 	
 	public void handlePointerEvent(MotionEvent event, InputEventTypeEnum eventType) {
+//		int index = MotionEventCompat.getActionIndex(event);
+//		if(event.getPointerCount() > 0) {
+//			for(int i = 0; i < event.getPointerCount(); i++) {
+//				int xPos = (int)MotionEventCompat.getX(event, i);
+//				int yPos = (int)MotionEventCompat.getY(event, i);		
+//				Point p = new Point(xPos, yPos);
+//
+//				/*DEBUG*/
+//				if(eventType.equals(InputEventTypeEnum.RELEASE)) {
+//					Log.d(TAG, String.format("Liftoff at %s,%s", p.x, p.y));
+//				} else if(eventType.equals(InputEventTypeEnum.RELEASE)) {
+//					Log.d(TAG, String.format("Touchdown at %s,%s", p.x, p.y));
+//				}
+//
+//				if(eventType.equals(InputEventTypeEnum.RELEASE) && mRenderer.mPointers.containsKey(i)) {
+//					mRenderer.mPointers.remove(i);
+//				} else {
+//					mRenderer.mPointers.put(i,p);
+//				}
+//
+//			}
+//		}
+
 		int index = MotionEventCompat.getActionIndex(event);
 		if(event.getPointerCount() > 0) {
-			for(int i = 0; i < event.getPointerCount(); i++) {
-				int xPos = (int)MotionEventCompat.getX(event, i);
-				int yPos = (int)MotionEventCompat.getY(event, i);		
-				Point p = new Point(xPos, yPos);
-				
-				/*DEBUG*/
-				if(eventType.equals(InputEventTypeEnum.RELEASE)) {
-					Log.d(TAG, String.format("Liftoff at %s,%s", p.x, p.y));
-				} else {
-					Log.d(TAG, String.format("Touchdown at %s,%s", p.x, p.y));
-				}
-				
-				if(eventType.equals(InputEventTypeEnum.RELEASE) && mRenderer.mPointers.containsKey(i)) {
-					mRenderer.mPointers.remove(i);
-				} else if(eventType.equals(InputEventTypeEnum.PRESS) && ! mRenderer.mPointers.containsKey(i)) {
-					mRenderer.mPointers.put(i,p);
-				}
-				
+			int xPos = (int)MotionEventCompat.getX(event, index);
+			int yPos = (int)MotionEventCompat.getY(event, index);		
+			Point p = new Point(xPos, yPos);
+
+			/*DEBUG*/
+			if(eventType.equals(InputEventTypeEnum.RELEASE)) {
+				Log.d(TAG, String.format("Liftoff at %s,%s", p.x, p.y));
+			} else if(eventType.equals(InputEventTypeEnum.PRESS)) {
+				Log.d(TAG, String.format("Touchdown at %s,%s", p.x, p.y));
 			}
+
+			if(eventType.equals(InputEventTypeEnum.RELEASE) && mRenderer.mPointers.containsKey(index)) {
+				mRenderer.mPointers.remove(index);
+			} else {
+				mRenderer.mPointers.put(index,p);
+			}
+
 		}
 	}
 
