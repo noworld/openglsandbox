@@ -46,7 +46,13 @@ public class UiManager {
 				//If the suffix is included
 				//then we are dealing with an input area
 				InputUiElement iuie = new InputUiElement(geo, geo.mInputArea);
-				iuie.registerCommand("Logger", logger);
+//				iuie.registerCommand("Logger", logger);
+				
+				//XXX Hack: Debugging the sticky button
+				if(geo.mName.equals("btn_y_inputarea-mesh")) {
+					iuie.registerCommand("EventLogger", new EventLoggingCommand());
+				}
+				
 				mInputs.put(geo.mName, iuie);				
 			} else {
 				DisplayUiElement duie = new DisplayUiElement(geo);

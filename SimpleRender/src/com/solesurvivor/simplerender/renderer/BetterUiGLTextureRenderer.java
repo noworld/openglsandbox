@@ -10,6 +10,7 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -83,7 +84,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	protected int mReportedError;
 	
-	public Map<Integer, Point> mPointers = Collections.synchronizedMap(new HashMap<Integer, Point>());
+	public List<Point> mPointers = Collections.synchronizedList(new LinkedList<Point>());
 	public Point mScreenDim;
 
 	public BetterUiGLTextureRenderer(Context context) {
@@ -108,7 +109,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	private void handleInput() {
 		UiManager uiM = UiManager.getInstance();
 		synchronized(mPointers) {
-			for(Point p : mPointers.values()) {
+			for(Point p : mPointers) {
 				uiM.inputEvent(convertCoordinates(p));
 			}
 		}
