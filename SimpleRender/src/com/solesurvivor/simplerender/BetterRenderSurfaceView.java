@@ -9,12 +9,14 @@ import android.view.MotionEvent;
 
 import com.solesurvivor.simplerender.renderer.BetterUiGLTextureRenderer;
 import com.solesurvivor.simplerender.ui.InputEventTypeEnum;
+import com.solesurvivor.simplerender.ui.TouchFeedback;
 import com.solesurvivor.simplerender.util.EventRecorder;
 
 public class BetterRenderSurfaceView extends GLSurfaceView {
 	
 	private static final String TAG = BetterRenderSurfaceView.class.getSimpleName();
 	private static final short DEBUG = 5;
+	private static final long[] HAPTIC_PATTERN = {10, 50};
 
 	private BetterUiGLTextureRenderer mRenderer;
 
@@ -99,6 +101,8 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 				} else {					
 					mRenderer.mPointers.add(index, p);
 				}
+				
+				TouchFeedback.instance().vibPattern(HAPTIC_PATTERN);
 				
 			} else if(eventType.equals(InputEventTypeEnum.MOVE)) {								
 				 int count = MotionEventCompat.getPointerCount(event);

@@ -50,7 +50,7 @@ public class UiManager {
 				//then we are dealing with an input area
 				InputUiElement iuie = new InputUiElement(geo, geo.mInputArea);
 				iuie.registerContinuousCommand("Logger", logCommand);
-				iuie.registerOneTimeCommand("Vibrator", vibCommand);
+//				iuie.registerOneTimeCommand("Vibrator", vibCommand);
 				
 				if(DEBUG > 6) {
 					if(geo.mName.equals("btn_y_inputarea-mesh")) {
