@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.graphics.Point;
+import android.graphics.PointF;
 
 import com.solesurvivor.simplerender.Geometry;
 import com.solesurvivor.simplerender.renderer.BetterUiGLTextureRenderer;
@@ -46,7 +46,7 @@ public class UiManager {
 				//If the suffix is included
 				//then we are dealing with an input area
 				InputUiElement iuie = new InputUiElement(geo, geo.mInputArea);
-//				iuie.registerCommand("Logger", logger);
+				iuie.registerCommand("Logger", logger);
 				
 				//XXX Hack: Debugging the sticky button
 				if(geo.mName.equals("btn_y_inputarea-mesh")) {
@@ -61,7 +61,7 @@ public class UiManager {
 		}
 	}
 	
-	public void inputEvent(Point p) {
+	public void inputEvent(PointF p) {
 //		for(InputUiElement iuie : mInputs.values()) {
 //			iuie.inputEvent(p);
 //		}

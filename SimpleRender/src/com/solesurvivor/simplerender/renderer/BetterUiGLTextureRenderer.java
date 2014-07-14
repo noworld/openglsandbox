@@ -31,6 +31,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.opengl.ETC1Util;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -84,7 +85,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 
 	protected int mReportedError;
 	
-	public List<Point> mPointers = Collections.synchronizedList(new LinkedList<Point>());
+	public List<PointF> mPointers = Collections.synchronizedList(new LinkedList<PointF>());
 	public Point mScreenDim;
 
 	public BetterUiGLTextureRenderer(Context context) {
@@ -109,18 +110,18 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	private void handleInput() {
 		UiManager uiM = UiManager.getInstance();
 		synchronized(mPointers) {
-			for(Point p : mPointers) {
+			for(PointF p : mPointers) {
 				uiM.inputEvent(convertCoordinates(p));
 			}
 		}
 	}
 
-	private Point convertCoordinates(Point p) {
+	private PointF convertCoordinates(PointF p) {
 		
-		int halfH = mScreenDim.y/2;
-		int halfW = mScreenDim.x/2;
+		float halfH = mScreenDim.y/2;
+		float halfW = mScreenDim.x/2;
 		
-		return new Point(p.x - halfW, halfH - p.y);
+		return new PointF(p.x - halfW, halfH - p.y);
 	}
 
 	@Override

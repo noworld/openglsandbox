@@ -1,7 +1,7 @@
 package com.solesurvivor.simplerender;
 
 import android.content.Context;
-import android.graphics.Point;
+import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
@@ -67,10 +67,9 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 
 		int index = MotionEventCompat.getActionIndex(event);
 		
-		//TODO: Why am I casting this to int???
-		int xPos = (int)MotionEventCompat.getX(event, index);
-		int yPos = (int)MotionEventCompat.getY(event, index);		
-		Point p = new Point(xPos, yPos);
+		float xPos = MotionEventCompat.getX(event, index);
+		float yPos = MotionEventCompat.getY(event, index);		
+		PointF p = new PointF(xPos, yPos);
 
 		/*DEBUG*/
 		if(eventType.equals(InputEventTypeEnum.RELEASE)) {
@@ -89,12 +88,18 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 				
 				if(mRenderer.mPointers.size() < index) {
 					mRenderer.mPointers.set(index, p);
-				} else {
+				} else {					
 					mRenderer.mPointers.add(index, p);
 				}
 				
-			} else if(eventType.equals(InputEventTypeEnum.MOVE)) {
-				mRenderer.mPointers.set(index, p);
+			} else if(eventType.equals(InputEventTypeEnum.MOVE)) {								
+				 int count = MotionEventCompat.getPointerCount(event);
+				 
+				 for(int i = 0; i < count; i++) {
+					PointF pMoved = new PointF(MotionEventCompat.getX(event, i), MotionEventCompat.getY(event, i));
+					mRenderer.mPointers.set(i, pMoved);
+				 }
+				
 			} else if(eventType.equals(InputEventTypeEnum.RELEASE)) {
 				
 //				Log.d(TAG, "Pointers contents before release:");

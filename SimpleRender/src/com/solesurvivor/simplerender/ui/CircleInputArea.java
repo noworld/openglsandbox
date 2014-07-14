@@ -1,6 +1,5 @@
 package com.solesurvivor.simplerender.ui;
 
-import android.graphics.Point;
 import android.graphics.PointF;
 
 public class CircleInputArea implements InputArea {
@@ -14,7 +13,7 @@ public class CircleInputArea implements InputArea {
 	}
 
 	@Override
-	public boolean isPressed(Point p) {
+	public boolean isPressed(PointF p) {
 		float a = (p.x - mCenter.x);
 		float b = (p.y - mCenter.y);
 		return ((a*a) + (b*b)) < mRadiusSq;

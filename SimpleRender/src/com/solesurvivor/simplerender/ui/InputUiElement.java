@@ -3,7 +3,7 @@ package com.solesurvivor.simplerender.ui;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.graphics.Point;
+import android.graphics.PointF;
 
 import com.solesurvivor.simplerender.Geometry;
 
@@ -22,7 +22,7 @@ public class InputUiElement extends UiElement {
 		return mUiGeo;
 	}
 	
-	public void inputEvent(Point p) {
+	public void inputEvent(PointF p) {
 		if(mInputArea.isPressed(p)) {
 			for(Command c : mCommands.values()) {
 				c.execute(new Object[]{mUiGeo.mName,p.x,p.y});

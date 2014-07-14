@@ -2,10 +2,9 @@ package com.solesurvivor.simplerender.ui;
 
 import java.util.List;
 
-import com.solesurvivor.util.math.VectorMath;
-
-import android.graphics.Point;
 import android.graphics.PointF;
+
+import com.solesurvivor.util.math.VectorMath;
 
 
 public class Polygon2DInputArea implements InputArea {
@@ -23,19 +22,19 @@ public class Polygon2DInputArea implements InputArea {
 	}
 
 	@Override
-	public boolean isPressed(Point p) {
+	public boolean isPressed(PointF p) {
 		
 		return inBoundingBox(p) && inHull(p);
 	}
 
-	private boolean inBoundingBox(Point p) {
+	private boolean inBoundingBox(PointF p) {
 		return p.x > mTopLeft.x
 				&& p.x < mBottomRight.x
 				&& p.y < mTopLeft.y
 				&& p.y > mBottomRight.y;
 	}
 
-	private boolean inHull(Point p) {
+	private boolean inHull(PointF p) {
 		//TODO: Convert everything to work with PointF or something.
 		Float[] target = new Float[]{(float)p.x, (float)p.y};
 		
