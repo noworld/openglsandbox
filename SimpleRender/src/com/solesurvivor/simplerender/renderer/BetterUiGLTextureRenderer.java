@@ -87,6 +87,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 	
 	public List<PointF> mPointers = Collections.synchronizedList(new LinkedList<PointF>());
 	public Point mScreenDim;
+	public volatile float mAccumRotation = 20.0f;
 
 	public BetterUiGLTextureRenderer(Context context) {
 		this.mContext = context;
@@ -150,8 +151,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		for(Geometry geo : mGeos) {
 			
 			Matrix.setIdentityM(geo.mModelMatrix, 0);
-			Matrix.translateM(geo.mModelMatrix, 0, 2.0f, 2.0f, -3.0f);
-			Matrix.scaleM(geo.mModelMatrix, 0, 0.25f, 0.25f, 0.25f);
+			Matrix.translateM(geo.mModelMatrix, 0, 0.0f, 0.0f, -4.0f);
 			
 			drawGeometry(geo);
 
@@ -163,13 +163,6 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 			}
 		}
 		
-		//Always draw UI last
-//		for(Geometry ui : mUis) {
-//			
-//			drawUI(ui);
-//
-//		}
-		
 		UiManager.getInstance().renderUi();
 		
 		//Text Drawing
@@ -177,24 +170,24 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 			mCursor = new Cursor();
 			mCursor.mFont = mFonts.get("Praetorium BB Regular");
 
-			mCursor.mValue = "!@#$%^&*()_+;':";
-			mCursor.mPosition[0] = 200.0f;
-			mCursor.mPosition[1] = 400.0f;
+			mCursor.mValue = "Rotate the light around the monkey.";
+			mCursor.mPosition[0] = -860.0f;
+			mCursor.mPosition[1] = 440.0f;
 			mCursor.mScale = new float[]{3.0f,3.0f,1.0f};
 			drawText(mCursor);
 
-			mCursor.mValue = "1234567890?";
-			mCursor.mPosition[1] -= 100.0f;
-			drawText(mCursor);
-			
-			mCursor.mValue = "\"~`{}[]:\"";
-			mCursor.mPosition[1] -= 100.0f;
-			drawText(mCursor);
-			
-			mCursor.mValue = "MADDOG";
-			mCursor.mCharPadding = 1.0f;
-			mCursor.mPosition[1] -= 100.0f;
-			drawText(mCursor);
+//			mCursor.mValue = "1234567890?";
+//			mCursor.mPosition[1] -= 100.0f;
+//			drawText(mCursor);
+//			
+//			mCursor.mValue = "\"~`{}[]:\"";
+//			mCursor.mPosition[1] -= 100.0f;
+//			drawText(mCursor);
+//			
+//			mCursor.mValue = "MADDOG";
+//			mCursor.mCharPadding = 1.0f;
+//			mCursor.mPosition[1] -= 100.0f;
+//			drawText(mCursor);
 		}
 
 	}
@@ -209,7 +202,7 @@ public class BetterUiGLTextureRenderer implements GLSurfaceView.Renderer {
 		// Calculate position of the light. Rotate and then push into the distance.
 		Matrix.setIdentityM(mLightModelMatrix, 0);
 		Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
-		Matrix.rotateM(mLightModelMatrix, 0, 20, 0.0f, 1.0f, 0.0f);
+		Matrix.rotateM(mLightModelMatrix, 0, mAccumRotation, 0.0f, 1.0f, 0.0f);
 		Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
 		//Build the MVP matrix
         Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);

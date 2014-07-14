@@ -58,6 +58,12 @@ public class UiManager {
 					}
 				}
 				
+				if(geo.mName.equals("dpad_inputarea_lt-mesh")) {
+					iuie.registerContinuousCommand("RotateLight", new RotateLightNegCommand());
+				} else if(geo.mName.equals("dpad_inputarea_rt-mesh")) {
+					iuie.registerContinuousCommand("RotateLight", new RotateLightPosCommand());
+				}
+				
 				mInputs.put(geo.mName, iuie);				
 			} else {
 				DisplayUiElement duie = new DisplayUiElement(geo);
