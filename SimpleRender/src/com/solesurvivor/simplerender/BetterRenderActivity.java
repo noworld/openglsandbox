@@ -3,14 +3,13 @@ package com.solesurvivor.simplerender;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.solesurvivor.simplerender.renderer.BetterUiGLTextureRenderer;
 import com.solesurvivor.simplerender.renderer.RendererManager;
+import com.solesurvivor.simplerender.ui.TouchFeedback;
 import com.solesurvivor.simplerender.util.SystemUiHider;
 
 /**
@@ -27,13 +26,9 @@ public class BetterRenderActivity extends Activity {
 	
 	private Context mContext;
 	private boolean mStarted = false;
-	
-	private Bundle mSavedInstanceState;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.mSavedInstanceState = savedInstanceState;
 		this.mStarted = false;
 		
 		Log.d(TAG, "BetterRenderActivity created.");
@@ -50,17 +45,8 @@ public class BetterRenderActivity extends Activity {
 			// Request an OpenGL ES 2.0 compatible context.
 			RendererManager.init(mContext);
 			setContentView(RendererManager.getInstance().getSurfaceView());
+			TouchFeedback.init(mContext);
 			mStarted = true;
     	}
-	}
-
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-	}
-	
-	@Override
-	public void onBackPressed() {
-		this.onCreate(mSavedInstanceState);
 	}
 }

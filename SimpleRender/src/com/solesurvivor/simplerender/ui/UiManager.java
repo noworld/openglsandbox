@@ -41,6 +41,7 @@ public class UiManager {
 	private void loadUi(List<Geometry> uis) {
 		
 		Command logger = new LoggingCommand();
+//		Command vibrator = new VibrateCommand();
 		
 		for(Geometry geo : uis) {
 			
