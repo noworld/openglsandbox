@@ -14,6 +14,7 @@ import com.solesurvivor.simplerender.util.EventRecorder;
 public class BetterRenderSurfaceView extends GLSurfaceView {
 	
 	private static final String TAG = BetterRenderSurfaceView.class.getSimpleName();
+	private static final short DEBUG = 5;
 
 	private BetterUiGLTextureRenderer mRenderer;
 
@@ -33,6 +34,7 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 		super.setRenderer(renderer);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean onTouchEvent(MotionEvent event) {
 
 		//TODO: Ship these events off to a queue to
@@ -40,10 +42,12 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 		int action = MotionEventCompat.getActionMasked(event);
 		
 		/*DEBUG*/
-		int index = MotionEventCompat.getActionIndex(event);
-		int xPos = (int)MotionEventCompat.getX(event, index);
-		int yPos = (int)MotionEventCompat.getY(event, index);	
-		EventRecorder.getInstance().record(String.format("ACTIONEVENT: %s->%s at (%s,%s)", index, action, xPos, yPos));
+		if(DEBUG > 5) {
+			int index = MotionEventCompat.getActionIndex(event);
+			int xPos = (int)MotionEventCompat.getX(event, index);
+			int yPos = (int)MotionEventCompat.getY(event, index);	
+			EventRecorder.getInstance().record(String.format("ACTIONEVENT: %s->%s at (%s,%s)", index, action, xPos, yPos));
+		}
 		/*DEBUG*/
 
 		switch(action) {
@@ -63,6 +67,7 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 		return true;
 	}
 	
+	@SuppressWarnings("unused")
 	public void handlePointerEvent(MotionEvent event, InputEventTypeEnum eventType) {
 
 		int index = MotionEventCompat.getActionIndex(event);
@@ -71,17 +76,20 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 		float yPos = MotionEventCompat.getY(event, index);		
 		PointF p = new PointF(xPos, yPos);
 
-		/*DEBUG*/
-		if(eventType.equals(InputEventTypeEnum.RELEASE)) {
-			Log.d(TAG, String.format("Index %s Liftoff at %s,%s", index, p.x, p.y));			
-		} else if(eventType.equals(InputEventTypeEnum.PRESS)) {
-			Log.d(TAG, String.format("Index %s Touchdown at %s,%s", index, p.x, p.y));
-		} 
-//		else if(eventType.equals(InputEventTypeEnum.MOVE)) {
-//			Log.d(TAG, String.format("PRESSURE at %s,%s: %s", p.x, p.y, event.getPressure(index)));
-//		}
+		if(DEBUG > 4) {
+			if(eventType.equals(InputEventTypeEnum.RELEASE)) {
+				Log.d(TAG, String.format("Index %s Liftoff at %s,%s", index, p.x, p.y));			
+			} else if(eventType.equals(InputEventTypeEnum.PRESS)) {
+				Log.d(TAG, String.format("Index %s Touchdown at %s,%s", index, p.x, p.y));
+			} 
+		}
 		
-
+		if(DEBUG > 6) {
+			if(eventType.equals(InputEventTypeEnum.MOVE)) {
+				Log.d(TAG, String.format("PRESSURE at %s,%s: %s", p.x, p.y, event.getPressure(index)));
+			}
+		}
+		
 		synchronized(mRenderer.mPointers) {
 			
 			if(eventType.equals(InputEventTypeEnum.PRESS)) {
@@ -102,21 +110,25 @@ public class BetterRenderSurfaceView extends GLSurfaceView {
 				
 			} else if(eventType.equals(InputEventTypeEnum.RELEASE)) {
 				
-//				Log.d(TAG, "Pointers contents before release:");
-//				for(int i = 0; i < mRenderer.mPointers.size(); i++) {
-//					Point target = mRenderer.mPointers.get(i);
-//					int realIndex = mRenderer.mPointers.indexOf(target);
-//					Log.d(TAG, String.format("Pointer event index %s, Real Index %s, List Position %s", index, realIndex, i));
-//				}
+				if(DEBUG > 6) {
+					Log.d(TAG, "Pointers contents before release:");
+					for(int i = 0; i < mRenderer.mPointers.size(); i++) {
+						PointF target = mRenderer.mPointers.get(i);
+						int realIndex = mRenderer.mPointers.indexOf(target);
+						Log.d(TAG, String.format("Pointer event index %s, Real Index %s, List Position %s", index, realIndex, i));
+					}
+				}
 				
 				mRenderer.mPointers.remove(index);				
 				
-//				Log.d(TAG, "Pointers contents after release:");
-//				for(int i = 0; i < mRenderer.mPointers.size(); i++) {
-//					Point target = mRenderer.mPointers.get(i);
-//					int realIndex = mRenderer.mPointers.indexOf(target);
-//					Log.d(TAG, String.format("Pointer event index %s, Real Index %s, List Position %s", index, realIndex, i));
-//				}
+				if(DEBUG > 6) {
+					Log.d(TAG, "Pointers contents after release:");
+					for(int i = 0; i < mRenderer.mPointers.size(); i++) {
+						PointF target = mRenderer.mPointers.get(i);
+						int realIndex = mRenderer.mPointers.indexOf(target);
+						Log.d(TAG, String.format("Pointer event index %s, Real Index %s, List Position %s", index, realIndex, i));
+					}
+				}
 				
 			}		
 		}

@@ -14,6 +14,7 @@ import com.solesurvivor.simplerender.renderer.RendererManager;
 public class UiManager {
 	
 	private static final String INPUTAREA_SUFFIX = "_inputarea";
+	private static final short DEBUG = 5;
 	
 	private static UiManager mInstance = null;
 	
@@ -36,6 +37,7 @@ public class UiManager {
 		return mInstance;
 	}
 
+	@SuppressWarnings("unused")
 	private void loadUi(List<Geometry> uis) {
 		
 		Command logger = new LoggingCommand();
@@ -48,9 +50,10 @@ public class UiManager {
 				InputUiElement iuie = new InputUiElement(geo, geo.mInputArea);
 				iuie.registerCommand("Logger", logger);
 				
-				//XXX Hack: Debugging the sticky button
-				if(geo.mName.equals("btn_y_inputarea-mesh")) {
-					iuie.registerCommand("EventLogger", new EventLoggingCommand());
+				if(DEBUG > 6) {
+					if(geo.mName.equals("btn_y_inputarea-mesh")) {
+						iuie.registerCommand("EventLogger", new EventLoggingCommand());
+					}
 				}
 				
 				mInputs.put(geo.mName, iuie);				
@@ -62,13 +65,7 @@ public class UiManager {
 	}
 	
 	public void inputEvent(PointF p) {
-//		for(InputUiElement iuie : mInputs.values()) {
-//			iuie.inputEvent(p);
-//		}
-		
-		/*XXX DEBUG*/
-		for(String key : mInputs.keySet()) {
-			InputUiElement iuie = mInputs.get(key);
+		for(InputUiElement iuie : mInputs.values()) {
 			iuie.inputEvent(p);
 		}
 	}
