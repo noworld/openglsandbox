@@ -3,9 +3,7 @@ package com.solesurvivor.simplerender.ui;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.content.Context;
 import android.graphics.PointF;
-import android.os.Vibrator;
 
 import com.solesurvivor.simplerender.Geometry;
 
@@ -13,7 +11,9 @@ public class InputUiElement extends UiElement {
 
 	private final Geometry mUiGeo;
 	private final InputArea mInputArea;
-	private Map<String,Command> mCommands = new HashMap<String,Command>();	
+	private Map<String,Command> mContinuous = new HashMap<String,Command>();
+	private Map<String,Command> mOneTime = new HashMap<String,Command>();
+	
 	private boolean mIsPressed = false;
 	
 	public InputUiElement(Geometry uiGeo, InputArea area) {
@@ -25,20 +25,17 @@ public class InputUiElement extends UiElement {
 		return mUiGeo;
 	}
 	
-	public boolean isPressed() {
-		return mIsPressed;
-	}
-	
 	public void inputEvent(PointF p) {			
 		if(mInputArea.isPressed(p)) {
-			
+
 			if(!mIsPressed) {
-				//If this is the first event of the press...
-				TouchFeedback.instance().shortVib();
 				mIsPressed = true;
+				for(Command c : mOneTime.values()) {
+					c.execute(new Object[]{mUiGeo.mName,p.x,p.y});
+				}
 			}
 			
-			for(Command c : mCommands.values()) {
+			for(Command c : mContinuous.values()) {
 				c.execute(new Object[]{mUiGeo.mName,p.x,p.y});
 			}
 		} else {
@@ -46,8 +43,20 @@ public class InputUiElement extends UiElement {
 		}
 	}
 
-	public void registerCommand(String name, Command command) {
-		mCommands.put(name, command);
+	public void registerContinuousCommand(String name, Command command) {
+		mContinuous.put(name, command);
+	}
+	
+	public void registerOneTimeCommand(String name, Command command) {
+		mOneTime.put(name, command);
+	}
+	
+	public void deRegisterContinuousCommand(String name) {
+		mContinuous.remove(name);
+	}
+	
+	public void deRegisterOneTimeCommand(String name) {
+		mOneTime.remove(name);
 	}
 
 }

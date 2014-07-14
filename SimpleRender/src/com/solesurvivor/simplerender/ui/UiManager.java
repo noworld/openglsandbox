@@ -40,8 +40,8 @@ public class UiManager {
 	@SuppressWarnings("unused")
 	private void loadUi(List<Geometry> uis) {
 		
-		Command logger = new LoggingCommand();
-//		Command vibrator = new VibrateCommand();
+		Command logCommand = new LoggingCommand();
+		Command vibCommand = new VibrateCommand();
 		
 		for(Geometry geo : uis) {
 			
@@ -49,11 +49,12 @@ public class UiManager {
 				//If the suffix is included
 				//then we are dealing with an input area
 				InputUiElement iuie = new InputUiElement(geo, geo.mInputArea);
-				iuie.registerCommand("Logger", logger);
+				iuie.registerContinuousCommand("Logger", logCommand);
+				iuie.registerOneTimeCommand("Vibrator", vibCommand);
 				
 				if(DEBUG > 6) {
 					if(geo.mName.equals("btn_y_inputarea-mesh")) {
-						iuie.registerCommand("EventLogger", new EventLoggingCommand());
+						iuie.registerOneTimeCommand("EventLogger", new EventLoggingCommand());
 					}
 				}
 				

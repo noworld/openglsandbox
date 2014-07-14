@@ -4,8 +4,6 @@ import android.content.Context;
 import android.os.Vibrator;
 
 public class TouchFeedback {
-	
-	private static final long[] SHORT_VIB = {10, 100};
 
 	private static TouchFeedback sInstance = null;
 	
@@ -25,10 +23,10 @@ public class TouchFeedback {
 		sInstance = new TouchFeedback(context);
 	}
 	
-	public void shortVib() {
+	public void vibPattern(long[] pattern) {
 		if(mVibrator.hasVibrator()) {
 			mVibrator.cancel();
-			mVibrator.vibrate(SHORT_VIB,-1);
+			mVibrator.vibrate(pattern,-1);
 		}
 	}
 	
