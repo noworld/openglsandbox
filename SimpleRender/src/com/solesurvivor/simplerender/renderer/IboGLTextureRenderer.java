@@ -21,8 +21,6 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.solesurvivor.simplerender.R;
-import com.solesurvivor.simplerender.R.drawable;
-import com.solesurvivor.simplerender.R.raw;
 import com.solesurvivor.util.SSArrayUtil;
 
 public class IboGLTextureRenderer implements GLSurfaceView.Renderer {

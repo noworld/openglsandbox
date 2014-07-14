@@ -1,10 +1,10 @@
 package com.solesurvivor.simplerender.util;
 
-import android.annotation.SuppressLint;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import android.annotation.SuppressLint;
 
 @SuppressLint("UseSparseArrays")
 public class EventRecorder {

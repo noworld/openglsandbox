@@ -27,14 +27,14 @@ import com.solesurvivor.simplerender.util.SystemUiHider;
  * @see SystemUiHider
  */
 public class SimpleRenderActivity extends Activity {
-	
+
 	private static final String TAG = SimpleRenderActivity.class.getSimpleName();
-	
+
 	private Context mContext;
 	private GLSurfaceView mGLSurfaceView;
 	private GLSurfaceView.Renderer mRenderer;
 	boolean mStarted = false;
-	
+
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -62,7 +62,7 @@ public class SimpleRenderActivity extends Activity {
 	 * The instance of the {@link SystemUiHider} for this activity.
 	 */
 	private SystemUiHider mSystemUiHider;
-	
+
 	private Bundle mSavedInstanceState;
 
 	@Override
@@ -82,45 +82,44 @@ public class SimpleRenderActivity extends Activity {
 				HIDER_FLAGS);
 		mSystemUiHider.setup();
 		mSystemUiHider
-				.setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
-					// Cached values.
-					int mControlsHeight;
-					int mShortAnimTime;
+		.setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
+			// Cached values.
+			int mControlsHeight;
+			int mShortAnimTime;
 
-					@SuppressWarnings("unused")
-					@Override
-					@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-					public void onVisibilityChange(boolean visible) {
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-							// If the ViewPropertyAnimator API is available
-							// (Honeycomb MR2 and later), use it to animate the
-							// in-layout UI controls at the bottom of the
-							// screen.
-							if (mControlsHeight == 0) {
-								mControlsHeight = controlsView.getHeight();
-							}
-							if (mShortAnimTime == 0) {
-								mShortAnimTime = getResources().getInteger(
-										android.R.integer.config_shortAnimTime);
-							}
-							controlsView
-									.animate()
-									.translationY(visible ? 0 : mControlsHeight)
-									.setDuration(mShortAnimTime);
-						} else {
-							// If the ViewPropertyAnimator APIs aren't
-							// available, simply show or hide the in-layout UI
-							// controls.
-							controlsView.setVisibility(visible ? View.VISIBLE
-									: View.GONE);
-						}
-
-						if (visible && AUTO_HIDE) {
-							// Schedule a hide().
-							delayedHide(AUTO_HIDE_DELAY_MILLIS);
-						}
+			@Override
+			@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+			public void onVisibilityChange(boolean visible) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+					// If the ViewPropertyAnimator API is available
+					// (Honeycomb MR2 and later), use it to animate the
+					// in-layout UI controls at the bottom of the
+					// screen.
+					if (mControlsHeight == 0) {
+						mControlsHeight = controlsView.getHeight();
 					}
-				});
+					if (mShortAnimTime == 0) {
+						mShortAnimTime = getResources().getInteger(
+								android.R.integer.config_shortAnimTime);
+					}
+					controlsView
+					.animate()
+					.translationY(visible ? 0 : mControlsHeight)
+					.setDuration(mShortAnimTime);
+				} else {
+					// If the ViewPropertyAnimator APIs aren't
+					// available, simply show or hide the in-layout UI
+					// controls.
+					controlsView.setVisibility(visible ? View.VISIBLE
+							: View.GONE);
+				}
+
+				if (visible && AUTO_HIDE) {
+					// Schedule a hide().
+					delayedHide(AUTO_HIDE_DELAY_MILLIS);
+				}
+			}
+		});
 
 		// Set up the user interaction to manually show or hide the system UI.
 		contentView.setOnClickListener(new View.OnClickListener() {
@@ -139,12 +138,12 @@ public class SimpleRenderActivity extends Activity {
 		// while interacting with the UI.
 		findViewById(R.id.startButton).setOnTouchListener(
 				mDelayHideTouchListener);
-		
+
 		mContext = getApplicationContext();
 		mGLSurfaceView = new SimpleRenderSurfaceView(mContext);
-		
+
 		final ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-		
+
 		final Spinner spinner = (Spinner)findViewById(R.id.rendererSpinner);
 		List<String> spinnerValues = new ArrayList<String>();
 		spinnerValues.add(RendererType.BETTER_UI.toString());
@@ -161,8 +160,8 @@ public class SimpleRenderActivity extends Activity {
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, spinnerValues);
 		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(dataAdapter);
-		
-		
+
+
 		final Spinner models = (Spinner)findViewById(R.id.modelSpinner);
 		List<String> modelvals = new ArrayList<String>();
 		modelvals.add("monkey");
@@ -179,22 +178,22 @@ public class SimpleRenderActivity extends Activity {
 
 		startButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-            	boolean es2 = activityManager.getDeviceConfigurationInfo().reqGlEsVersion >= 0x20000;
-            	if (es2 && !mStarted) {
-        			// Request an OpenGL ES 2.0 compatible context.
-        			mGLSurfaceView.setEGLContextClientVersion(2);
-        			// Set the renderer to our demo renderer, defined below.
-        			RendererType rt = RendererType.valueOf(spinner.getSelectedItem().toString());
-        			String model = models.getSelectedItem().toString();
-        			mRenderer = RendererFactory.getRenderer(rt, model);
-        			mGLSurfaceView.setRenderer(mRenderer);
-        			setContentView(mGLSurfaceView);
-        			mStarted = true;
-        		} else {
-        			Log.w(TAG, String.format("OpenGL ES 2.0 not supported (%s) or renderer already started (%s).", es2, mStarted));
-        		}
-            }
-        });		
+				boolean es2 = activityManager.getDeviceConfigurationInfo().reqGlEsVersion >= 0x20000;
+				if (es2 && !mStarted) {
+					// Request an OpenGL ES 2.0 compatible context.
+					mGLSurfaceView.setEGLContextClientVersion(2);
+					// Set the renderer to our demo renderer, defined below.
+					RendererType rt = RendererType.valueOf(spinner.getSelectedItem().toString());
+					String model = models.getSelectedItem().toString();
+					mRenderer = RendererFactory.getRenderer(rt, model);
+					mGLSurfaceView.setRenderer(mRenderer);
+					setContentView(mGLSurfaceView);
+					mStarted = true;
+				} else {
+					Log.w(TAG, String.format("OpenGL ES 2.0 not supported (%s) or renderer already started (%s).", es2, mStarted));
+				}
+			}
+		});		
 	}
 
 	@Override
@@ -239,7 +238,7 @@ public class SimpleRenderActivity extends Activity {
 		mHideHandler.removeCallbacks(mHideRunnable);
 		mHideHandler.postDelayed(mHideRunnable, delayMillis);
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		setContentView(R.layout.activity_simple_render);

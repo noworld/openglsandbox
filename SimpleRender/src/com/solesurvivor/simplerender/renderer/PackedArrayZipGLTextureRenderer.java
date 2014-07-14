@@ -17,7 +17,6 @@ import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
@@ -28,8 +27,6 @@ import android.util.Log;
 
 import com.solesurvivor.simplerender.Geometry;
 import com.solesurvivor.simplerender.R;
-import com.solesurvivor.simplerender.R.drawable;
-import com.solesurvivor.simplerender.R.raw;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
@@ -39,7 +36,7 @@ public class PackedArrayZipGLTextureRenderer implements GLSurfaceView.Renderer {
 	
 	private static final boolean DRAW_LIGHT = true;
 
-	private static final String NEWLINE = "\n";
+//	private static final String NEWLINE = "\n";
 	private static final int BYTES_PER_FLOAT = 4;
 	private static final int BYTES_PER_SHORT = 2;
 
