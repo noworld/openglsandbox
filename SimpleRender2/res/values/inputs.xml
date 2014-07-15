@@ -1,0 +1,68 @@
+
+    <resources>
+        
+        <string-array name="btn_a_inputarea">
+            <item>POS_X|90.0</item>
+            <item>POS_Y|90.0</item>
+            <item>POS_TYPE|%</item>
+            <item>SCALE_X|1.0</item>
+            <item>SCALE_Y|1.0</item>
+        </string-array>
+        
+        <string-array name="btn_b_inputarea">
+           <item>POS_X|90.0</item>
+            <item>POS_Y|90.0</item>
+            <item>POS_TYPE|%</item>
+            <item>SCALE_X|1.0</item>
+            <item>SCALE_Y|1.0</item>
+        </string-array> 
+        
+        <string-array name="btn_x_inputarea">
+           <item>POS_X|90.0</item>
+            <item>POS_Y|90.0</item>
+            <item>POS_TYPE|%</item>
+            <item>SCALE_X|1.0</item>
+            <item>SCALE_Y|1.0</item>
+        </string-array> 
+        
+        <string-array name="btn_y_inputarea">
+           <item>POS_X|90.0</item>
+            <item>POS_Y|90.0</item>
+            <item>POS_TYPE|%</item>
+            <item>SCALE_X|1.0</item>
+            <item>SCALE_Y|1.0</item>
+        </string-array> 
+        
+        <string-array name="dpad_inputarea_up">
+        <item>POS_X|90.0</item>
+            <item>POS_Y|90.0</item>
+            <item>POS_TYPE|%</item>
+            <item>SCALE_X|1.0</item>
+            <item>SCALE_Y|1.0</item>
+        </string-array> 
+        
+        <string-array name="dpad_inputarea_dn">
+        <item>POS_X|90.0</item>
+            <item>POS_Y|90.0</item>
+            <item>POS_TYPE|%</item>
+            <item>SCALE_X|1.0</item>
+            <item>SCALE_Y|1.0</item>
+        </string-array> 
+        
+        <string-array name="dpad_inputarea_lt">
+           <item>POS_X|90.0</item>
+            <item>POS_Y|90.0</item>
+            <item>POS_TYPE|%</item>
+            <item>SCALE_X|1.0</item>
+            <item>SCALE_Y|1.0</item>
+        </string-array> 
+        
+        <string-array name="dpad_inputarea_rt">
+           <item>POS_X|90.0</item>
+            <item>POS_Y|90.0</item>
+            <item>POS_TYPE|%</item>
+            <item>SCALE_X|1.0</item>
+            <item>SCALE_Y|1.0</item>
+        </string-array> 
+         
+    </resources>

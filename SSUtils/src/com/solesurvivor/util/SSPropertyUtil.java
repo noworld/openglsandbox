@@ -41,4 +41,13 @@ public class SSPropertyUtil {
 		return mappy;
 	}
 	
+	public static Map<String, String> parseFromStringArray(String[] s, String separator) {
+		Map<String,String> vals = new HashMap<String, String>();
+		for(int i = 0; i < s.length; i++) {
+			String[] keyVal = s[i].split(separator);
+			vals.put(keyVal[0], keyVal[1]);
+		}
+		return vals;
+	}
+	
 }

@@ -1,0 +1,15 @@
+
+    <resources>
+        <string-array name="global">
+            <!-- GENERAL -->
+            <item>DEBUG_BUILD|true</item>
+            
+            <!-- FILE LOADING -->
+            <item>DESCRIPTOR_FILE_EXT|.dsc</item>
+            <item>VBO_FILE_EXT|.v</item>
+            <item>IBO_FILE_EXT|.i</item>
+            <item>INDEX_FILE_NAME|index</item>
+            <item>ASSET_FILE_NAME|asset.xml</item>
+            <item>MESH_SUFFIX|-mesh</item>            
+        </string-array>    
+    </resources>
