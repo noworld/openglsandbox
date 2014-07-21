@@ -9,7 +9,7 @@ public class Camera {
 
 	protected float[] mViewMatrix = new float[16];	
 	protected float[] mProjectionMatrix  = new float[16];
-	protected float[] mUIMatrix = new float[16];
+	protected float[] mUiMatrix = new float[16];
 	protected float[] mEyePos = {0.0f, 0.0f, -0.5f};
 	protected float[] mLookVector = {0.0f, 0.0f, -5.0f};
 	protected float[] mUpVector = {0.0f, 1.0f, 0.0f};	
@@ -62,6 +62,14 @@ public class Camera {
 	public void setViewport(Point viewport) {
 		this.mViewport = viewport;
 	}
+	
+	public float[] getProjectionMatrix() {
+		return mProjectionMatrix;
+	}
+	
+	public float[] getUiMatrix() {
+		return mUiMatrix;
+	}
 
 	protected void orient() {
 		Matrix.setLookAtM(mViewMatrix, 0, mEyePos[0], mEyePos[1], mEyePos[2], 
@@ -92,6 +100,6 @@ public class Camera {
 		final float far_ortho = 200.0f;
 
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-		Matrix.orthoM(mUIMatrix, 0, left_ortho, right_ortho, bottom_ortho, top_ortho, near_ortho, far_ortho);
+		Matrix.orthoM(mUiMatrix, 0, left_ortho, right_ortho, bottom_ortho, top_ortho, near_ortho, far_ortho);
 	}
 }

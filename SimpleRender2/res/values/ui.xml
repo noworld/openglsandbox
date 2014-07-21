@@ -3,6 +3,7 @@
     <string-array name="textbox_main">
         <item>POS_X|-510.0</item>
         <item>POS_Y|0.0</item>
+        <item>POS_Z|-4.0</item>
         <item>POS_TYPE|px</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
@@ -13,6 +14,7 @@
     <string-array name="btn_waterworld">
         <item>POS_X|430.0</item>
         <item>POS_Y|315.0</item>
+        <item>POS_Z|-4.0</item>
         <item>POS_TYPE|px</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>

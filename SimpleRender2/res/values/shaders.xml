@@ -1,0 +1,36 @@
+<resources>
+    
+     <array name="shaderPrograms">
+        <item>@array/point_shader</item>
+        <item>@array/ui_shader</item>
+        <item>@array/sprite_shader</item>
+        <item>@array/inputarea_shader</item>
+        <item>@array/text_shader</item>
+    </array>
+    
+    <array name="point_shader">
+        <item >@raw/v_point</item> 
+        <item >@raw/f_white</item>  
+    </array>
+    
+    <array name="ui_shader">
+        <item >@raw/v_ui</item> 
+        <item >@raw/f_ui</item>  
+    </array>    
+    
+    <array name="inputarea_shader">
+        <item >@raw/v_sprite</item> 
+        <item >@raw/f_sprite</item>  
+    </array>
+    
+    <array name="sprite_shader">
+        <item >@raw/v_sprite</item> 
+        <item >@raw/f_sprite</item>  
+    </array> 
+    
+    <array name="text_shader">
+        <item >@raw/v_ui</item> 
+        <item >@raw/f_ui</item>  
+    </array>
+
+</resources>

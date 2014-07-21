@@ -22,7 +22,7 @@ public class RendererManager {
 	}
 	
 	public static void init() {
-		sInstance = new RendererManager();
+		sInstance = new RendererManager();		
 	}
 	
 	public SimpleRender2SurfaceView getSurfaceView() {

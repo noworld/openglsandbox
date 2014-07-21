@@ -25,13 +25,15 @@ import com.pimphand.simplerender2.rendering.BaseRenderer;
 import com.pimphand.simplerender2.rendering.Geometry;
 import com.pimphand.simplerender2.rendering.PositionTypeEnum;
 import com.pimphand.simplerender2.rendering.RendererManager;
+import com.pimphand.simplerender2.rendering.shaders.ShaderManager;
+import com.pimphand.simplerender2.rendering.textures.TextureManager;
 import com.pimphand.simplerender2.scene.GameEntity;
 import com.pimphand.simplerender2.scene.GameObjectLibrary;
 import com.pimphand.simplerender2.ui.CircleInputArea;
 import com.pimphand.simplerender2.ui.InputArea;
 import com.pimphand.simplerender2.ui.InputShapeEnum;
-import com.pimphand.simplerender2.ui.Polygon2DInputArea;
 import com.pimphand.simplerender2.ui.InputUiElement;
+import com.pimphand.simplerender2.ui.Polygon2DInputArea;
 import com.pimphand.simplerender2.ui.UiElement;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
@@ -42,7 +44,7 @@ public class GeometryLoader {
 	private static final String NEWLINE = "\r\n";
 	private static final String PLUS = "+";
 	private static final String COMMA = ",";
-
+	
 	public static GameObjectLibrary loadGameObjects(Context context, TypedArray modelArray) {
 		GameObjectLibrary library = new GameObjectLibrary();
 
@@ -155,18 +157,18 @@ public class GeometryLoader {
 			Map<String,String> settings = SSPropertyUtil.parseFromStringArray(inputSettingsArray, GameGlobal.SEPARATOR);
 			float xPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
 			float yPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Y.toString()));
+			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
 			PositionTypeEnum posType = PositionTypeEnum.fromSuffix(settings.get(DescriptorKeysEnum.POS_TYPE.toString()));
 			float scaleX = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
 			float scaleY = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
 			PointF position = new PointF(xPos,yPos);
 			PointF scale = new PointF(scaleX,scaleY);
-			element.setPosition(position, posType);
-			element.setScale(scale);
-
-			//			element.registerCommand(c)
-
+			element.setZPos(zPos);
+			element.setPositionType(posType);
+			element.setPosition(position);
+			element.setScale(scale);			
 		}
-
+		
 		return element;
 	}
 
@@ -208,6 +210,10 @@ public class GeometryLoader {
 
 		geo.mNumElements = Integer.valueOf(desc.get(DescriptorKeysEnum.NUM_ELEMENTS.toString()));
 		geo.mElementStride = Integer.valueOf(desc.get(DescriptorKeysEnum.ELEMENT_STRIDE.toString()));
+		
+		//TODO: Apply texture and shaders from resource xml
+		geo.mShaderHandle = ShaderManager.getShaderId(desc.get(DescriptorKeysEnum.SHADER_NAME.toString()));
+		geo.mTextureHandle = TextureManager.getTextureId(desc.get(DescriptorKeysEnum.TEXTURE_NAME.toString()));
 
 		return geo;
 
@@ -227,12 +233,15 @@ public class GeometryLoader {
 			Map<String,String> settings = SSPropertyUtil.parseFromStringArray(inputSettingsArray, GameGlobal.SEPARATOR);
 			float xPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
 			float yPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Y.toString()));
+			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
 			PositionTypeEnum posType = PositionTypeEnum.fromSuffix(settings.get(DescriptorKeysEnum.POS_TYPE.toString()));
 			float scaleX = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
 			float scaleY = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
 			PointF position = new PointF(xPos,yPos);
 			PointF scale = new PointF(scaleX,scaleY);
-			element.setPosition(position, posType);
+			element.setPositionType(posType);
+			element.setZPos(zPos);
+			element.setPosition(position);			
 			element.setScale(scale);
 		}
 
@@ -285,66 +294,6 @@ public class GeometryLoader {
 
 		Polygon2DInputArea polyArea = new Polygon2DInputArea(hull);
 		return polyArea;
-	}
-
-	private void parseSomething() {
-
-		//TODO: Finish object initialization by
-		//bringing in other descriptors
-
-		//		geo.mXSize = Float.valueOf(properties.get("x_size"));
-		//		geo.mYSize = Float.valueOf(properties.get("y_size"));
-		//		geo.mZSize = Float.valueOf(properties.get("z_size"));
-		//
-		//		if(StringUtils.isNotBlank(properties.get("priority"))) {
-		//			geo.mPriority = Integer.valueOf(properties.get("priority"));
-		//		}
-		//
-		//		if(StringUtils.isNotBlank(properties.get("h_align"))) {
-		//			geo.mHAlign = HAlignType.valueOf(properties.get("h_align").toUpperCase());
-		//		}
-		//
-		//		if(StringUtils.isNotBlank(properties.get("v_align"))) {
-		//			geo.mVAlign = VAlignType.valueOf(properties.get("v_align").toUpperCase());
-		//		}
-		//
-		//		if(StringUtils.isBlank(properties.get("texture_name"))) {
-		//			geo.mTextureHandle = 1;
-		//		} else {
-		//			geo.mTextureHandle = renderer.getTexture(properties.get("texture_name"));
-		//		}
-		//
-		//		if(StringUtils.isBlank(properties.get("shader_name"))) {
-		//			geo.mShaderHandle = 1;
-		//		} else {
-		//			Log.d(TAG, String.format("Attempting to load shader %s", properties.get("shader_name")));
-		//			geo.mShaderHandle = renderer.getShader(properties.get("shader_name"));
-		//		}
-		//
-		//		if(properties.get("obj_type").equals("input_area")) {
-		//			if(properties.get("input_shape").equals("circle")) {
-		//
-		//				float[] center = SSArrayUtil.parseFloatArray(properties.get("input_center"), ",");
-		//				float radius = Float.parseFloat(properties.get("input_radius"));
-		//
-		//				geo.mInputArea = new CircleInputArea(new PointF(center[0], center[1]), radius);
-		//
-		//			} else if(properties.get("input_shape").equals("polygon2d")) {
-		//
-		//				Float[] hullArray = ArrayUtils.toObject(SSArrayUtil.parseFloatArray(properties.get("input_hull"), ","));
-		//
-		//				List<Float[]> hull = new ArrayList<Float[]>(hullArray.length/geo.mPosSize);
-		//				for(int i = 0; i < hullArray.length; i += geo.mPosSize) {
-		//					Float[] point = new Float[geo.mPosSize];
-		//					System.arraycopy(hullArray, i, point, 0, geo.mPosSize);	
-		//					hull.add(point);
-		//				}
-		//
-		//				Log.d(TAG, String.format("HULL SIZE: %s", hull.size()));
-		//
-		//				geo.mInputArea = new Polygon2DInputArea(hull);
-		//			}
-		//		}
 	}
 
 	private static class IntermediateGeometry {

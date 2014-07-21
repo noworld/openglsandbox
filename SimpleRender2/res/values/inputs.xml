@@ -3,6 +3,7 @@
     <string-array name="btn_a_inputarea">
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
+        <item>POS_Z|-3.9</item>
         <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
@@ -13,6 +14,7 @@
     <string-array name="btn_b_inputarea">
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
+        <item>POS_Z|-3.9</item>
         <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
@@ -23,6 +25,7 @@
     <string-array name="btn_x_inputarea">
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
+        <item>POS_Z|-3.9</item>
         <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
@@ -33,6 +36,7 @@
     <string-array name="btn_y_inputarea">
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
+        <item>POS_Z|-3.9</item>
         <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
@@ -43,6 +47,7 @@
     <string-array name="dpad_inputarea_up">
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
+        <item>POS_Z|-3.9</item>
         <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
@@ -53,6 +58,7 @@
     <string-array name="dpad_inputarea_dn">
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
+        <item>POS_Z|-3.9</item>
         <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
@@ -63,6 +69,7 @@
     <string-array name="dpad_inputarea_lt">
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
+        <item>POS_Z|-3.9</item>
         <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
@@ -73,6 +80,7 @@
     <string-array name="dpad_inputarea_rt">
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
+        <item>POS_Z|-3.9</item>
         <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
@@ -83,6 +91,7 @@
     <string-array name="btn_waterworld_inputarea">
         <item>POS_X|430.0</item>
         <item>POS_Y|315.0</item>
+        <item>POS_Z|-3.9</item>
         <item>POS_TYPE|px</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>

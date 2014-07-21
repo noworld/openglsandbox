@@ -1,0 +1,15 @@
+<resources>
+    
+    <array name="textures">
+        <item>@drawable/btn_a</item>
+        <item>@drawable/btn_b</item>
+        <item>@drawable/btn_x</item>
+        <item>@drawable/btn_y</item>
+        <item>@drawable/dpad</item>
+        <item>@drawable/uipack_rpg_sheet</item>
+        <item>@drawable/praetorium_bb_regular_36</item>
+        <item>@drawable/uvgrid</item>
+    </array>
+
+    
+</resources>

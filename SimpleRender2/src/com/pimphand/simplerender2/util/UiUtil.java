@@ -7,12 +7,24 @@ import com.pimphand.simplerender2.scene.GameWorld;
 public class UiUtil {
 
 	public static PointF viewToScreenCoords(PointF viewCoords) {
+		
+		//If viewport has not been initialized yet
+		if(GameWorld.instance() == null
+				|| GameWorld.instance().getCamera() == null
+				|| GameWorld.instance().getCamera().getViewport() == null
+				|| GameWorld.instance().getCamera().getViewport().x <= 0
+				|| GameWorld.instance().getCamera().getViewport().y <=0) {
+			return new PointF(0.0f, 0.0f);
+		}
+		
 		float screenWidth = (float)GameWorld.instance().getCamera().getViewport().x;
 		float screenHeight = (float)GameWorld.instance().getCamera().getViewport().y;
 		
 		float xPos =  (viewCoords.x/2) - (screenWidth/2);
 		float yPos =  (viewCoords.y/2) - (screenHeight/2);
 		
-		return new PointF(xPos,yPos);
+		//return new PointF(xPos,yPos);
+		//TODO: use this repositioning logic...
+		return viewCoords;
 	}
 }
