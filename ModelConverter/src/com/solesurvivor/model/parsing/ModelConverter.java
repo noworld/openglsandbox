@@ -13,7 +13,6 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -685,6 +684,12 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 		if(modelName == null || modelName.trim().equals("")) {
 			throw new IllegalArgumentException("Param 'modelName' cannot be null.");
 		}
+		
+		//TODO: Get rid of "-mesh" right from the start... in the converter
+		String meshSuffix = "-mesh";
+		if(modelName.endsWith(meshSuffix)) {
+			modelName = modelName.substring(0, modelName.indexOf(meshSuffix));
+		}
 
 		String zipFile = mProgArgs.mOutputDir + File.separator + modelName + ZIP_FILE_EXT;
 
@@ -703,6 +708,9 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 				LOG.t("Writing Geometry: %s - %s", geo.mName, geo.getClass().getSimpleName());
 
 				String name = ConversionUtils.chopPound(geo.mName);
+				if(name.endsWith(meshSuffix)) {
+					name = name.substring(0, name.indexOf(meshSuffix));
+				}
 				indexFile.append(L1_SYM).append(name).append(LINE_SEP);
 
 				String fileName = null;
@@ -775,8 +783,8 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 						meshDesc.putAll(descriptors);
 					}
 					
-					if(meshDesc.get("obj_type").equals("input_area")) {
-						if(meshDesc.get("input_shape").equals("circle")) {
+					if(meshDesc.get("OBJECT_TYPE").equals("INPUT_AREA")) {
+						if(meshDesc.get("INPUT_SHAPE").equals("CIRCLE")) {
 							
 //							if(StringUtils.isBlank(meshDesc.get("input_center"))) {
 //								meshDesc.put("input_center", "0.0f,0.0f");
@@ -786,11 +794,11 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 								float xRad = (geo.mXMax - geo.mXMin)/2;
 								float yRad = (geo.mYMax - geo.mYMin)/2;
 								float avgRad = (xRad + yRad)/2;
-								meshDesc.put("input_radius", String.valueOf(avgRad));
-								meshDesc.put("input_center", String.format("%s,%s", geo.mXMin + xRad, geo.mYMin + yRad));
+								meshDesc.put("INPUT_RADIUS", String.valueOf(avgRad));
+								meshDesc.put("INPUT_CENTER", String.format("%s,%s", geo.mXMin + xRad, geo.mYMin + yRad));
 //							}
 							
-						} else if(meshDesc.get("input_shape").equals("polygon2d")) {
+						} else if(meshDesc.get("INPUT_SHAPE").equals("POLYGON")) {
 
 							Map<String, Float[]> uniquePoints = new HashMap<String, Float[]>();
 							
@@ -821,29 +829,29 @@ public class ModelConverter implements DrawingConstants, GeometryFormatConstants
 								inputHull.append(String.format("%s,%s,%s", (Object[])point));
 							}
 							
-							meshDesc.put("input_hull", inputHull.toString());
+							meshDesc.put("INPUT_HULL", inputHull.toString());
 							
 						}
 
 					}
 				}
 
-				meshDesc.put("name",name);
+				meshDesc.put("OBJECT_NAME",name);
 				
-				meshDesc.put("num_elements",String.valueOf(geo.mNumElements));
-				meshDesc.put("element_stride",String.valueOf(geo.mTotalStride));
+				meshDesc.put("NUM_ELEMENTS",String.valueOf(geo.mNumElements));
+				meshDesc.put("ELEMENT_STRIDE",String.valueOf(geo.mTotalStride));
 
-				meshDesc.put("pos_size",String.valueOf(geo.mPosSize));
-				meshDesc.put("nrm_size",String.valueOf(geo.mNrmSize));
-				meshDesc.put("txc_size",String.valueOf(geo.mTxcSize));
+				meshDesc.put("POS_SIZE",String.valueOf(geo.mPosSize));
+				meshDesc.put("NRM_SIZE",String.valueOf(geo.mNrmSize));
+				meshDesc.put("TXC_SIZE",String.valueOf(geo.mTxcSize));
 
-				meshDesc.put("pos_offset",String.valueOf(geo.mPosOffset));
-				meshDesc.put("txc_offset",String.valueOf(geo.mTxcOffset));
-				meshDesc.put("nrm_offset",String.valueOf(geo.mNrmOffset));
+				meshDesc.put("POS_OFFSET",String.valueOf(geo.mPosOffset));
+				meshDesc.put("TXC_OFFSET",String.valueOf(geo.mTxcOffset));
+				meshDesc.put("NRM_OFFSET",String.valueOf(geo.mNrmOffset));
 				
-				meshDesc.put("x_size",boundAndConvert(geo.mXMax - geo.mXMin));
-				meshDesc.put("y_size",boundAndConvert(geo.mYMax - geo.mYMin));
-				meshDesc.put("z_size",boundAndConvert(geo.mZMax - geo.mZMin));				
+				meshDesc.put("X_SIZE",boundAndConvert(geo.mXMax - geo.mXMin));
+				meshDesc.put("Y_SIZE",boundAndConvert(geo.mYMax - geo.mYMin));
+				meshDesc.put("Z_SIZE",boundAndConvert(geo.mZMax - geo.mZMin));				
 
 				fileName = name + DSC_FILE_EXT;
 				String fileContents = parseMap(meshDesc);
