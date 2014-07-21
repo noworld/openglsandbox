@@ -1,6 +1,7 @@
 package com.pimphand.simplerender2.loading;
 
 public enum DescriptorKeysEnum {
+	OBJECT_NAME,
 	OBJECT_TYPE,
 	INPUT_SHAPE,
 	INPUT_CENTER,
@@ -18,5 +19,8 @@ public enum DescriptorKeysEnum {
 	POS_Y,
 	POS_TYPE,
 	SCALE_X,
-	SCALE_Y;
+	SCALE_Y,
+	COMMAND,
+	TEXTURE_NAME,
+	SHADER_NAME;
 }

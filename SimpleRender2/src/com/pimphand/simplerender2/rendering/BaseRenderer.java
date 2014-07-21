@@ -20,6 +20,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	
 	private static final String TAG = BaseRenderer.class.getSimpleName();
 	
+	/* --------------------------------- */
+	/* Event Methods that drive the game */
+	/* --------------------------------- */
+	
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		synchronized(GameWorld.instance()) {
@@ -33,16 +37,20 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		Log.d(TAG, "Renderer.onSurfaceChanged");
 		synchronized(GameWorld.instance()) {
-			GameWorld.instance().resizeViewport(new Point(width, height));
+			GameWorld.instance().getCamera().resizeViewport(new Point(width, height));
 		}
 	}
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		// TODO Auto-generated method stub
-		
+		GameWorld.instance().init();
 	}
 	
+	
+	/* ------------------------------- */
+	/* Methods to be called externally */
+	/* ------------------------------- */
+
 	public void resizeViewport(Point viewport) {
 		GLES20.glViewport(0, 0, viewport.x, viewport.y);
 	}
@@ -92,6 +100,29 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 				
 		return bufIdx;
 	}
+	
+	public void initOpenGL(GlSettings settings) {
+		Log.d(TAG, "Renderer.initOpenGL");
+
+		// Set the background clear color
+		float[] color = settings.getClearColor();
+		GLES20.glClearColor(color[0],color[1],color[2],color[3]);
+		
+		
+		for(GlOption go : settings.getOptions()) {
+			if(go.isEnabled()) {
+				GLES20.glEnable(go.getIndex());
+			} else {
+				GLES20.glDisable(go.getIndex());
+			}
+		}
+
+		GLES20.glBlendFunc(settings.getBlendFunc().getSource(), settings.getBlendFunc().getDest());	
+	}
+	
+	/* ------------------------------ */
+	/*        Utility Methods         */
+	/* ------------------------------ */
 		
 	protected int checkError() {
 		int errorCode =  GLES20.GL_NO_ERROR;

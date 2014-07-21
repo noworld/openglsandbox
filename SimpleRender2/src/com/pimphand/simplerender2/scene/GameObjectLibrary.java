@@ -1,9 +1,8 @@
-package com.pimphand.simplerender2.rendering;
+package com.pimphand.simplerender2.scene;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pimphand.simplerender2.scene.GameEntity;
 import com.pimphand.simplerender2.ui.InputUiElement;
 import com.pimphand.simplerender2.ui.UiElement;
 

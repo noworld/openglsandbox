@@ -6,6 +6,7 @@ import java.util.List;
 import android.graphics.PointF;
 
 import com.pimphand.simplerender2.rendering.Geometry;
+import com.pimphand.simplerender2.ui.commands.Command;
 
 public class InputUiElement extends UiElement {
 

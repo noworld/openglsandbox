@@ -1,0 +1,23 @@
+<resources>
+    
+    <string-array name="textbox_main">
+        <item>POS_X|-510.0</item>
+        <item>POS_Y|0.0</item>
+        <item>POS_TYPE|px</item>
+        <item>SCALE_X|1.0</item>
+        <item>SCALE_Y|1.0</item>
+        <item>TEXTURE_NAME|uipack_rpg_sheet</item>
+        <item>SHADER_NAME|ui_shader</item>
+    </string-array>
+    
+    <string-array name="btn_waterworld">
+        <item>POS_X|430.0</item>
+        <item>POS_Y|315.0</item>
+        <item>POS_TYPE|px</item>
+        <item>SCALE_X|1.0</item>
+        <item>SCALE_Y|1.0</item>
+        <item>TEXTURE_NAME|uipack_rpg_sheet</item>
+        <item>SHADER_NAME|ui_shader</item>
+    </string-array>
+
+</resources>

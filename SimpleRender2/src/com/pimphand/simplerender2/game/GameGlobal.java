@@ -11,7 +11,7 @@ import com.solesurvivor.util.exceptions.NotInitializedException;
 
 public class GameGlobal {
 
-	public static final String SEPARATOR = "|";
+	public static final String SEPARATOR = "\\|";
 	
 	private static GameGlobal sInstance;
 	

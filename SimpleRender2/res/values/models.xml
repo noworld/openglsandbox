@@ -1,0 +1,8 @@
+<resources>
+    
+    <!-- Must be in specific order: Position, Color, Normal, (optional) Texcoord -->
+    <array name="main_menu_models">
+        <item >@raw/mainmenu_ui</item>
+    </array>   
+    
+</resources>

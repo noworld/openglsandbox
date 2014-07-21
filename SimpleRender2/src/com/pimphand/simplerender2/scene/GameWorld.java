@@ -1,63 +1,54 @@
 package com.pimphand.simplerender2.scene;
 
+import java.util.List;
+
+import com.pimphand.simplerender2.fsm.MainMenuState;
+import com.pimphand.simplerender2.fsm.State;
+import com.pimphand.simplerender2.game.GameGlobal;
+import com.pimphand.simplerender2.loading.GeometryLoader;
+import com.pimphand.simplerender2.rendering.GlSettings;
 import com.pimphand.simplerender2.rendering.RendererManager;
 
-import android.graphics.Point;
-import android.opengl.Matrix;
-
-
-public class GameWorld extends GameObject {
+public class GameWorld {
 
 	private static GameWorld sInstance = new GameWorld();
 
-	private Point mViewport = new Point(0,0);
-	private float[] mProjectionMatrix = new float[16];
-	private float[] mUIMatrix = new float[16];
+	private Camera mCamera;
+	private GlSettings mGlSettings;
+	private State<GameWorld> mCurrentState;
+	private State<GameWorld> mPreviousState;
 
 	private GameWorld() {
-
+		this.mCamera = new Camera();
+		this.mGlSettings = new GlSettings();		
+		
+		State<GameWorld> startingState = new MainMenuState();
+		this.mCurrentState = startingState;
+		this.mPreviousState = startingState;		
 	}
 
 	public static GameWorld instance() {
 		return sInstance;
 	}
 	
-	@Override
-	public boolean update() {
-		return super.update();
+	public Camera getCamera() {
+		return mCamera;
+	}
+	
+	public void init() {
+		RendererManager.instance().getRenderer().initOpenGL(mGlSettings);
+	}
+	
+	public void update() {
+		this.mCurrentState.execute(this);
 	}
 
-	@Override
-	public boolean render() {		
-		return super.render();
+	public void render() {		
+		
 	}
 
-	public boolean resizeViewport(Point newViewport) {
-		
-		RendererManager.instance().getRenderer().resizeViewport(newViewport);
-		
-		this.mViewport = newViewport;
-		// Create a new perspective projection matrix. The height will stay the same
-		// while the width will vary as per aspect ratio.
-		final float ratio = (float) mViewport.x / mViewport.y;
-		final float left = -ratio;
-		final float right = ratio;
-		final float bottom = -1.0f;
-		final float top = 1.0f;
-		final float near = 1.0f;
-		final float far = 200.0f;
-
-		final float left_ortho = -(mViewport.x/2);
-		final float right_ortho = (mViewport.x/2);
-		final float bottom_ortho = -(mViewport.y/2);
-		final float top_ortho = (mViewport.y/2);
-		final float near_ortho = 1.0f;
-		final float far_ortho = 200.0f;
-
-		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-		Matrix.orthoM(mUIMatrix, 0, left_ortho, right_ortho, bottom_ortho, top_ortho, near_ortho, far_ortho);
-		
-		return true;
+	private void renderUi() {
+		//TODO: mCurrentState.getui
 	}
-
+	
 }

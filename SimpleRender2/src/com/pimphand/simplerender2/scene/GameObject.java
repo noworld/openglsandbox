@@ -9,11 +9,22 @@ public abstract class GameObject {
 	protected List<GameObject> mChildren;
 	protected State<GameObject> mCurrentState;
 	protected State<GameObject> mPreviousState;
+	protected boolean mDirty = true;
+	
+	public boolean isDirty() {
+		return mDirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.mDirty = dirty;
+	}
 
 	public boolean update() {
 
-		for(GameObject ge : mChildren) {
-			ge.update();
+		if(mChildren != null){
+			for(GameObject ge : mChildren) {
+				ge.update();
+			}
 		}
 		
 		return true;
@@ -21,8 +32,10 @@ public abstract class GameObject {
 
 	public boolean render() {
 
-		for(GameObject ge : mChildren) {
-			ge.render();
+		if(mChildren != null){
+			for(GameObject ge : mChildren) {
+				ge.render();
+			}
 		}
 
 		return true;
