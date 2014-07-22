@@ -1,35 +1,26 @@
-package com.pimphand.simplerender2.scene;
+package com.pimphand.simplerender2.game;
 
 import android.graphics.Point;
 
-import com.pimphand.simplerender2.fsm.MainMenuState;
 import com.pimphand.simplerender2.fsm.State;
 import com.pimphand.simplerender2.input.InputEventBus;
+import com.pimphand.simplerender2.input.InputHandler;
 import com.pimphand.simplerender2.rendering.BaseRenderer;
-import com.pimphand.simplerender2.rendering.GlSettings;
 import com.pimphand.simplerender2.rendering.RendererManager;
-import com.pimphand.simplerender2.ui.InputUiElement;
-import com.pimphand.simplerender2.ui.UiElement;
+import com.pimphand.simplerender2.scene.Camera;
+import com.pimphand.simplerender2.scene.UiElement;
 
 public class GameWorld {
 
 	private static GameWorld sInstance;
 
 	private Camera mCamera;
-	private GlSettings mGlSettings;
 	private State<GameWorld> mCurrentState;
 	private State<GameWorld> mPreviousState;
 	private boolean mDrawInputAreas = false;
 
 	private GameWorld() {
 		this.mCamera = new Camera();
-		this.mGlSettings = new GlSettings();
-		
-		RendererManager.inst().getRenderer().initOpenGL(mGlSettings);
-		
-		State<GameWorld> startingState = new MainMenuState();
-		this.mCurrentState = startingState;
-		this.mPreviousState = startingState;		
 	}
 
 	public static GameWorld inst() {
@@ -41,12 +32,13 @@ public class GameWorld {
 	}
 	
 	public static void init() {
-		sInstance = new GameWorld();		
+		sInstance = new GameWorld();
+		sInstance.changeState(GameStateManager.getState(GameStateEnum.MAIN_MENU));
 	}
 	
 	public void update() {
 
-		InputEventBus.inst().executeCommands(mCurrentState.getLibrary().mInputElements);
+		InputEventBus.inst().executeCommands(mCurrentState.getLibrary().mInputHandlers);
 		
 		this.mCurrentState.execute(this);
 	}
@@ -57,11 +49,12 @@ public class GameWorld {
 
 	public boolean changeState(State<GameWorld> state) {
 
-		mCurrentState.exit(this);
-
-		this.mPreviousState = mCurrentState;
+		if(mCurrentState != null) {
+			mCurrentState.exit(this);
+			this.mPreviousState = mCurrentState;
+		}
+		
 		mCurrentState = state;
-
 		mCurrentState.enter(this);
 
 		return true;
@@ -85,8 +78,11 @@ public class GameWorld {
 		}
 		
 		if(mDrawInputAreas) {
-			for(InputUiElement iui : mCurrentState.getLibrary().mInputElements) {
-				ren.drawUI(iui.getGeometry());
+			//If an input handler can be drawn then draw it
+			for(InputHandler ih : mCurrentState.getLibrary().mInputHandlers) {
+				if(ih instanceof UiElement) {
+					ren.drawUI(((UiElement)ih).getGeometry());
+				}
 			}
 		}
 	}

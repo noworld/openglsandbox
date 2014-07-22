@@ -1,4 +1,4 @@
-package com.pimphand.simplerender2.ui;
+package com.pimphand.simplerender2.input;
 
 import java.util.ArrayList;
 import java.util.List;

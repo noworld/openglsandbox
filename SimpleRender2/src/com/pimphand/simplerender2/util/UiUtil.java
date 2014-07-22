@@ -2,7 +2,7 @@ package com.pimphand.simplerender2.util;
 
 import android.graphics.PointF;
 
-import com.pimphand.simplerender2.scene.GameWorld;
+import com.pimphand.simplerender2.game.GameWorld;
 
 public class UiUtil {
 

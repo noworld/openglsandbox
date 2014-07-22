@@ -1,24 +1,22 @@
-package com.pimphand.simplerender2.ui;
+package com.pimphand.simplerender2.input;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import android.util.Log;
 
-import com.pimphand.simplerender2.input.InputEvent;
-import com.pimphand.simplerender2.input.InputEventEnum;
-import com.pimphand.simplerender2.input.TouchFeedback;
+import com.pimphand.simplerender2.commands.Command;
 import com.pimphand.simplerender2.rendering.Geometry;
-import com.pimphand.simplerender2.ui.commands.Command;
+import com.pimphand.simplerender2.scene.UiElement;
 
-public class InputUiElement extends UiElement {
+public class InputUiElement extends UiElement implements InputHandler {
 	
 	private static final String TAG = InputUiElement.class.getSimpleName();
 
 	protected InputArea mInputArea;
 	protected List<Command> mCommands;
-	protected InputEventEnum mPreviousTouch;
-	protected InputEventEnum mTouch;
+	protected InputEvent mPreviousTouch;
+	protected InputEvent mTouch;
 	protected boolean mPressed;
 
 	public InputUiElement(Geometry geometry, InputArea inputArea) {
@@ -26,12 +24,11 @@ public class InputUiElement extends UiElement {
 		this.mGeometry = geometry;
 		this.mInputArea = inputArea;
 		this.mCommands = new ArrayList<Command>();
-		this.mPreviousTouch = InputEventEnum.UP;
-		this.mTouch = InputEventEnum.UP;
-		this.mPressed = false;
+		quiet();
 	}
 
-	public boolean input(InputEvent event) {
+	@Override
+	public boolean testInput(InputEvent event) {
 		
 		boolean myEvent = mInputArea.isPressed(event.getCoords());
 
@@ -39,36 +36,38 @@ public class InputUiElement extends UiElement {
 			mPressed = event.getEvent().equals(InputEventEnum.DOWN)
 					|| event.getEvent().equals(InputEventEnum.MOVE_ON);
 			
-			mTouch = event.getEvent();
+			mTouch = event;
 		}
 
 		return myEvent;
 	}
 	
+	@Override
 	public void fire() {
 		//If the button is down
 		if(mPressed) {
-			
+			Log.d(TAG, String.format("SCREEN button firing on %s at %s,%s", mTouch.getEvent().toString(), mTouch.getCoords().x, mTouch.getCoords().y));
 			//Vibrate when changing state to pressed 
-//			Log.d(TAG, String.format("Firing command on event %s -> %s.", mPreviousTouch.toString(), mTouch.toString()));
-			if(mPreviousTouch.equals(InputEventEnum.UP)
-					|| mPreviousTouch.equals(InputEventEnum.MOVE_OFF)) {
-//				Log.d(TAG, String.format("Vibrating on event %s -> %s.", mPreviousTouch.toString(), mTouch.toString()));
+			if(mPreviousTouch == null
+					|| mPreviousTouch.getEvent().equals(InputEventEnum.UP)
+					|| mPreviousTouch.getEvent().equals(InputEventEnum.MOVE_OFF)) {
 				TouchFeedback.touch();
 			}
 			
 			for(Command c : mCommands) {
-				c.execute(null);
+				c.execute(mTouch);
 			}
 		}
 		
 		mPreviousTouch = mTouch;
 	}
 
+	@Override
 	public void registerCommand(Command c) {
 		this.mCommands.add(c);
 	}
 
+	@Override
 	public void removeCommand(Command c) {
 		this.mCommands.remove(c);
 	}
@@ -89,6 +88,13 @@ public class InputUiElement extends UiElement {
 	public void reset() {
 		this.mInputArea.reset();
 		super.reset();
+	}
+
+	@Override
+	public void quiet() {
+		this.mPreviousTouch = null;
+		this.mTouch = null;
+		this.mPressed = false;
 	}
 
 }

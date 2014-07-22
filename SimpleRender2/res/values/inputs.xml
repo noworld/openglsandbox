@@ -4,7 +4,6 @@
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
         <item>POS_Z|-3.9</item>
-        <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
@@ -15,7 +14,6 @@
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
         <item>POS_Z|-3.9</item>
-        <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
@@ -26,7 +24,6 @@
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
         <item>POS_Z|-3.9</item>
-        <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
@@ -37,7 +34,6 @@
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
         <item>POS_Z|-3.9</item>
-        <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
@@ -48,7 +44,6 @@
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
         <item>POS_Z|-3.9</item>
-        <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
@@ -59,7 +54,6 @@
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
         <item>POS_Z|-3.9</item>
-        <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
@@ -70,7 +64,6 @@
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
         <item>POS_Z|-3.9</item>
-        <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
@@ -81,7 +74,6 @@
         <item>POS_X|90.0</item>
         <item>POS_Y|90.0</item>
         <item>POS_Z|-3.9</item>
-        <item>POS_TYPE|%</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
@@ -92,10 +84,9 @@
         <item>POS_X|430.0</item>
         <item>POS_Y|315.0</item>
         <item>POS_Z|-3.9</item>
-        <item>POS_TYPE|px</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
-        <item>COMMAND|ShowWaterWorld</item>
+        <item>COMMAND|SHOW_WATER_WORLD</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>

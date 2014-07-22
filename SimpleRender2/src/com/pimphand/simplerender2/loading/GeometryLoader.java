@@ -12,6 +12,7 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -19,8 +20,14 @@ import android.content.res.TypedArray;
 import android.graphics.PointF;
 import android.util.Log;
 
+import com.pimphand.simplerender2.commands.CommandEnum;
 import com.pimphand.simplerender2.game.GameGlobal;
 import com.pimphand.simplerender2.game.GlobalKeysEnum;
+import com.pimphand.simplerender2.input.CircleInputArea;
+import com.pimphand.simplerender2.input.InputArea;
+import com.pimphand.simplerender2.input.InputShapeEnum;
+import com.pimphand.simplerender2.input.InputUiElement;
+import com.pimphand.simplerender2.input.Polygon2DInputArea;
 import com.pimphand.simplerender2.rendering.BaseRenderer;
 import com.pimphand.simplerender2.rendering.Geometry;
 import com.pimphand.simplerender2.rendering.RendererManager;
@@ -28,12 +35,7 @@ import com.pimphand.simplerender2.rendering.shaders.ShaderManager;
 import com.pimphand.simplerender2.rendering.textures.TextureManager;
 import com.pimphand.simplerender2.scene.GameEntity;
 import com.pimphand.simplerender2.scene.GameObjectLibrary;
-import com.pimphand.simplerender2.ui.CircleInputArea;
-import com.pimphand.simplerender2.ui.InputArea;
-import com.pimphand.simplerender2.ui.InputShapeEnum;
-import com.pimphand.simplerender2.ui.InputUiElement;
-import com.pimphand.simplerender2.ui.Polygon2DInputArea;
-import com.pimphand.simplerender2.ui.UiElement;
+import com.pimphand.simplerender2.scene.UiElement;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
@@ -72,7 +74,7 @@ public class GeometryLoader {
 			for(String name : ig.mObjectNames) {
 				ObjectTypeEnum objectType = ObjectTypeEnum.valueOf(ig.mDescriptors.get(name).get(DescriptorKeysEnum.OBJECT_TYPE.toString()));
 				if(objectType.equals(ObjectTypeEnum.INPUT_AREA)) {
-					library.mInputElements.add(parseInputUiElement(name, ig));
+					library.mInputHandlers.add(parseInputUiElement(name, ig));
 				} else if(objectType.equals(ObjectTypeEnum.UI_ELEMENT)) {
 					library.mDisplayElements.add(parseUiElement(name, ig));
 				} else if(objectType.equals(ObjectTypeEnum.GAME_ENTITY)) {
@@ -231,13 +233,19 @@ public class GeometryLoader {
 			float xPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
 			float yPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Y.toString()));
 			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
-//			PositionTypeEnum posType = PositionTypeEnum.fromSuffix(settings.get(DescriptorKeysEnum.POS_TYPE.toString()));
 			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
 			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
 			float zScale = 1.0f; //TODO: Add a Scale-Z
 			
 			element.translate(xPos, yPos, zPos);
-			element.scale(xScale, yScale, zScale);		
+			element.scale(xScale, yScale, zScale);
+			
+			//TODO: Allow comma-separated command names in config or whatever
+			String commands = settings.get(DescriptorKeysEnum.COMMAND.toString());
+			if(StringUtils.isNotBlank(commands)) {
+				element.registerCommand(CommandEnum.valueOf(commands).getCommand());
+			}
+			
 		}
 		
 		return element;

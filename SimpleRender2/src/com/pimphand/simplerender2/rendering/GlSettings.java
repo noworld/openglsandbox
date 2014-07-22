@@ -28,6 +28,10 @@ public class GlSettings {
 		this.mBlendFunc = new GlBlendFunc();
 	}
 	
+	public void setClearColor(float[] color) {
+		this.mGlClearColor = color;
+	}
+	
 	public float[] getClearColor() {
 		return mGlClearColor;
 	}

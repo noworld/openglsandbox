@@ -15,12 +15,12 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 import android.view.Display;
-import android.view.Surface;
 
 import com.pimphand.simplerender2.game.GameGlobal;
+import com.pimphand.simplerender2.game.GameStateManager;
+import com.pimphand.simplerender2.game.GameWorld;
 import com.pimphand.simplerender2.rendering.shaders.ShaderManager;
 import com.pimphand.simplerender2.rendering.textures.TextureManager;
-import com.pimphand.simplerender2.scene.GameWorld;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
 
@@ -45,43 +45,45 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		Log.d(TAG, "Renderer.onSurfaceChanged");
 		
-//		synchronized(GameWorld.inst()) {			
-//			GameWorld.inst().resizeViewport(new Point(width, height));
-//		}
+		synchronized(GameWorld.inst()) {			
+			GameWorld.inst().resizeViewport(new Point(width, height));
+		}
 	}
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		ShaderManager.init();
 		TextureManager.init();
+		GameStateManager.init();
 		GameWorld.init();
 		synchronized(GameWorld.inst()) {
 			Display d = GameGlobal.inst().getWindowManager().getDefaultDisplay();
+			@SuppressWarnings("deprecation")
 			Point p = new Point(d.getWidth(),d.getHeight());
 //			d.getSize(p); //Requires API 13+			
 			GameWorld.inst().resizeViewport(new Point(p.x, p.y));
 			
-			//XXX DEBUG CODE
-			Log.d(TAG, String.format("SCREEN DIMENSIONS: %s x %s", p.x, p.y));
-			String rotation;
-			switch(d.getRotation()) {
-			case Surface.ROTATION_0:
-				rotation = "0 deg";
-				break;
-			case Surface.ROTATION_90:
-				rotation = "90 deg";
-				break;
-			case Surface.ROTATION_180:
-				rotation = "180 deg";
-				break;
-			case Surface.ROTATION_270:
-				rotation = "270 deg";
-				break;
-			default:
-				rotation = "*error*";
-				break;
-			}
-			Log.d(TAG, String.format("DEVICE ROTATION: %s ", rotation));
+//			//XXX DEBUG CODE
+//			Log.d(TAG, String.format("SCREEN DIMENSIONS: %s x %s", p.x, p.y));
+//			String rotation;
+//			switch(d.getRotation()) {
+//			case Surface.ROTATION_0:
+//				rotation = "0 deg";
+//				break;
+//			case Surface.ROTATION_90:
+//				rotation = "90 deg";
+//				break;
+//			case Surface.ROTATION_180:
+//				rotation = "180 deg";
+//				break;
+//			case Surface.ROTATION_270:
+//				rotation = "270 deg";
+//				break;
+//			default:
+//				rotation = "*error*";
+//				break;
+//			}
+//			Log.d(TAG, String.format("DEVICE ROTATION: %s ", rotation));
 		}
 	}
 	

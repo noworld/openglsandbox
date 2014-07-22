@@ -1,4 +1,4 @@
-package com.pimphand.simplerender2.ui;
+package com.pimphand.simplerender2.input;
 
 public enum InputShapeEnum {
 	CIRCLE,

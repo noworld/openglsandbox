@@ -18,7 +18,6 @@ public enum DescriptorKeysEnum {
 	POS_X,
 	POS_Y,
 	POS_Z,
-	POS_TYPE,
 	SCALE_X,
 	SCALE_Y,
 	COMMAND,

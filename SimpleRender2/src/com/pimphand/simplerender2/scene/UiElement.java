@@ -1,4 +1,4 @@
-package com.pimphand.simplerender2.ui;
+package com.pimphand.simplerender2.scene;
 
 import android.opengl.Matrix;
 

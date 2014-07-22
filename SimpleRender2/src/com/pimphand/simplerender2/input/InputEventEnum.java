@@ -5,5 +5,6 @@ public enum InputEventEnum {
 	MOVE,
 	MOVE_OFF,
 	MOVE_ON,
-	UP;
+	UP,
+	BACK_BUTTON;
 }

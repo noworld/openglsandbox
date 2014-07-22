@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.util.Log;
 
-import com.pimphand.simplerender2.ui.InputUiElement;
 
 
 public class InputEventBus {
@@ -41,7 +40,7 @@ public class InputEventBus {
 		return result;
 	}
 	
-	public void executeCommands(List<InputUiElement> inputs) {
+	public void executeCommands(List<InputHandler> inputs) {
 		synchronized(mEventList) {			
 			if(mEventList.size() > 0){Log.d(TAG, "***INPUT EVENT LIST FOLLOWS***");}
 			for(InputEvent event : mEventList) {
@@ -49,15 +48,17 @@ public class InputEventBus {
 						event.getCoords().x,
 						event.getCoords().y ));}
 				
-				for(InputUiElement iui : inputs) {
-					if(iui.input(event)) break;
+				for(InputHandler ih : inputs) {
+					Log.d(TAG, String.format("Bus testing input handler: %s", ih.getClass().getSimpleName()));
+					if(ih.testInput(event)) break;
 				}
 			}
 			
 			mEventList.clear();
 			
-			for(InputUiElement iui : inputs) {
-				iui.fire();
+			for(InputHandler ih : inputs) {
+				//Log.d(TAG, String.format("Bus firing input handler: %s", ih.getClass().getSimpleName()));
+				ih.fire();
 			}
 		}
 	}

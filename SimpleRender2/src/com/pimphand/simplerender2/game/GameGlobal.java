@@ -1,12 +1,16 @@
 package com.pimphand.simplerender2.game;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
 import android.view.WindowManager;
 
 import com.pimphand.simplerender2.R;
+import com.pimphand.simplerender2.commands.CommandEnum;
+import com.pimphand.simplerender2.input.BackButtonInputHandler;
+import com.pimphand.simplerender2.input.InputHandler;
 import com.solesurvivor.util.SSPropertyUtil;
 import com.solesurvivor.util.exceptions.NotInitializedException;
 
@@ -17,16 +21,19 @@ public class GameGlobal {
 	private static GameGlobal sInstance;
 	
 	private Context mContext;
-	
 	private WindowManager mWindowManager;
-	
-	private Map<String,String> mValues;
+	private Map<GlobalKeysEnum,String> mValues;
+	private Map<GlobalKeysEnum,InputHandler> mInputHandlers;
 	
 	private GameGlobal(Context context, WindowManager windowManager) {
 		this.mContext = context;
 		this.mWindowManager = windowManager;
-		Map<String,String> vals = readGlobalConfig();
+		Map<GlobalKeysEnum,String> vals = readGlobalConfig();
 		mValues = Collections.unmodifiableMap(vals);
+		Map<GlobalKeysEnum,InputHandler> handlers = new HashMap<GlobalKeysEnum,InputHandler>();
+		handlers.put(GlobalKeysEnum.BACK_BUTTON_INPUT_HANDLER, new BackButtonInputHandler());
+		handlers.get(GlobalKeysEnum.BACK_BUTTON_INPUT_HANDLER).registerCommand(CommandEnum.REVERT_STATE.getCommand());
+		mInputHandlers = Collections.unmodifiableMap(handlers);
 	}
 	
 	public static void init(Context context, WindowManager windowManager) {
@@ -41,7 +48,11 @@ public class GameGlobal {
 	}
 	
 	public String getVal(GlobalKeysEnum key) {
-		return mValues.get(key.toString());
+		return mValues.get(key);
+	}
+	
+	public InputHandler getHandler(GlobalKeysEnum key) {
+		return mInputHandlers.get(key);
 	}
 	
 	public Context getContext() {
@@ -59,12 +70,18 @@ public class GameGlobal {
 		return mWindowManager;
 	}
 	
-	private Map<String, String> readGlobalConfig() {
+	private Map<GlobalKeysEnum, String> readGlobalConfig() {
 		String[] globals = mContext.getResources().getStringArray(R.array.global);
 		
-		Map<String,String> vals = SSPropertyUtil.parseFromStringArray(globals,SEPARATOR);
+		Map<String,String> stringKeys = SSPropertyUtil.parseFromStringArray(globals,SEPARATOR);
 		
-		return vals;
+		Map<GlobalKeysEnum,String> enumKeys = new HashMap<GlobalKeysEnum,String>(stringKeys.size());
+		
+		for(Map.Entry<String,String> entry: stringKeys.entrySet()) {
+			enumKeys.put(GlobalKeysEnum.valueOf(entry.getKey()), entry.getValue());
+		}
+		
+		return enumKeys;
 	}
 	
 }

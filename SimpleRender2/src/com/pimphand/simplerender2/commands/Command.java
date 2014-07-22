@@ -1,4 +1,4 @@
-package com.pimphand.simplerender2.ui.commands;
+package com.pimphand.simplerender2.commands;
 
 import com.pimphand.simplerender2.input.InputEvent;
 
