@@ -31,8 +31,8 @@ public class ShaderManager {
 	}
 	
 	private static void loadShaders() {
-		Resources res = GameGlobal.instance().getContext().getResources();
-		BaseRenderer ren = RendererManager.instance().getRenderer();
+		Resources res = GameGlobal.inst().getContext().getResources();
+		BaseRenderer ren = RendererManager.inst().getRenderer();
 		
 		TypedArray shaderPrograms = res.obtainTypedArray(R.array.shaderPrograms);		
 		

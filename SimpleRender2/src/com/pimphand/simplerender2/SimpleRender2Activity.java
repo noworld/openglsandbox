@@ -30,7 +30,7 @@ public class SimpleRender2Activity extends Activity {
 		final boolean es2 = activityManager.getDeviceConfigurationInfo().reqGlEsVersion >= GL_VERSION;
 		if (es2) {
 			RendererManager.init();
-			setContentView(RendererManager.instance().getSurfaceView());
+			setContentView(RendererManager.inst().getSurfaceView());
 		}
 		
 		SSLog.d(TAG, "Activity created.");

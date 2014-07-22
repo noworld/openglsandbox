@@ -31,10 +31,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		synchronized(GameWorld.instance()) {
+		synchronized(GameWorld.inst()) {
 			clearOpenGL();
-			GameWorld.instance().update();
-			GameWorld.instance().render();
+			GameWorld.inst().update();
+			GameWorld.inst().render();
 		}
 	}
 
@@ -42,8 +42,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		Log.d(TAG, "Renderer.onSurfaceChanged");
 		
-		synchronized(GameWorld.instance()) {			
-			GameWorld.instance().resizeViewport(new Point(width, height));
+		synchronized(GameWorld.inst()) {			
+			GameWorld.inst().resizeViewport(new Point(width, height));
 		}
 	}
 
@@ -168,8 +168,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void drawUI(Geometry geo) {
 
 		float[] mvpMatrix = new float[16];
-		float[] uiMatrix = GameWorld.instance().getCamera().getUiMatrix();
-		float[] viewMatrix = GameWorld.instance().getCamera().getViewMatrix();
+		float[] uiMatrix = GameWorld.inst().getCamera().getUiMatrix();
+		float[] viewMatrix = GameWorld.inst().getCamera().getViewMatrix();
 		
 		GLES20.glUseProgram(geo.mShaderHandle);
 		

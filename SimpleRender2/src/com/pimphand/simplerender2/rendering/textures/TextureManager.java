@@ -32,8 +32,8 @@ public class TextureManager {
 
 	private static void loadTextures() {
 
-		Resources res =  GameGlobal.instance().getContext().getResources();
-		BaseRenderer ren = RendererManager.instance().getRenderer();
+		Resources res =  GameGlobal.inst().getContext().getResources();
+		BaseRenderer ren = RendererManager.inst().getRenderer();
 
 		TypedArray textures = res.obtainTypedArray(R.array.textures);
 

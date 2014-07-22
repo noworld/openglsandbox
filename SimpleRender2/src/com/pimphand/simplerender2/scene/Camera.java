@@ -79,7 +79,7 @@ public class Camera {
 	
 	public void resizeViewport(Point newViewport) {
 		
-		RendererManager.instance().getRenderer().resizeViewport(newViewport);
+		RendererManager.inst().getRenderer().resizeViewport(newViewport);
 		
 		this.mViewport = newViewport;
 		// Create a new perspective projection matrix. The height will stay the same

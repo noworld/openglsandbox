@@ -1,4 +1,6 @@
-package com.pimphand.simplerender2.ui;
+package com.pimphand.simplerender2.input;
+
+import com.pimphand.simplerender2.ui.InputEventEnum;
 
 import android.graphics.PointF;
 

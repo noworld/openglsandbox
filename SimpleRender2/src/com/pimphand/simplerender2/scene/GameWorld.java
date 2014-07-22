@@ -24,14 +24,14 @@ public class GameWorld {
 		this.mCamera = new Camera();
 		this.mGlSettings = new GlSettings();
 		
-		RendererManager.instance().getRenderer().initOpenGL(mGlSettings);
+		RendererManager.inst().getRenderer().initOpenGL(mGlSettings);
 		
 		State<GameWorld> startingState = new MainMenuState();
 		this.mCurrentState = startingState;
 		this.mPreviousState = startingState;		
 	}
 
-	public static GameWorld instance() {
+	public static GameWorld inst() {
 		return sInstance;
 	}
 	
@@ -44,6 +44,11 @@ public class GameWorld {
 	}
 	
 	public void update() {
+		
+		for(InputUiElement iui : mCurrentState.getLibrary().mInputElements) {
+			//TODO: Send the events to the inputs...
+		}
+		
 		this.mCurrentState.execute(this);
 	}
 
@@ -67,22 +72,7 @@ public class GameWorld {
 	public boolean revertState() {
 		return changeState(mPreviousState);
 	}
-
-	private void renderUi() {
-		
-		BaseRenderer ren = RendererManager.instance().getRenderer();
-		
-		for(UiElement ui : mCurrentState.getLibrary().mDisplayElements) {
-			ren.drawUI(ui.getGeometry());
-		}
-		
-		if(mDrawInputAreas) {
-			for(InputUiElement iui : mCurrentState.getLibrary().mInputElements) {
-				ren.drawUI(iui.getGeometry());
-			}
-		}
-	}
-
+	
 	public void resizeViewport(Point point) {
 		this.mCamera.resizeViewport(point);
 		
@@ -92,6 +82,21 @@ public class GameWorld {
 		
 		for(InputUiElement iui : this.mCurrentState.getLibrary().mInputElements) {
 			iui.reposition();
+		}
+	}
+
+	private void renderUi() {
+		
+		BaseRenderer ren = RendererManager.inst().getRenderer();
+		
+		for(UiElement ui : mCurrentState.getLibrary().mDisplayElements) {
+			ren.drawUI(ui.getGeometry());
+		}
+		
+		if(mDrawInputAreas) {
+			for(InputUiElement iui : mCurrentState.getLibrary().mInputElements) {
+				ren.drawUI(iui.getGeometry());
+			}
 		}
 	}
 	

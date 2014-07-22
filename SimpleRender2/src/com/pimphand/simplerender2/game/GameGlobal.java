@@ -29,7 +29,7 @@ public class GameGlobal {
 		sInstance = new GameGlobal(context);
 	}
 	
-	public static GameGlobal instance() {
+	public static GameGlobal inst() {
 		if(sInstance == null) {
 			throw new NotInitializedException();
 		}

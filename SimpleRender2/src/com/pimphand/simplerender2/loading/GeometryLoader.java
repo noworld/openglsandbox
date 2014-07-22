@@ -101,7 +101,7 @@ public class GeometryLoader {
 	private static List<String> parseObjectNames(IntermediateGeometry ig) {
 		List<String> objNames = new ArrayList<String>();
 
-		String indexFileName = GameGlobal.instance().getVal(GlobalKeysEnum.INDEX_FILE_NAME);
+		String indexFileName = GameGlobal.inst().getVal(GlobalKeysEnum.INDEX_FILE_NAME);
 		String index = new String(ig.mFiles.get(indexFileName));
 		String[] files = index.split(NEWLINE);
 
@@ -117,7 +117,7 @@ public class GeometryLoader {
 	private static Map<String, Map<String, String>> parseDescriptors(IntermediateGeometry ig) {
 		Map<String,Map<String,String>> descriptors = new HashMap<String, Map<String,String>>();
 
-		String descExt = GameGlobal.instance().getVal(GlobalKeysEnum.DESCRIPTOR_FILE_EXT);
+		String descExt = GameGlobal.inst().getVal(GlobalKeysEnum.DESCRIPTOR_FILE_EXT);
 
 		for(String s : ig.mObjectNames) {						
 			String descName = s + descExt;
@@ -148,7 +148,7 @@ public class GeometryLoader {
 		InputUiElement element = new InputUiElement(geo, area);
 
 
-		Context ctx = GameGlobal.instance().getContext();
+		Context ctx = GameGlobal.inst().getContext();
 		Resources res = ctx.getResources();
 		//TODO: fix these hard-coded strings assuming they work
 		String[] inputSettingsArray = res.getStringArray(res.getIdentifier(name, "array", "com.pimphand.simplerender2"));
@@ -182,17 +182,17 @@ public class GeometryLoader {
 
 		Geometry geo = new Geometry();
 		geo.mName = name;
-		String assetFileName = GameGlobal.instance().getVal(GlobalKeysEnum.ASSET_FILE_NAME);
+		String assetFileName = GameGlobal.inst().getVal(GlobalKeysEnum.ASSET_FILE_NAME);
 		geo.mAssetXml = new String(ig.mFiles.get(assetFileName));
 
 
 		StringBuilder vboFile = new StringBuilder(name);
-		vboFile.append(GameGlobal.instance().getVal(GlobalKeysEnum.VBO_FILE_EXT));
+		vboFile.append(GameGlobal.inst().getVal(GlobalKeysEnum.VBO_FILE_EXT));
 
 		StringBuilder iboFile = new StringBuilder(name);
-		iboFile.append(GameGlobal.instance().getVal(GlobalKeysEnum.IBO_FILE_EXT));
+		iboFile.append(GameGlobal.inst().getVal(GlobalKeysEnum.IBO_FILE_EXT));
 
-		BaseRenderer rend = RendererManager.instance().getRenderer();
+		BaseRenderer rend = RendererManager.inst().getRenderer();
 
 		geo.mDatBufIndex = rend.loadToVbo(ig.mFiles.get(vboFile.toString()));
 		geo.mIdxBufIndex = rend.loadToIbo(ig.mFiles.get(iboFile.toString()));
@@ -224,7 +224,7 @@ public class GeometryLoader {
 		Geometry geometry = parseGeometry(name, ig);
 		UiElement element = new UiElement(geometry);
 
-		Context ctx = GameGlobal.instance().getContext();
+		Context ctx = GameGlobal.inst().getContext();
 		Resources res = ctx.getResources();
 		//TODO: fix these hard-coded strings assuming they work
 		String[] inputSettingsArray = res.getStringArray(res.getIdentifier(name, "array", "com.pimphand.simplerender2"));

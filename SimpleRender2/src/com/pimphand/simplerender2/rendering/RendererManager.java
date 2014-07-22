@@ -14,7 +14,7 @@ public class RendererManager {
 	private BaseRenderer mRenderer;
 	
 	private RendererManager() {
-		mGLSurfaceView = new SimpleRender2SurfaceView(GameGlobal.instance().getContext());
+		mGLSurfaceView = new SimpleRender2SurfaceView(GameGlobal.inst().getContext());
 		mGLSurfaceView.setEGLContextClientVersion(2);
 		mRenderer = new BaseRenderer();
 		mGLSurfaceView.setRenderer(mRenderer);
@@ -33,7 +33,7 @@ public class RendererManager {
 		return mRenderer;
 	}
 	
-	public static RendererManager instance() {
+	public static RendererManager inst() {
 		return sInstance;
 	}
 	

@@ -9,12 +9,12 @@ import com.pimphand.simplerender2.loading.GeometryLoader;
 import com.pimphand.simplerender2.scene.GameObjectLibrary;
 import com.pimphand.simplerender2.scene.GameWorld;
 
-public class MainMenuState implements State<GameWorld> {
+public class WaterWorldState implements State<GameWorld> {
 	
 	protected float[] mMVPMatrix = new float[16]; 
 	protected GameObjectLibrary mObjectLibrary;
 	
-	public MainMenuState() {
+	public WaterWorldState() {
 		Context ctx = GameGlobal.inst().getContext();
 		
 		TypedArray modelArray = ctx.getResources().obtainTypedArray(R.array.main_menu_models);
