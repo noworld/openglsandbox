@@ -23,7 +23,6 @@ import com.pimphand.simplerender2.game.GameGlobal;
 import com.pimphand.simplerender2.game.GlobalKeysEnum;
 import com.pimphand.simplerender2.rendering.BaseRenderer;
 import com.pimphand.simplerender2.rendering.Geometry;
-import com.pimphand.simplerender2.rendering.PositionTypeEnum;
 import com.pimphand.simplerender2.rendering.RendererManager;
 import com.pimphand.simplerender2.rendering.shaders.ShaderManager;
 import com.pimphand.simplerender2.rendering.textures.TextureManager;
@@ -141,37 +140,6 @@ public class GeometryLoader {
 		return zipFiles;
 	}
 
-	private static InputUiElement parseInputUiElement(String name, IntermediateGeometry ig) {
-
-		Geometry geo = parseGeometry(name, ig);
-		InputArea area = parseInputArea(name, ig);
-		InputUiElement element = new InputUiElement(geo, area);
-
-
-		Context ctx = GameGlobal.inst().getContext();
-		Resources res = ctx.getResources();
-		//TODO: fix these hard-coded strings assuming they work
-		String[] inputSettingsArray = res.getStringArray(res.getIdentifier(name, "array", "com.pimphand.simplerender2"));
-
-		if(inputSettingsArray != null) {
-			Map<String,String> settings = SSPropertyUtil.parseFromStringArray(inputSettingsArray, GameGlobal.SEPARATOR);
-			float xPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
-			float yPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Y.toString()));
-			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
-			PositionTypeEnum posType = PositionTypeEnum.fromSuffix(settings.get(DescriptorKeysEnum.POS_TYPE.toString()));
-			float scaleX = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
-			float scaleY = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
-			PointF position = new PointF(xPos,yPos);
-			PointF scale = new PointF(scaleX,scaleY);
-			element.setZPos(zPos);
-			element.setPositionType(posType);
-			element.setPosition(position);
-			element.setScale(scale);			
-		}
-		
-		return element;
-	}
-
 	private static GameEntity parseEntity(String name, IntermediateGeometry ig) {
 		Geometry geo = parseGeometry(name, ig);
 		GameEntity entity = new GameEntity(geo);
@@ -234,17 +202,44 @@ public class GeometryLoader {
 			float xPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
 			float yPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Y.toString()));
 			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
-			PositionTypeEnum posType = PositionTypeEnum.fromSuffix(settings.get(DescriptorKeysEnum.POS_TYPE.toString()));
-			float scaleX = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
-			float scaleY = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
-			PointF position = new PointF(xPos,yPos);
-			PointF scale = new PointF(scaleX,scaleY);
-			element.setPositionType(posType);
-			element.setZPos(zPos);
-			element.setPosition(position);			
-			element.setScale(scale);
+//			PositionTypeEnum posType = PositionTypeEnum.fromSuffix(settings.get(DescriptorKeysEnum.POS_TYPE.toString()));
+			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
+			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
+			float zScale = 1.0f; //TODO: Add a Scale-Z
+			
+			element.translate(xPos, yPos, zPos);
+			element.scale(xScale, yScale, zScale);
 		}
 
+		return element;
+	}
+	
+	private static InputUiElement parseInputUiElement(String name, IntermediateGeometry ig) {
+
+		Geometry geo = parseGeometry(name, ig);
+		InputArea area = parseInputArea(name, ig);
+		InputUiElement element = new InputUiElement(geo, area);
+
+
+		Context ctx = GameGlobal.inst().getContext();
+		Resources res = ctx.getResources();
+		//TODO: fix these hard-coded strings assuming they work
+		String[] inputSettingsArray = res.getStringArray(res.getIdentifier(name, "array", "com.pimphand.simplerender2"));
+
+		if(inputSettingsArray != null) {
+			Map<String,String> settings = SSPropertyUtil.parseFromStringArray(inputSettingsArray, GameGlobal.SEPARATOR);
+			float xPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
+			float yPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Y.toString()));
+			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
+//			PositionTypeEnum posType = PositionTypeEnum.fromSuffix(settings.get(DescriptorKeysEnum.POS_TYPE.toString()));
+			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
+			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
+			float zScale = 1.0f; //TODO: Add a Scale-Z
+			
+			element.translate(xPos, yPos, zPos);
+			element.scale(xScale, yScale, zScale);		
+		}
+		
 		return element;
 	}
 

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import android.content.Context;
+import android.view.WindowManager;
 
 import com.pimphand.simplerender2.R;
 import com.solesurvivor.util.SSPropertyUtil;
@@ -17,16 +18,19 @@ public class GameGlobal {
 	
 	private Context mContext;
 	
+	private WindowManager mWindowManager;
+	
 	private Map<String,String> mValues;
 	
-	private GameGlobal(Context context) {
+	private GameGlobal(Context context, WindowManager windowManager) {
 		this.mContext = context;
+		this.mWindowManager = windowManager;
 		Map<String,String> vals = readGlobalConfig();
 		mValues = Collections.unmodifiableMap(vals);
 	}
 	
-	public static void init(Context context) {
-		sInstance = new GameGlobal(context);
+	public static void init(Context context, WindowManager windowManager) {
+		sInstance = new GameGlobal(context, windowManager);
 	}
 	
 	public static GameGlobal inst() {
@@ -45,6 +49,14 @@ public class GameGlobal {
 			throw new NotInitializedException();
 		}
 		return mContext;
+	}
+	
+	public WindowManager getWindowManager() {
+		if(mWindowManager == null) {
+			throw new NotInitializedException();
+		}
+		
+		return mWindowManager;
 	}
 	
 	private Map<String, String> readGlobalConfig() {

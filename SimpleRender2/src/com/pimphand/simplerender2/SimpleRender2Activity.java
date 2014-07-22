@@ -8,6 +8,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.pimphand.simplerender2.game.GameGlobal;
+import com.pimphand.simplerender2.input.TouchFeedback;
 import com.pimphand.simplerender2.rendering.RendererManager;
 import com.solesurvivor.util.logging.SSLog;
 
@@ -23,7 +24,8 @@ public class SimpleRender2Activity extends Activity {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		GameGlobal.init(getApplicationContext());			
+		GameGlobal.init(getApplicationContext(), getWindowManager());
+		TouchFeedback.init();
 
 		final ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 

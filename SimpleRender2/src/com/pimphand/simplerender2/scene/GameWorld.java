@@ -4,6 +4,7 @@ import android.graphics.Point;
 
 import com.pimphand.simplerender2.fsm.MainMenuState;
 import com.pimphand.simplerender2.fsm.State;
+import com.pimphand.simplerender2.input.InputEventBus;
 import com.pimphand.simplerender2.rendering.BaseRenderer;
 import com.pimphand.simplerender2.rendering.GlSettings;
 import com.pimphand.simplerender2.rendering.RendererManager;
@@ -44,10 +45,8 @@ public class GameWorld {
 	}
 	
 	public void update() {
-		
-		for(InputUiElement iui : mCurrentState.getLibrary().mInputElements) {
-			//TODO: Send the events to the inputs...
-		}
+
+		InputEventBus.inst().executeCommands(mCurrentState.getLibrary().mInputElements);
 		
 		this.mCurrentState.execute(this);
 	}
@@ -75,14 +74,6 @@ public class GameWorld {
 	
 	public void resizeViewport(Point point) {
 		this.mCamera.resizeViewport(point);
-		
-		for(UiElement ui : this.mCurrentState.getLibrary().mDisplayElements) {
-			ui.reposition();
-		}
-		
-		for(InputUiElement iui : this.mCurrentState.getLibrary().mInputElements) {
-			iui.reposition();
-		}
 	}
 
 	private void renderUi() {

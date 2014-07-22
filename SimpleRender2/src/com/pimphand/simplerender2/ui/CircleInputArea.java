@@ -21,8 +21,21 @@ public class CircleInputArea implements InputArea {
 	}
 
 	@Override
-	public void setScale(PointF factor) {
-		this.mScale = (factor.x + factor.y)/2;
+	public void scale(float x, float y, float z) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void translate(float x, float y, float z) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
