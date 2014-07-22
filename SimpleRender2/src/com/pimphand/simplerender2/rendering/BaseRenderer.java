@@ -206,9 +206,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	
 	public void drawGeometry(Geometry geo, List<Light> lights) {
 		
-		float[] mMVPMatrix = new float[16];
-		float[] mProjectionMatrix = GameWorld.inst().getCamera().getUiMatrix();
-		float[] mViewMatrix = GameWorld.inst().getCamera().getViewMatrix();
+		float[] mvpMatrix = new float[16];
+		float[] projectionMatrix = GameWorld.inst().getCamera().getUiMatrix();
+		float[] viewMatrix = GameWorld.inst().getCamera().getViewMatrix();
 		
 		GLES20.glUseProgram(geo.mShaderHandle);
 		
@@ -241,23 +241,24 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// --MV--
 
 		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, geo.mModelMatrix, 0);
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, geo.mModelMatrix, 0);
 		//MVP matrix is *actually MV* at this point
-		GLES20.glUniformMatrix4fv(u_mv, 1, false, mMVPMatrix, 0); //1282
+		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
 
 		// --MVP--
 
 		/* Get the MVP Matrix: Multiply P * MV = MVP*/
-		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
 		//MVP is MVP at this point
-		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mMVPMatrix, 0);
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
 
 		// --LightPos--
 
 		/* Pass in the light position in eye space.	*/	
 		//Switching to view space...
 		//TODO: Handle multiple lights
-		float[] lightPos = lights.get(0).mPosInEyeSpace;
+		float[] lightPos = new float[4];
+		Matrix.multiplyMV(lightPos, 0, viewMatrix, 0, lights.get(0).mModelMatrix, 12);  
 		GLES20.glUniform3f(u_lightpos, lightPos[0], lightPos[1], lightPos[2]);
 
 		// Draw
@@ -316,6 +317,25 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		checkError();
 		
+	}
+	
+	public void drawLight(Light light) {
+		
+		float[] mvpMatrix = new float[16];
+		float[] projectionMatrix = GameWorld.inst().getCamera().getUiMatrix();
+		float[] viewMatrix = GameWorld.inst().getCamera().getViewMatrix();
+
+		GLES20.glUseProgram(light.mShaderHandle);  
+		final int u_mvp = GLES20.glGetUniformLocation(light.mShaderHandle, "u_MVPMatrix");
+		final int a_pos = GLES20.glGetAttribLocation(light.mShaderHandle, "a_Position");
+
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, light.mModelMatrix, 0);
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
+
+		GLES20.glVertexAttrib3f(a_pos, light.mModelMatrix[12], light.mModelMatrix[13], light.mModelMatrix[14]);
+		GLES20.glDisableVertexAttribArray(a_pos);  
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+		GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
 	}
 	
 	/* ------------------------------ */

@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.PointF;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import com.pimphand.simplerender2.commands.CommandEnum;
@@ -35,6 +36,7 @@ import com.pimphand.simplerender2.rendering.shaders.ShaderManager;
 import com.pimphand.simplerender2.rendering.textures.TextureManager;
 import com.pimphand.simplerender2.scene.GameEntity;
 import com.pimphand.simplerender2.scene.GameObjectLibrary;
+import com.pimphand.simplerender2.scene.Light;
 import com.pimphand.simplerender2.scene.UiElement;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
@@ -84,6 +86,15 @@ public class GeometryLoader {
 				}
 			}
 		}
+		
+		//XXX Hack: Adding a light to get started
+		Light light = new Light();
+		Matrix.setIdentityM(light.mModelMatrix, 0);
+		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
+		Matrix.rotateM(light.mModelMatrix, 0, 90, 0.0f, 1.0f, 0.0f);
+		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+		light.mShaderHandle = ShaderManager.getShaderId("point_shader");
+		library.mLights.add(light);
 
 		return library;
 
@@ -283,6 +294,9 @@ public class GeometryLoader {
 
 		geo.mNumElements = Integer.valueOf(desc.get(DescriptorKeysEnum.NUM_ELEMENTS.toString()));
 		geo.mElementStride = Integer.valueOf(desc.get(DescriptorKeysEnum.ELEMENT_STRIDE.toString()));
+		
+		//XXX Hack: push the model back a bit on loading
+		Matrix.translateM(geo.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);
 
 		return geo;
 

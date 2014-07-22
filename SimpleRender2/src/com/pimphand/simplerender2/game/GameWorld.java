@@ -9,6 +9,7 @@ import com.pimphand.simplerender2.rendering.BaseRenderer;
 import com.pimphand.simplerender2.rendering.RendererManager;
 import com.pimphand.simplerender2.scene.Camera;
 import com.pimphand.simplerender2.scene.GameEntity;
+import com.pimphand.simplerender2.scene.Light;
 import com.pimphand.simplerender2.scene.UiElement;
 
 public class GameWorld {
@@ -44,7 +45,9 @@ public class GameWorld {
 		this.mCurrentState.execute(this);
 	}
 
-	public void render() {		
+	public void render() {
+		renderModels();
+		renderLights();
 		renderUi();
 	}
 
@@ -69,14 +72,26 @@ public class GameWorld {
 	public void resizeViewport(Point point) {
 		this.mCamera.resizeViewport(point);
 	}
+	
+	private void renderModels() {
+		BaseRenderer ren = RendererManager.inst().getRenderer();
+		
+		for(GameEntity ge : mCurrentState.getLibrary().mEntities) {
+			ren.drawGeometry(ge.getGeometry(), mCurrentState.getLibrary().mLights);
+		}
+	}
+	
+	private void renderLights() {
+		BaseRenderer ren = RendererManager.inst().getRenderer();
+		
+		for(Light light : mCurrentState.getLibrary().mLights) {
+			ren.drawLight(light);
+		}
+	}
 
 	private void renderUi() {
 		
 		BaseRenderer ren = RendererManager.inst().getRenderer();
-		
-		for(GameEntity ge : mCurrentState.getLibrary().mEntities) {
-			ren.drawUI(ge.getGeometry());
-		}
 		
 		for(UiElement ui : mCurrentState.getLibrary().mDisplayElements) {
 			ren.drawUI(ui.getGeometry());
