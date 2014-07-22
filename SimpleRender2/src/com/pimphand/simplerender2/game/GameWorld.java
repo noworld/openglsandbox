@@ -8,6 +8,7 @@ import com.pimphand.simplerender2.input.InputHandler;
 import com.pimphand.simplerender2.rendering.BaseRenderer;
 import com.pimphand.simplerender2.rendering.RendererManager;
 import com.pimphand.simplerender2.scene.Camera;
+import com.pimphand.simplerender2.scene.GameEntity;
 import com.pimphand.simplerender2.scene.UiElement;
 
 public class GameWorld {
@@ -72,6 +73,10 @@ public class GameWorld {
 	private void renderUi() {
 		
 		BaseRenderer ren = RendererManager.inst().getRenderer();
+		
+		for(GameEntity ge : mCurrentState.getLibrary().mEntities) {
+			ren.drawUI(ge.getGeometry());
+		}
 		
 		for(UiElement ui : mCurrentState.getLibrary().mDisplayElements) {
 			ren.drawUI(ui.getGeometry());

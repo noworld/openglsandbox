@@ -3,6 +3,7 @@ package com.pimphand.simplerender2.rendering;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -21,6 +22,7 @@ import com.pimphand.simplerender2.game.GameStateManager;
 import com.pimphand.simplerender2.game.GameWorld;
 import com.pimphand.simplerender2.rendering.shaders.ShaderManager;
 import com.pimphand.simplerender2.rendering.textures.TextureManager;
+import com.pimphand.simplerender2.scene.Light;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
 
@@ -88,9 +90,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	
-	/* ------------------------------- */
-	/* Methods to be called externally */
-	/* ------------------------------- */
+	/* ----------------------------------------------------- */
+	/* Methods for loading drawables to be called externally */
+	/* ----------------------------------------------------- */
 
 	public void resizeViewport(Point viewport) {
 		GLES20.glViewport(0, 0, viewport.x, viewport.y);
@@ -179,6 +181,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		return textureHandle[0];
 	}
 	
+	/* ------------------------------------ */
+	/* Draw methods to be called externally */
+	/* ------------------------------------ */
+	
 	public void initOpenGL(GlSettings settings) {
 		Log.d(TAG, "Renderer.initOpenGL");
 
@@ -196,6 +202,72 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		}
 
 		GLES20.glBlendFunc(settings.getBlendFunc().getSource(), settings.getBlendFunc().getDest());	
+	}
+	
+	public void drawGeometry(Geometry geo, List<Light> lights) {
+		
+		float[] mMVPMatrix = new float[16];
+		float[] mProjectionMatrix = GameWorld.inst().getCamera().getUiMatrix();
+		float[] mViewMatrix = GameWorld.inst().getCamera().getViewMatrix();
+		
+		GLES20.glUseProgram(geo.mShaderHandle);
+		
+		int u_mvp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVPMatrix");
+		int u_mv = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVMatrix");
+		int u_lightpos = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_LightPos");
+		int u_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Texture");
+
+		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
+		int a_nrm = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Normal");
+		int a_txc = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_TexCoordinate");
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, geo.mTextureHandle);
+		GLES20.glUniform1i(u_texsampler, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.mDatBufIndex);
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, geo.mPosSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mPosOffset);
+
+		GLES20.glEnableVertexAttribArray(a_nrm);
+		GLES20.glVertexAttribPointer(a_nrm, geo.mNrmSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mNrmOffset);
+
+		GLES20.glEnableVertexAttribArray(a_txc);
+		GLES20.glVertexAttribPointer(a_txc, geo.mTxcSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mTxcOffset);
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+		// --MV--
+
+		/* Get the MV Matrix: Multiply V * M  = MV */
+		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, geo.mModelMatrix, 0);
+		//MVP matrix is *actually MV* at this point
+		GLES20.glUniformMatrix4fv(u_mv, 1, false, mMVPMatrix, 0); //1282
+
+		// --MVP--
+
+		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mMVPMatrix, 0);
+
+		// --LightPos--
+
+		/* Pass in the light position in eye space.	*/	
+		//Switching to view space...
+		//TODO: Handle multiple lights
+		float[] lightPos = lights.get(0).mPosInEyeSpace;
+		GLES20.glUniform3f(u_lightpos, lightPos[0], lightPos[1], lightPos[2]);
+
+		// Draw
+		
+		/* Draw the arrays as triangles */
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
 	}
 	
 	public void drawUI(Geometry geo) {

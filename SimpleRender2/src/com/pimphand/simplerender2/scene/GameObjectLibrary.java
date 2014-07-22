@@ -10,5 +10,6 @@ public class GameObjectLibrary {
 	public List<GameEntity> mEntities = new ArrayList<GameEntity>();
 	public List<InputHandler> mInputHandlers = new ArrayList<InputHandler>();
 	public List<UiElement> mDisplayElements = new ArrayList<UiElement>();
+	public List<Light> mLights = new ArrayList<Light>();
 	
 }

@@ -4,6 +4,7 @@
         <item>@array/point_shader</item>
         <item>@array/ui_shader</item>
         <item>@array/sprite_shader</item>
+        <item>@array/model_shader</item>
         <item>@array/inputarea_shader</item>
         <item>@array/text_shader</item>
     </array>
@@ -24,6 +25,11 @@
     </array>
     
     <array name="sprite_shader">
+        <item >@raw/v_sprite</item> 
+        <item >@raw/f_sprite</item>  
+    </array>
+    
+    <array name="model_shader">
         <item >@raw/v_sprite</item> 
         <item >@raw/f_sprite</item>  
     </array> 

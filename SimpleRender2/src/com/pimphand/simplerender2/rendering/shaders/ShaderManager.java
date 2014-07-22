@@ -64,6 +64,7 @@ public class ShaderManager {
 			}
 			
 			//XXX HACK: For now, assume only 1 v and f shader
+			//TODO: Reconfigure for reusing individual shaders (i.e. don't compile the same code over and over)
 			mShaders.put(resourceName, ren.loadShaderProgram(new String[]{vShadCode}, new String[]{fShadCode}));
 			
 			shaders.recycle();

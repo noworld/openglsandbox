@@ -16,7 +16,7 @@ public class WaterWorldState extends MainMenuState {
 	
 	public WaterWorldState() {
 		Context ctx = GameGlobal.inst().getContext();
-		TypedArray modelArray = ctx.getResources().obtainTypedArray(R.array.main_menu_models);
+		TypedArray modelArray = ctx.getResources().obtainTypedArray(R.array.water_world_models);
 		this.mObjectLibrary = GeometryLoader.loadGameObjects(GameGlobal.inst().getContext(), modelArray);
 		modelArray.recycle();
 		mGlSettings = new GlSettings();

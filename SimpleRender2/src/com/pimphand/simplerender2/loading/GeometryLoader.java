@@ -45,6 +45,8 @@ public class GeometryLoader {
 	private static final String NEWLINE = "\r\n";
 	private static final String PLUS = "+";
 	private static final String COMMA = ",";
+	private static final String ARRAY_RESOURCE_TYPE = "array";
+	private static final String RESOURCE_PACKAGE = "com.pimphand.simplerender2";
 	
 	public static GameObjectLibrary loadGameObjects(Context context, TypedArray modelArray) {
 		GameObjectLibrary library = new GameObjectLibrary();
@@ -78,7 +80,7 @@ public class GeometryLoader {
 				} else if(objectType.equals(ObjectTypeEnum.UI_ELEMENT)) {
 					library.mDisplayElements.add(parseUiElement(name, ig));
 				} else if(objectType.equals(ObjectTypeEnum.GAME_ENTITY)) {
-					library.mEntities.add(parseEntity(name, ig));
+					library.mEntities.add(parseGameEntity(name, ig));
 				}
 			}
 		}
@@ -141,13 +143,114 @@ public class GeometryLoader {
 		}
 		return zipFiles;
 	}
-
-	private static GameEntity parseEntity(String name, IntermediateGeometry ig) {
+	
+	private static GameEntity parseGameEntity(String name, IntermediateGeometry ig) {
 		Geometry geo = parseGeometry(name, ig);
 		GameEntity entity = new GameEntity(geo);
+		
+		Context ctx = GameGlobal.inst().getContext();
+		Resources res = ctx.getResources();
+		String[] inputSettingsArray = res.getStringArray(res.getIdentifier(name, ARRAY_RESOURCE_TYPE, RESOURCE_PACKAGE));
+
+		if(inputSettingsArray != null) {
+			Map<String,String> settings = SSPropertyUtil.parseFromStringArray(inputSettingsArray, GameGlobal.SEPARATOR);
+			float xPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
+			float yPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Y.toString()));
+			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
+			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
+			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
+			float zScale = 1.0f; //TODO: Add a Scale-Z
+			
+			entity.translate(xPos, yPos, zPos);
+			entity.scale(xScale, yScale, zScale);
+			
+			geo.mShaderHandle = ShaderManager.getShaderId(settings.get(DescriptorKeysEnum.SHADER_NAME.toString()));
+			geo.mTextureHandle = TextureManager.getTextureId(settings.get(DescriptorKeysEnum.TEXTURE_NAME.toString()));
+		}
+		
 		return entity;
 	}
 
+	private static UiElement parseUiElement(String name, IntermediateGeometry ig) {
+		
+		Geometry geo = parseGeometry(name, ig);
+		UiElement element = new UiElement(geo);
+
+		Context ctx = GameGlobal.inst().getContext();
+		Resources res = ctx.getResources();
+		String[] inputSettingsArray = res.getStringArray(res.getIdentifier(name, ARRAY_RESOURCE_TYPE, RESOURCE_PACKAGE));
+
+		if(inputSettingsArray != null) {
+			Map<String,String> settings = SSPropertyUtil.parseFromStringArray(inputSettingsArray, GameGlobal.SEPARATOR);
+			float xPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
+			float yPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Y.toString()));
+			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
+			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
+			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
+			float zScale = 1.0f; //TODO: Add a Scale-Z
+			
+			element.translate(xPos, yPos, zPos);
+			element.scale(xScale, yScale, zScale);
+			
+			geo.mShaderHandle = ShaderManager.getShaderId(settings.get(DescriptorKeysEnum.SHADER_NAME.toString()));
+			geo.mTextureHandle = TextureManager.getTextureId(settings.get(DescriptorKeysEnum.TEXTURE_NAME.toString()));
+		}
+
+		return element;
+	}
+	
+	private static InputUiElement parseInputUiElement(String name, IntermediateGeometry ig) {
+
+		Geometry geo = parseGeometry(name, ig);
+		InputArea area = parseInputArea(name, ig);
+		InputUiElement element = new InputUiElement(geo, area);
+
+		Context ctx = GameGlobal.inst().getContext();
+		Resources res = ctx.getResources();
+		String[] inputSettingsArray = res.getStringArray(res.getIdentifier(name, ARRAY_RESOURCE_TYPE, RESOURCE_PACKAGE));
+
+		if(inputSettingsArray != null) {
+			Map<String,String> settings = SSPropertyUtil.parseFromStringArray(inputSettingsArray, GameGlobal.SEPARATOR);
+			float xPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
+			float yPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Y.toString()));
+			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
+			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
+			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
+			float zScale = 1.0f; //TODO: Add a Scale-Z
+			
+			element.translate(xPos, yPos, zPos);
+			element.scale(xScale, yScale, zScale);
+			
+			geo.mShaderHandle = ShaderManager.getShaderId(settings.get(DescriptorKeysEnum.SHADER_NAME.toString()));
+			geo.mTextureHandle = TextureManager.getTextureId(settings.get(DescriptorKeysEnum.TEXTURE_NAME.toString()));
+			
+			//TODO: Allow comma-separated command names in config or whatever
+			String commands = settings.get(DescriptorKeysEnum.COMMAND.toString());
+			if(StringUtils.isNotBlank(commands)) {
+				element.registerCommand(CommandEnum.valueOf(commands).getCommand());
+			}
+			
+		}
+		
+		return element;
+	}
+
+	private static InputArea parseInputArea(String name, IntermediateGeometry ig) {
+		InputArea area = null;
+
+		Map<String,String> desc = ig.mDescriptors.get(name);
+
+		InputShapeEnum inputShape = InputShapeEnum.valueOf(desc.get(DescriptorKeysEnum.INPUT_SHAPE.toString()));
+
+		if(inputShape.equals(InputShapeEnum.CIRCLE)) {
+			area = parseCircleArea(name, ig);
+		} else if(inputShape.equals(InputShapeEnum.POLYGON)) {
+			area = parsePolygonArea(name, ig);
+		}
+
+		return area;
+	}
+	
 	private static Geometry parseGeometry(String name, IntermediateGeometry ig) {		
 
 		Geometry geo = new Geometry();
@@ -180,91 +283,9 @@ public class GeometryLoader {
 
 		geo.mNumElements = Integer.valueOf(desc.get(DescriptorKeysEnum.NUM_ELEMENTS.toString()));
 		geo.mElementStride = Integer.valueOf(desc.get(DescriptorKeysEnum.ELEMENT_STRIDE.toString()));
-		
-		//TODO: Apply texture and shaders from resource xml
-		geo.mShaderHandle = ShaderManager.getShaderId(desc.get(DescriptorKeysEnum.SHADER_NAME.toString()));
-		geo.mTextureHandle = TextureManager.getTextureId(desc.get(DescriptorKeysEnum.TEXTURE_NAME.toString()));
 
 		return geo;
 
-	}
-
-	private static UiElement parseUiElement(String name, IntermediateGeometry ig) {
-		
-		Geometry geometry = parseGeometry(name, ig);
-		UiElement element = new UiElement(geometry);
-
-		Context ctx = GameGlobal.inst().getContext();
-		Resources res = ctx.getResources();
-		//TODO: fix these hard-coded strings assuming they work
-		String[] inputSettingsArray = res.getStringArray(res.getIdentifier(name, "array", "com.pimphand.simplerender2"));
-
-		if(inputSettingsArray != null) {
-			Map<String,String> settings = SSPropertyUtil.parseFromStringArray(inputSettingsArray, GameGlobal.SEPARATOR);
-			float xPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
-			float yPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Y.toString()));
-			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
-//			PositionTypeEnum posType = PositionTypeEnum.fromSuffix(settings.get(DescriptorKeysEnum.POS_TYPE.toString()));
-			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
-			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
-			float zScale = 1.0f; //TODO: Add a Scale-Z
-			
-			element.translate(xPos, yPos, zPos);
-			element.scale(xScale, yScale, zScale);
-		}
-
-		return element;
-	}
-	
-	private static InputUiElement parseInputUiElement(String name, IntermediateGeometry ig) {
-
-		Geometry geo = parseGeometry(name, ig);
-		InputArea area = parseInputArea(name, ig);
-		InputUiElement element = new InputUiElement(geo, area);
-
-
-		Context ctx = GameGlobal.inst().getContext();
-		Resources res = ctx.getResources();
-		//TODO: fix these hard-coded strings assuming they work
-		String[] inputSettingsArray = res.getStringArray(res.getIdentifier(name, "array", "com.pimphand.simplerender2"));
-
-		if(inputSettingsArray != null) {
-			Map<String,String> settings = SSPropertyUtil.parseFromStringArray(inputSettingsArray, GameGlobal.SEPARATOR);
-			float xPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_X.toString()));
-			float yPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Y.toString()));
-			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
-			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
-			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
-			float zScale = 1.0f; //TODO: Add a Scale-Z
-			
-			element.translate(xPos, yPos, zPos);
-			element.scale(xScale, yScale, zScale);
-			
-			//TODO: Allow comma-separated command names in config or whatever
-			String commands = settings.get(DescriptorKeysEnum.COMMAND.toString());
-			if(StringUtils.isNotBlank(commands)) {
-				element.registerCommand(CommandEnum.valueOf(commands).getCommand());
-			}
-			
-		}
-		
-		return element;
-	}
-
-	private static InputArea parseInputArea(String name, IntermediateGeometry ig) {
-		InputArea area = null;
-
-		Map<String,String> desc = ig.mDescriptors.get(name);
-
-		InputShapeEnum inputShape = InputShapeEnum.valueOf(desc.get(DescriptorKeysEnum.INPUT_SHAPE.toString()));
-
-		if(inputShape.equals(InputShapeEnum.CIRCLE)) {
-			area = parseCircleArea(name, ig);
-		} else if(inputShape.equals(InputShapeEnum.POLYGON)) {
-			area = parsePolygonArea(name, ig);
-		}
-
-		return area;
 	}
 
 	private static CircleInputArea parseCircleArea(String name, IntermediateGeometry ig) {
