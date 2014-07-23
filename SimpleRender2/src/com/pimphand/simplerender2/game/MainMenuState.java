@@ -28,7 +28,7 @@ public class MainMenuState implements State<GameWorld> {
 		modelArray.recycle();
 		this.mObjectLibrary.mInputHandlers.add(GameGlobal.inst().getHandler(GlobalKeysEnum.BACK_BUTTON_INPUT_HANDLER));
 		mGlSettings = new GlSettings();
-		mGlSettings.setClearColor(new float[]{0.6f, 0.4f, 0.2f, 1.0f});
+		mGlSettings.setGlClearColor(new float[]{0.6f, 0.4f, 0.2f, 1.0f});
 	}
 
 	@Override

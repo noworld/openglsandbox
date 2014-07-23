@@ -2,6 +2,7 @@ package com.pimphand.simplerender2.game;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -9,6 +10,7 @@ import com.pimphand.simplerender2.R;
 import com.pimphand.simplerender2.input.InputEventBus;
 import com.pimphand.simplerender2.input.InputHandler;
 import com.pimphand.simplerender2.loading.GeometryLoader;
+import com.pimphand.simplerender2.rendering.GlBlendFunc;
 import com.pimphand.simplerender2.rendering.GlSettings;
 import com.pimphand.simplerender2.rendering.RendererManager;
 import com.pimphand.simplerender2.scene.Light;
@@ -25,6 +27,7 @@ public class WaterWorldState extends MainMenuState {
 		this.mObjectLibrary = GeometryLoader.loadGameObjects(GameGlobal.inst().getContext(), modelArray);
 		modelArray.recycle();
 		mGlSettings = new GlSettings();
+		mGlSettings.setBlendFunc(new GlBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA));
 		this.mObjectLibrary.mInputHandlers.add(GameGlobal.inst().getHandler(GlobalKeysEnum.BACK_BUTTON_INPUT_HANDLER));
 	}
 

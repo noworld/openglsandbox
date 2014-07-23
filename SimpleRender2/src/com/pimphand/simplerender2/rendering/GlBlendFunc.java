@@ -11,6 +11,11 @@ public class GlBlendFunc {
 		mSource = GLES20.GL_SRC_ALPHA;
 		mDest = GLES20.GL_ONE_MINUS_SRC_ALPHA;
 	}
+	
+	public GlBlendFunc(int source, int dest) {
+		this.mSource = source;
+		this.mDest = dest;
+	}
 
 	public int getSource() {
 		return mSource;

@@ -46,8 +46,8 @@ public class GameWorld {
 	}
 
 	public void render() {
-		renderModels();
 		renderLights();
+		renderModels();		
 		renderUi();
 	}
 

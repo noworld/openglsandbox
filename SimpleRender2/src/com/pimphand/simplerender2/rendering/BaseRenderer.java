@@ -167,7 +167,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		Log.d(TAG, "Renderer.initOpenGL");
 
 		// Set the background clear color
-		float[] color = settings.getClearColor();
+		float[] color = settings.getGlClearColor();
 		GLES20.glClearColor(color[0],color[1],color[2],color[3]);
 		
 		
