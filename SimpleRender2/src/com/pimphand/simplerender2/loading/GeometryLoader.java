@@ -90,9 +90,6 @@ public class GeometryLoader {
 		//XXX Hack: Adding a light to get started
 		Light light = new Light();
 		Matrix.setIdentityM(light.mModelMatrix, 0);
-		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
-		Matrix.rotateM(light.mModelMatrix, 0, 90, 0.0f, 1.0f, 0.0f);
-		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 2.0f);
 		light.mShaderHandle = ShaderManager.getShaderId("point_shader");
 		library.mLights.add(light);
 

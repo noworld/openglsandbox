@@ -11,6 +11,7 @@ public class Light {
 	
 	public boolean mCastsShadow;
 	
+	public float[] mPosition = {0.0f,0.0f,0.0f,1.0f};
 	public float[] mModelMatrix = new float[16];
 	public int mShaderHandle;
 		

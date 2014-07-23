@@ -40,8 +40,7 @@ public class GameWorld {
 	
 	public void update() {
 
-		InputEventBus.inst().executeCommands(mCurrentState.getLibrary().mInputHandlers);
-		
+		InputEventBus.inst().executeCommands(mCurrentState.getLibrary().mInputHandlers);		
 		this.mCurrentState.execute(this);
 	}
 

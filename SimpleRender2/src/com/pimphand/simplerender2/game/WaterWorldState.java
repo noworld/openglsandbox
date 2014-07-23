@@ -2,6 +2,7 @@ package com.pimphand.simplerender2.game;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import com.pimphand.simplerender2.R;
@@ -9,10 +10,13 @@ import com.pimphand.simplerender2.input.InputHandler;
 import com.pimphand.simplerender2.loading.GeometryLoader;
 import com.pimphand.simplerender2.rendering.GlSettings;
 import com.pimphand.simplerender2.rendering.RendererManager;
+import com.pimphand.simplerender2.scene.Light;
 
 public class WaterWorldState extends MainMenuState {
 	
 	private static final String TAG = WaterWorldState.class.getSimpleName();
+	
+	private float mAccumulatedRotation = 0.0f;
 	
 	public WaterWorldState() {
 		Context ctx = GameGlobal.inst().getContext();
@@ -32,6 +36,14 @@ public class WaterWorldState extends MainMenuState {
 	@Override
 	public void execute(GameWorld target) {
 		//Log.d(TAG, "Executing Water World State");
+		mAccumulatedRotation += 0.5f;
+		if(mAccumulatedRotation >= 360.0f) mAccumulatedRotation = 0.0f;
+		for(Light light : mObjectLibrary.mLights) {
+			Matrix.setIdentityM(light.mModelMatrix, 0);
+			Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
+			Matrix.rotateM(light.mModelMatrix, 0, mAccumulatedRotation, 0.0f, 1.0f, 0.0f);
+			Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+		}
 	}
 
 	@Override

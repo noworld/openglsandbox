@@ -322,7 +322,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void drawLight(Light light) {
 		
 		float[] mvpMatrix = new float[16];
-		float[] projectionMatrix = GameWorld.inst().getCamera().getUiMatrix();
+		float[] projectionMatrix = GameWorld.inst().getCamera().getProjectionMatrix();
 		float[] viewMatrix = GameWorld.inst().getCamera().getViewMatrix();
 
 		GLES20.glUseProgram(light.mShaderHandle);  
@@ -332,8 +332,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, light.mModelMatrix, 0);
 		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
 
-		GLES20.glVertexAttrib3f(a_pos, light.mModelMatrix[12], light.mModelMatrix[13], light.mModelMatrix[14]);
-		GLES20.glDisableVertexAttribArray(a_pos);  
+		GLES20.glVertexAttrib3f(a_pos, light.mPosition[0], light.mPosition[1], light.mPosition[2]);
+		GLES20.glDisableVertexAttribArray(a_pos);
 		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
 		GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
 	}

@@ -10,7 +10,7 @@ public class Camera {
 	protected float[] mViewMatrix = new float[16];	
 	protected float[] mProjectionMatrix  = new float[16];
 	protected float[] mUiMatrix = new float[16];
-	protected float[] mEyePos = {0.0f, 0.0f, 0.5f};
+	protected float[] mEyePos = {0.0f, 0.0f, -0.5f};
 	protected float[] mLookVector = {0.0f, 0.0f, -5.0f};
 	protected float[] mUpVector = {0.0f, 1.0f, 0.0f};	
 	protected Point mViewport = new Point(0,0);

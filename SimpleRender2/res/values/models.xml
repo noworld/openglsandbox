@@ -6,7 +6,7 @@
     </array>
     
     <array name="water_world_models">
-        <item >@raw/scar</item>
+        <item >@raw/monkey</item>
     </array>
     
     <string-array name="scar">
@@ -16,6 +16,16 @@
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>TEXTURE_NAME|scar</item>
+        <item>SHADER_NAME|model_shader</item>
+    </string-array>
+    
+    <string-array name="suzanne">
+        <item>POS_X|0.0</item>
+        <item>POS_Y|0.0</item>
+        <item>POS_Z|-5.0</item>
+        <item>SCALE_X|1.0</item>
+        <item>SCALE_Y|1.0</item>
+        <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|model_shader</item>
     </string-array>
     
