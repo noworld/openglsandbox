@@ -6,10 +6,12 @@ import android.graphics.PointF;
 public class CircleInputArea implements InputArea {
 	
 	private PointF mCenter;
+	private PointF mModelCenter;
 	private float mRadiusSq;
 	private float mScale = 1.0f;
 	
 	public CircleInputArea(PointF center, float radius) {
+		this.mModelCenter = center;
 		this.mCenter = center;
 		this.mRadiusSq = radius*radius;
 	}
@@ -23,20 +25,19 @@ public class CircleInputArea implements InputArea {
 
 	@Override
 	public void scale(float x, float y, float z) {
-		// TODO Auto-generated method stub
-		
+		mScale = x;
 	}
 
 	@Override
 	public void translate(float x, float y, float z) {
-		// TODO Auto-generated method stub
-		
+		PointF updCenter = new PointF(mCenter.x + x, mCenter.y + y);
+		mCenter = updCenter;
 	}
 
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-		
+		mCenter = mModelCenter;
+		mScale = 1.0f;
 	}
 
 }
