@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.71.0 commit date:2014-06-25, commit time:18:36, hash:9337574</authoring_tool>
     </contributor>
-    <created>2014-07-21T10:46:46</created>
-    <modified>2014-07-21T10:46:46</modified>
+    <created>2014-07-23T10:23:00</created>
+    <modified>2014-07-23T10:23:00</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -141,6 +141,92 @@
         </polylist>
       </mesh>
     </geometry>
+    <geometry id="btn_modelviewer_inputarea-mesh" name="btn_modelviewer_inputarea">
+      <mesh>
+        <source id="btn_modelviewer_inputarea-mesh-positions">
+          <float_array id="btn_modelviewer_inputarea-mesh-positions-array" count="12">-484.9625 -110.4863 0 484.9625 -110.4863 0 -484.9625 110.4863 0 484.9625 110.4863 0</float_array>
+          <technique_common>
+            <accessor source="#btn_modelviewer_inputarea-mesh-positions-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="btn_modelviewer_inputarea-mesh-normals">
+          <float_array id="btn_modelviewer_inputarea-mesh-normals-array" count="6">0 0 1 0 0 1</float_array>
+          <technique_common>
+            <accessor source="#btn_modelviewer_inputarea-mesh-normals-array" count="2" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="btn_modelviewer_inputarea-mesh-map-0">
+          <float_array id="btn_modelviewer_inputarea-mesh-map-0-array" count="12">4.77264e-5 4.77736e-5 0.9999523 4.77264e-5 0.9999523 0.2278504 4.77264e-5 0.2278504 4.77264e-5 4.77736e-5 0.9999523 0.2278504</float_array>
+          <technique_common>
+            <accessor source="#btn_modelviewer_inputarea-mesh-map-0-array" count="6" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="btn_modelviewer_inputarea-mesh-vertices">
+          <input semantic="POSITION" source="#btn_modelviewer_inputarea-mesh-positions"/>
+        </vertices>
+        <polylist count="2">
+          <input semantic="VERTEX" source="#btn_modelviewer_inputarea-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#btn_modelviewer_inputarea-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#btn_modelviewer_inputarea-mesh-map-0" offset="2" set="0"/>
+          <vcount>3 3 </vcount>
+          <p>0 0 0 1 0 1 3 0 2 2 1 3 0 1 4 3 1 5</p>
+        </polylist>
+      </mesh>
+    </geometry>
+    <geometry id="btn_modelviewer-mesh" name="btn_modelviewer">
+      <mesh>
+        <source id="btn_modelviewer-mesh-positions">
+          <float_array id="btn_modelviewer-mesh-positions-array" count="12">-484.9625 -110.4863 0 484.9625 -110.4863 0 -484.9625 110.4863 0 484.9625 110.4863 0</float_array>
+          <technique_common>
+            <accessor source="#btn_modelviewer-mesh-positions-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="btn_modelviewer-mesh-normals">
+          <float_array id="btn_modelviewer-mesh-normals-array" count="6">0 0 1 0 0 1</float_array>
+          <technique_common>
+            <accessor source="#btn_modelviewer-mesh-normals-array" count="2" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="btn_modelviewer-mesh-map-0">
+          <float_array id="btn_modelviewer-mesh-map-0-array" count="12">-4.02841e-4 0.6323407 0.3708523 0.6323407 0.3708523 0.7206793 -4.02841e-4 0.7206793 -4.02841e-4 0.6323407 0.3708523 0.7206793</float_array>
+          <technique_common>
+            <accessor source="#btn_modelviewer-mesh-map-0-array" count="6" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="btn_modelviewer-mesh-vertices">
+          <input semantic="POSITION" source="#btn_modelviewer-mesh-positions"/>
+        </vertices>
+        <polylist count="2">
+          <input semantic="VERTEX" source="#btn_modelviewer-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#btn_modelviewer-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#btn_modelviewer-mesh-map-0" offset="2" set="0"/>
+          <vcount>3 3 </vcount>
+          <p>0 0 0 1 0 1 3 0 2 2 1 3 0 1 4 3 1 5</p>
+        </polylist>
+      </mesh>
+    </geometry>
   </library_geometries>
   <library_controllers/>
   <library_visual_scenes>
@@ -156,6 +242,14 @@
       <node id="btnWaterWorldInputAreaObj" name="btnWaterWorldInputAreaObj" type="NODE">
         <matrix sid="transform">1 0 0 430 0 1 0 315 0 0 1 -3.9 0 0 0 1</matrix>
         <instance_geometry url="#btn_waterworld_inputarea-mesh"/>
+      </node>
+      <node id="btnModelViewerInputAreaObj" name="btnModelViewerInputAreaObj" type="NODE">
+        <matrix sid="transform">1 0 0 430 0 1 0 0 0 0 1 -3.9 0 0 0 1</matrix>
+        <instance_geometry url="#btn_modelviewer_inputarea-mesh"/>
+      </node>
+      <node id="btnModelViewerObj" name="btnModelViewerObj" type="NODE">
+        <matrix sid="transform">1 0 0 431.6626 0 1 0 0 0 0 1 -4 0 0 0 1</matrix>
+        <instance_geometry url="#btn_modelviewer-mesh"/>
       </node>
     </visual_scene>
   </library_visual_scenes>
