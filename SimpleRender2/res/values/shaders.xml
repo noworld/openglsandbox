@@ -30,8 +30,8 @@
     </array>
     
     <array name="model_shader">
-        <item >@raw/v_sprite</item> 
-        <item >@raw/f_sprite</item>  
+        <item >@raw/v_model</item> 
+        <item >@raw/f_model</item>  
     </array> 
     
     <array name="text_shader">

@@ -291,9 +291,6 @@ public class GeometryLoader {
 
 		geo.mNumElements = Integer.valueOf(desc.get(DescriptorKeysEnum.NUM_ELEMENTS.toString()));
 		geo.mElementStride = Integer.valueOf(desc.get(DescriptorKeysEnum.ELEMENT_STRIDE.toString()));
-		
-		//XXX Hack: push the model back a bit on loading
-		Matrix.translateM(geo.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);
 
 		return geo;
 

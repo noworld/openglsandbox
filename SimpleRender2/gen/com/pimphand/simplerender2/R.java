@@ -70,16 +70,18 @@ public final class R {
         public static final int simple_render2=0x7f090000;
     }
     public static final class raw {
-        public static final int f_sprite=0x7f040000;
-        public static final int f_ui=0x7f040001;
-        public static final int f_white=0x7f040002;
-        public static final int gamepad_ui=0x7f040003;
-        public static final int mainmenu_ui=0x7f040004;
-        public static final int monkey=0x7f040005;
-        public static final int scar=0x7f040006;
-        public static final int v_point=0x7f040007;
-        public static final int v_sprite=0x7f040008;
-        public static final int v_ui=0x7f040009;
+        public static final int f_model=0x7f040000;
+        public static final int f_sprite=0x7f040001;
+        public static final int f_ui=0x7f040002;
+        public static final int f_white=0x7f040003;
+        public static final int gamepad_ui=0x7f040004;
+        public static final int mainmenu_ui=0x7f040005;
+        public static final int monkey=0x7f040006;
+        public static final int scar=0x7f040007;
+        public static final int v_model=0x7f040008;
+        public static final int v_point=0x7f040009;
+        public static final int v_sprite=0x7f04000a;
+        public static final int v_ui=0x7f04000b;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;

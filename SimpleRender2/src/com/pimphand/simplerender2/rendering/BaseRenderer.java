@@ -64,28 +64,6 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			Point p = new Point(d.getWidth(),d.getHeight());
 //			d.getSize(p); //Requires API 13+			
 			GameWorld.inst().resizeViewport(new Point(p.x, p.y));
-			
-//			//XXX DEBUG CODE
-//			Log.d(TAG, String.format("SCREEN DIMENSIONS: %s x %s", p.x, p.y));
-//			String rotation;
-//			switch(d.getRotation()) {
-//			case Surface.ROTATION_0:
-//				rotation = "0 deg";
-//				break;
-//			case Surface.ROTATION_90:
-//				rotation = "90 deg";
-//				break;
-//			case Surface.ROTATION_180:
-//				rotation = "180 deg";
-//				break;
-//			case Surface.ROTATION_270:
-//				rotation = "270 deg";
-//				break;
-//			default:
-//				rotation = "*error*";
-//				break;
-//			}
-//			Log.d(TAG, String.format("DEVICE ROTATION: %s ", rotation));
 		}
 	}
 	
@@ -207,7 +185,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void drawGeometry(Geometry geo, List<Light> lights) {
 		
 		float[] mvpMatrix = new float[16];
-		float[] projectionMatrix = GameWorld.inst().getCamera().getUiMatrix();
+		float[] projectionMatrix = GameWorld.inst().getCamera().getProjectionMatrix();
 		float[] viewMatrix = GameWorld.inst().getCamera().getViewMatrix();
 		
 		GLES20.glUseProgram(geo.mShaderHandle);
@@ -257,9 +235,12 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		/* Pass in the light position in eye space.	*/	
 		//Switching to view space...
 		//TODO: Handle multiple lights
-		float[] lightPos = new float[4];
-		Matrix.multiplyMV(lightPos, 0, viewMatrix, 0, lights.get(0).mModelMatrix, 12);  
-		GLES20.glUniform3f(u_lightpos, lightPos[0], lightPos[1], lightPos[2]);
+		Light light = lights.get(0);
+		float[] lightPosWorldSpace = new float[4];
+		float[] lightPosEyeSpace = new float[4];
+		Matrix.multiplyMV(lightPosWorldSpace, 0, light.mModelMatrix, 0, light.mPosition, 0);
+        Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
+		GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
 
 		// Draw
 		
@@ -268,6 +249,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		checkError();
 		
 	}
 	
@@ -336,6 +319,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glDisableVertexAttribArray(a_pos);
 		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
 		GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
+		
+		checkError();
 	}
 	
 	/* ------------------------------ */
@@ -416,6 +401,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		if(GLES20.glGetError() != GLES20.GL_NO_ERROR) {			
 			SSLog.w(TAG, "OpenGL Error Encountered: " + interpretError(GLES20.glGetError()));
 			errorCode = GLES20.glGetError();
+		}
+		
+		if(errorCode != GLES20.GL_NO_ERROR) {
+			Log.e(TAG, String.format("OPENGL ERROR ENCOUNTERED: %s", interpretError(errorCode)));
 		}
 		
 		return errorCode;
