@@ -9,12 +9,17 @@ package com.pimphand.simplerender2;
 
 public final class R {
     public static final class array {
+        public static final int btn_a=0x7f080018;
         public static final int btn_a_inputarea=0x7f080001;
+        public static final int btn_b=0x7f080019;
         public static final int btn_b_inputarea=0x7f080002;
         public static final int btn_waterworld=0x7f080017;
         public static final int btn_waterworld_inputarea=0x7f080009;
+        public static final int btn_x=0x7f08001a;
         public static final int btn_x_inputarea=0x7f080003;
+        public static final int btn_y=0x7f08001b;
         public static final int btn_y_inputarea=0x7f080004;
+        public static final int dpad=0x7f08001c;
         public static final int dpad_inputarea_dn=0x7f080006;
         public static final int dpad_inputarea_lt=0x7f080007;
         public static final int dpad_inputarea_rt=0x7f080008;

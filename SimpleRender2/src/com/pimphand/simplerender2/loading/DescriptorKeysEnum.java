@@ -20,7 +20,8 @@ public enum DescriptorKeysEnum {
 	POS_Z,
 	SCALE_X,
 	SCALE_Y,
+	SCALE_Z,
 	COMMAND,
 	TEXTURE_NAME,
-	SHADER_NAME;
+	SHADER_NAME
 }

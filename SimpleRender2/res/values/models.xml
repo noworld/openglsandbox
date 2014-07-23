@@ -6,15 +6,17 @@
     </array>
     
     <array name="water_world_models">
-        <item >@raw/monkey</item>
+        <item >@raw/gamepad_ui</item>
+        <item >@raw/scar</item>
     </array>
     
     <string-array name="scar">
         <item>POS_X|0.0</item>
         <item>POS_Y|0.0</item>
         <item>POS_Z|-5.0</item>
-        <item>SCALE_X|1.0</item>
-        <item>SCALE_Y|1.0</item>
+        <item>SCALE_X|3.0</item>
+        <item>SCALE_Y|3.0</item>
+        <item>SCALE_Z|3.0</item>
         <item>TEXTURE_NAME|scar</item>
         <item>SHADER_NAME|model_shader</item>
     </string-array>
@@ -25,6 +27,7 @@
         <item>POS_Z|-5.0</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|model_shader</item>
     </string-array>

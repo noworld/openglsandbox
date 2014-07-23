@@ -19,7 +19,7 @@ public class GameWorld {
 	private Camera mCamera;
 	private State<GameWorld> mCurrentState;
 	private State<GameWorld> mPreviousState;
-	private boolean mDrawInputAreas = false;
+	private boolean mDrawInputAreas = true;
 
 	private GameWorld() {
 		this.mCamera = new Camera();

@@ -167,7 +167,7 @@ public class GeometryLoader {
 			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
 			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
 			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
-			float zScale = 1.0f; //TODO: Add a Scale-Z
+			float zScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Z.toString()));
 			
 			entity.translate(xPos, yPos, zPos);
 			entity.scale(xScale, yScale, zScale);
@@ -195,7 +195,7 @@ public class GeometryLoader {
 			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
 			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
 			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
-			float zScale = 1.0f; //TODO: Add a Scale-Z
+			float zScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Z.toString()));
 			
 			element.translate(xPos, yPos, zPos);
 			element.scale(xScale, yScale, zScale);
@@ -224,7 +224,7 @@ public class GeometryLoader {
 			float zPos = Float.valueOf(settings.get(DescriptorKeysEnum.POS_Z.toString()));
 			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
 			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
-			float zScale = 1.0f; //TODO: Add a Scale-Z
+			float zScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Z.toString()));
 			
 			element.translate(xPos, yPos, zPos);
 			element.scale(xScale, yScale, zScale);

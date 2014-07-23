@@ -1,81 +1,89 @@
 <resources>
 
     <string-array name="btn_a_inputarea">
-        <item>POS_X|90.0</item>
-        <item>POS_Y|90.0</item>
+        <item>POS_X|500.0</item>
+        <item>POS_Y|-280.0</item>
         <item>POS_Z|-3.9</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>
     
     <string-array name="btn_b_inputarea">
-        <item>POS_X|90.0</item>
-        <item>POS_Y|90.0</item>
+        <item>POS_X|660.0</item>
+        <item>POS_Y|-180.0</item>
         <item>POS_Z|-3.9</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>
     
     <string-array name="btn_x_inputarea">
-        <item>POS_X|90.0</item>
-        <item>POS_Y|90.0</item>
+        <item>POS_X|660.0</item>
+        <item>POS_Y|-380.0</item>
         <item>POS_Z|-3.9</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>
     
     <string-array name="btn_y_inputarea">
-        <item>POS_X|90.0</item>
-        <item>POS_Y|90.0</item>
+        <item>POS_X|825.0</item>
+        <item>POS_Y|-280.0</item>
         <item>POS_Z|-3.9</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>
     
     <string-array name="dpad_inputarea_up">
-        <item>POS_X|90.0</item>
-        <item>POS_Y|90.0</item>
+        <item>POS_X|-700.0</item>
+        <item>POS_Y|-153.8</item>
         <item>POS_Z|-3.9</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>
     
     <string-array name="dpad_inputarea_dn">
-        <item>POS_X|90.0</item>
-        <item>POS_Y|90.0</item>
+        <item>POS_X|-700.0</item>
+        <item>POS_Y|-406.2</item>
         <item>POS_Z|-3.9</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>
     
     <string-array name="dpad_inputarea_lt">
-        <item>POS_X|90.0</item>
-        <item>POS_Y|90.0</item>
+        <item>POS_X|-826.2</item>
+        <item>POS_Y|-280.0</item>
         <item>POS_Z|-3.9</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>
     
     <string-array name="dpad_inputarea_rt">
-        <item>POS_X|90.0</item>
-        <item>POS_Y|90.0</item>
+        <item>POS_X|-573.8</item>
+        <item>POS_Y|-280.0</item>
         <item>POS_Z|-3.9</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>
@@ -86,6 +94,7 @@
         <item>POS_Z|-3.9</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
         <item>COMMAND|SHOW_WATER_WORLD</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
