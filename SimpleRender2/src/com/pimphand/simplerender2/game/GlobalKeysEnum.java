@@ -4,6 +4,7 @@ public enum GlobalKeysEnum {
 
 	//General
 	DEBUG_BUILD,
+	DRAW_INPUT_AREAS,
 	
 	//File Loading
 	DESCRIPTOR_FILE_EXT,

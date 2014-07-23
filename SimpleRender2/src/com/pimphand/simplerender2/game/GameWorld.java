@@ -19,10 +19,11 @@ public class GameWorld {
 	private Camera mCamera;
 	private State<GameWorld> mCurrentState;
 	private State<GameWorld> mPreviousState;
-	private boolean mDrawInputAreas = true;
+	private boolean mDrawInputAreas = false;
 
 	private GameWorld() {
 		this.mCamera = new Camera();
+		mDrawInputAreas = GameGlobal.inst().getBool(GlobalKeysEnum.DRAW_INPUT_AREAS);
 	}
 
 	public static GameWorld inst() {

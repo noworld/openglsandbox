@@ -3,6 +3,7 @@
         <string-array name="global">
             <!-- GENERAL -->
             <item>DEBUG_BUILD|true</item>
+            <item>DRAW_INPUT_AREAS|false</item>
             
             <!-- FILE LOADING -->
             <item>DESCRIPTOR_FILE_EXT|.dsc</item>

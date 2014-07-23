@@ -22,6 +22,17 @@
         <item>SHADER_NAME|ui_shader</item>
     </string-array>
     
+     <string-array name="btn_modelviewer">
+        <item>POS_X|430.0</item>
+        <item>POS_Y|0.0</item>
+        <item>POS_Z|-4.0</item>
+        <item>SCALE_X|1.0</item>
+        <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
+        <item>TEXTURE_NAME|uipack_rpg_sheet</item>
+        <item>SHADER_NAME|ui_shader</item>
+    </string-array>
+    
     <string-array name="btn_a">
         <item>POS_X|500.0</item>
         <item>POS_Y|-280.0</item>

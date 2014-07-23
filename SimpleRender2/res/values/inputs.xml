@@ -99,5 +99,17 @@
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>
+    
+     <string-array name="btn_modelviewer_inputarea">
+        <item>POS_X|430.0</item>
+        <item>POS_Y|0.0</item>
+        <item>POS_Z|-3.9</item>
+        <item>SCALE_X|1.0</item>
+        <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
+        <item>COMMAND|SHOW_MODEL_VIEWER</item>
+        <item>TEXTURE_NAME|uvgrid</item>
+        <item>SHADER_NAME|inputarea_shader</item>
+    </string-array>
 
 </resources>

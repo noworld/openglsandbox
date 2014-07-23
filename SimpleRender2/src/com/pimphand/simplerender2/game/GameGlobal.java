@@ -51,6 +51,12 @@ public class GameGlobal {
 		return mValues.get(key);
 	}
 	
+	public Boolean getBool(GlobalKeysEnum key) {
+		String boolVal = mValues.get(key);
+		if(boolVal == null) return null;
+		return Boolean.valueOf(boolVal);
+	}
+	
 	public InputHandler getHandler(GlobalKeysEnum key) {
 		return mInputHandlers.get(key);
 	}

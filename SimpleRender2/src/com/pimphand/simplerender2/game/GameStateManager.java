@@ -16,6 +16,7 @@ public class GameStateManager {
 		
 		states.put(GameStateEnum.MAIN_MENU, new MainMenuState());
 		states.put(GameStateEnum.WATER_WORLD, new WaterWorldState());
+		states.put(GameStateEnum.MODEL_VIEWER, new ModelViewerState());
 		
 		sGameStates = Collections.unmodifiableMap(states);
 	}

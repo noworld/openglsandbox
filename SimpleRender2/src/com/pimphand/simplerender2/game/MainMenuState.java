@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.pimphand.simplerender2.R;
 import com.pimphand.simplerender2.fsm.State;
+import com.pimphand.simplerender2.input.InputEventBus;
 import com.pimphand.simplerender2.input.InputHandler;
 import com.pimphand.simplerender2.loading.GeometryLoader;
 import com.pimphand.simplerender2.rendering.GlSettings;
@@ -47,6 +48,8 @@ public class MainMenuState implements State<GameWorld> {
 		for(InputHandler ih : mObjectLibrary.mInputHandlers) {
 			ih.quiet();
 		}
+		//Clear input events when leaving the main menu
+		InputEventBus.inst().clear();
 	}
 
 	@Override

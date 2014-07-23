@@ -40,6 +40,12 @@ public class InputEventBus {
 		return result;
 	}
 	
+	public void clear() {
+		synchronized(mEventList) {
+			mEventList.clear();
+		}		
+	}
+	
 	public void executeCommands(List<InputHandler> inputs) {
 		synchronized(mEventList) {			
 			if(mEventList.size() > 0){Log.d(TAG, "***INPUT EVENT LIST FOLLOWS***");}

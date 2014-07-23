@@ -13,15 +13,15 @@ import com.pimphand.simplerender2.rendering.GlSettings;
 import com.pimphand.simplerender2.rendering.RendererManager;
 import com.pimphand.simplerender2.scene.Light;
 
-public class WaterWorldState extends MainMenuState {
+public class ModelViewerState extends MainMenuState {
 	
-	private static final String TAG = WaterWorldState.class.getSimpleName();
+	private static final String TAG = ModelViewerState.class.getSimpleName();
 	
 	private float mAccumulatedRotation = 0.0f;
 	
-	public WaterWorldState() {
+	public ModelViewerState() {
 		Context ctx = GameGlobal.inst().getContext();
-		TypedArray modelArray = ctx.getResources().obtainTypedArray(R.array.water_world_models);
+		TypedArray modelArray = ctx.getResources().obtainTypedArray(R.array.model_viewer_models);
 		this.mObjectLibrary = GeometryLoader.loadGameObjects(GameGlobal.inst().getContext(), modelArray);
 		modelArray.recycle();
 		mGlSettings = new GlSettings();
@@ -30,7 +30,7 @@ public class WaterWorldState extends MainMenuState {
 
 	@Override
 	public void enter(GameWorld target) {
-		Log.d(TAG, "Entering Water World State");
+		Log.d(TAG, "Entering Model Viewer State");
 		RendererManager.inst().getRenderer().initOpenGL(mGlSettings);
 	}
 
@@ -49,7 +49,7 @@ public class WaterWorldState extends MainMenuState {
 
 	@Override
 	public void exit(GameWorld target) {
-		Log.d(TAG, "Exiting Water World State");
+		Log.d(TAG, "Exiting Model Viewer State");
 		for(InputHandler ih : mObjectLibrary.mInputHandlers) {
 			ih.quiet();
 		}

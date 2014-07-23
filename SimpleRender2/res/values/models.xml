@@ -5,9 +5,14 @@
         <item >@raw/mainmenu_ui</item>
     </array>
     
-    <array name="water_world_models">
+    <array name="model_viewer_models">
         <item >@raw/gamepad_ui</item>
         <item >@raw/scar</item>
+    </array>
+    
+    <array name="water_world_models">
+        <item >@raw/gamepad_ui</item>
+        <item >@raw/monkey</item>
     </array>
     
     <string-array name="scar">
