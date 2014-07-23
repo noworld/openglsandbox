@@ -9,40 +9,43 @@ package com.pimphand.simplerender2;
 
 public final class R {
     public static final class array {
-        public static final int btn_a=0x7f08001b;
-        public static final int btn_a_inputarea=0x7f080001;
-        public static final int btn_b=0x7f08001c;
-        public static final int btn_b_inputarea=0x7f080002;
-        public static final int btn_modelviewer=0x7f08001a;
-        public static final int btn_modelviewer_inputarea=0x7f08000a;
-        public static final int btn_waterworld=0x7f080019;
-        public static final int btn_waterworld_inputarea=0x7f080009;
-        public static final int btn_x=0x7f08001d;
-        public static final int btn_x_inputarea=0x7f080003;
-        public static final int btn_y=0x7f08001e;
-        public static final int btn_y_inputarea=0x7f080004;
-        public static final int dpad=0x7f08001f;
-        public static final int dpad_inputarea_dn=0x7f080006;
-        public static final int dpad_inputarea_lt=0x7f080007;
-        public static final int dpad_inputarea_rt=0x7f080008;
-        public static final int dpad_inputarea_up=0x7f080005;
-        public static final int global=0x7f080000;
-        public static final int inputarea_shader=0x7f080013;
+        public static final int btn_a=0x7f08001c;
+        public static final int btn_a_inputarea=0x7f080002;
+        public static final int btn_b=0x7f08001d;
+        public static final int btn_b_inputarea=0x7f080003;
+        public static final int btn_modelviewer=0x7f08001b;
+        public static final int btn_modelviewer_inputarea=0x7f08000b;
+        public static final int btn_waterworld=0x7f08001a;
+        public static final int btn_waterworld_inputarea=0x7f08000a;
+        public static final int btn_x=0x7f08001e;
+        public static final int btn_x_inputarea=0x7f080004;
+        public static final int btn_y=0x7f08001f;
+        public static final int btn_y_inputarea=0x7f080005;
+        public static final int dpad=0x7f080020;
+        public static final int dpad_inputarea_dn=0x7f080007;
+        public static final int dpad_inputarea_lt=0x7f080008;
+        public static final int dpad_inputarea_rt=0x7f080009;
+        public static final int dpad_inputarea_up=0x7f080006;
         /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
          */
-        public static final int main_menu_models=0x7f08000b;
-        public static final int model_shader=0x7f080015;
-        public static final int model_viewer_models=0x7f08000c;
-        public static final int point_shader=0x7f080011;
-        public static final int scar=0x7f08000e;
-        public static final int shaderPrograms=0x7f080010;
-        public static final int sprite_shader=0x7f080014;
-        public static final int suzanne=0x7f08000f;
-        public static final int text_shader=0x7f080016;
-        public static final int textbox_main=0x7f080018;
-        public static final int textures=0x7f080017;
-        public static final int ui_shader=0x7f080012;
-        public static final int water_world_models=0x7f08000d;
+        public static final int fonts=0x7f080000;
+        public static final int global=0x7f080001;
+        public static final int inputarea_shader=0x7f080014;
+        /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
+         */
+        public static final int main_menu_models=0x7f08000c;
+        public static final int model_shader=0x7f080016;
+        public static final int model_viewer_models=0x7f08000d;
+        public static final int point_shader=0x7f080012;
+        public static final int scar=0x7f08000f;
+        public static final int shaderPrograms=0x7f080011;
+        public static final int sprite_shader=0x7f080015;
+        public static final int suzanne=0x7f080010;
+        public static final int text_shader=0x7f080017;
+        public static final int textbox_main=0x7f080019;
+        public static final int textures=0x7f080018;
+        public static final int ui_shader=0x7f080013;
+        public static final int water_world_models=0x7f08000e;
     }
     public static final class attr {
     }
@@ -85,11 +88,12 @@ public final class R {
         public static final int gamepad_ui=0x7f040004;
         public static final int mainmenu_ui=0x7f040005;
         public static final int monkey=0x7f040006;
-        public static final int scar=0x7f040007;
-        public static final int v_model=0x7f040008;
-        public static final int v_point=0x7f040009;
-        public static final int v_sprite=0x7f04000a;
-        public static final int v_ui=0x7f04000b;
+        public static final int praetorium_bb_regular=0x7f040007;
+        public static final int scar=0x7f040008;
+        public static final int v_model=0x7f040009;
+        public static final int v_point=0x7f04000a;
+        public static final int v_sprite=0x7f04000b;
+        public static final int v_ui=0x7f04000c;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;
