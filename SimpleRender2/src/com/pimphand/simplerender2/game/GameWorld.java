@@ -2,7 +2,7 @@ package com.pimphand.simplerender2.game;
 
 import android.graphics.Point;
 
-import com.pimphand.simplerender2.fsm.State;
+import com.pimphand.simplerender2.fsm.GameState;
 import com.pimphand.simplerender2.input.InputEventBus;
 import com.pimphand.simplerender2.input.InputHandler;
 import com.pimphand.simplerender2.rendering.BaseRenderer;
@@ -17,8 +17,8 @@ public class GameWorld {
 	private static GameWorld sInstance;
 
 	private Camera mCamera;
-	private State<GameWorld> mCurrentState;
-	private State<GameWorld> mPreviousState;
+	private GameState<GameWorld> mCurrentState;
+	private GameState<GameWorld> mPreviousState;
 	private boolean mDrawInputAreas = false;
 
 	private GameWorld() {
@@ -51,7 +51,7 @@ public class GameWorld {
 		renderUi();
 	}
 
-	public boolean changeState(State<GameWorld> state) {
+	public boolean changeState(GameState<GameWorld> state) {
 
 		if(mCurrentState != null) {
 			mCurrentState.exit(this);

@@ -9,14 +9,19 @@ import org.apache.commons.lang.ArrayUtils;
 
 import android.util.Log;
 
+import com.pimphand.simplerender2.rendering.shaders.ShaderManager;
+import com.pimphand.simplerender2.rendering.textures.TextureManager;
 import com.solesurvivor.util.SSArrayUtil;
 
 
 public class Font {
 	
-	public static final String GLYPH_PREFIX = "glyph_";
+	public static final String UNDERSCORE = "_";
 	public static final String EQUALS_CODE = "eq";
+	public static final String EQUALS = "=";	
 	public static final String SPACE_CODE = "space";
+	public static final String SPACE = " ";
+	public static final String COMMA = ",";
 	public static final int NUM_ELEMENTS = 6; 
 	public static final int ELEMENTS_STRIDE = 32;
 	public static final int POS_OFFSET = 0;
@@ -48,27 +53,29 @@ public class Font {
 			
 	public Font(Map<String,String> glyphProperties) {
 		
-		this.mAsset = glyphProperties.get("asset");
+		this.mAsset = glyphProperties.get(FontKeysEnum.ASSET.toString());
 		this.mName = glyphProperties.get("name");
-		this.mAtlasWidth = Float.parseFloat(glyphProperties.get("atlas_width"));
-		this.mAtlasHeight = Float.parseFloat(glyphProperties.get("atlas_height"));
+		this.mAtlasWidth = Float.parseFloat(glyphProperties.get(FontKeysEnum.ATLAS_WIDTH.toString()));
+		this.mAtlasHeight = Float.parseFloat(glyphProperties.get(FontKeysEnum.ATLAS_HEIGHT.toString()));
+		this.mShaderHandle = ShaderManager.getShaderId(glyphProperties.get(FontKeysEnum.SHADER_NAME.toString()));
+		this.mTextureHandle = TextureManager.getTextureId(glyphProperties.get(FontKeysEnum.TEXTURE_NAME.toString()));
 		
 		Log.d(TAG, String.format("Loading %s font atlas: %s x %s", mName, mAtlasWidth, mAtlasHeight));
 		
 		mGlyphs = new HashMap<Character,Glyph>(glyphProperties.size());
-		
+		String glpyhPrefix = FontKeysEnum.GLYPH.toString() + UNDERSCORE;		
 		for(String s : glyphProperties.keySet()) {
-			if(s.startsWith(GLYPH_PREFIX)) {
+			if(s.startsWith(glpyhPrefix)) {
 				String values = glyphProperties.get(s);
-				String glyph = s.substring(GLYPH_PREFIX.length());
+				String glyph = s.substring(glpyhPrefix.length());
 				
 				//If length is 1, then we have a single character
 				//Else, we have a code
 				if(glyph.length() > 1) {
 					if(glyph.equals(EQUALS_CODE)) {
-						glyph = "=";
+						glyph = EQUALS;
 					} else if(glyph.equals(SPACE_CODE)) {
-						glyph = " ";
+						glyph = SPACE;
 					}
 				}				
 				
@@ -93,10 +100,10 @@ public class Font {
 	private Glyph loadGlyphIntoList(char c, String values) {
 		
 		
-		String[] bbStr = values.split(",");
+		String[] bbStr = values.split(COMMA);
 		
 		if(bbStr.length != 4) {
-			throw new IllegalArgumentException("Glyphs must have exactly left, top, right, bottom.");
+			throw new IllegalArgumentException(String.format("Glyphs must have exactly left, top, right, bottom. Encountered: %s", values));
 		}
 		
 		float[] bb = new float[4];

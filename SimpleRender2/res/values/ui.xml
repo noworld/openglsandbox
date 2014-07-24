@@ -7,6 +7,14 @@
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>SCALE_Z|1.0</item>
+        <item>TEXT|Welcome to the main menu.</item>
+        <item>TEXT_LINE_LEN|80</item> 
+        <item>TEXT_POS_X|0.0</item>
+        <item>TEXT_POS_Y|0.0</item>
+        <item>TEXT_POS_Z|-4.0</item>
+        <item>TEXT_SCALE_X|1.0</item>
+        <item>TEXT_SCALE_Y|1.0</item>
+        <item>TEXT_FONT|praetorium_bb_regular</item>
         <item>TEXTURE_NAME|uipack_rpg_sheet</item>
         <item>SHADER_NAME|ui_shader</item>
     </string-array>
@@ -18,6 +26,13 @@
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>SCALE_Z|1.0</item>
+        <item>TEXT|Water Demo World</item>
+        <item>TEXT_LINE_LEN|80</item> 
+        <item>TEXT_POS_X|0.0</item>
+        <item>TEXT_POS_Y|0.0</item>
+        <item>TEXT_POS_Z|-4.0</item>
+        <item>TEXT_SCALE_X|1.0</item>
+        <item>TEXT_SCALE_Y|1.0</item>
         <item>TEXTURE_NAME|uipack_rpg_sheet</item>
         <item>SHADER_NAME|ui_shader</item>
     </string-array>
@@ -29,6 +44,13 @@
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>SCALE_Z|1.0</item>
+        <item>TEXT|Model Viewer</item>
+        <item>TEXT_LINE_LEN|80</item> 
+        <item>TEXT_POS_X|0.0</item>
+        <item>TEXT_POS_Y|0.0</item>
+        <item>TEXT_POS_Z|-4.0</item>
+        <item>TEXT_SCALE_X|1.0</item>
+        <item>TEXT_SCALE_Y|1.0</item>
         <item>TEXTURE_NAME|uipack_rpg_sheet</item>
         <item>SHADER_NAME|ui_shader</item>
     </string-array>

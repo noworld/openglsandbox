@@ -4,15 +4,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.pimphand.simplerender2.fsm.State;
+import com.pimphand.simplerender2.fsm.GameState;
 import com.solesurvivor.util.exceptions.NotInitializedException;
 
 public class GameStateManager {
 
-	private static Map<GameStateEnum,State<GameWorld>> sGameStates = null;
+	private static Map<GameStateEnum,GameState<GameWorld>> sGameStates = null;
 	
 	public static void init() {
-		Map<GameStateEnum,State<GameWorld>> states = new HashMap<GameStateEnum,State<GameWorld>>();
+		Map<GameStateEnum,GameState<GameWorld>> states = new HashMap<GameStateEnum,GameState<GameWorld>>();
 		
 		states.put(GameStateEnum.MAIN_MENU, new MainMenuState());
 		states.put(GameStateEnum.WATER_WORLD, new WaterWorldState());
@@ -21,7 +21,7 @@ public class GameStateManager {
 		sGameStates = Collections.unmodifiableMap(states);
 	}
 	
-	public static State<GameWorld> getState(GameStateEnum key) {
+	public static GameState<GameWorld> getState(GameStateEnum key) {
 		if(sGameStates == null) {
 			throw new NotInitializedException();
 		}

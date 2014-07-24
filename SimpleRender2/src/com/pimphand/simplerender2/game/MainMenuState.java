@@ -5,7 +5,7 @@ import android.content.res.TypedArray;
 import android.util.Log;
 
 import com.pimphand.simplerender2.R;
-import com.pimphand.simplerender2.fsm.State;
+import com.pimphand.simplerender2.fsm.GameState;
 import com.pimphand.simplerender2.input.InputEventBus;
 import com.pimphand.simplerender2.input.InputHandler;
 import com.pimphand.simplerender2.loading.GeometryLoader;
@@ -13,7 +13,7 @@ import com.pimphand.simplerender2.rendering.GlSettings;
 import com.pimphand.simplerender2.rendering.RendererManager;
 import com.pimphand.simplerender2.scene.GameObjectLibrary;
 
-public class MainMenuState implements State<GameWorld> {
+public class MainMenuState implements GameState<GameWorld> {
 	
 	private static final String TAG = MainMenuState.class.getSimpleName();
 	
@@ -39,6 +39,11 @@ public class MainMenuState implements State<GameWorld> {
 
 	@Override
 	public void execute(GameWorld target) {
+		
+	}
+
+	@Override
+	public void render(GameWorld target) {
 		//Log.d(TAG, "Executing Main Menu State");
 	}
 

@@ -12,12 +12,24 @@ public class Cursor implements Iterable<CursorPosition> {
 
 	private static final int BYTES_PER_INDEX = 2;
 
-	public Font mFont = null;
-	public float[] mScale = new float[]{2.0f, 2.0f, 1.0f};
-	public float[] mPosition = new float[]{0.0f, 0.0f, -4.0f, 1.0f};
-	public float mCharPadding = 0.0f;
-//	public float[] mModelMatrix = new float[16];
-	public String mValue = null; 
+	private Font mFont = null;
+	private float[] mScale = new float[]{2.0f, 2.0f, 1.0f};
+	private float[] mPosition = new float[]{0.0f, 0.0f, -4.0f, 1.0f};
+	private float mLineLen = Float.POSITIVE_INFINITY;
+	private float mCharPadding = 0.0f;
+	private String mValue = null; 
+
+	public Cursor(Font mFont, float[] mScale, float[] mPosition, float mCharPadding, String mValue) {
+		this.mFont = mFont;
+		this.mScale = mScale;
+		this.mPosition = mPosition;
+		this.mCharPadding = mCharPadding;
+		this.mValue = mValue;
+	}
+	
+	public void setLineLength(float lineLen) {
+		this.mLineLen = lineLen;
+	}
 
 	@Override
 	public Iterator<CursorPosition> iterator() {

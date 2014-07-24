@@ -1,4 +1,4 @@
-package com.pimphand.simplerender2.input;
+package com.pimphand.simplerender2.scene;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,12 @@ import java.util.List;
 import android.util.Log;
 
 import com.pimphand.simplerender2.commands.Command;
+import com.pimphand.simplerender2.input.InputArea;
+import com.pimphand.simplerender2.input.InputEvent;
+import com.pimphand.simplerender2.input.InputEventEnum;
+import com.pimphand.simplerender2.input.InputHandler;
+import com.pimphand.simplerender2.input.TouchFeedback;
 import com.pimphand.simplerender2.rendering.Geometry;
-import com.pimphand.simplerender2.scene.UiElement;
 
 public class InputUiElement extends UiElement implements InputHandler {
 	

@@ -2,13 +2,13 @@ package com.pimphand.simplerender2.scene;
 
 import java.util.List;
 
-import com.pimphand.simplerender2.fsm.State;
+import com.pimphand.simplerender2.fsm.GameState;
 
 public abstract class GameObject {
 
 	protected List<GameObject> mChildren;
-	protected State<GameObject> mCurrentState;
-	protected State<GameObject> mPreviousState;
+	protected GameState<GameObject> mCurrentState;
+	protected GameState<GameObject> mPreviousState;
 	protected boolean mDirty = true;
 	
 	public boolean isDirty() {
@@ -41,7 +41,7 @@ public abstract class GameObject {
 		return true;
 	}
 	
-	public boolean changeState(State<GameObject> state) {
+	public boolean changeState(GameState<GameObject> state) {
 
 		mCurrentState.exit(this);
 

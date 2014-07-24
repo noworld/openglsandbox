@@ -23,6 +23,7 @@ import com.pimphand.simplerender2.game.GameWorld;
 import com.pimphand.simplerender2.rendering.shaders.ShaderManager;
 import com.pimphand.simplerender2.rendering.textures.TextureManager;
 import com.pimphand.simplerender2.scene.Light;
+import com.pimphand.simplerender2.text.FontManager;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
 
@@ -56,6 +57,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		ShaderManager.init();
 		TextureManager.init();
+		FontManager.init();
 		GameStateManager.init();
 		GameWorld.init();
 		synchronized(GameWorld.inst()) {

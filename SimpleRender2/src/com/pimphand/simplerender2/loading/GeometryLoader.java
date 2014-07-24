@@ -27,7 +27,6 @@ import com.pimphand.simplerender2.game.GlobalKeysEnum;
 import com.pimphand.simplerender2.input.CircleInputArea;
 import com.pimphand.simplerender2.input.InputArea;
 import com.pimphand.simplerender2.input.InputShapeEnum;
-import com.pimphand.simplerender2.input.InputUiElement;
 import com.pimphand.simplerender2.input.Polygon2DInputArea;
 import com.pimphand.simplerender2.rendering.BaseRenderer;
 import com.pimphand.simplerender2.rendering.Geometry;
@@ -36,8 +35,12 @@ import com.pimphand.simplerender2.rendering.shaders.ShaderManager;
 import com.pimphand.simplerender2.rendering.textures.TextureManager;
 import com.pimphand.simplerender2.scene.GameEntity;
 import com.pimphand.simplerender2.scene.GameObjectLibrary;
+import com.pimphand.simplerender2.scene.InputUiElement;
 import com.pimphand.simplerender2.scene.Light;
 import com.pimphand.simplerender2.scene.UiElement;
+import com.pimphand.simplerender2.text.Cursor;
+import com.pimphand.simplerender2.text.Font;
+import com.pimphand.simplerender2.text.FontManager;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
@@ -197,6 +200,8 @@ public class GeometryLoader {
 			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
 			float zScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Z.toString()));
 			
+			element.setCursor(loadCursor(settings));
+			
 			element.translate(xPos, yPos, zPos);
 			element.scale(xScale, yScale, zScale);
 			
@@ -225,6 +230,8 @@ public class GeometryLoader {
 			float xScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_X.toString()));
 			float yScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Y.toString()));
 			float zScale = Float.valueOf(settings.get(DescriptorKeysEnum.SCALE_Z.toString()));
+			
+			element.setCursor(loadCursor(settings));
 			
 			element.translate(xPos, yPos, zPos);
 			element.scale(xScale, yScale, zScale);
@@ -326,6 +333,34 @@ public class GeometryLoader {
 
 		Polygon2DInputArea polyArea = new Polygon2DInputArea(hull);
 		return polyArea;
+	}
+	
+	private static Cursor loadCursor(Map<String, String> settings) {
+		if(StringUtils.isNotBlank(settings.get(DescriptorKeysEnum.TEXT_FONT.toString()))) {
+			Font font = FontManager.getFont(settings.get(DescriptorKeysEnum.TEXT_FONT.toString()));
+			
+			float textXPos = Float.valueOf(settings.get(DescriptorKeysEnum.TEXT_POS_X.toString()));
+			float textYPos = Float.valueOf(settings.get(DescriptorKeysEnum.TEXT_POS_Y.toString()));
+			float textZPos = Float.valueOf(settings.get(DescriptorKeysEnum.TEXT_POS_Z.toString()));
+			float[] textPos = {textXPos, textYPos, textZPos, 1.0f};
+			
+			float textXscale = Float.valueOf(settings.get(DescriptorKeysEnum.TEXT_POS_X.toString()));
+			float textYscale = Float.valueOf(settings.get(DescriptorKeysEnum.TEXT_POS_Y.toString()));
+			float[] textScale = {textXscale, textYscale, 1.0f};
+					
+			String text = settings.get(DescriptorKeysEnum.TEXT.toString());
+			
+			Cursor cursor = new Cursor(font, textScale, textPos, 0.0f, text);
+
+			String lineLenVal = settings.get(DescriptorKeysEnum.TEXT_LINE_LEN.toString());
+			if(StringUtils.isNotBlank(lineLenVal)) {
+				float lineLen = Float.valueOf(lineLenVal);
+				cursor.setLineLength(lineLen);
+			}
+			
+			return cursor;
+		}
+		return null;
 	}
 
 	private static class IntermediateGeometry {
