@@ -23,6 +23,8 @@ import com.pimphand.simplerender2.game.GameWorld;
 import com.pimphand.simplerender2.rendering.shaders.ShaderManager;
 import com.pimphand.simplerender2.rendering.textures.TextureManager;
 import com.pimphand.simplerender2.scene.Light;
+import com.pimphand.simplerender2.text.Cursor;
+import com.pimphand.simplerender2.text.Font;
 import com.pimphand.simplerender2.text.FontManager;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
@@ -323,6 +325,55 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
 		
 		checkError();
+	}
+	
+	public void drawText(Cursor cursor) {
+		if(cursor == null || cursor.getFont() == null) return;
+		
+		float[] mvpMatrix = new float[16];
+		float[] uiMatrix = GameWorld.inst().getCamera().getUiMatrix();
+		float[] viewMatrix = GameWorld.inst().getCamera().getViewMatrix();
+		
+		Font font = cursor.getFont();
+				
+		GLES20.glUseProgram(font.mShaderHandle);
+		
+		int u_mvp = GLES20.glGetUniformLocation(font.mShaderHandle, "u_MVPMatrix");
+		int u_texsampler = GLES20.glGetUniformLocation(font.mShaderHandle, "u_Texture");
+
+		int a_pos = GLES20.glGetAttribLocation(font.mShaderHandle, "a_Position");
+		int a_txc = GLES20.glGetAttribLocation(font.mShaderHandle, "a_TexCoordinate");
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, font.mTextureHandle);
+		GLES20.glUniform1i(u_texsampler, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, font.mVboIndex);
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, font.mPosSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.POS_OFFSET);
+
+		GLES20.glEnableVertexAttribArray(a_txc);
+		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.TXC_OFFSET);
+
+		// Draw
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, font.mIboIndex);
+		
+		for(Cursor.CursorPosition cp : cursor) {
+			// --MV--
+			//make mMVPMatrix MV
+			Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, cp.mModelMatrix, 0);
+			//make mMVPMatrix MVP
+			Matrix.multiplyMM(mvpMatrix, 0, uiMatrix, 0, mvpMatrix, 0);
+			//MVP is MVP at this point
+			GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+			GLES20.glDrawElements(GLES20.GL_TRIANGLES, Font.NUM_ELEMENTS, GLES20.GL_UNSIGNED_SHORT, cp.mGlyphIndex);
+		}
+		
+		//Unbind buffers
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
 	}
 	
 	/* ------------------------------ */

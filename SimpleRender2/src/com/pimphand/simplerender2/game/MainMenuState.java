@@ -8,7 +8,7 @@ import com.pimphand.simplerender2.R;
 import com.pimphand.simplerender2.fsm.GameState;
 import com.pimphand.simplerender2.input.InputEventBus;
 import com.pimphand.simplerender2.input.InputHandler;
-import com.pimphand.simplerender2.loading.GeometryLoader;
+import com.pimphand.simplerender2.loading.GameObjectLoader;
 import com.pimphand.simplerender2.rendering.GlSettings;
 import com.pimphand.simplerender2.rendering.RendererManager;
 import com.pimphand.simplerender2.scene.GameObjectLibrary;
@@ -24,7 +24,7 @@ public class MainMenuState implements GameState<GameWorld> {
 	public MainMenuState() {
 		Context ctx = GameGlobal.inst().getContext();
 		TypedArray modelArray = ctx.getResources().obtainTypedArray(R.array.main_menu_models);
-		this.mObjectLibrary = GeometryLoader.loadGameObjects(GameGlobal.inst().getContext(), modelArray);
+		this.mObjectLibrary = GameObjectLoader.loadGameObjects(GameGlobal.inst().getContext(), modelArray);
 		modelArray.recycle();
 		this.mObjectLibrary.mInputHandlers.add(GameGlobal.inst().getHandler(GlobalKeysEnum.BACK_BUTTON_INPUT_HANDLER));
 		mGlSettings = new GlSettings();

@@ -44,9 +44,9 @@ import com.pimphand.simplerender2.text.FontManager;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
-public class GeometryLoader {
+public class GameObjectLoader {
 
-	private static final String TAG = GeometryLoader.class.getSimpleName();
+	private static final String TAG = GameObjectLoader.class.getSimpleName();
 	private static final String NEWLINE = "\r\n";
 	private static final String PLUS = "+";
 	private static final String COMMA = ",";
@@ -344,18 +344,17 @@ public class GeometryLoader {
 			float textZPos = Float.valueOf(settings.get(DescriptorKeysEnum.TEXT_POS_Z.toString()));
 			float[] textPos = {textXPos, textYPos, textZPos, 1.0f};
 			
-			float textXscale = Float.valueOf(settings.get(DescriptorKeysEnum.TEXT_POS_X.toString()));
-			float textYscale = Float.valueOf(settings.get(DescriptorKeysEnum.TEXT_POS_Y.toString()));
+			float textXscale = Float.valueOf(settings.get(DescriptorKeysEnum.TEXT_SCALE_X.toString()));
+			float textYscale = Float.valueOf(settings.get(DescriptorKeysEnum.TEXT_SCALE_Y.toString()));
 			float[] textScale = {textXscale, textYscale, 1.0f};
 					
 			String text = settings.get(DescriptorKeysEnum.TEXT.toString());
 			
 			Cursor cursor = new Cursor(font, textScale, textPos, 0.0f, text);
 
-			String lineLenVal = settings.get(DescriptorKeysEnum.TEXT_LINE_LEN.toString());
-			if(StringUtils.isNotBlank(lineLenVal)) {
-				float lineLen = Float.valueOf(lineLenVal);
-				cursor.setLineLength(lineLen);
+			String lineLenVal = settings.get(DescriptorKeysEnum.TEXT_LINE_LENGTH.toString());
+			if(StringUtils.isNotBlank(lineLenVal)) {				
+				cursor.setLineLength(Float.valueOf(lineLenVal));
 			}
 			
 			return cursor;

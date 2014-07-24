@@ -45,6 +45,8 @@ public class Font {
 	public float mAtlasWidth = 1024.0f; //Font atlas size
 	public float mAtlasHeight = 1024.0f;
 	
+	public float mLineHeight = 36.0f;
+	
 	public Map<Character,Glyph> mGlyphs = null;
 	
 	private List<Float> mData = new ArrayList<Float>();
@@ -54,9 +56,10 @@ public class Font {
 	public Font(Map<String,String> glyphProperties) {
 		
 		this.mAsset = glyphProperties.get(FontKeysEnum.ASSET.toString());
-		this.mName = glyphProperties.get("name");
+		this.mName = glyphProperties.get(FontKeysEnum.NAME.toString());
 		this.mAtlasWidth = Float.parseFloat(glyphProperties.get(FontKeysEnum.ATLAS_WIDTH.toString()));
 		this.mAtlasHeight = Float.parseFloat(glyphProperties.get(FontKeysEnum.ATLAS_HEIGHT.toString()));
+		this.mLineHeight = Float.parseFloat(glyphProperties.get(FontKeysEnum.LINE_HEIGHT.toString()));
 		this.mShaderHandle = ShaderManager.getShaderId(glyphProperties.get(FontKeysEnum.SHADER_NAME.toString()));
 		this.mTextureHandle = TextureManager.getTextureId(glyphProperties.get(FontKeysEnum.TEXTURE_NAME.toString()));
 		

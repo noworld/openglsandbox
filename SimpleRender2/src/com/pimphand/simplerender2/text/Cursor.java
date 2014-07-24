@@ -16,6 +16,7 @@ public class Cursor implements Iterable<CursorPosition> {
 	private float[] mScale = new float[]{2.0f, 2.0f, 1.0f};
 	private float[] mPosition = new float[]{0.0f, 0.0f, -4.0f, 1.0f};
 	private float mLineLen = Float.POSITIVE_INFINITY;
+	private float mLineHeight = 0.0f;
 	private float mCharPadding = 0.0f;
 	private String mValue = null; 
 
@@ -29,6 +30,14 @@ public class Cursor implements Iterable<CursorPosition> {
 	
 	public void setLineLength(float lineLen) {
 		this.mLineLen = lineLen;
+	}
+	
+	public void setLineHeight(float lineHieght) {
+		this.mLineHeight = lineHieght;
+	}
+	
+	public Font getFont() {
+		return mFont;
 	}
 
 	@Override

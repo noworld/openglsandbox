@@ -9,7 +9,7 @@ import android.util.Log;
 import com.pimphand.simplerender2.R;
 import com.pimphand.simplerender2.input.InputEventBus;
 import com.pimphand.simplerender2.input.InputHandler;
-import com.pimphand.simplerender2.loading.GeometryLoader;
+import com.pimphand.simplerender2.loading.GameObjectLoader;
 import com.pimphand.simplerender2.rendering.GlBlendFunc;
 import com.pimphand.simplerender2.rendering.GlSettings;
 import com.pimphand.simplerender2.rendering.RendererManager;
@@ -24,7 +24,7 @@ public class WaterWorldState extends MainMenuState {
 	public WaterWorldState() {
 		Context ctx = GameGlobal.inst().getContext();
 		TypedArray modelArray = ctx.getResources().obtainTypedArray(R.array.water_world_models);
-		this.mObjectLibrary = GeometryLoader.loadGameObjects(GameGlobal.inst().getContext(), modelArray);
+		this.mObjectLibrary = GameObjectLoader.loadGameObjects(GameGlobal.inst().getContext(), modelArray);
 		modelArray.recycle();
 		mGlSettings = new GlSettings();
 		mGlSettings.setBlendFunc(new GlBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA));

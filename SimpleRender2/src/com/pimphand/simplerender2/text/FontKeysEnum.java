@@ -8,5 +8,6 @@ public enum FontKeysEnum {
 	SHADER_NAME,
 	ATLAS_WIDTH,
 	ATLAS_HEIGHT,
+	LINE_HEIGHT,
 	GLYPH
 }

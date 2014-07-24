@@ -21,6 +21,10 @@ public class UiElement {
 	public void setCursor(Cursor cursor) {
 		this.mCursor = cursor;
 	}
+	
+	public Cursor getCursor() {
+		return mCursor;
+	}
 
 	public void scale(float x, float y, float z) {
 		Matrix.scaleM(this.mGeometry.mModelMatrix, 0, x, y, z);

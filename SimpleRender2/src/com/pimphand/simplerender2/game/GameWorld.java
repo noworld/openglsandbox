@@ -95,6 +95,7 @@ public class GameWorld {
 		
 		for(UiElement ui : mCurrentState.getLibrary().mDisplayElements) {
 			ren.drawUI(ui.getGeometry());
+			ren.drawText(ui.getCursor());
 		}
 		
 		if(mDrawInputAreas) {
