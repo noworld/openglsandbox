@@ -336,6 +336,7 @@ public class GameObjectLoader {
 	}
 	
 	private static Cursor loadCursor(Map<String, String> settings) {
+		Cursor cursor = null;
 		if(StringUtils.isNotBlank(settings.get(DescriptorKeysEnum.TEXT_FONT.toString()))) {
 			Font font = FontManager.getFont(settings.get(DescriptorKeysEnum.TEXT_FONT.toString()));
 			
@@ -350,16 +351,16 @@ public class GameObjectLoader {
 					
 			String text = settings.get(DescriptorKeysEnum.TEXT.toString());
 			
-			Cursor cursor = new Cursor(font, textScale, textPos, 0.0f, text);
+			cursor = new Cursor(font, textScale, textPos, 0.0f, text);
 
 			String lineLenVal = settings.get(DescriptorKeysEnum.TEXT_LINE_LENGTH.toString());
 			if(StringUtils.isNotBlank(lineLenVal)) {				
 				cursor.setLineLength(Float.valueOf(lineLenVal));
 			}
-			
-			return cursor;
+
 		}
-		return null;
+		
+		return cursor;
 	}
 
 	private static class IntermediateGeometry {

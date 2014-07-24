@@ -28,13 +28,16 @@ public class UiElement {
 
 	public void scale(float x, float y, float z) {
 		Matrix.scaleM(this.mGeometry.mModelMatrix, 0, x, y, z);
+		if(mCursor != null){mCursor.scale(x,y,z);}
 	}
 
 	public void translate(float x, float y, float z) {
 		Matrix.translateM(this.mGeometry.mModelMatrix, 0, x, y, z);
+		if(mCursor != null){mCursor.translate(x,y,z);}
 	}
 
 	public void reset() {
 		Matrix.setIdentityM(this.mGeometry.mModelMatrix, 0);
+		if(mCursor != null){mCursor.reset();}
 	}
 }

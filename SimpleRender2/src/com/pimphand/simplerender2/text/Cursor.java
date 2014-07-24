@@ -13,19 +13,23 @@ public class Cursor implements Iterable<CursorPosition> {
 	private static final int BYTES_PER_INDEX = 2;
 
 	private Font mFont = null;
-	private float[] mScale = new float[]{2.0f, 2.0f, 1.0f};
-	private float[] mPosition = new float[]{0.0f, 0.0f, -4.0f, 1.0f};
+	private float[] mScale;
+	private float[] mOriginalScale;
+	private float[] mPosition;
+	private float[] mOriginalPosition;
 	private float mLineLen = Float.POSITIVE_INFINITY;
 	private float mLineHeight = 0.0f;
 	private float mCharPadding = 0.0f;
 	private String mValue = null; 
 
-	public Cursor(Font mFont, float[] mScale, float[] mPosition, float mCharPadding, String mValue) {
-		this.mFont = mFont;
-		this.mScale = mScale;
-		this.mPosition = mPosition;
-		this.mCharPadding = mCharPadding;
-		this.mValue = mValue;
+	public Cursor(Font font, float[] scale, float[] position, float charPadding, String value) {
+		this.mFont = font;
+		this.mOriginalScale = scale;
+		this.mScale = scale;
+		this.mOriginalPosition = position;
+		this.mPosition = position;
+		this.mCharPadding = charPadding;
+		this.mValue = value;
 	}
 	
 	public void setLineLength(float lineLen) {
@@ -34,6 +38,26 @@ public class Cursor implements Iterable<CursorPosition> {
 	
 	public void setLineHeight(float lineHieght) {
 		this.mLineHeight = lineHieght;
+	}
+	
+	public void scale(float x, float y, float z) {
+		float[] intermediate = {mScale[0] * x, 
+				mScale[1] * y, 
+				mScale[2] * z};
+		this.mScale = intermediate;
+	}
+	
+	public void translate(float x, float y, float z) {
+		float[] intermediate = {mPosition[0] + x, 
+				mPosition[1] + y, 
+				mPosition[2] + z, 
+				mPosition[3]};
+		this.mPosition = intermediate;
+	}
+
+	public void reset() {
+		this.mScale = mOriginalScale;
+		this.mPosition = mOriginalPosition;
 	}
 	
 	public Font getFont() {
