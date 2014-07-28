@@ -3,6 +3,8 @@ package com.pimphand.simplerender2.scene;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.Log;
+
 import com.pimphand.simplerender2.commands.Command;
 import com.pimphand.simplerender2.input.InputArea;
 import com.pimphand.simplerender2.input.InputEvent;
@@ -49,7 +51,7 @@ public class InputUiElement extends UiElement implements InputHandler {
 	public void fire() {
 		//If the button is down
 		if(mPressed) {
-//			Log.d(TAG, String.format("SCREEN button firing on %s at %s,%s", mTouch.getEvent().toString(), mTouch.getCoords().x, mTouch.getCoords().y));
+			Log.d(TAG, String.format("SCREEN button firing on %s at %s,%s", mTouch.getEvent().toString(), mTouch.getCoords().x, mTouch.getCoords().y));
 			//Vibrate when changing state to pressed 
 			if(mPreviousTouch == null
 					|| mPreviousTouch.getEvent().equals(InputEventEnum.UP)

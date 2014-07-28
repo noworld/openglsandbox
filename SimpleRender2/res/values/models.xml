@@ -13,6 +13,7 @@
     <array name="water_world_models">
         <item>@raw/gamepad_ui</item>
         <item>@raw/box_plane</item>
+        <item>@raw/scar</item>
     </array>
     
      <string-array name="cube">
