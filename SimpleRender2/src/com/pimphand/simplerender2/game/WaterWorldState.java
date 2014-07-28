@@ -57,4 +57,37 @@ public class WaterWorldState extends MainMenuState {
 		InputEventBus.inst().clear();
 	}
 	
+	@Override
+	public void translateView(float x, float y, float z) {
+		mCameraTranslation[0] += z * Math.sin(Math.toRadians(mCameraRotation[0])) * -1;				
+		mCameraTranslation[1] += y; //y-up
+		mCameraTranslation[2] += z * Math.cos(Math.toRadians(mCameraRotation[0]));
+	}
+
+	@Override
+	public void rotateView(float angle, float x, float y, float z) {
+		mCameraRotation[0] += angle;
+		
+		if(mCameraRotation[0] > 360.0f) {
+			mCameraRotation[0] = mCameraRotation[0] - 360.0f;
+		} else if(mCameraRotation[0] < 0.0f) {
+			mCameraRotation[0] = mCameraRotation[0] + 360.0f;
+		}
+			
+		
+		mCameraRotation[1] = (x + mCameraRotation[1])/2;
+		mCameraRotation[2] = (y + mCameraRotation[2])/2;
+		mCameraRotation[3] = (z + mCameraRotation[3])/2;
+	}
+	
+	@Override
+	public float[] getProjectionMatrix() {
+		float[] tempMatrix = new float[mCamera.getProjectionMatrix().length];
+		System.arraycopy(mCamera.getProjectionMatrix(), 0, tempMatrix, 0, tempMatrix.length);
+		Matrix.rotateM(tempMatrix, 0, mCameraRotation[0], mCameraRotation[1], mCameraRotation[2], mCameraRotation[3]);
+		Matrix.translateM(tempMatrix, 0, mCameraTranslation[0], mCameraTranslation[1], mCameraTranslation[2]);		
+		return tempMatrix;
+	}
+	
+	
 }

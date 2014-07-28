@@ -189,8 +189,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void drawGeometry(Geometry geo, List<Light> lights) {
 		
 		float[] mvpMatrix = new float[16];
-		float[] projectionMatrix = GameWorld.inst().getCamera().getProjectionMatrix();
-		float[] viewMatrix = GameWorld.inst().getCamera().getViewMatrix();
+		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
+		float[] viewMatrix = GameWorld.inst().getViewMatrix();
 		
 		GLES20.glUseProgram(geo.mShaderHandle);
 		
@@ -261,8 +261,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void drawUI(Geometry geo) {
 
 		float[] mvpMatrix = new float[16];
-		float[] uiMatrix = GameWorld.inst().getCamera().getUiMatrix();
-		float[] viewMatrix = GameWorld.inst().getCamera().getViewMatrix();
+		float[] uiMatrix = GameWorld.inst().getUiMatrix();
+		float[] viewMatrix = GameWorld.inst().getViewMatrix();
 		
 		GLES20.glUseProgram(geo.mShaderHandle);
 		
@@ -309,8 +309,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void drawLight(Light light) {
 		
 		float[] mvpMatrix = new float[16];
-		float[] projectionMatrix = GameWorld.inst().getCamera().getProjectionMatrix();
-		float[] viewMatrix = GameWorld.inst().getCamera().getViewMatrix();
+		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
+		float[] viewMatrix = GameWorld.inst().getViewMatrix();
 
 		GLES20.glUseProgram(light.mShaderHandle);  
 		final int u_mvp = GLES20.glGetUniformLocation(light.mShaderHandle, "u_MVPMatrix");
@@ -331,8 +331,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		if(cursor == null || cursor.getFont() == null) return;
 		
 		float[] mvpMatrix = new float[16];
-		float[] uiMatrix = GameWorld.inst().getCamera().getUiMatrix();
-		float[] viewMatrix = GameWorld.inst().getCamera().getViewMatrix();
+		float[] uiMatrix = GameWorld.inst().getUiMatrix();
+		float[] viewMatrix = GameWorld.inst().getViewMatrix();
 		
 		Font font = cursor.getFont();
 				

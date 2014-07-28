@@ -4,7 +4,6 @@ import android.graphics.Point;
 
 import com.pimphand.simplerender2.fsm.GameState;
 import com.pimphand.simplerender2.input.InputEventBus;
-import com.pimphand.simplerender2.scene.Camera;
 
 public class GameWorld {
 
@@ -58,13 +57,34 @@ public class GameWorld {
 		return changeState(mPreviousState);
 	}
 	
-	public Camera getCamera() {
-		return this.mCurrentState.getCamera();
-	}
-	
 	public void resizeViewport(Point point) {
 		this.mViewport = point;
 		this.mCurrentState.resizeViewport(point);
+	}
+
+	public void translateView(float x, float y, float z) {
+		this.mCurrentState.translateView(x, y, z);
+		
+	}
+
+	public void rotateView(float angle, float x, float y, float z) {
+		this.mCurrentState.rotateView(angle, x, y, z);
+	}
+	
+	public Point getViewport() {
+		return mViewport;
+	}
+
+	public float[] getUiMatrix() {
+		return mCurrentState.getUiMatrix();
+	}
+
+	public float[] getViewMatrix() {
+		return mCurrentState.getViewMatrix();
+	}
+
+	public float[] getProjectionMatrix() {
+		return mCurrentState.getProjectionMatrix();
 	}
 	
 }

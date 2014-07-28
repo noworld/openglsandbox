@@ -28,6 +28,8 @@ public class MainMenuState implements GameState<GameWorld> {
 	protected GlSettings mGlSettings;
 	protected boolean mDrawInputAreas = false;
 	protected Camera mCamera;
+	protected float[] mCameraTranslation = {0.0f, 0.0f, 0.0f};
+	protected float[] mCameraRotation = {0.0f, 0.0f, 0.0f, 1.0f};
 	
 	public MainMenuState() {
 		Context ctx = GameGlobal.inst().getContext();
@@ -116,8 +118,28 @@ public class MainMenuState implements GameState<GameWorld> {
 	}
 
 	@Override
-	public Camera getCamera() {
-		return this.mCamera;
+	public void translateView(float x, float y, float z) {
+
+	}
+
+	@Override
+	public void rotateView(float angle, float x, float y, float z) {
+
+	}
+
+	@Override
+	public float[] getUiMatrix() {
+		return mCamera.getUiMatrix();
+	}
+
+	@Override
+	public float[] getViewMatrix() {
+		return mCamera.getViewMatrix();
+	}
+
+	@Override
+	public float[] getProjectionMatrix() {
+		return mCamera.getProjectionMatrix();
 	}
 
 }

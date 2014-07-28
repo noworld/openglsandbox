@@ -7,7 +7,9 @@ public enum CommandEnum {
 	SHOW_MODEL_VIEWER(new ShowModelViewer()),
 	REVERT_STATE(new RevertStateCommand()),
 	WALK_FORWARD(new WalkForward()),
-	WALK_BACKWARD(new WalkBackward());
+	WALK_BACKWARD(new WalkBackward()),
+	TURN_LEFT(new TurnLeft()),
+	TURN_RIGHT(new TurnRight());
 	
 	private Command mCommand;
 	
