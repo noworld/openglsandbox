@@ -10,22 +10,18 @@ public class GameWorld {
 
 	private static GameWorld sInstance;
 
-	private Camera mCamera;
 	private GameState<GameWorld> mCurrentState;
 	private GameState<GameWorld> mPreviousState;
+	private Point mViewport = null;
 
 	private GameWorld() {
-		this.mCamera = new Camera();
+		
 	}
 
 	public static GameWorld inst() {
 		return sInstance;
 	}
-	
-	public Camera getCamera() {
-		return mCamera;
-	}
-	
+
 	public static void init() {
 		sInstance = new GameWorld();
 		sInstance.changeState(GameStateManager.getState(GameStateEnum.MAIN_MENU));
@@ -49,6 +45,9 @@ public class GameWorld {
 		}
 		
 		mCurrentState = state;
+		if(mViewport != null) {
+			mCurrentState.resizeViewport(mViewport);
+		}
 		mCurrentState.enter(this);
 
 		return true;
@@ -59,8 +58,13 @@ public class GameWorld {
 		return changeState(mPreviousState);
 	}
 	
+	public Camera getCamera() {
+		return this.mCurrentState.getCamera();
+	}
+	
 	public void resizeViewport(Point point) {
-		this.mCamera.resizeViewport(point);
+		this.mViewport = point;
+		this.mCurrentState.resizeViewport(point);
 	}
 	
 }

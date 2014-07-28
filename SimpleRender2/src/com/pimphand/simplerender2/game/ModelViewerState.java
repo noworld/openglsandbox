@@ -36,7 +36,7 @@ public class ModelViewerState extends MainMenuState {
 
 	@Override
 	public void execute(GameWorld target) {
-		//Log.d(TAG, "Executing Water World State");
+		//Log.d(TAG, "Executing Model Viewer State");
 		mAccumulatedRotation += 0.5f;
 		if(mAccumulatedRotation >= 360.0f) mAccumulatedRotation = 0.0f;
 		for(Light light : mObjectLibrary.mLights) {

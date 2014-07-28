@@ -2,6 +2,7 @@ package com.pimphand.simplerender2.game;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Point;
 import android.util.Log;
 
 import com.pimphand.simplerender2.R;
@@ -12,6 +13,7 @@ import com.pimphand.simplerender2.loading.GameObjectLoader;
 import com.pimphand.simplerender2.rendering.BaseRenderer;
 import com.pimphand.simplerender2.rendering.GlSettings;
 import com.pimphand.simplerender2.rendering.RendererManager;
+import com.pimphand.simplerender2.scene.Camera;
 import com.pimphand.simplerender2.scene.GameEntity;
 import com.pimphand.simplerender2.scene.GameObjectLibrary;
 import com.pimphand.simplerender2.scene.Light;
@@ -25,6 +27,7 @@ public class MainMenuState implements GameState<GameWorld> {
 	protected GameObjectLibrary mObjectLibrary;
 	protected GlSettings mGlSettings;
 	protected boolean mDrawInputAreas = false;
+	protected Camera mCamera;
 	
 	public MainMenuState() {
 		Context ctx = GameGlobal.inst().getContext();
@@ -35,6 +38,7 @@ public class MainMenuState implements GameState<GameWorld> {
 		mGlSettings = new GlSettings();
 		mGlSettings.setGlClearColor(new float[]{0.6f, 0.4f, 0.2f, 1.0f});
 		mDrawInputAreas = GameGlobal.inst().getBool(GlobalKeysEnum.DRAW_INPUT_AREAS);
+		this.mCamera = new Camera();
 	}
 
 	@Override
@@ -104,6 +108,16 @@ public class MainMenuState implements GameState<GameWorld> {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void resizeViewport(Point point) {
+		this.mCamera.resizeViewport(point);
+	}
+
+	@Override
+	public Camera getCamera() {
+		return this.mCamera;
 	}
 
 }

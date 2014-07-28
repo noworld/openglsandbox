@@ -2,18 +2,40 @@
     
     <!-- Must be in specific order: Position, Color, Normal, (optional) Texcoord -->
     <array name="main_menu_models">
-        <item >@raw/mainmenu_ui</item>
+        <item>@raw/mainmenu_ui</item>
     </array>
     
     <array name="model_viewer_models">
-        <item >@raw/gamepad_ui</item>
-        <item >@raw/scar</item>
+        <item>@raw/gamepad_ui</item>
+        <item>@raw/scar</item>
     </array>
     
     <array name="water_world_models">
-        <item >@raw/gamepad_ui</item>
-        <item >@raw/monkey</item>
+        <item>@raw/gamepad_ui</item>
+        <item>@raw/box_plane</item>
     </array>
+    
+     <string-array name="cube">
+        <item>POS_X|0.0</item>
+        <item>POS_Y|2.2</item>
+        <item>POS_Z|-5.0</item>
+        <item>SCALE_X|1.0</item>
+        <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
+        <item>TEXTURE_NAME|uvgrid</item>
+        <item>SHADER_NAME|model_shader</item>
+    </string-array>
+    
+      <string-array name="plane">
+        <item>POS_X|0.0</item>
+        <item>POS_Y|-1.0</item>
+        <item>POS_Z|-5.0</item>
+        <item>SCALE_X|1.0</item>
+        <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
+        <item>TEXTURE_NAME|uvgrid</item>
+        <item>SHADER_NAME|model_shader</item>
+    </string-array>
     
     <string-array name="scar">
         <item>POS_X|0.0</item>

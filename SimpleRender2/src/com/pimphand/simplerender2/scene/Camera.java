@@ -66,6 +66,10 @@ public class Camera {
 	public float[] getProjectionMatrix() {
 		return mProjectionMatrix;
 	}
+
+	public void translate(float x, float y, float z) {
+		Matrix.translateM(this.mProjectionMatrix, 0, x, y, z);
+	}
 	
 	public float[] getUiMatrix() {
 		return mUiMatrix;
