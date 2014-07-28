@@ -37,6 +37,7 @@ public class WaterWorldState extends MainMenuState {
 	@Override
 	public void execute(GameWorld target) {
 		//Log.d(TAG, "Executing Water World State");
+		super.execute(target);
 		mAccumulatedRotation += 0.5f;
 		if(mAccumulatedRotation >= 360.0f) mAccumulatedRotation = 0.0f;
 		for(Light light : mObjectLibrary.mLights) {
@@ -44,6 +45,16 @@ public class WaterWorldState extends MainMenuState {
 			Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
 			Matrix.rotateM(light.mModelMatrix, 0, mAccumulatedRotation, 0.0f, 1.0f, 0.0f);
 			Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+		}
+		
+		/*XXX FIRST PHYSICS!*/
+		float dTSecs = ((float)mDeltaT) / (1000.0f);		
+		mCameraTranslation[1] -= mCameraVelocity[1];
+		mCameraVelocity[1] = Physics.applyGravity(mCameraVelocity[1], dTSecs);
+		//Apply collision with imaginary plane
+		if(mCameraTranslation[1] >= 0.0f) {
+			mCameraTranslation[1] = 0.0f; //don't go below the y=0 plane
+			mCameraVelocity[1] = 0.0f; //Stop when it hits the y=0 plane
 		}
 	}
 
@@ -81,12 +92,22 @@ public class WaterWorldState extends MainMenuState {
 	}
 	
 	@Override
-	public float[] getProjectionMatrix() {
-		float[] tempMatrix = new float[mCamera.getProjectionMatrix().length];
-		System.arraycopy(mCamera.getProjectionMatrix(), 0, tempMatrix, 0, tempMatrix.length);
-		Matrix.rotateM(tempMatrix, 0, mCameraRotation[0], mCameraRotation[1], mCameraRotation[2], mCameraRotation[3]);
+	public float[] getAgentViewMatrix() {
+		float[] tempMatrix = new float[mCamera.getViewMatrix().length];
+		System.arraycopy(mCamera.getViewMatrix(), 0, tempMatrix, 0, tempMatrix.length);
+		Matrix.rotateM(tempMatrix, 0, mCameraRotation[0], mCameraRotation[1], mCameraRotation[2], mCameraRotation[3]);		
 		Matrix.translateM(tempMatrix, 0, mCameraTranslation[0], mCameraTranslation[1], mCameraTranslation[2]);		
+//		Matrix.translateM(tempMatrix, 0, mCameraVelocity[0],mCameraVelocity[1],mCameraVelocity[2]);
+		
 		return tempMatrix;
+	}
+	
+	@Override
+	public void impulseView(float x, float y, float z) {
+		//Only allow impulse if we are at rest in y (on the ground)
+		if(mCameraTranslation[1] == 0.0f) {
+			super.impulseView(x, y, z);
+		}
 	}
 	
 	

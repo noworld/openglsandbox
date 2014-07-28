@@ -26,6 +26,26 @@ public class GameWorld {
 		sInstance.changeState(GameStateManager.getState(GameStateEnum.MAIN_MENU));
 	}
 	
+	public Point getViewport() {
+		return mViewport;
+	}
+
+	public float[] getUiMatrix() {
+		return mCurrentState.getUiMatrix();
+	}
+
+	public float[] getViewMatrix() {
+		return mCurrentState.getViewMatrix();
+	}
+
+	public float[] getProjectionMatrix() {
+		return mCurrentState.getProjectionMatrix();
+	}
+	
+	public float[] getAgentViewMatrix() {
+		return mCurrentState.getAgentViewMatrix();
+	}
+	
 	public void update() {
 
 		InputEventBus.inst().executeCommands(mCurrentState.getLibrary().mInputHandlers);		
@@ -64,27 +84,14 @@ public class GameWorld {
 
 	public void translateView(float x, float y, float z) {
 		this.mCurrentState.translateView(x, y, z);
-		
 	}
 
 	public void rotateView(float angle, float x, float y, float z) {
 		this.mCurrentState.rotateView(angle, x, y, z);
 	}
 	
-	public Point getViewport() {
-		return mViewport;
-	}
-
-	public float[] getUiMatrix() {
-		return mCurrentState.getUiMatrix();
-	}
-
-	public float[] getViewMatrix() {
-		return mCurrentState.getViewMatrix();
-	}
-
-	public float[] getProjectionMatrix() {
-		return mCurrentState.getProjectionMatrix();
+	public void impulseView(float x, float y, float z) {		
+		this.mCurrentState.impulseView(x, y, z);
 	}
 	
 }

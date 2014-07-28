@@ -3,6 +3,7 @@ package com.pimphand.simplerender2.game;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Point;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.pimphand.simplerender2.R;
@@ -27,9 +28,12 @@ public class MainMenuState implements GameState<GameWorld> {
 	protected GameObjectLibrary mObjectLibrary;
 	protected GlSettings mGlSettings;
 	protected boolean mDrawInputAreas = false;
+	protected long mDeltaT = 0L;
+	protected long mLastT = SystemClock.uptimeMillis(); 
 	protected Camera mCamera;
 	protected float[] mCameraTranslation = {0.0f, 0.0f, 0.0f};
 	protected float[] mCameraRotation = {0.0f, 0.0f, 0.0f, 1.0f};
+	protected float[] mCameraVelocity = {0.0f, 0.0f, 0.0f};
 	
 	public MainMenuState() {
 		Context ctx = GameGlobal.inst().getContext();
@@ -51,7 +55,9 @@ public class MainMenuState implements GameState<GameWorld> {
 
 	@Override
 	public void execute(GameWorld target) {
-		
+		long tempT = SystemClock.uptimeMillis();
+		mDeltaT = tempT - mLastT;
+		mLastT = tempT;
 	}
 
 	@Override
@@ -140,6 +146,18 @@ public class MainMenuState implements GameState<GameWorld> {
 	@Override
 	public float[] getProjectionMatrix() {
 		return mCamera.getProjectionMatrix();
+	}
+
+	@Override
+	public void impulseView(float x, float y, float z) {
+		mCameraVelocity[0] += x;
+		mCameraVelocity[1] += y;
+		mCameraVelocity[2] += z;
+	}
+
+	@Override
+	public float[] getAgentViewMatrix() {
+		return mCamera.getViewMatrix();
 	}
 
 }

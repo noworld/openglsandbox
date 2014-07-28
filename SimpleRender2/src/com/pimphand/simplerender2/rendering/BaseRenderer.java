@@ -190,7 +190,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
-		float[] viewMatrix = GameWorld.inst().getViewMatrix();
+		float[] viewMatrix = GameWorld.inst().getAgentViewMatrix();
 		
 		GLES20.glUseProgram(geo.mShaderHandle);
 		
@@ -310,7 +310,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
-		float[] viewMatrix = GameWorld.inst().getViewMatrix();
+		float[] viewMatrix = GameWorld.inst().getAgentViewMatrix();
 
 		GLES20.glUseProgram(light.mShaderHandle);  
 		final int u_mvp = GLES20.glGetUniformLocation(light.mShaderHandle, "u_MVPMatrix");

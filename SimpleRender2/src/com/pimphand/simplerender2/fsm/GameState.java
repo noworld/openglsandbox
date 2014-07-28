@@ -21,5 +21,7 @@ public interface GameState<T> {
 	public void rotateView(float angle, float x, float y, float z);
 	public float[] getUiMatrix();
 	public float[] getViewMatrix();
+	public float[] getAgentViewMatrix();
 	public float[] getProjectionMatrix();
+	public void impulseView(float x, float y, float z);
 }
