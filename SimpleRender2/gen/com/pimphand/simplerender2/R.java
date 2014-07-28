@@ -66,10 +66,11 @@ public final class R {
         public static final int btn_y=0x7f020003;
         public static final int dpad=0x7f020004;
         public static final int ic_launcher=0x7f020005;
-        public static final int praetorium_bb_regular_36=0x7f020006;
-        public static final int scar=0x7f020007;
-        public static final int uipack_rpg_sheet=0x7f020008;
-        public static final int uvgrid=0x7f020009;
+        public static final int nightwatcher_bb_36=0x7f020006;
+        public static final int praetorium_bb_regular_36=0x7f020007;
+        public static final int scar=0x7f020008;
+        public static final int uipack_rpg_sheet=0x7f020009;
+        public static final int uvgrid=0x7f02000a;
     }
     public static final class id {
         public static final int action_settings=0x7f0a0000;
@@ -81,19 +82,22 @@ public final class R {
         public static final int simple_render2=0x7f090000;
     }
     public static final class raw {
-        public static final int f_model=0x7f040000;
-        public static final int f_sprite=0x7f040001;
-        public static final int f_ui=0x7f040002;
-        public static final int f_white=0x7f040003;
-        public static final int gamepad_ui=0x7f040004;
-        public static final int mainmenu_ui=0x7f040005;
-        public static final int monkey=0x7f040006;
-        public static final int praetorium_bb_regular=0x7f040007;
-        public static final int scar=0x7f040008;
-        public static final int v_model=0x7f040009;
-        public static final int v_point=0x7f04000a;
-        public static final int v_sprite=0x7f04000b;
-        public static final int v_ui=0x7f04000c;
+        public static final int f_bitmap=0x7f040000;
+        public static final int f_model=0x7f040001;
+        public static final int f_sprite=0x7f040002;
+        public static final int f_ui=0x7f040003;
+        public static final int f_white=0x7f040004;
+        public static final int gamepad_ui=0x7f040005;
+        public static final int mainmenu_ui=0x7f040006;
+        public static final int monkey=0x7f040007;
+        public static final int nightwatcher_bb=0x7f040008;
+        public static final int praetorium_bb_regular=0x7f040009;
+        public static final int scar=0x7f04000a;
+        public static final int v_bitmap=0x7f04000b;
+        public static final int v_model=0x7f04000c;
+        public static final int v_point=0x7f04000d;
+        public static final int v_sprite=0x7f04000e;
+        public static final int v_ui=0x7f04000f;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;

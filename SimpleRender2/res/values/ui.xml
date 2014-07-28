@@ -9,13 +9,13 @@
         <item>SCALE_Z|1.0</item>
         <item>TEXT|Welcome to the main menu.</item>
         <item>TEXT_LINE_LENGTH|80</item> 
-        <item>TEXT_FONT|Praetorium BB Regular</item>
+        <item>TEXT_FONT|Nightwatcher BB</item>
         <!-- Text is relative to the parent, 0,0 is center of parent -->
         <item>TEXT_POS_X|-360.0</item>
         <item>TEXT_POS_Y|350.0</item>
         <item>TEXT_POS_Z|0.2</item>
-        <item>TEXT_SCALE_X|2.0</item>
-        <item>TEXT_SCALE_Y|2.0</item>
+        <item>TEXT_SCALE_X|1.5</item>
+        <item>TEXT_SCALE_Y|1.5</item>
         <!-- Text is relative to the parent -->        
         <item>TEXTURE_NAME|uipack_rpg_sheet</item>
         <item>SHADER_NAME|ui_shader</item>

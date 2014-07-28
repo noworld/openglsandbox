@@ -2,7 +2,8 @@
     
     <!-- Must be in specific order: Position, Color, Normal, (optional) Texcoord -->
     <array name="fonts">
-        <item >@raw/praetorium_bb_regular</item>
+        <item>@raw/praetorium_bb_regular</item>
+        <item>@raw/nightwatcher_bb</item>
     </array>   
     
 </resources>
