@@ -11,6 +11,7 @@ import com.pimphand.simplerender2.R;
 import com.pimphand.simplerender2.commands.CommandEnum;
 import com.pimphand.simplerender2.input.BackButtonInputHandler;
 import com.pimphand.simplerender2.input.InputHandler;
+import com.pimphand.simplerender2.scene.Camera;
 import com.solesurvivor.util.SSPropertyUtil;
 import com.solesurvivor.util.exceptions.NotInitializedException;
 
@@ -24,6 +25,7 @@ public class GameGlobal {
 	private WindowManager mWindowManager;
 	private Map<GlobalKeysEnum,String> mValues;
 	private Map<GlobalKeysEnum,InputHandler> mInputHandlers;
+	private Camera mCurrentCamera;
 	
 	private GameGlobal(Context context, WindowManager windowManager) {
 		this.mContext = context;
@@ -88,6 +90,14 @@ public class GameGlobal {
 		}
 		
 		return enumKeys;
+	}
+	
+	public void setCamera(Camera cam) {
+		this.mCurrentCamera = cam;
+	}
+	
+	public Camera getCamera() {
+		return this.mCurrentCamera;
 	}
 	
 }

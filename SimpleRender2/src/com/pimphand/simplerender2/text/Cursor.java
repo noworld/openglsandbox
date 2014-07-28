@@ -63,6 +63,10 @@ public class Cursor implements Iterable<CursorPosition> {
 	public Font getFont() {
 		return mFont;
 	}
+	
+	public void setValue(String value) {
+		this.mValue = value;
+	}
 
 	@Override
 	public Iterator<CursorPosition> iterator() {

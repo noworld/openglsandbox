@@ -19,6 +19,7 @@ import com.pimphand.simplerender2.scene.GameEntity;
 import com.pimphand.simplerender2.scene.GameObjectLibrary;
 import com.pimphand.simplerender2.scene.Light;
 import com.pimphand.simplerender2.scene.UiElement;
+import com.pimphand.simplerender2.text.Cursor;
 
 public class MainMenuState implements GameState<GameWorld> {
 	
@@ -66,6 +67,14 @@ public class MainMenuState implements GameState<GameWorld> {
 		renderLights();
 		renderModels();		
 		renderUi();
+		renderOrthoText();
+	}
+
+	private void renderOrthoText() {
+		BaseRenderer ren = RendererManager.inst().getRenderer();
+		for(Cursor c : this.getLibrary().mCursors) {
+			ren.drawText(c);
+		}
 	}
 
 	@Override

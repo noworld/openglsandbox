@@ -10,7 +10,9 @@ public enum CommandEnum {
 	WALK_BACKWARD(new WalkBackward()),
 	TURN_LEFT(new TurnLeft()),
 	TURN_RIGHT(new TurnRight()),
-	JUMP(new Jump());
+	JUMP(new Jump()),
+	INCREASE_NEAR(new IncreaseNear()),
+	DECREASE_NEAR(new DecreaseNear());
 	
 	private Command mCommand;
 	

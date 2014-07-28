@@ -12,12 +12,15 @@ import com.pimphand.simplerender2.loading.GameObjectLoader;
 import com.pimphand.simplerender2.rendering.GlSettings;
 import com.pimphand.simplerender2.rendering.RendererManager;
 import com.pimphand.simplerender2.scene.Light;
+import com.pimphand.simplerender2.text.Cursor;
+import com.pimphand.simplerender2.text.FontManager;
 
 public class WaterWorldState extends MainMenuState {
 	
 	private static final String TAG = WaterWorldState.class.getSimpleName();
 	
 	private float mAccumulatedRotation = 0.0f;
+	private Cursor mNear = null;
 	
 	public WaterWorldState() {
 		Context ctx = GameGlobal.inst().getContext();
@@ -26,12 +29,15 @@ public class WaterWorldState extends MainMenuState {
 		modelArray.recycle();
 		mGlSettings = new GlSettings();
 		this.mObjectLibrary.mInputHandlers.add(GameGlobal.inst().getHandler(GlobalKeysEnum.BACK_BUTTON_INPUT_HANDLER));
+		mNear = new Cursor(FontManager.getFont("Nightwatcher BB"), new float[]{1.5f,1.5f,1.0f},new float[]{-900.0f,480.0f,-4.0f},0,"");
+		this.mObjectLibrary.mCursors.add(mNear);
 	}
 
 	@Override
 	public void enter(GameWorld target) {
 		Log.d(TAG, "Entering Water World State");
 		RendererManager.inst().getRenderer().initOpenGL(mGlSettings);
+		GameGlobal.inst().setCamera(this.mCamera);
 	}
 
 	@Override
@@ -56,6 +62,8 @@ public class WaterWorldState extends MainMenuState {
 			mCameraTranslation[1] = 0.0f; //don't go below the y=0 plane
 			mCameraVelocity[1] = 0.0f; //Stop when it hits the y=0 plane
 		}
+		
+		mNear.setValue(String.format("Near: %.3f",GameGlobal.inst().getCamera().getNear()));
 	}
 
 	@Override

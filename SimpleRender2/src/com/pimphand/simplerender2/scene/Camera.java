@@ -1,11 +1,14 @@
 package com.pimphand.simplerender2.scene;
 
-import com.pimphand.simplerender2.rendering.RendererManager;
-
 import android.graphics.Point;
 import android.opengl.Matrix;
+import android.util.Log;
+
+import com.pimphand.simplerender2.rendering.RendererManager;
 
 public class Camera {
+	
+	private static final String TAG = Camera.class.getSimpleName();
 
 	protected float[] mViewMatrix = new float[16];	
 	protected float[] mProjectionMatrix  = new float[16];
@@ -14,6 +17,7 @@ public class Camera {
 	protected float[] mLookVector = {0.0f, 0.0f, -5.0f};
 	protected float[] mUpVector = {0.0f, 1.0f, 0.0f};	
 	protected Point mViewport = new Point(0,0);
+	protected float mNear = 1.0f;
 	
 	public Camera() {		
 		orient();
@@ -77,6 +81,17 @@ public class Camera {
 				mUpVector[0], mUpVector[1], mUpVector[2]);
 	}
 	
+	public void adjustNear(float adj) {
+		this.mNear += adj;
+		if(mNear <= 0.0f) mNear = 0.001f;
+		Log.d(TAG, String.format("NEAR IS: %s", mNear));
+		resizeViewport(mViewport);
+	}
+	
+	public float getNear() {
+		return this.mNear;
+	}
+	
 	public void resizeViewport(Point newViewport) {
 		
 		RendererManager.inst().getRenderer().resizeViewport(newViewport);
@@ -85,12 +100,13 @@ public class Camera {
 		// Create a new perspective projection matrix. The height will stay the same
 		// while the width will vary as per aspect ratio.
 		final float ratio = (float) mViewport.x / mViewport.y;
+		//Rig for a 90 deg FOV
 		final float left = -ratio;
 		final float right = ratio;
 		final float bottom = -1.0f;
 		final float top = 1.0f;
-		final float near = 1.0f;
-		final float far = 200.0f;
+		final float near = mNear;
+		final float far = 200f;
 
 		final float left_ortho = -(mViewport.x/2);
 		final float right_ortho = (mViewport.x/2);
