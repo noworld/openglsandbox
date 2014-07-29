@@ -24,7 +24,7 @@
         <item>SCALE_Y|1.0</item>
         <item>SCALE_Z|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
-        <item>SHADER_NAME|model_shader</item>
+        <item>SHADER_NAME|blur_shader</item>
     </string-array>
     
       <string-array name="plane">

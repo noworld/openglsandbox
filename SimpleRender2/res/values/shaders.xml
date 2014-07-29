@@ -7,6 +7,8 @@
         <item>@array/model_shader</item>
         <item>@array/inputarea_shader</item>
         <item>@array/text_shader</item>
+        <item>@array/toon_shader</item>
+        <item>@array/blur_shader</item>
     </array>
     
     <array name="point_shader">
@@ -37,6 +39,18 @@
     <array name="text_shader">
         <item >@raw/v_ui</item> 
         <item >@raw/f_ui</item>  
+    </array>
+    
+    <!-- Playing with shaders -->
+    
+    <array name="toon_shader">
+        <item >@raw/v_model</item> 
+        <item >@raw/f_toon</item>  
+    </array>
+    
+    <array name="blur_shader">
+        <item >@raw/v_blur</item> 
+        <item >@raw/f_blur</item>  
     </array>
 
 </resources>
