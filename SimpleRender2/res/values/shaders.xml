@@ -9,6 +9,7 @@
         <item>@array/text_shader</item>
         <item>@array/toon_shader</item>
         <item>@array/blur_shader</item>
+        <item>@array/water_shader</item>
     </array>
     
     <array name="point_shader">
@@ -51,6 +52,11 @@
     <array name="blur_shader">
         <item >@raw/v_blur</item> 
         <item >@raw/f_blur</item>  
+    </array>
+    
+    <array name="water_shader">
+        <item >@raw/v_water</item> 
+        <item >@raw/f_water</item>  
     </array>
 
 </resources>
