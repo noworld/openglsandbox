@@ -14,6 +14,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Display;
 
@@ -269,6 +270,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		int u_lightpos = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_LightPos");
 		int u_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Texture");
 		int u_normals_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NormalTexture");
+		int u_time = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Time");
 
 		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
 		int a_nrm = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Normal");
@@ -321,6 +323,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
 		GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
 
+		//Time
+		double time = ((double)SystemClock.uptimeMillis()) / 1000.0;
+		GLES20.glUniform1f(u_time, (float)time);
+		
 		// Draw
 		
 		/* Draw the arrays as triangles */
