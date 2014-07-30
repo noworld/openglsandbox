@@ -26,5 +26,5 @@ void main()
 	gl_Position = u_MVPMatrix * a_Position;                       	
 	
 	//To prevent z-clipping
-	 gl_Position.z = 0.0;	  
+	//gl_Position.z = 0.0;	  
 }                                                          

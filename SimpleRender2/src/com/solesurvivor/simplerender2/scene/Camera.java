@@ -17,9 +17,9 @@ public class Camera {
 	protected float[] mLookVector = {0.0f, 0.0f, -1.0f};
 	protected float[] mUpVector = {0.0f, 1.0f, 0.0f};	
 	protected Point mViewport = new Point(0,0);
-	protected float mNear = 1.0f;
+	protected float mNear = 0.5f;
 	protected float mFar = 200.0f;
-	protected float mAspectAdj = 1.0f;
+	protected float mAspectAdj = 0.5f;
 	
 	public Camera() {		
 		orient();
