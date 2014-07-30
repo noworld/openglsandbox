@@ -12,7 +12,12 @@ public enum CommandEnum {
 	TURN_RIGHT(new TurnRight()),
 	JUMP(new Jump()),
 	INCREASE_NEAR(new IncreaseNear()),
-	DECREASE_NEAR(new DecreaseNear());
+	DECREASE_NEAR(new DecreaseNear()),
+	INCREASE_FAR(new IncreaseFar()),
+	DECREASE_FAR(new DecreaseFar()),
+	INCREASE_ASPECT(new IncreaseAspect()),
+	DECREASE_ASPECT(new DecreaseAspect()),
+	SWITCH_WAVE_TEX(new SwitchWaveTex());
 	
 	private Command mCommand;
 	

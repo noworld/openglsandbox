@@ -10,6 +10,6 @@ public class TurnLeft implements Command {
 
 	@Override
 	public void execute(InputEvent event) {		
-		GameWorld.inst().rotateView(-1.0f, 0.0f, 1.0f, 0.0f);
+		GameWorld.inst().rotateView(-1.5f, 0.0f, 1.0f, 0.0f);
 	}
 }

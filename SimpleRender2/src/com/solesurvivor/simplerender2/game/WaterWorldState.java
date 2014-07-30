@@ -9,8 +9,10 @@ import com.pimphand.simplerender2.R;
 import com.solesurvivor.simplerender2.input.InputEventBus;
 import com.solesurvivor.simplerender2.input.InputHandler;
 import com.solesurvivor.simplerender2.loading.GameObjectLoader;
+import com.solesurvivor.simplerender2.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2.rendering.GlSettings;
 import com.solesurvivor.simplerender2.rendering.RendererManager;
+import com.solesurvivor.simplerender2.scene.GameEntity;
 import com.solesurvivor.simplerender2.scene.Light;
 import com.solesurvivor.simplerender2.text.Cursor;
 import com.solesurvivor.simplerender2.text.FontManager;
@@ -20,7 +22,10 @@ public class WaterWorldState extends MainMenuState {
 	private static final String TAG = WaterWorldState.class.getSimpleName();
 	
 	private float mAccumulatedRotation = 0.0f;
-	private Cursor mNear = null;
+	private Cursor mLine1 = null;
+	private Cursor mLine2 = null;
+	private GameEntity mWater = null;
+	private String mWaveTex = "wavemapn1";
 	
 	public WaterWorldState() {
 		Context ctx = GameGlobal.inst().getContext();
@@ -28,9 +33,24 @@ public class WaterWorldState extends MainMenuState {
 		this.mObjectLibrary = GameObjectLoader.loadGameObjects(GameGlobal.inst().getContext(), modelArray);
 		modelArray.recycle();
 		mGlSettings = new GlSettings();
+		mGlSettings.setGlClearColor(new float[]{0.681f, 0.886f, 1.0f, 1.0f});
+		
+		for(GameEntity ge : this.mObjectLibrary.mEntities) {
+			if(ge.getGeometry().mName.equals("plane")) {
+				mWater = ge;
+				break;
+			}
+		}
+		if(mWater != null) {
+			this.mObjectLibrary.mEntities.remove(mWater);
+		}
+		
 		this.mObjectLibrary.mInputHandlers.add(GameGlobal.inst().getHandler(GlobalKeysEnum.BACK_BUTTON_INPUT_HANDLER));
-		mNear = new Cursor(FontManager.getFont("Nightwatcher BB"), new float[]{1.5f,1.5f,1.0f},new float[]{-900.0f,480.0f,-4.0f},0,"");
-		this.mObjectLibrary.mCursors.add(mNear);
+		
+		mLine1 = new Cursor(FontManager.getFont("Nightwatcher BB"), new float[]{1.5f,1.5f,1.0f},new float[]{-900.0f,480.0f,-4.0f},0,"");
+		mLine2 = new Cursor(FontManager.getFont("Nightwatcher BB"), new float[]{1.5f,1.5f,1.0f},new float[]{-900.0f,420.0f,-4.0f},0,"");
+//		this.mObjectLibrary.mCursors.add(mLine1);
+//		this.mObjectLibrary.mCursors.add(mLine2);
 	}
 
 	@Override
@@ -63,7 +83,15 @@ public class WaterWorldState extends MainMenuState {
 			mCameraVelocity[1] = 0.0f; //Stop when it hits the y=0 plane
 		}
 		
-		mNear.setValue(String.format("Near: %.3f",GameGlobal.inst().getCamera().getNear()));
+		mLine1.setValue(String.format("Near: %.1f,%.1f,%.1f",GameGlobal.inst().getCamera().getEyePos()[2], GameGlobal.inst().getCamera().getEyePos()[0], GameGlobal.inst().getCamera().getEyePos()[1]));
+		mLine2.setValue(String.format("Aspect: %.2f",GameGlobal.inst().getCamera().getAspect()));
+	}
+	
+	@Override
+	public void render(GameWorld target) {		
+		BaseRenderer ren = RendererManager.inst().getRenderer();
+		ren.drawWater(mWater.getGeometry(), mObjectLibrary.mLights, mWaveTex);
+		super.render(target);
 	}
 
 	@Override
@@ -105,9 +133,13 @@ public class WaterWorldState extends MainMenuState {
 		System.arraycopy(mCamera.getViewMatrix(), 0, tempMatrix, 0, tempMatrix.length);
 		Matrix.rotateM(tempMatrix, 0, mCameraRotation[0], mCameraRotation[1], mCameraRotation[2], mCameraRotation[3]);		
 		Matrix.translateM(tempMatrix, 0, mCameraTranslation[0], mCameraTranslation[1], mCameraTranslation[2]);		
-//		Matrix.translateM(tempMatrix, 0, mCameraVelocity[0],mCameraVelocity[1],mCameraVelocity[2]);
 		
 		return tempMatrix;
+	}
+	
+	public void setWaveTex(String waveTex) {
+		Log.d(TAG, String.format("Using wave texture: %s", waveTex));
+		this.mWaveTex = waveTex;
 	}
 	
 	@Override

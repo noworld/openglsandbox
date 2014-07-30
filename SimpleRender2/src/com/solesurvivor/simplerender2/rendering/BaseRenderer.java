@@ -150,10 +150,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 			
 			// Load the bitmap into the bound texture.
-			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);			
 			
-			// Recycle the bitmap, since its data has been loaded into OpenGL.
-			bitmap.recycle();						
 		}
 		
 		if (textureHandle[0] == 0) {
@@ -206,6 +204,83 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, geo.mTextureHandle);
 		GLES20.glUniform1i(u_texsampler, 0);
+	
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.mDatBufIndex);
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, geo.mPosSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mPosOffset);
+
+		GLES20.glEnableVertexAttribArray(a_nrm);
+		GLES20.glVertexAttribPointer(a_nrm, geo.mNrmSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mNrmOffset);
+
+		GLES20.glEnableVertexAttribArray(a_txc);
+		GLES20.glVertexAttribPointer(a_txc, geo.mTxcSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mTxcOffset);
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+		// --MV--
+
+		/* Get the MV Matrix: Multiply V * M  = MV */
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, geo.mModelMatrix, 0);
+		//MVP matrix is *actually MV* at this point
+		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
+
+		// --MVP--
+
+		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+
+		// --LightPos--
+
+		/* Pass in the light position in eye space.	*/	
+		//Switching to view space...
+		//TODO: Handle multiple lights
+		Light light = lights.get(0);
+		float[] lightPosWorldSpace = new float[4];
+		float[] lightPosEyeSpace = new float[4];
+		Matrix.multiplyMV(lightPosWorldSpace, 0, light.mModelMatrix, 0, light.mPosition, 0);
+        Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
+		GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
+
+		// Draw
+		
+		/* Draw the arrays as triangles */
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		checkError();
+		
+	}
+	
+	public void drawWater(Geometry geo, List<Light> lights, String waveTex) {
+		
+		float[] mvpMatrix = new float[16];
+		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
+		float[] viewMatrix = GameWorld.inst().getAgentViewMatrix();
+		
+		GLES20.glUseProgram(geo.mShaderHandle);
+		
+		int u_mvp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVPMatrix");
+		int u_mv = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVMatrix");
+		int u_lightpos = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_LightPos");
+		int u_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Texture");
+		int u_normals_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NormalTexture");
+
+		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
+		int a_nrm = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Normal");
+		int a_txc = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_TexCoordinate");
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, geo.mTextureHandle);
+		GLES20.glUniform1i(u_texsampler, 0);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, TextureManager.getTextureId(waveTex));
+		GLES20.glUniform1i(u_normals_texsampler, 1);
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.mDatBufIndex);
 

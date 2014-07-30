@@ -85,7 +85,7 @@ public class SimpleRender2SurfaceView extends GLSurfaceView {
 				mPointers.set(i, pMoved);
 				
 				//If the pointers are moving, then release and repress
-				if(pOld.x != pMoved.x && pOld.y != pMoved.y) {
+				if(pOld.x != pMoved.x || pOld.y != pMoved.y) {
 					InputEventBus.inst().add(new InputEvent(InputEventEnum.MOVE_OFF, UiUtil.screenToViewCoords(pOld)));
 					InputEventBus.inst().add(new InputEvent(InputEventEnum.MOVE_ON, UiUtil.screenToViewCoords(pMoved)));
 				}

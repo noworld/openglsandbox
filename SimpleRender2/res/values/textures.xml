@@ -12,6 +12,11 @@
         <item>@drawable/uvgrid</item>
         <item>@drawable/scar</item>
         <item>@drawable/bumpmap_a</item>
+        <item>@drawable/water_disp</item>
+        <item>@drawable/water_normals</item>
+        <item>@drawable/wavemapd1</item>
+        <item>@drawable/wavemapn1</item>
+        <item>@drawable/wavemapn2</item>
     </array>
 
     

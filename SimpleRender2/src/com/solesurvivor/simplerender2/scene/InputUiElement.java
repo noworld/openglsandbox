@@ -3,6 +3,7 @@ package com.solesurvivor.simplerender2.scene;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.PointF;
 import android.util.Log;
 
 import com.solesurvivor.simplerender2.commands.Command;
@@ -12,20 +13,23 @@ import com.solesurvivor.simplerender2.input.InputEventEnum;
 import com.solesurvivor.simplerender2.input.InputHandler;
 import com.solesurvivor.simplerender2.input.TouchFeedback;
 import com.solesurvivor.simplerender2.rendering.Geometry;
+import com.solesurvivor.simplerender2.util.UiUtil;
 
 public class InputUiElement extends UiElement implements InputHandler {
 	
 	@SuppressWarnings("unused")
 	private static final String TAG = InputUiElement.class.getSimpleName();
 
+	protected String mName;
 	protected InputArea mInputArea;
 	protected List<Command> mCommands;
 	protected InputEvent mPreviousTouch;
 	protected InputEvent mTouch;
 	protected boolean mPressed;
 
-	public InputUiElement(Geometry geometry, InputArea inputArea) {
+	public InputUiElement(String name, Geometry geometry, InputArea inputArea) {
 		super(geometry);
+		this.mName = name;
 		this.mGeometry = geometry;
 		this.mInputArea = inputArea;
 		this.mCommands = new ArrayList<Command>();
@@ -37,11 +41,20 @@ public class InputUiElement extends UiElement implements InputHandler {
 		
 		boolean myEvent = mInputArea.isPressed(event.getCoords());
 
+		//XXX DEBUG STICKING INPUT
+		PointF screen = UiUtil.viewToScreenCoords(event.getCoords());
+		
 		if(myEvent) {
 			mPressed = event.getEvent().equals(InputEventEnum.DOWN)
 					|| event.getEvent().equals(InputEventEnum.MOVE_ON);
 			
 			mTouch = event;
+			
+			//XXX DEBUG STICKING INPUT
+			Log.d(TAG, String.format("%s testest POS for %s,%s", mName, screen.x, screen.y));
+		} else {
+			//XXX DEBUG STICKING INPUT
+			Log.d(TAG, String.format("%s testest NEG for %s,%s", mName, screen.x, screen.y));
 		}
 
 		return myEvent;
@@ -62,6 +75,7 @@ public class InputUiElement extends UiElement implements InputHandler {
 			for(Command c : mCommands) {
 				c.execute(mTouch);
 			}
+			
 		}
 		
 		mPreviousTouch = mTouch;

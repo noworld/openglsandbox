@@ -49,6 +49,8 @@ public class TextureManager {
 			
 			mTextures.put(resourceName, ren.loadTexture(bitmap));	
 			
+			bitmap.recycle();
+			
 			Log.d(TAG, String.format("Loaded texture %s", resourceName));
 		}
 

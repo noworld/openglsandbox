@@ -14,10 +14,12 @@ public class Camera {
 	protected float[] mProjectionMatrix  = new float[16];
 	protected float[] mUiMatrix = new float[16];
 	protected float[] mEyePos = {0.0f, 0.0f, -0.5f};
-	protected float[] mLookVector = {0.0f, 0.0f, -5.0f};
+	protected float[] mLookVector = {0.0f, 0.0f, -1.0f};
 	protected float[] mUpVector = {0.0f, 1.0f, 0.0f};	
 	protected Point mViewport = new Point(0,0);
 	protected float mNear = 1.0f;
+	protected float mFar = 200.0f;
+	protected float mAspectAdj = 1.0f;
 	
 	public Camera() {		
 		orient();
@@ -81,15 +83,39 @@ public class Camera {
 				mUpVector[0], mUpVector[1], mUpVector[2]);
 	}
 	
+	public void adjustFar(float adj) {
+		this.mFar += adj;
+		if(mFar <= mNear) mFar = mNear + 0.1f;
+		Log.d(TAG, String.format("FAR IS: %s", mFar));
+		resizeViewport(mViewport);
+	}
+	
+	public float getFar() {
+		return this.mFar;
+	}
+	
 	public void adjustNear(float adj) {
 		this.mNear += adj;
 		if(mNear <= 0.0f) mNear = 0.001f;
+		if(mFar <= mNear) mFar = mNear + 0.1f;
 		Log.d(TAG, String.format("NEAR IS: %s", mNear));
 		resizeViewport(mViewport);
 	}
 	
 	public float getNear() {
 		return this.mNear;
+	}
+	
+	public void adjustAspect(float adj) {
+		this.mAspectAdj += adj;
+		if(mAspectAdj <= 0.001f) mAspectAdj = 0.001f;
+		float ratio = (float) mViewport.x / mViewport.y;
+		Log.d(TAG, String.format("WIDTH IS: %s", (ratio + mAspectAdj)));
+		resizeViewport(mViewport);
+	}
+	
+	public float getAspect() {
+		return mAspectAdj;
 	}
 	
 	public void resizeViewport(Point newViewport) {
@@ -100,13 +126,14 @@ public class Camera {
 		// Create a new perspective projection matrix. The height will stay the same
 		// while the width will vary as per aspect ratio.
 		final float ratio = (float) mViewport.x / mViewport.y;
+		
 		//Rig for a 90 deg FOV
-		final float left = -ratio;
-		final float right = ratio;
-		final float bottom = -1.0f;
-		final float top = 1.0f;
+		final float left = -(ratio * mAspectAdj);
+		final float right = ratio * mAspectAdj;
+		final float bottom = -mAspectAdj;
+		final float top = mAspectAdj;
 		final float near = mNear;
-		final float far = 200f;
+		final float far = mFar;
 
 		final float left_ortho = -(mViewport.x/2);
 		final float right_ortho = (mViewport.x/2);

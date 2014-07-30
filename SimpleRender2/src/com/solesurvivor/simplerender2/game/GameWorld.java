@@ -26,6 +26,10 @@ public class GameWorld {
 		sInstance.changeState(GameStateManager.getState(GameStateEnum.MAIN_MENU));
 	}
 	
+	public GameState<GameWorld> getCurrentState() {
+		return mCurrentState;
+	}
+	
 	public Point getViewport() {
 		return mViewport;
 	}

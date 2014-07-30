@@ -216,7 +216,7 @@ public class GameObjectLoader {
 
 		Geometry geo = parseGeometry(name, ig);
 		InputArea area = parseInputArea(name, ig);
-		InputUiElement element = new InputUiElement(geo, area);
+		InputUiElement element = new InputUiElement(name, geo, area);
 
 		Context ctx = GameGlobal.inst().getContext();
 		Resources res = ctx.getResources();
