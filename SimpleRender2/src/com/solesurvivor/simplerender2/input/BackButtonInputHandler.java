@@ -27,7 +27,7 @@ public class BackButtonInputHandler implements InputHandler {
 	@Override
 	public void fire() {
 		if(mFire) {
-			Log.d(TAG, String.format("BACK button firing on %s at %s,%s", mTouch.getEvent().toString(), mTouch.getCoords().x, mTouch.getCoords().y));
+//			Log.d(TAG, String.format("BACK button firing on %s at %s,%s", mTouch.getEvent().toString(), mTouch.getCoords().x, mTouch.getCoords().y));
 			for(Command c : mCommands) {
 				c.execute(mTouch);
 			}

@@ -182,6 +182,12 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			}
 		}
 
+//		GLES20.glCullFace(GLES20.GL_BACK);
+		// No culling of back faces
+		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		 
+		// No depth testing
+		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		GLES20.glBlendFunc(settings.getBlendFunc().getSource(), settings.getBlendFunc().getDest());	
 	}
 	
@@ -257,7 +263,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		
 	}
 	
-	public void drawWater(Geometry geo, List<Light> lights, String waveTex) {
+	public void drawWater(Geometry geo, List<Light> lights,
+			float[] eyePos, float[] eyeRot) {
 		
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
@@ -271,6 +278,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		int u_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Texture");
 		int u_normals_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NormalTexture");
 		int u_time = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Time");
+		int u_eyepos = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_EyePos");
+//		int u_eyerot = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_EyeRot");
 
 		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
 		int a_nrm = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Normal");
@@ -281,7 +290,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glUniform1i(u_texsampler, 0);
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, TextureManager.getTextureId(waveTex));
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, TextureManager.getTextureId("wavemapn1"));
 		GLES20.glUniform1i(u_normals_texsampler, 1);
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.mDatBufIndex);
@@ -326,6 +335,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		//Time
 		double time = ((double)SystemClock.uptimeMillis()) / 1000.0;
 		GLES20.glUniform1f(u_time, (float)time);
+		
+		//Eye
+		GLES20.glUniform3f(u_eyepos, eyePos[0], eyePos[1], eyePos[2]);
+//		GLES20.glUniform3f(u_eyerot, eyePos[0], eyePos[1], eyePos[2]);
 		
 		// Draw
 		

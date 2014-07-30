@@ -51,10 +51,10 @@ public class InputUiElement extends UiElement implements InputHandler {
 			mTouch = event;
 			
 			//XXX DEBUG STICKING INPUT
-			Log.d(TAG, String.format("%s testest POS for %s,%s", mName, screen.x, screen.y));
+//			Log.d(TAG, String.format("%s testest POS for %s,%s", mName, screen.x, screen.y));
 		} else {
 			//XXX DEBUG STICKING INPUT
-			Log.d(TAG, String.format("%s testest NEG for %s,%s", mName, screen.x, screen.y));
+//			Log.d(TAG, String.format("%s testest NEG for %s,%s", mName, screen.x, screen.y));
 		}
 
 		return myEvent;
@@ -64,7 +64,7 @@ public class InputUiElement extends UiElement implements InputHandler {
 	public void fire() {
 		//If the button is down
 		if(mPressed) {
-			Log.d(TAG, String.format("SCREEN button firing on %s at %s,%s", mTouch.getEvent().toString(), mTouch.getCoords().x, mTouch.getCoords().y));
+//			Log.d(TAG, String.format("SCREEN button firing on %s at %s,%s", mTouch.getEvent().toString(), mTouch.getCoords().x, mTouch.getCoords().y));
 			//Vibrate when changing state to pressed 
 			if(mPreviousTouch == null
 					|| mPreviousTouch.getEvent().equals(InputEventEnum.UP)

@@ -25,7 +25,6 @@ public class WaterWorldState extends MainMenuState {
 	private Cursor mLine1 = null;
 	private Cursor mLine2 = null;
 	private GameEntity mWater = null;
-	private String mWaveTex = "wavemapn1";
 	
 	public WaterWorldState() {
 		Context ctx = GameGlobal.inst().getContext();
@@ -90,8 +89,8 @@ public class WaterWorldState extends MainMenuState {
 	@Override
 	public void render(GameWorld target) {		
 		BaseRenderer ren = RendererManager.inst().getRenderer();
-		ren.drawWater(mWater.getGeometry(), mObjectLibrary.mLights, mWaveTex);
 		super.render(target);
+		ren.drawWater(mWater.getGeometry(), mObjectLibrary.mLights, mCameraTranslation, mCameraRotation);
 	}
 
 	@Override
@@ -135,11 +134,6 @@ public class WaterWorldState extends MainMenuState {
 		Matrix.translateM(tempMatrix, 0, mCameraTranslation[0], mCameraTranslation[1], mCameraTranslation[2]);		
 		
 		return tempMatrix;
-	}
-	
-	public void setWaveTex(String waveTex) {
-		Log.d(TAG, String.format("Using wave texture: %s", waveTex));
-		this.mWaveTex = waveTex;
 	}
 	
 	@Override

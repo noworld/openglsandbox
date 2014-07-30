@@ -11,11 +11,9 @@ attribute vec2 a_TexCoordinate; // Per-vertex texture coordinate information we 
 		  
 varying vec3 v_Position;		// This will be passed into the fragment shader.       		          		  
 varying vec2 v_TexCoordinate;   // This will be passed into the fragment shader.   
-varying mat4 v_MVMatrix;
 varying vec3 v_Normal; 		
-varying float v_TestValue;
-varying float v_PartialX;
-varying float v_PartialZ;
+varying mat4 v_MVMatrix;
+varying float v_Height;
 
 const float c_TwoPi = 6.2831853072;
 		  
@@ -44,6 +42,28 @@ void main()
 	
 	vec4 position = a_Position;
 	position.y = height1;
+	
+	amplitude = 0.15;
+	direction = vec3(1.0, 0.0, 0.75);
+	wavelength = 4.0;
+	freq = c_TwoPi/wavelength;
+	speed = 0.75;
+	phase_const = speed * freq;
+	time_stretch = 0.75;
+	
+	phase = (u_Time * phase_const * time_stretch);
+	
+	angle1 = (dot(direction.xz, a_Position.xz) * freq) + phase;
+	
+	partial_h_x = freq * direction.x * amplitude * cos(angle1);
+	partial_h_z = freq * direction.z * amplitude * cos(angle1);
+	bitangent = bitangent + vec3(1.0,partial_h_x,0.0);
+	tangent = tangent + vec3(0.0,partial_h_z,1.0);
+	
+	height1 = amplitude * sin(angle1);
+
+	position.y = position.y + height1;
+	v_Height = position.y;
                          
     // Pass through the texture coordinate.
 	v_TexCoordinate = a_TexCoordinate;   
@@ -51,10 +71,7 @@ void main()
 	vec3 normal = cross(bitangent, tangent);
 	v_Position = vec3(u_MVMatrix * position);
 	//v_Normal = vec3(u_MVMatrix * vec4(normal, 0.0));
-	v_Normal = a_Normal;
-	v_PartialZ = partial_h_z;
-	v_PartialX = partial_h_x;
-	v_TestValue = 0.5;
+	v_Normal = normal;
 	v_MVMatrix = u_MVMatrix;
           
 	// gl_Position is a special variable used to store the final position.

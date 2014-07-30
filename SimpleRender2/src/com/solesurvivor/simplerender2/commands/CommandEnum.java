@@ -16,8 +16,7 @@ public enum CommandEnum {
 	INCREASE_FAR(new IncreaseFar()),
 	DECREASE_FAR(new DecreaseFar()),
 	INCREASE_ASPECT(new IncreaseAspect()),
-	DECREASE_ASPECT(new DecreaseAspect()),
-	SWITCH_WAVE_TEX(new SwitchWaveTex());
+	DECREASE_ASPECT(new DecreaseAspect());
 	
 	private Command mCommand;
 	

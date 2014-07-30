@@ -3,21 +3,23 @@ precision mediump float;
 uniform vec3 u_LightPos;       	// The position of the light in eye space.
 uniform sampler2D u_Texture;    // The input texture.
 uniform sampler2D u_NormalTexture;    // The input texture.
+uniform vec3 u_EyePos; 
   
 varying vec3 v_Position;		// Interpolated position for this fragment.
 varying vec2 v_TexCoordinate;   // Interpolated texture coordinate per fragment.
 varying vec3 v_Normal;
+varying float v_TestValue;
 varying mat4 v_MVMatrix;
+varying float v_PartialX;
+varying float v_PartialZ;
   
 // The entry point for our fragment shader.
 void main()                    		
 {
-	vec4 normalFromMap = texture2D(u_NormalTexture, v_TexCoordinate);
-	
-	//Swizzle because rgb = xyz and we want to map z to y
-	vec3 normal_rgb = normalFromMap.rbg;	
-	
-	vec3 normal = vec3(v_MVMatrix * vec4(normal_rgb,0.0));
+	vec3 bitangent = vec3(1.0,v_PartialX,0.0);
+	vec3 tangent = vec3(0.0,v_PartialZ,1.0);
+	vec3 normal = cross(bitangent, tangent);
+	normal =  vec3(v_MVMatrix * vec4(normal, 0.0));
 	                              
 	// Will be used for attenuation.
     float distance = length(u_LightPos - v_Position);                  
@@ -30,7 +32,6 @@ void main()
     float diffuse = max(dot(normal, lightVector), 0.0);               	  		  													  
 
 	// Add attenuation. 
-    //diffuse = diffuse * (1.0 / (1.0 + (0.25 * distance)));
     diffuse = diffuse * (1.0 / (1.0 + (0.1 * distance)));
     
     // Add ambient lighting
@@ -38,9 +39,9 @@ void main()
 
 	// Multiply the color by the diffuse illumination level and texture value to get final output color.
 	vec4 color = (diffuse * texture2D(u_Texture, v_TexCoordinate));
-	//vec4 color = diffuse * normalFromMap;
 	
-    gl_FragColor = color;  
-    gl_FragColor.a = 1.0;                      		
+    gl_FragColor = color;
+    gl_FragColor.a = 0.75; 
+    
   }                                                                     	
 
