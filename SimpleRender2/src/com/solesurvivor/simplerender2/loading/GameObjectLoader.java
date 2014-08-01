@@ -21,6 +21,7 @@ import android.graphics.PointF;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.pimphand.simplerender2.R;
 import com.solesurvivor.simplerender2.commands.CommandEnum;
 import com.solesurvivor.simplerender2.game.GameGlobal;
 import com.solesurvivor.simplerender2.game.GlobalKeysEnum;
@@ -33,16 +34,20 @@ import com.solesurvivor.simplerender2.rendering.Geometry;
 import com.solesurvivor.simplerender2.rendering.RendererManager;
 import com.solesurvivor.simplerender2.rendering.shaders.ShaderManager;
 import com.solesurvivor.simplerender2.rendering.textures.TextureManager;
+import com.solesurvivor.simplerender2.rendering.water.Wave;
+import com.solesurvivor.simplerender2.rendering.water.WaveDescriptorEnum;
 import com.solesurvivor.simplerender2.scene.GameEntity;
 import com.solesurvivor.simplerender2.scene.GameObjectLibrary;
 import com.solesurvivor.simplerender2.scene.InputUiElement;
 import com.solesurvivor.simplerender2.scene.Light;
 import com.solesurvivor.simplerender2.scene.UiElement;
+import com.solesurvivor.simplerender2.scene.Water;
 import com.solesurvivor.simplerender2.text.Cursor;
 import com.solesurvivor.simplerender2.text.Font;
 import com.solesurvivor.simplerender2.text.FontManager;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
+import com.solesurvivor.util.math.Vec3;
 
 public class GameObjectLoader {
 
@@ -53,8 +58,12 @@ public class GameObjectLoader {
 	private static final String ARRAY_RESOURCE_TYPE = "array";
 	private static final String RESOURCE_PACKAGE = "com.pimphand.simplerender2";
 	
+	private static Map<String, Geometry> mGeometries = null;
+	private static GameObjectLibrary mLibrary = null;
+	
 	public static GameObjectLibrary loadGameObjects(Context context, TypedArray modelArray) {
-		GameObjectLibrary library = new GameObjectLibrary();
+		mLibrary = new GameObjectLibrary();
+		mGeometries = new HashMap<String, Geometry>();
 
 		Resources res =  context.getResources();
 
@@ -81,11 +90,11 @@ public class GameObjectLoader {
 			for(String name : ig.mObjectNames) {
 				ObjectTypeEnum objectType = ObjectTypeEnum.valueOf(ig.mDescriptors.get(name).get(DescriptorKeysEnum.OBJECT_TYPE.toString()));
 				if(objectType.equals(ObjectTypeEnum.INPUT_AREA)) {
-					library.mInputHandlers.add(parseInputUiElement(name, ig));
+					mLibrary.mInputHandlers.add(parseInputUiElement(name, ig));
 				} else if(objectType.equals(ObjectTypeEnum.UI_ELEMENT)) {
-					library.mDisplayElements.add(parseUiElement(name, ig));
+					mLibrary.mDisplayElements.add(parseUiElement(name, ig));
 				} else if(objectType.equals(ObjectTypeEnum.GAME_ENTITY)) {
-					library.mEntities.add(parseGameEntity(name, ig));
+					mLibrary.mEntities.add(parseGameEntity(name, ig));
 				}
 			}
 		}
@@ -94,10 +103,97 @@ public class GameObjectLoader {
 		Light light = new Light();
 		Matrix.setIdentityM(light.mModelMatrix, 0);
 		light.mShaderHandle = ShaderManager.getShaderId("point_shader");
-		library.mLights.add(light);
+		mLibrary.mLights.add(light);
+		
+		mLibrary.mWaters.addAll(loadWater());
 
-		return library;
+		return mLibrary;
 
+	}
+
+	private static List<Water> loadWater() {
+		List<Water> waters = new ArrayList<Water>();
+		
+		Resources res = GameGlobal.inst().getContext().getResources();
+		
+		TypedArray waterArray = res.obtainTypedArray(R.array.water);
+		
+		for(int i = 0; i < waterArray.length(); i++) {
+			int resourceId = waterArray.getResourceId(i, 0);
+			String resourceName = res.getResourceEntryName(resourceId);	
+			Log.d(TAG,String.format("Loading water: %s",resourceName));
+			String[] propArray = res.getStringArray(resourceId);
+			//TODO: make the key a DescriptorKeyEnum using SSPropertyUtil.descriptorFromStringArray(...)
+			Map<String,String> properties = SSPropertyUtil.parseFromStringArray(propArray, GameGlobal.SEPARATOR);
+			String modelName = properties.get(DescriptorKeysEnum.MODEL.toString());
+			Geometry geo = mGeometries.get(modelName);
+			if(geo != null) { //If the geometry for this water exists.
+
+				String waveArrayName = properties.get(DescriptorKeysEnum.WAVES.toString());
+				int waveId = res.getIdentifier(waveArrayName, ARRAY_RESOURCE_TYPE, RESOURCE_PACKAGE);
+
+				TypedArray waveArray = res.obtainTypedArray(waveId);
+				List<Wave> waves = loadWaves(waveArray);
+				waveArray.recycle();
+
+				String texName = properties.get(DescriptorKeysEnum.TEXTURE_NAME.toString());
+				String shadName = properties.get(DescriptorKeysEnum.SHADER_NAME.toString());
+
+				int texHandle = TextureManager.getTextureId(texName);
+				int shadHandle = ShaderManager.getShaderId(shadName);
+
+				Water w = new Water(waves, geo, texHandle, shadHandle);
+
+				String transparency = properties.get(DescriptorKeysEnum.TRANSPARENCY.toString());
+				w.setTransparency(Float.valueOf(transparency));
+
+				waters.add(w);				
+			}
+		}
+		
+		waterArray.recycle();
+		
+		//Remove water objects from game entities
+		List<GameEntity> waterEntities = new ArrayList<GameEntity>();
+		for(Water w : waters) {
+			for(GameEntity ge : mLibrary.mEntities) {
+				if(ge.getGeometry().mName.equals(w.getGeometry().mName)) {
+					waterEntities.add(ge);
+				}
+			}
+		}
+		mLibrary.mEntities.removeAll(waterEntities);
+		
+		return waters;
+	}
+
+	private static List<Wave> loadWaves(TypedArray waveArray) {
+		List<Wave> waves = new ArrayList<Wave>(waveArray.length());
+		
+		Resources res = GameGlobal.inst().getContext().getResources();
+		
+		for(int i = 0; i < waveArray.length(); i++) {
+			int resourceId = waveArray.getResourceId(i, 0);
+			String resourceName = res.getResourceEntryName(resourceId);	
+			Log.d(TAG,String.format("Loading wave: %s",resourceName));
+			
+			String[] propArray = res.getStringArray(resourceId);
+			Map<String,String> properties = SSPropertyUtil.parseFromStringArray(propArray, GameGlobal.SEPARATOR);
+			
+			float amp = Float.valueOf(properties.get(WaveDescriptorEnum.AMPLITUDE.toString()));
+		    Vec3 dir = 	Vec3.valueOf(properties.get(WaveDescriptorEnum.DIRECTION.toString()));
+		    float len = Float.valueOf(properties.get(WaveDescriptorEnum.WAVELENGTH.toString()));
+		    float spd = Float.valueOf(properties.get(WaveDescriptorEnum.SPEED.toString()));
+		    float tsc = Float.valueOf(properties.get(WaveDescriptorEnum.TIME_SCALE.toString()));
+		    float phs = Float.valueOf(properties.get(WaveDescriptorEnum.PHASE_SHIFT.toString()));
+		    
+		    Wave w = new Wave(amp, dir, len, spd);
+		    w.setTimeScale(tsc);
+		    w.setPhaseShift(phs);
+		    waves.add(w);
+		}
+		
+		return waves;
 	}
 
 	private static IntermediateGeometry parseIntermediateGeometry(InputStream is) throws IOException {
@@ -157,6 +253,7 @@ public class GameObjectLoader {
 	
 	private static GameEntity parseGameEntity(String name, IntermediateGeometry ig) {
 		Geometry geo = parseGeometry(name, ig);
+		mGeometries.put(geo.mName, geo);
 		GameEntity entity = new GameEntity(geo);
 		
 		Context ctx = GameGlobal.inst().getContext();
@@ -298,7 +395,7 @@ public class GameObjectLoader {
 
 		geo.mNumElements = Integer.valueOf(desc.get(DescriptorKeysEnum.NUM_ELEMENTS.toString()));
 		geo.mElementStride = Integer.valueOf(desc.get(DescriptorKeysEnum.ELEMENT_STRIDE.toString()));
-
+		
 		return geo;
 
 	}

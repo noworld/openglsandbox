@@ -3,9 +3,6 @@ package com.solesurvivor.simplerender2.scene;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.graphics.PointF;
-import android.util.Log;
-
 import com.solesurvivor.simplerender2.commands.Command;
 import com.solesurvivor.simplerender2.input.InputArea;
 import com.solesurvivor.simplerender2.input.InputEvent;
@@ -13,7 +10,6 @@ import com.solesurvivor.simplerender2.input.InputEventEnum;
 import com.solesurvivor.simplerender2.input.InputHandler;
 import com.solesurvivor.simplerender2.input.TouchFeedback;
 import com.solesurvivor.simplerender2.rendering.Geometry;
-import com.solesurvivor.simplerender2.util.UiUtil;
 
 public class InputUiElement extends UiElement implements InputHandler {
 	
@@ -42,7 +38,7 @@ public class InputUiElement extends UiElement implements InputHandler {
 		boolean myEvent = mInputArea.isPressed(event.getCoords());
 
 		//XXX DEBUG STICKING INPUT
-		PointF screen = UiUtil.viewToScreenCoords(event.getCoords());
+//		PointF screen = UiUtil.viewToScreenCoords(event.getCoords());
 		
 		if(myEvent) {
 			mPressed = event.getEvent().equals(InputEventEnum.DOWN)

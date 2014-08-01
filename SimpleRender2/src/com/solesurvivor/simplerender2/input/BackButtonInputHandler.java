@@ -3,8 +3,6 @@ package com.solesurvivor.simplerender2.input;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.util.Log;
-
 import com.solesurvivor.simplerender2.commands.Command;
 
 public class BackButtonInputHandler implements InputHandler {

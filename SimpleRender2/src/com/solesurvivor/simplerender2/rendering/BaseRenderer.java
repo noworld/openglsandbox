@@ -23,7 +23,9 @@ import com.solesurvivor.simplerender2.game.GameStateManager;
 import com.solesurvivor.simplerender2.game.GameWorld;
 import com.solesurvivor.simplerender2.rendering.shaders.ShaderManager;
 import com.solesurvivor.simplerender2.rendering.textures.TextureManager;
+import com.solesurvivor.simplerender2.rendering.water.Wave;
 import com.solesurvivor.simplerender2.scene.Light;
+import com.solesurvivor.simplerender2.scene.Water;
 import com.solesurvivor.simplerender2.text.Cursor;
 import com.solesurvivor.simplerender2.text.Font;
 import com.solesurvivor.simplerender2.text.FontManager;
@@ -263,23 +265,30 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		
 	}
 	
-	public void drawWater(Geometry geo, List<Light> lights,
-			float[] eyePos, float[] eyeRot) {
+	public void drawWater(Water water, List<Light> lights) {
+		
+		Geometry geo = water.getGeometry();
 		
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
 		float[] viewMatrix = GameWorld.inst().getAgentViewMatrix();
 		
 		GLES20.glUseProgram(geo.mShaderHandle);
-		
+
 		int u_mvp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVPMatrix");
 		int u_mv = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVMatrix");
 		int u_lightpos = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_LightPos");
 		int u_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Texture");
-		int u_normals_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NormalTexture");
 		int u_time = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Time");
-		int u_eyepos = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_EyePos");
-//		int u_eyerot = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_EyeRot");
+		int u_transp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Transp");
+
+		int u_w_amp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.amplitude");
+		int u_w_dir = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.direction");
+		int u_w_frq = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.frequency");
+		int u_w_spd = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.speed");
+		int u_w_phc = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.phase_const");
+		int u_w_tms = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.time_scale");
+		int u_w_phs = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.phase_shift");
 
 		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
 		int a_nrm = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Normal");
@@ -288,10 +297,6 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, geo.mTextureHandle);
 		GLES20.glUniform1i(u_texsampler, 0);
-		
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, TextureManager.getTextureId("wavemapn1"));
-		GLES20.glUniform1i(u_normals_texsampler, 1);
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.mDatBufIndex);
 
@@ -336,12 +341,21 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		double time = ((double)SystemClock.uptimeMillis()) / 1000.0;
 		GLES20.glUniform1f(u_time, (float)time);
 		
-		//Eye
-		GLES20.glUniform3f(u_eyepos, eyePos[0], eyePos[1], eyePos[2]);
-//		GLES20.glUniform3f(u_eyerot, eyePos[0], eyePos[1], eyePos[2]);
+		//Transparency
+		GLES20.glUniform1f(u_transp, water.getTransparency());
+
+		//Wave
+		//TODO: Handle multiple waves
+		Wave w = water.getWaves().get(0);
+		GLES20.glUniform1f(u_w_amp, w.getAmplitude());
+		GLES20.glUniform3f(u_w_dir, w.getDirection().getX(),w.getDirection().getY(),w.getDirection().getZ());
+		GLES20.glUniform1f(u_w_frq, w.getFrequency());
+		GLES20.glUniform1f(u_w_spd, w.getSpeed());
+		GLES20.glUniform1f(u_w_phc, w.getPhaseConst());
+		GLES20.glUniform1f(u_w_tms, w.getTimeScale());
+		GLES20.glUniform1f(u_w_phs, w.getPhaseShift());
 		
-		// Draw
-		
+		// Draw	
 		/* Draw the arrays as triangles */
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);

@@ -31,5 +31,8 @@ public enum DescriptorKeysEnum {
 	TEXT_FONT,
 	COMMAND,
 	TEXTURE_NAME,
-	SHADER_NAME
+	SHADER_NAME,
+	TRANSPARENCY,
+    MODEL,
+    WAVES
 }

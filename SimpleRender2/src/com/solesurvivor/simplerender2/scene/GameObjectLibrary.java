@@ -13,5 +13,6 @@ public class GameObjectLibrary {
 	public List<UiElement> mDisplayElements = new ArrayList<UiElement>();
 	public List<Light> mLights = new ArrayList<Light>();
 	public List<Cursor> mCursors = new ArrayList<Cursor>();
+	public List<Water> mWaters = new ArrayList<Water>();
 	
 }

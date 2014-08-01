@@ -1,0 +1,30 @@
+<resources>
+    
+    <!-- Must be in specific order: Position, Color, Normal, (optional) Texcoord -->
+    
+    <array name="water">
+        <item>@array/ocean_water</item>
+    </array>
+    
+    <string-array name="ocean_water">
+        <item>TRANSPARENCY|0.75</item>
+        <item>MODEL|plane</item>
+        <item>WAVES|ocean_waves</item>
+        <item>TEXTURE_NAME|wavemapd1</item>
+        <item>SHADER_NAME|water_shader</item>
+    </string-array>
+    
+    <array name="ocean_waves">
+        <item>@array/large_wave</item>
+    </array>
+    
+    <string-array name="large_wave">
+        <item>AMPLITUDE|1.0</item>
+        <item>DIRECTION|1.0,0.0,1.0</item><!-- Y-up -->
+        <item>WAVELENGTH|1.5</item>
+        <item>SPEED|1.0</item>
+        <item>TIME_SCALE|1.0</item>
+        <item>PHASE_SHIFT|0.0</item>
+    </string-array>
+    
+</resources>

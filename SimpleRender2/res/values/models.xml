@@ -40,6 +40,17 @@
     
       <string-array name="plane">
         <item>POS_X|0.0</item>
+        <item>POS_Y|-1.5</item>
+        <item>POS_Z|-5.0</item>
+        <item>SCALE_X|1.0</item>
+        <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
+        <item>TEXTURE_NAME|wavemapd1</item>
+        <item>SHADER_NAME|water_shader</item>
+    </string-array>
+    
+      <string-array name="radial">
+        <item>POS_X|0.0</item>
         <item>POS_Y|-1.0</item>
         <item>POS_Z|-5.0</item>
         <item>SCALE_X|1.0</item>

@@ -1,9 +1,9 @@
 package com.solesurvivor.simplerender2.input;
 
-import com.solesurvivor.simplerender2.game.GameGlobal;
-
 import android.content.Context;
 import android.os.Vibrator;
+
+import com.solesurvivor.simplerender2.game.GameGlobal;
 
 public class TouchFeedback {
 

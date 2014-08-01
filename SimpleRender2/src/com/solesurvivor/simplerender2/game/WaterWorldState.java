@@ -12,8 +12,8 @@ import com.solesurvivor.simplerender2.loading.GameObjectLoader;
 import com.solesurvivor.simplerender2.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2.rendering.GlSettings;
 import com.solesurvivor.simplerender2.rendering.RendererManager;
-import com.solesurvivor.simplerender2.scene.GameEntity;
 import com.solesurvivor.simplerender2.scene.Light;
+import com.solesurvivor.simplerender2.scene.Water;
 import com.solesurvivor.simplerender2.text.Cursor;
 import com.solesurvivor.simplerender2.text.FontManager;
 
@@ -24,7 +24,6 @@ public class WaterWorldState extends MainMenuState {
 	private float mAccumulatedRotation = 0.0f;
 	private Cursor mLine1 = null;
 	private Cursor mLine2 = null;
-	private GameEntity mWater = null;
 	
 	public WaterWorldState() {
 		Context ctx = GameGlobal.inst().getContext();
@@ -33,21 +32,13 @@ public class WaterWorldState extends MainMenuState {
 		modelArray.recycle();
 		mGlSettings = new GlSettings();
 		mGlSettings.setGlClearColor(new float[]{0.681f, 0.886f, 1.0f, 1.0f});
-		
-		for(GameEntity ge : this.mObjectLibrary.mEntities) {
-			if(ge.getGeometry().mName.equals("plane")) {
-				mWater = ge;
-				break;
-			}
-		}
-		if(mWater != null) {
-			this.mObjectLibrary.mEntities.remove(mWater);
-		}
-		
+
 		this.mObjectLibrary.mInputHandlers.add(GameGlobal.inst().getHandler(GlobalKeysEnum.BACK_BUTTON_INPUT_HANDLER));
 		
 		mLine1 = new Cursor(FontManager.getFont("Nightwatcher BB"), new float[]{1.5f,1.5f,1.0f},new float[]{-900.0f,480.0f,-4.0f},0,"");
 		mLine2 = new Cursor(FontManager.getFont("Nightwatcher BB"), new float[]{1.5f,1.5f,1.0f},new float[]{-900.0f,420.0f,-4.0f},0,"");
+
+		//Uncomment to draw text
 //		this.mObjectLibrary.mCursors.add(mLine1);
 //		this.mObjectLibrary.mCursors.add(mLine2);
 	}
@@ -72,7 +63,7 @@ public class WaterWorldState extends MainMenuState {
 			Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 2.0f);
 		}
 		
-		/*XXX FIRST PHYSICS!*/
+		/*XXX FIRST PHYSICS! - Jump*/
 		float dTSecs = ((float)mDeltaT) / (1000.0f);		
 		mCameraTranslation[1] -= mCameraVelocity[1];
 		mCameraVelocity[1] = Physics.applyGravity(mCameraVelocity[1], dTSecs);
@@ -88,9 +79,12 @@ public class WaterWorldState extends MainMenuState {
 	
 	@Override
 	public void render(GameWorld target) {		
+		//TODO: Shift rendering to game objects and render back to front
 		BaseRenderer ren = RendererManager.inst().getRenderer();
 		super.render(target);
-		ren.drawWater(mWater.getGeometry(), mObjectLibrary.mLights, mCameraTranslation, mCameraRotation);
+		for(Water w : mObjectLibrary.mWaters) {
+			ren.drawWater(w, mObjectLibrary.mLights);
+		}
 	}
 
 	@Override
@@ -119,7 +113,6 @@ public class WaterWorldState extends MainMenuState {
 		} else if(mCameraRotation[0] < 0.0f) {
 			mCameraRotation[0] = mCameraRotation[0] + 360.0f;
 		}
-			
 		
 		mCameraRotation[1] = (x + mCameraRotation[1])/2;
 		mCameraRotation[2] = (y + mCameraRotation[2])/2;
@@ -143,6 +136,5 @@ public class WaterWorldState extends MainMenuState {
 			super.impulseView(x, y, z);
 		}
 	}
-	
 	
 }
