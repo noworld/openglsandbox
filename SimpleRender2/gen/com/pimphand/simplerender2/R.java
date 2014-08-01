@@ -48,6 +48,7 @@ public final class R {
         public static final int radial=0x7f080012;
         public static final int scar=0x7f080014;
         public static final int shaderPrograms=0x7f080016;
+        public static final int small_wave=0x7f08002d;
         public static final int sprite_shader=0x7f08001a;
         public static final int suzanne=0x7f080015;
         public static final int text_shader=0x7f08001c;

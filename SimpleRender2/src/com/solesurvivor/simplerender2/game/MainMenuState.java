@@ -70,7 +70,7 @@ public class MainMenuState implements GameState<GameWorld> {
 		renderOrthoText();
 	}
 
-	private void renderOrthoText() {
+	protected void renderOrthoText() {
 		BaseRenderer ren = RendererManager.inst().getRenderer();
 		for(Cursor c : this.getLibrary().mCursors) {
 			ren.drawText(c);

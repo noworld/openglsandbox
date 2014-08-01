@@ -175,22 +175,21 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		float[] color = settings.getGlClearColor();
 		GLES20.glClearColor(color[0],color[1],color[2],color[3]);
 		
+		setGlOptions(settings.getOptions());
 		
-		for(GlOption go : settings.getOptions()) {
-			if(go.isEnabled()) {
-				GLES20.glEnable(go.getIndex());
+
+		GLES20.glBlendFunc(settings.getBlendFunc().getSource(), settings.getBlendFunc().getDest());	
+	}
+	
+	public void setGlOptions(List<GlOption> options) {
+		
+		for(GlOption glo : options) {
+			if(glo.isEnabled()) {
+				GLES20.glEnable(glo.getIndex());
 			} else {
-				GLES20.glDisable(go.getIndex());
+				GLES20.glDisable(glo.getIndex());
 			}
 		}
-
-//		GLES20.glCullFace(GLES20.GL_BACK);
-		// No culling of back faces
-		GLES20.glDisable(GLES20.GL_CULL_FACE);
-		 
-		// No depth testing
-		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-		GLES20.glBlendFunc(settings.getBlendFunc().getSource(), settings.getBlendFunc().getDest());	
 	}
 	
 	public void drawGeometry(Geometry geo, List<Light> lights) {
@@ -266,7 +265,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public void drawWater(Water water, List<Light> lights) {
-		
+			
 		Geometry geo = water.getGeometry();
 		
 		float[] mvpMatrix = new float[16];
