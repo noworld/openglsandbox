@@ -1,24 +1,11 @@
 precision mediump float;
 
-struct wave {
-	float amplitude;
-	vec3  direction;
-	float wavelength;
-	float frequency;
-	float speed;
-	float phase_const;
-	float time_scale;
-	float phase_shift;
-};
-
 uniform vec3      u_LightPos;
 uniform sampler2D u_Texture;
-uniform wave      u_Wave;
   
 varying vec3  v_Position;		 // Interpolated position for this fragment.
 varying vec3  v_Normal;
 varying vec2  v_TexCoordinate;   // Interpolated texture coordinate per fragment.
-varying float v_TestValue;       // Test value passed from vertex shader
 varying float v_Transp;
   
 // The entry point for our fragment shader.
@@ -42,9 +29,8 @@ void main()
 
 	// Multiply the color by the diffuse illumination level and texture value to get final output color.
 	vec4 color = (diffuse * texture2D(u_Texture, v_TexCoordinate));
-	
-    gl_FragColor = color;
-    gl_FragColor.a = v_Transp; 
+	gl_FragColor = vec4(color.rgb, v_Transp);
+    //gl_FragColor = vec4(v_Normal, v_Transp);
     
   }                                                                     	
 

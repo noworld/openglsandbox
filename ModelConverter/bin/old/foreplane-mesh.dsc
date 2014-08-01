@@ -1,0 +1,2 @@
+texture_name=foreplane
+shader_name=alphaShaders

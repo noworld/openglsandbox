@@ -280,17 +280,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		int u_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Texture");
 		int u_time = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Time");
 		int u_transp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Transp");
-
-		int u_w_amp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.amplitude");
-		int u_w_dir = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.direction");
-		int u_w_frq = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.frequency");
-		int u_w_spd = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.speed");
-		int u_w_phc = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.phase_const");
-		int u_w_tms = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.time_scale");
-		int u_w_phs = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Wave.phase_shift");
+		int u_numwaves = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NumWaves");
 
 		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
-		int a_nrm = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Normal");
 		int a_txc = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_TexCoordinate");
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -301,15 +293,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		GLES20.glEnableVertexAttribArray(a_pos);
 		GLES20.glVertexAttribPointer(a_pos, geo.mPosSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mPosOffset);
-
-		GLES20.glEnableVertexAttribArray(a_nrm);
-		GLES20.glVertexAttribPointer(a_nrm, geo.mNrmSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mNrmOffset);
-
 		GLES20.glEnableVertexAttribArray(a_txc);
 		GLES20.glVertexAttribPointer(a_txc, geo.mTxcSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mTxcOffset);
+		/*Normals are computed in the shader...*/
 		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-
 		// --MV--
 
 		/* Get the MV Matrix: Multiply V * M  = MV */
@@ -344,15 +331,26 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glUniform1f(u_transp, water.getTransparency());
 
 		//Wave
-		//TODO: Handle multiple waves
-		Wave w = water.getWaves().get(0);
-		GLES20.glUniform1f(u_w_amp, w.getAmplitude());
-		GLES20.glUniform3f(u_w_dir, w.getDirection().getX(),w.getDirection().getY(),w.getDirection().getZ());
-		GLES20.glUniform1f(u_w_frq, w.getFrequency());
-		GLES20.glUniform1f(u_w_spd, w.getSpeed());
-		GLES20.glUniform1f(u_w_phc, w.getPhaseConst());
-		GLES20.glUniform1f(u_w_tms, w.getTimeScale());
-		GLES20.glUniform1f(u_w_phs, w.getPhaseShift());
+		GLES20.glUniform1i(u_numwaves, water.getWaves().size());
+		
+		for(int i = 0; i < water.getWaves().size(); i++) { 
+			Wave w = water.getWaves().get(i);			
+			int u_w_amp = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].amplitude",i));
+			int u_w_dir = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].direction",i));
+			int u_w_frq = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].frequency",i));
+			int u_w_spd = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].speed",i));
+			int u_w_phc = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].phase_const",i));
+			int u_w_tms = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].time_scale",i));
+			int u_w_phs = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].phase_shift",i));
+
+			GLES20.glUniform1f(u_w_amp, w.getAmplitude());
+			GLES20.glUniform3f(u_w_dir, w.getDirection().getX(),w.getDirection().getY(),w.getDirection().getZ());
+			GLES20.glUniform1f(u_w_frq, w.getFrequency());
+			GLES20.glUniform1f(u_w_spd, w.getSpeed());
+			GLES20.glUniform1f(u_w_phc, w.getPhaseConst());
+			GLES20.glUniform1f(u_w_tms, w.getTimeScale());
+			GLES20.glUniform1f(u_w_phs, w.getPhaseShift());
+		}
 		
 		// Draw	
 		/* Draw the arrays as triangles */
@@ -360,6 +358,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		
 		checkError();
 		
@@ -557,14 +556,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	
 	protected int checkError() {
 		int errorCode =  GLES20.GL_NO_ERROR;
+		int currentError = GLES20.glGetError();
 		/* Check for errors */
-		if(GLES20.glGetError() != GLES20.GL_NO_ERROR) {			
-			SSLog.w(TAG, "OpenGL Error Encountered: " + interpretError(GLES20.glGetError()));
-			errorCode = GLES20.glGetError();
-		}
-		
-		if(errorCode != GLES20.GL_NO_ERROR) {
-			Log.e(TAG, String.format("OPENGL ERROR ENCOUNTERED: %s", interpretError(errorCode)));
+		if(currentError != GLES20.GL_NO_ERROR) {			
+			SSLog.w(TAG, "OpenGL Error Encountered: " + interpretError(currentError));
 		}
 		
 		return errorCode;
