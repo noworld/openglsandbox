@@ -1,0 +1,194 @@
+rod wedge [ matrix
+    1.8369701987210297E-16 1.0 1.2246467991473532E-16 0.0
+    1.0 -1.8369701987210297E-16 0.0 -6.386076441342869
+    2.2496396739927864E-32 1.2246467991473532E-16 -1.0 5.207440419558344 ]
+    N [ 0.4999999999999998 -0.8660254037844389 6.123233995736762E-17 ]
+    4.680504428 * 
+
+unit-cube unit-cube [ trans 2 2 0 ]
+	N [ 1 1 0 ] 1.4142135 *
+unit-cube tetra [ trans 2 2 2 ]
+	V V [0.5 0.5 0.5]  [1 1 1] 2.5980762 *
+unit-cube tetra [ trans -2 -2 1 ]
+	V E [ -0.5 -0.5 0.5 ] [-1 -1 0.5] 1.5 *
+unit-cube tetra [ trans -1.5 -1.5 -1.5 ]
+	V F [-0.5 -0.5 -0.5  ] [-1 -1 -1] 1.1547005 *
+unit-cube tetra [ trans 1 0 0 ]
+	N [ 1 0 0 ] 0.5 *
+unit-cube tetra [ trans 1 0 0 roty 45 ]
+	N [ 1 0 0 ] 0.5 *
+unit-cube tetra [ trans 1 1 0 roty 1 ]
+	E V [ 0.5 0.5 0 ]  [1 1 0] 0.70710675 *
+unit-cube tetra [ trans -2 -2 0 ]
+	E E [ -0.5 -0.5 0 ] [-1 -1 0] 1.4142135 *
+unit-cube tetra [ trans 0 0 -2 ]
+	F V [ 0.0 0.0 -0.5 ]  [0 0 -1] 0.5 *
+unit-cube unit-cube [ trans 2 0.1 0.1 ]
+	N [ 1 0 0 ] 1 *
+unit-cube unit-cube [ trans 2 2 2 ]
+	V V [ 0.5 0.5 0.5 ] [1 1 1 ] 1.7320508 *
+unit-cube unit-cube [ trans 1 1 2 rotz 45 ]
+	V E [ 0.5 0.5 0.5 ] [ 0.14644660 0.14644660 1 ] 1.02122143 *
+unit-cube unit-cube [ trans 2 2 2 rot -1 1 0 54.735610 ]
+	V F [ 0.5 0.5 0.5 ] [1.2113248 1.2113248 1.2113248] 2.0980762 *
+unit-cube unit-cube [ trans 0 2 2 rotz 45 ]
+	E V [ 0 0.5 0.5 ]  [ 0 0.7928932 1 ] 1.27619734 *
+unit-cube unit-cube [ trans 2 2 0 rot 1 1 0 90 ]
+	E E [ 0.5 0.5 0 ] [1 1 0 ] 1.41421356 *
+unit-cube unit-cube [ trans 0 3 0 rotz 45 rot 1 -1 0 35.264389 ]
+	F V [ 0 0.5 0 ] [ 0 1.6339745 0 ] 1.6339745 *
+unit-cube unit-cube [ trans 2 0 0 roty 45 ]
+	N [ 1 0 0 ] 0.79289321 *
+unit-cube tetra [trans -1  -1  -1 ]
+	V F [ -0.5 -0.5 -0.5 ] [ -1 -1 -1 ] 0.2886751345 *
+cone unit-cube [ trans 0 0 1 ]
+	V F [ 0 0 .3 ] [ 0 0 1 ] 0.2 *
+brick diamond  [ trans 3 0 0 ]
+	F V [ 1 0 0 ] [ 1 0 0 ] 1.5 *
+unit-cube brick [ trans 2.5 0 0 ]
+	N [ 1 0 0 ] 1 *
+unit-cube brick [ trans 2.5 0.1 0.1 ]
+	N [ 1 0 0 ] 1 *
+unit-cube brick [ trans 2.5 1 0 ]
+	N [ 1 0 0 ] 1 *
+unit-cube diamond [ trans 2 .5 0 ]
+	N [ 1 0 0 ] 1 *
+unit-cube diamond [ trans 2 .5 .25 ]
+	N [ 1 0 0 ] 1 *
+unit-cube diamond [ trans 2 .5000001 .25 ]
+	E V [ .5 .5 .25 ] [ 1 0 0 ] 1 *
+unit-cube diamond [ trans 2 .4999999 .25 ]
+	F V [ .5 .5 .25 ] [ 1 0 0 ] 1 *
+unit-cube skew [ trans 2 0 0 ]
+	N [ 1 0 0 ] 1 *
+unit-cube skew [ trans 2 0.5 0 ]
+	N [ 1 0 0 ] 1 *
+unit-cube skew [ trans 2 0.5 1.1 ]
+	N [ 1 0 .1 ] 1.0049875 *
+unit-cube skew [ trans 2 0.5000001 1.1 ]
+	V V [ 0.5 0.5 0.5 ] [ 1 0 .1 ] 1.0049875 *
+unit-cube skew [ trans 2 0.4999999 1.1 ]
+	E V [ 0.5 0.5 0.5 ] [ 1 0 .1 ] 1.0049875 *
+skew diamond [ trans 2 0 0 ]
+	E V  [ 0.5 0 0 ] [ 1 0 0 ] 1  *
+skew diamond [ trans 2 1 0 ]
+	E E [ 0.5 0 0 ] [ 2 1 0 ] 1.34164078 *
+skew diamond [ trans 2 0 2 ]
+	V E [ 0.5 0 0.5 ] [ 1 0 1 ] 1.767766952 *
+skew skew [ trans 2 0 0 ]
+	N [ 1 0 0 ] 1 *
+skew skew [ trans 2 0 1 ]
+	N [ 1 0 0 ] 1 *
+skew skew [ trans 2 0 1.000001 ]
+	V V [ .5 0 .5 ] [ 1 0 0.000001 ] 1 *
+cross unit-cube [ trans 1.25 1.5 0 ]
+	N [ 1 0 0 ] .25 *
+cross unit-cube [ trans 1.25 1.1 0 ]
+	N [ 0 1 0 ] .1 *
+
+triangle-cube triangle-cube [ trans 2 0 0 ]
+	N [1 0 0 ] 1.0 *
+triangle-cube tetra [ trans 2 2 2 ]
+	V V [0.5 0.5 0.5]  [1 1 1] 2.5980762 *
+triangle-cube tetra [ trans -2 -2 1 ]
+	V E [ -0.5 -0.5 0.5 ] [-1 -1 0.5] 1.5 *
+triangle-cube tetra [ trans -1.5 -1.5 -1.5 ]
+	V F [-0.5 -0.5 -0.5  ] [-1 -1 -1] 1.1547005 *
+triangle-cube tetra [ trans 1 0 0 ]
+	N [ 1 0 0 ] 0.5 *
+triangle-cube tetra [ trans 1 0 0 roty 45 ]
+	N [ 1 0 0 ] 0.5 *
+triangle-cube tetra [ trans 1 1 0 roty 1 ]
+	E V [ 0.5 0.5 0 ]  [1 1 0] 0.70710675 *
+triangle-cube tetra [ trans -2 -2 0 ]
+	E E [ -0.5 -0.5 0 ] [-1 -1 0] 1.4142135 *
+triangle-cube tetra [ trans 0 0 -2 ]
+	N  [0 0 -1] 0.5 *
+triangle-cube triangle-cube [ trans 2 2 2 ]
+	V V [ 0.5 0.5 0.5 ] [1 1 1 ] 1.7320508 *
+triangle-cube triangle-cube [ trans 1 1 2 rotz 45 ]
+	V E [ 0.5 0.5 0.5 ] [ 0.14644660 0.14644660 1 ] 1.02122143 *
+triangle-cube triangle-cube [ trans 2 2 2 rot -1 1 0 54.735610 ]
+	N [ 0.5 0.5 0.5 ] 2.0980762 *
+triangle-cube triangle-cube [ trans 0 2 2 rotz 45 ]
+	E V [ 0 0.5 0.5 ]  [ 0 0.7928932 1 ] 1.27619734 *
+triangle-cube triangle-cube [ trans 2 2 0 rot 1 1 0 90 ]
+	E E [ 0.5 0.5 0 ] [1 1 0 ] 1.41421356 *
+triangle-cube triangle-cube [ trans 0 3 0 rotz 45 rot 1 -1 0 35.264389 ]
+	F V [ 0 0.5 0 ] [ 0 1.6339745 0 ] 1.6339745 *
+triangle-cube triangle-cube [ trans 2 0.1 0.1 ]
+	N [ 1 0 0 ] 1 *
+#triangle-cube triangle-cube [ trans 2 0 0 roty 45 ]
+#	N [ 1 0 0 ] 0.79289321 *
+triangle-cube triangle-cube [ trans 2 2 0 ]
+	N [ 1 1 0 ] 1.4142135 *
+triangle-cube tetra [trans -1  -1  -1 ]
+	V F [ -0.5 -0.5 -0.5 ] [ -1 -1 -1 ] 0.2886751345 *
+cone triangle-cube [ trans 0 0 1 ]
+	N [ 0 0 1 ] 0.2 *
+triangle-cube brick [ trans 2.5 0 0 ]
+	N [ 1 0 0 ] 1 *
+triangle-cube brick [ trans 2.5 0.1 0.1 ]
+	N [ 1 0 0 ] 1 *
+triangle-cube brick [ trans 2.5 1 0 ]
+	N [ 1 0 0 ] 1 *
+triangle-cube diamond [ trans 2 .5 0 ]
+	N [ 1 0 0 ] 1 *
+triangle-cube diamond [ trans 2 .5 .25 ]
+	N [ 1 0 0 ] 1 *
+triangle-cube skew [ trans 2 0 0 ]
+	N [ 1 0 0 ] 1 *
+triangle-cube skew [ trans 2 0.5 0 ]
+	N [ 1 0 0 ] 1 *
+triangle-cube skew [ trans 2 0.5 1.1 ]
+	N [ 1 0 .1 ] 1.0049875 *
+cross triangle-cube [ trans 1.25 1.5 0 ]
+	N [ 1 0 0 ] .25 *
+cross triangle-cube [ trans 1.25 1.1 0 ]
+	N [ 0 1 0 ] .1 *
+
+unit-cube unit-cube [ trans 1.20710678112 1.20710678112 0 rotz 45 ] P D 2
+	E F [ .5 .5 -.5 ] [ 1 1 0 ] 0.5
+	E F [ .5 .5  .5 ] [ 1 1 0 ] 0.5 *
+unit-cube unit-cube [ trans 1.20710678112 1.20710678112 .5 rotz 45 ] P D 2
+	E F [ .5 .5  0 ] [ 1 1 0 ] 0.5
+	E F [ .5 .5  .5 ] [ 1 1 0 ] 0.5 *
+unit-cube unit-cube [ trans 1.20710678112 1.20710678112 -.5 rotz 45 ] P D 2
+	E F [ .5 .5 -.5 ] [ 1 1 0 ] 0.5
+	E F [ .5 .5  0 ] [ 1 1 0 ] 0.5 *
+unit-cube unit-cube [ trans 1.20710678112 1.20710678112 -1 rotz 45 ] P D 2
+	E F [ .5 .5 -.5 ] [ 1 1 0 ] 0.5 *
+unit-cube unit-cube [ trans 1.20710678112 1.20710678112 1 rotz 45 ] P D 2
+	E F [ .5 .5 .5 ] [ 1 1 0 ] 0.5 *
+
+unit-cube unit-cube [ trans 1.7071067811 0 0 roty 45 ] P D 2
+	F E [ .5  .5 0 ] [ 1 0 0 ] 0.5 
+	F E [ .5 -.5 0 ] [ 1 0 0 ] 0.5 *
+unit-cube unit-cube [ trans 1.7071067811 0.5 0 roty 45 ] P D 2
+	F E [ .5  .5 0 ] [ 1 0 0 ] 0.5 
+	F E [ .5  0  0 ] [ 1 0 0 ] 0.5 *
+unit-cube unit-cube [ trans 1.7071067811 -0.5 0 roty 45 ] P D 2
+	F E [ .5  0 0 ] [ 1 0 0 ] 0.5 
+	F E [ .5  -0.5  0 ] [ 1 0 0 ] 0.5 *
+unit-cube unit-cube [ trans 1.7071067811 -1 0 roty 45 ] P D 2
+	F E [ .5  -0.5  0 ] [ 1 0 0 ] 0.5 *
+unit-cube unit-cube [ trans 1.7071067811 1 0 roty 45 ] P D 2
+	F E [ .5  .5  0 ] [ 1 0 0 ] 0.5 *
+
+unit-cube unit-cube [ trans 2 0 0 ] P D 2
+	F F [ .5 .5 .5 ] [ 1 0 0 ] 1 
+	F F [ .5 -.5 .5 ] [ 1 0 0 ] 1 
+	F F [ .5 .5 -.5 ] [ 1 0 0 ] 1 
+	F F [ .5 -.5 -.5 ] [ 1 0 0 ] 1 *
+unit-cube unit-cube [ trans 2 .5 .5 ] P D 2
+	F F [ .5 .5 .5 ] [ 1 0 0 ] 1 
+	F F [ .5 0 .5 ] [ 1 0 0 ] 1 
+	F F [ .5 .5 0 ] [ 1 0 0 ] 1 
+	F F [ .5 0 0 ] [ 1 0 0 ] 1 *
+unit-cube unit-cube [ trans 2 -.5 0 ] P D 2
+	F F [ .5 0 .5 ] [ 1 0 0 ] 1 
+	F F [ .5 0 -.5 ] [ 1 0 0 ] 1 
+	F F [ .5 -.5 -.5 ] [ 1 0 0 ] 1 
+	F F [ .5 -.5 .5 ] [ 1 0 0 ] 1 *
+unit-cube unit-cube [ trans 2 1 1 ] P D 2
+	F F [ .5 .5 .5 ] [ 1 0 0 ] 1 *

@@ -33,22 +33,31 @@ varying vec3 otherNormal;
 void main()                                                 	
 {	
 	float height = 0.0;
-	for(int i = 0; i < u_NumWaves; i++) {
+	vec3 normal = vec3(0.0, 0.0, 0.0);
+	//Add up the height of all the waves
+	for(int i = 0; i < u_NumWaves; i++) {		
 		wave u_Wave = u_Waves[i];
 		float phase = (u_Time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
 		float angle = (dot(u_Wave.direction.xz, a_Position.xz) * u_Wave.frequency) + phase;
-		height = height + u_Wave.amplitude * sin(angle);		
+		height = height + u_Wave.amplitude * sin(angle);
+		float xDir = u_Wave.direction.x * cos(angle);
+		float yDir = (cos(2.0 * angle)+1.0)/2.0;
+		float zDir = u_Wave.direction.z * cos(angle);
+		normal = normal + normalize(vec3(xDir,1.0,zDir));
 	}	
 	
+	//Set the height on the point
 	vec4 position = a_Position;
 	position.y = height;	
                          
     // Pass through the texture coordinate.
 	v_TexCoordinate = a_TexCoordinate;   
 
-	v_Position = vec3(u_MVMatrix * position);	
-	vec3 normal = vec3(0.0, 1.0, 1.0);
-	v_Normal = vec3(u_MVMatrix * vec4(normal, 0.0));	
+	//Translate to view space
+	v_Position = vec3(u_MVMatrix * position);
+	
+	//v_Normal = vec3(u_MVMatrix * vec4(normal, 0.0));
+	v_Normal = normal;
 	v_Transp = u_Transp;
           
 	// gl_Position is a special variable used to store the final position.
