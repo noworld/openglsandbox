@@ -1,0 +1,26 @@
+<resources>
+    
+    <!-- 
+    <array name="main_menu_models">
+        <item>@raw/mainmenu_ui</item>
+    </array>
+     -->
+
+     <string-array name="data_classes">
+        <item>SHIP</item>
+        <item>AIRCRAFT</item>
+        <item>GUN_SYSTEM</item>
+        <item>MISSILE_SYSTEM</item>
+        <item>ASW_SYSTEM</item>
+        <item>TORPEDO</item>
+        <item>AIRCRAFT_ORDNANCE</item>
+        <item>AIRCRAFT_ELECTRONICS</item>
+        <item>AIRCRAFT_GUN</item>
+        <item>NUCLEAR_WEAPONS</item>
+        <item>EARCH_RADAR</item>
+        <item>WEAPON_DIRECTOR</item>
+        <item>SONAR</item>
+        <item>ENVIRONMENT</item>
+    </string-array>
+
+</resources>
