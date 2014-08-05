@@ -33,6 +33,15 @@ public class SSArrayUtil {
 		
 	}
 	
+	public static IntBuffer bytesToIntBufBigEndian(byte[] bytes) {
+		int[] ints = new int[bytes.length / BYTES_PER_INT];
+		ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).asIntBuffer().get(ints);		
+		IntBuffer fBuf = SSArrayUtil.arrayToIntBuffer(ints);
+		fBuf.rewind();
+		return fBuf;
+		
+	}
+	
 	public static int[] parseIntArray(String s, String delimiter) {
 		String[] strings = s.split(delimiter);
 		int[] ints = new int[strings.length];
