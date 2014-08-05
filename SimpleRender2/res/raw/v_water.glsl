@@ -9,6 +9,7 @@ struct wave {
 	float phase_shift;
 };
 
+const float CONST_TIME = 1.0;
 const int MAX_WAVES = 3;
 
 uniform int       u_NumWaves;
@@ -37,7 +38,8 @@ void main()
 	//Add up the height of all the waves
 	for(int i = 0; i < u_NumWaves; i++) {		
 		wave u_Wave = u_Waves[i];
-		float phase = (u_Time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
+		//float phase = (u_Time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
+		float phase = (CONST_TIME * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
 		float angle = (dot(u_Wave.direction.xz, a_Position.xz) * u_Wave.frequency) + phase;
 		height = height + u_Wave.amplitude * sin(angle);
 		float xDir = u_Wave.direction.x * cos(angle);

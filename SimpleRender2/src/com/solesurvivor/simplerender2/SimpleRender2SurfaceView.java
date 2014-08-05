@@ -25,6 +25,8 @@ public class SimpleRender2SurfaceView extends GLSurfaceView {
 	public SimpleRender2SurfaceView(Context context) {
 		super(context);
 		setEGLContextClientVersion(2);
+		//DEPTH BUFFER SETTINGS
+		//http://stackoverflow.com/questions/11866686/opengl-es-depth-buffer-android-cant-get-to-work
 		Log.d(TAG, "GLSurfaceView created.");
 	}
 

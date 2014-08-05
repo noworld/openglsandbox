@@ -8,6 +8,8 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.opengl.GLES20;
@@ -90,9 +92,17 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public int loadToIbo(byte[] iboBytes) {
 		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes);
 	}
+	
+	public int loadToIboReverse(byte[] iboBytes) {
+		return loadGLBufferReverse(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes);
+	}
 
 	public int loadToVbo(byte[] vboBbytes) {
 		return loadGLBuffer(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes);
+	}
+	
+	public int loadToVboReverse(byte[] vboBbytes) {
+		return loadGLBufferReverse(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes);
 	}
 	
 	public int loadGLBuffer(int glTarget, int glType, byte[] bytes) {
@@ -117,6 +127,48 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		} else if(glType == GLES20.GL_FLOAT) {
 
 			FloatBuffer vboBuf = SSArrayUtil.bytesToFloatBufBigEndian(bytes);
+			buf = vboBuf;
+			dataSize = DrawingConstants.BYTES_PER_FLOAT;
+			
+		}
+		
+		GLES20.glBindBuffer(glTarget, bufIdx);
+		GLES20.glBufferData(glTarget, buf.capacity() * dataSize, buf, GLES20.GL_STATIC_DRAW);
+		GLES20.glBindBuffer(glTarget, 0);
+				
+		return bufIdx;
+	}
+	
+	public int loadGLBufferReverse(int glTarget, int glType, byte[] bytes) {
+		int bufIdx = -1;
+
+		final int buffers[] = new int[1];
+		GLES20.glGenBuffers(1, buffers, 0);		
+		if(buffers[0] < 1) {
+			Log.e(TAG, "IBO buffer could not be created.");
+		}
+
+		bufIdx = buffers[0];
+		Buffer buf = null;
+		int dataSize = -1;
+	
+		if(glType == GLES20.GL_UNSIGNED_SHORT) {
+		
+			short[] backwards = SSArrayUtil.byteToShortArray(bytes);
+			ArrayUtils.reverse(backwards);
+			byte[] reverse = SSArrayUtil.shortToByteArray(backwards);
+			
+			ShortBuffer iboBuf = SSArrayUtil.bytesToShortBufBigEndian(reverse);			
+			buf = iboBuf;
+			dataSize = DrawingConstants.BYTES_PER_SHORT;
+
+		} else if(glType == GLES20.GL_FLOAT) {
+			
+			float[] backwards = SSArrayUtil.byteToFloatArray(bytes);
+			ArrayUtils.reverse(backwards);
+			byte[] reverse = SSArrayUtil.floatToByteArray(backwards);
+
+			FloatBuffer vboBuf = SSArrayUtil.bytesToFloatBufBigEndian(reverse);
 			buf = vboBuf;
 			dataSize = DrawingConstants.BYTES_PER_FLOAT;
 			
@@ -176,9 +228,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClearColor(color[0],color[1],color[2],color[3]);
 		
 		setGlOptions(settings.getOptions());
-		
 
-		GLES20.glBlendFunc(settings.getBlendFunc().getSource(), settings.getBlendFunc().getDest());	
+		GLES20.glBlendFunc(settings.getBlendFunc().getSource(), settings.getBlendFunc().getDest());
+
 	}
 	
 	public void setGlOptions(List<GlOption> options) {
@@ -265,6 +317,21 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public void drawWater(Water water, List<Light> lights) {
+		
+		/*XXX DEBUG*/
+//		GLES20.glDisable(GLES20.GL_BLEND);
+		//Log.d(TAG, String.format("GL_DEPTH_TEST Enabled: %s", GLES20.glIsEnabled(GLES20.GL_DEPTH_TEST)));
+		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
+		GLES20.glDisable(GLES20.GL_DITHER);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
+//		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+//		GLES20.glBlendEquationSeparate(GLES20.GL_FUNC_ADD, GLES20.GL_FUNC_ADD);
+		GLES20.glBlendFuncSeparate(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA, GLES20.GL_ONE, GLES20.GL_ZERO);
+//		GLES20.glBlendFuncSeparate(GLES20.GL_ONE, GLES20.GL_ZERO,  GLES20.GL_ONE, GLES20.GL_ZERO);		
+//		GLES20.glEnable(GLES20.GL_STENCIL_TEST);		
+//		GLES20.glStencilFuncSeparate(GLES20.GL_FRONT_AND_BACK, GLES20.GL_LEQUAL, 0, Integer.MAX_VALUE);
+//		GLES20.glStencilOp(GLES20.GL_ZERO, GLES20.GL_ZERO, GLES20.GL_ZERO);
+		/*XXX DEBUG*/
 			
 		Geometry geo = water.getGeometry();
 		
@@ -359,6 +426,17 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+		
+		/*XXX DEBUG*/
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDepthFunc(GLES20.GL_LESS);
+		GLES20.glEnable(GLES20.GL_DITHER);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
+		GLES20.glBlendEquation(GLES20.GL_FUNC_ADD);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		/*XXX DEBUG*/
 		
 		checkError();
 		

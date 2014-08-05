@@ -1,5 +1,7 @@
 precision mediump float;
 
+const vec3 CONST_COLOR = vec3(0.0,0.3,0.6);
+
 uniform vec3      u_LightPos;
 uniform sampler2D u_Texture;
   
@@ -29,8 +31,9 @@ void main()
 
 	// Multiply the color by the diffuse illumination level and texture value to get final output color.
 	vec4 color = (diffuse * texture2D(u_Texture, v_TexCoordinate));
-	gl_FragColor = vec4(color.rgb, v_Transp);
-    //gl_FragColor = vec4(v_Normal, v_Transp);
+	//gl_FragColor = vec4(color.rgb, v_Transp);
+    gl_FragColor = vec4(CONST_COLOR * diffuse, v_Transp);
+    
     
   }                                                                     	
 

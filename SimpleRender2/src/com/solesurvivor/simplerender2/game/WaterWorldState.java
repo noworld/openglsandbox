@@ -47,14 +47,14 @@ public class WaterWorldState extends MainMenuState {
 		//Uncomment to draw text
 //		this.mObjectLibrary.mCursors.add(mLine1);
 //		this.mObjectLibrary.mCursors.add(mLine2);
-		
-		GlOption disableCulling = new GlOption(GLES20.GL_CULL_FACE);
-		disableCulling.setEnabled(false);
-		GlOption disbaleDepthTest = new GlOption(GLES20.GL_DEPTH_TEST);
-		disbaleDepthTest.setEnabled(false);
-		mWaterOptions = new ArrayList<GlOption>(2);
-		mWaterOptions.add(disableCulling);
-		mWaterOptions.add(disbaleDepthTest);
+//		
+//		GlOption disableCulling = new GlOption(GLES20.GL_CULL_FACE);
+//		disableCulling.setEnabled(false);
+//		GlOption disbaleDepthTest = new GlOption(GLES20.GL_DEPTH_TEST);
+//		disbaleDepthTest.setEnabled(false);
+//		mWaterOptions = new ArrayList<GlOption>(2);
+//		mWaterOptions.add(disableCulling);
+//		mWaterOptions.add(disbaleDepthTest);
 	}
 
 	@Override
@@ -153,11 +153,11 @@ public class WaterWorldState extends MainMenuState {
 	
 	protected void renderWater() {
 		BaseRenderer ren = RendererManager.inst().getRenderer();
-		ren.setGlOptions(mWaterOptions);
+//		ren.setGlOptions(mWaterOptions);
 		for(Water w : mObjectLibrary.mWaters) {
 			ren.drawWater(w, mObjectLibrary.mLights);
 		}
-		ren.setGlOptions(mGlSettings.getOptions());
+//		ren.setGlOptions(mGlSettings.getOptions());
 		
 	}
 	
