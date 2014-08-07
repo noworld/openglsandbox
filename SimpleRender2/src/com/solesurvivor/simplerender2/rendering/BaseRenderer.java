@@ -324,6 +324,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
 		GLES20.glDisable(GLES20.GL_DITHER);
 		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		GLES20.glDepthMask(false);
+		GLES20.glBlendFunc(GLES20.GL_ZERO, GLES20.GL_SRC_COLOR);
 //		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 //		GLES20.glBlendEquationSeparate(GLES20.GL_FUNC_ADD, GLES20.GL_FUNC_ADD);
 //		GLES20.glBlendFuncSeparate(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA, GLES20.GL_ONE, GLES20.GL_ZERO);
@@ -431,6 +433,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 		GLES20.glDepthFunc(GLES20.GL_LESS);
+		GLES20.glDepthMask(true);
 		GLES20.glEnable(GLES20.GL_DITHER);
 		GLES20.glEnable(GLES20.GL_CULL_FACE);
 		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
