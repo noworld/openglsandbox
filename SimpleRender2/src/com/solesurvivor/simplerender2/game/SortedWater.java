@@ -26,10 +26,10 @@ public class SortedWater  {
 //	@SuppressWarnings("unused")
 	private static final String TAG = SortedWater.class.getSimpleName();
 	
-	private static final boolean DEBUG_MESH_DATA = true;
-	private static final float DEPTH = 12.0f;
-	private static final float WIDTH = 12.0f;
-	private static final int DIV = 32;
+	private static final boolean DEBUG_MESH_DATA = false;
+	private static final float DEPTH = 12.21f;
+	private static final float WIDTH = 12.21f;
+	private static final int DIV = 64;
 	private static final int NUM_PRIMS = DIV*DIV*2;
 	private static final int NUM_VERTS = (DIV+1)*(DIV+1);
 	private static final float Y_VAL = 0.0f;
@@ -46,6 +46,7 @@ public class SortedWater  {
 	private SparseArray<Vec2> mIndexedTxc;
 	private List<SortablePrim> mSortedPrims;
 	private Geometry mGeometry;
+	
 	
 	public SortedWater() {
 		List<Wave> waves = new ArrayList<Wave>(1);
@@ -118,7 +119,10 @@ public class SortedWater  {
 		mIboHandle = ren.loadToIbo(iboBytes);
 		mGeometry.mIdxBufIndex = mIboHandle;
 		mGeometry.mNumElements = iboShorts.length;
-		SSLog.d(TAG, "Number of Water Elements: %s", mGeometry.mNumElements);
+		
+		if(DEBUG_MESH_DATA) {
+			SSLog.d(TAG, "Number of Water Elements: %s", mGeometry.mNumElements);
+		}
 	}
 	
 	private void buildMesh() {

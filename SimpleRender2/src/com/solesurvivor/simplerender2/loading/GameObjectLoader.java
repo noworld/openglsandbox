@@ -47,6 +47,7 @@ import com.solesurvivor.simplerender2.text.Font;
 import com.solesurvivor.simplerender2.text.FontManager;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
+import com.solesurvivor.util.logging.SSLog;
 import com.solesurvivor.util.math.Vec3;
 
 public class GameObjectLoader {
@@ -395,6 +396,23 @@ public class GameObjectLoader {
 
 		geo.mNumElements = Integer.valueOf(desc.get(DescriptorKeysEnum.NUM_ELEMENTS.toString()));
 		geo.mElementStride = Integer.valueOf(desc.get(DescriptorKeysEnum.ELEMENT_STRIDE.toString()));
+		
+		
+		//XXX DEBUGGING
+//		if(geo.mName.equals("plane")) { 
+//			float[] vbo = SSArrayUtil.byteToFloatArray(ig.mFiles.get(vboFile.toString()));
+//			short[] ibo = SSArrayUtil.byteToShortArray(ig.mFiles.get(iboFile.toString()));
+//			SSLog.d(TAG, " -*-*-*- LOGGING BLENDER WATER -*-*-*- ");
+//			for(int i = 0; i < ibo.length-3; i += 3) {
+//				short idx0 = ibo[i];
+//				short idx1 = ibo[i+1];
+//				short idx2 = ibo[i+2];
+//				Vec3 v0 = new Vec3(vbo[idx0], vbo[idx0+1], vbo[idx0+2]);
+//				Vec3 v1 = new Vec3(vbo[idx1], vbo[idx1+1], vbo[idx1+2]);
+//				Vec3 v2 = new Vec3(vbo[idx2], vbo[idx2+1], vbo[idx2+2]);
+//				SSLog.d(TAG, "TRIANGLE %s: %s->%s->%s ", String.format("(%s,%s,%s)", idx0,idx1,idx2), v0.prettyString(), v1.prettyString(), v2.prettyString());
+//			}
+//		}
 		
 		return geo;
 
