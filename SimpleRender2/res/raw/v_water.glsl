@@ -38,8 +38,8 @@ void main()
 	//Add up the height of all the waves
 	for(int i = 0; i < u_NumWaves; i++) {		
 		wave u_Wave = u_Waves[i];
-		//float phase = (u_Time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
-		float phase = (CONST_TIME * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
+		float phase = (u_Time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
+		//float phase = (CONST_TIME * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
 		float angle = (dot(u_Wave.direction.xz, a_Position.xz) * u_Wave.frequency) + phase;
 		height = height + u_Wave.amplitude * sin(angle);
 		float xDir = u_Wave.direction.x * cos(angle);
@@ -50,7 +50,7 @@ void main()
 	
 	//Set the height on the point
 	vec4 position = a_Position;
-	position.y = height;	
+	position.y = position.y + height;	
                          
     // Pass through the texture coordinate.
 	v_TexCoordinate = a_TexCoordinate;   

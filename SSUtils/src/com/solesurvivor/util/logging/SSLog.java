@@ -15,6 +15,10 @@ public class SSLog {
 		sDebug = debug;
 	}
 	
+	public static int d(String tag, String msg, Object... params) {
+		return d(tag, String.format(msg, params));
+	}
+	
 	public static int d(String tag, String msg) {
 		return printlnDebug(Log.DEBUG, tag, msg);
 	}
@@ -23,12 +27,20 @@ public class SSLog {
 		return printlnDebug(Log.DEBUG, tag, msg);
 	}
 	
+	public static int e(String tag, String msg, Object... params) {
+		return e(tag, String.format(msg, params));
+	}
+	
 	public static int e(String tag, String msg) {
 		return printlnDebug(Log.ERROR, tag, msg);
 	}
 	
 	public static int e(String tag, String msg, Throwable tr) {
 		return printlnDebug(Log.ERROR, tag, msg);
+	}
+	
+	public static int i(String tag, String msg, Object... params) {
+		return i(tag, String.format(msg, params));
 	}
 	
 	public static int i(String tag, String msg) {
@@ -76,12 +88,24 @@ public class SSLog {
 		return ret;
 	}
 	
+	public static int v(String tag, String msg, Object... params) {
+		return v(tag, String.format(msg, params));
+	}
+	
 	public static int v(String tag, String msg) {
 		return printlnDebug(Log.VERBOSE, tag, msg);
 	}
 	
 	public static int v(String tag, String msg, Throwable tr) {
 		return printlnDebug(Log.VERBOSE, tag, msg);
+	}
+	
+	public static int w(String tag, String msg, Object... params) {
+		return w(tag, String.format(msg, params));
+	}
+	
+	public static int d(String tag, String msg, Throwable tr, Object... params) {
+		return d(tag, String.format(msg, params), tr);
 	}
 	
 	public static int w(String tag, String msg, Throwable tr) {
@@ -95,6 +119,7 @@ public class SSLog {
 	public static int wtf(String tag, Throwable tr) {
 		return Log.wtf(tag, tr);
 	}
+	
 	
 	public static int wtf(String tag, String msg) {
 		return Log.wtf(tag, msg);

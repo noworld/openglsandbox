@@ -1,11 +1,7 @@
 package com.solesurvivor.simplerender2.game;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -14,7 +10,6 @@ import com.solesurvivor.simplerender2.input.InputEventBus;
 import com.solesurvivor.simplerender2.input.InputHandler;
 import com.solesurvivor.simplerender2.loading.GameObjectLoader;
 import com.solesurvivor.simplerender2.rendering.BaseRenderer;
-import com.solesurvivor.simplerender2.rendering.GlOption;
 import com.solesurvivor.simplerender2.rendering.GlSettings;
 import com.solesurvivor.simplerender2.rendering.RendererManager;
 import com.solesurvivor.simplerender2.scene.Light;
@@ -29,7 +24,7 @@ public class WaterWorldState extends MainMenuState {
 	private float mAccumulatedRotation = 0.0f;
 	private Cursor mLine1 = null;
 	private Cursor mLine2 = null;
-	private List<GlOption> mWaterOptions = null;
+	private SortedWater mWater;
 	
 	public WaterWorldState() {
 		Context ctx = GameGlobal.inst().getContext();
@@ -48,13 +43,7 @@ public class WaterWorldState extends MainMenuState {
 //		this.mObjectLibrary.mCursors.add(mLine1);
 //		this.mObjectLibrary.mCursors.add(mLine2);
 //		
-//		GlOption disableCulling = new GlOption(GLES20.GL_CULL_FACE);
-//		disableCulling.setEnabled(false);
-//		GlOption disbaleDepthTest = new GlOption(GLES20.GL_DEPTH_TEST);
-//		disbaleDepthTest.setEnabled(false);
-//		mWaterOptions = new ArrayList<GlOption>(2);
-//		mWaterOptions.add(disableCulling);
-//		mWaterOptions.add(disbaleDepthTest);
+		mWater = new SortedWater();
 	}
 
 	@Override
@@ -152,12 +141,15 @@ public class WaterWorldState extends MainMenuState {
 	}
 	
 	protected void renderWater() {
-		BaseRenderer ren = RendererManager.inst().getRenderer();
+		BaseRenderer ren = RendererManager.inst().getRenderer();		
+		
 //		ren.setGlOptions(mWaterOptions);
 		for(Water w : mObjectLibrary.mWaters) {
 			ren.drawWater(w, mObjectLibrary.mLights);
 		}
 //		ren.setGlOptions(mGlSettings.getOptions());
+		
+		ren.drawWater(mWater.getWater(),  mObjectLibrary.mLights);
 		
 	}
 	

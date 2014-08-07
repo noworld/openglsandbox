@@ -24,6 +24,35 @@ public class Vec3 extends Vec2 {
 		this.z = z;
 	}
 	
+	public float getR() {
+		return x;
+	}
+	
+	public float getG() {
+		return y;
+	}
+	
+	public float getB() {
+		return z;
+	}
+	
+	@Override
+	public float getMagSq() {
+		return super.getMagSq()+(z*z);
+	}
+	
+	@Override
+	public String prettyString() {
+		return String.format("(%s,%s,%s)",x,y,z);
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o == null || !(o instanceof Vec3)) return false;
+		Vec3 other = (Vec3)o;
+		return super.equals(o) && z == other.getZ();
+	}
+	
 	public static Vec3 valueOf(String s) {
 		String[] vals = s.split(COMMA);
 		return new Vec3(Float.valueOf(vals[0]), Float.valueOf(vals[1]), Float.valueOf(vals[2]));

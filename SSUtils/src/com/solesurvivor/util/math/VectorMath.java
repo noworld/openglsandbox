@@ -1,5 +1,7 @@
 package com.solesurvivor.util.math;
 
+import android.util.FloatMath;
+
 public class VectorMath {
 	
 	public static Float[] cross(Float[] p1, Float[] p2, Float[] p3) {
@@ -63,6 +65,10 @@ public class VectorMath {
 		};
 	    
 		return Math.abs((grade1[0]*grade2[1])-(grade1[1]*grade2[0]));
+	}
+	
+	public static float compDot(Vec3 v1, Vec3 v2) {		
+		return (v1.getX()*v2.getX()) + (v1.getY()*v2.getY()) + (v1.getZ()*v2.getZ());
 	}
 	
 }

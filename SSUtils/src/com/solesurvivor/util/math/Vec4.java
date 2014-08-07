@@ -23,10 +23,21 @@ public class Vec4 extends Vec3 {
 	public void setW(float w) {
 		this.w = w;
 	}
+	
+	public float getA() {
+		return w;
+	}
 
 	public static Vec4 valueOf(String s) {
 		String[] vals = s.split(COMMA);
 		return new Vec4(Float.valueOf(vals[0]), Float.valueOf(vals[1]),
 				Float.valueOf(vals[2]), Float.valueOf(vals[3]));
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o == null || !(o instanceof Vec4)) return false;
+		Vec4 other = (Vec4)o;
+		return super.equals(o) && w == other.getW();
 	}
 }

@@ -19,6 +19,7 @@
         <item>@drawable/wavemapn2</item>
         <item>@drawable/waterplain</item>
         <item>@drawable/sand</item>
+        <item>@drawable/quads</item>
     </array>
 
     
