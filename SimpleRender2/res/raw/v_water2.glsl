@@ -12,6 +12,7 @@ struct wave {
 const float CONST_TIME = 1.0;
 const int MAX_WAVES = 3;
 const float K_EXP = 2.0;
+const float Q_SCALE = 0.75;
 
 uniform float     u_InitialHeight;
 uniform int       u_NumWaves;
@@ -40,11 +41,18 @@ void main()
 	float xDisp = 0.0;
 	float zDisp = 0.0;
 	vec3 normal = vec3(0.0, 0.0, 0.0);
+	float q = 0.0;
+	float combinedAmp = 0.0;
+	
+	//Get the combined amplitude
+	for(int i = 0; i < u_NumWaves; i++) {
+		 combinedAmp = combinedAmp + u_Waves[i].amplitude;
+	}
+	
 	//Add up the height of all the waves
 	for(int i = 0; i < u_NumWaves; i++) {		
 		wave u_Wave = u_Waves[i];
-		float qMax = 1.0 / (u_Wave.frequency * u_Wave.amplitude);
-		float q = qMax * 0.75;
+		float q = (1.0 / (u_Wave.frequency * combinedAmp)) * Q_SCALE;
 		float phase = (u_Time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
 		float angle = dot(u_Wave.frequency * u_Wave.direction.xz, a_Position.xz) + phase;
 		xDisp = xDisp + ((q * u_Wave.amplitude) * u_Wave.direction.x * cos(angle));		
