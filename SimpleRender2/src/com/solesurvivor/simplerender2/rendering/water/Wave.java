@@ -1,5 +1,7 @@
 package com.solesurvivor.simplerender2.rendering.water;
 
+import android.util.FloatMath;
+
 import com.solesurvivor.simplerender2.rendering.DrawingConstants;
 import com.solesurvivor.util.math.Vec3;
 
@@ -7,18 +9,20 @@ public class Wave {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = Wave.class.getSimpleName();
+	private static final float GRAV = 9.8f;
 	
 	private float mAmplitude = 0.1f;
 	private Vec3  mDirection = new Vec3(1.0f, 0.0f, 1.0f);
 	private float mWavelength = 1.0f;
-	private float mFrequency = (float)(DrawingConstants.TWO_PI/mWavelength);
+	private float mFrequency = 0.0f;
 	private float mSpeed = 1.0f;
 	private float mPhaseConst = mSpeed * mFrequency;
 	private float mTimeScale = 1.0f;
 	private float mPhaseShift = 0.0f;
+	private float mWavelenBufIdx = 0;
 	
 	public Wave() {
-		
+		setWavelength(mWavelength);
 	}
 	
 //	public Wave(float amplitude, float[])
@@ -52,7 +56,7 @@ public class Wave {
 
 	public void setWavelength(float wavelength) {
 		this.mWavelength = wavelength;
-		this.mFrequency = (float)(DrawingConstants.TWO_PI/mWavelength);
+		this.mFrequency = (float)Math.sqrt(GRAV * (DrawingConstants.TWO_PI/mWavelength));
 		this.mPhaseConst = mSpeed * mFrequency;
 	}
 

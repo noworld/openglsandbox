@@ -67,6 +67,10 @@ public class Cursor implements Iterable<CursorPosition> {
 	public void setValue(String value) {
 		this.mValue = value;
 	}
+	
+	public void setValue(String format, Object... args) {
+		this.mValue = String.format(format, args);
+	}
 
 	@Override
 	public Iterator<CursorPosition> iterator() {

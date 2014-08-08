@@ -10,7 +10,7 @@ struct wave {
 };
 
 const float CONST_TIME = 1.0;
-const int MAX_WAVES = 3;
+const int MAX_WAVES = 5;
 const float K_EXP = 2.0;
 const float Q_SCALE = 0.75;
 
@@ -55,15 +55,18 @@ void main()
 		float q = (1.0 / (u_Wave.frequency * combinedAmp)) * Q_SCALE;
 		float phase = (u_Time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
 		float angle = dot(u_Wave.frequency * u_Wave.direction.xz, a_Position.xz) + phase;
-		xDisp = xDisp + ((q * u_Wave.amplitude) * u_Wave.direction.x * cos(angle));		
-		zDisp = zDisp + ((q * u_Wave.amplitude) * u_Wave.direction.z * cos(angle));
+		float sinA = sin(angle);
+		float cosA = cos(angle);
+		xDisp = xDisp + ((q * u_Wave.amplitude) * u_Wave.direction.x * cosA);		
+		zDisp = zDisp + ((q * u_Wave.amplitude) * u_Wave.direction.z * cosA);
 
-		height = height + u_Wave.amplitude * sin(angle);
+		height = height + u_Wave.amplitude * sinA;
 		
-		float xDir = u_Wave.direction.x * cos(angle);
-		float yDir = (cos(2.0 * angle)+1.0)/2.0;
-		float zDir = u_Wave.direction.z * cos(angle);
-		normal = normal + normalize(vec3(xDir,1.0,zDir));
+		float wa = u_Wave.frequency * u_Wave.amplitude;
+		float xDir = u_Wave.direction.x * wa * cosA;
+		float zDir = u_Wave.direction.z * wa * cosA;
+		float yDir = 1.0 - (q * wa * sinA);
+		normal = normal + normalize(vec3(-xDir,yDir,-zDir));
 	}	
 	
 	//Set the height on the point

@@ -12,6 +12,7 @@ import com.solesurvivor.simplerender2.loading.GameObjectLoader;
 import com.solesurvivor.simplerender2.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2.rendering.GlSettings;
 import com.solesurvivor.simplerender2.rendering.RendererManager;
+import com.solesurvivor.simplerender2.rendering.water.Wave;
 import com.solesurvivor.simplerender2.scene.Light;
 import com.solesurvivor.simplerender2.scene.Water;
 import com.solesurvivor.simplerender2.text.Cursor;
@@ -40,7 +41,7 @@ public class WaterWorldState extends MainMenuState {
 		mLine2 = new Cursor(FontManager.getFont("Nightwatcher BB"), new float[]{1.5f,1.5f,1.0f},new float[]{-900.0f,420.0f,-4.0f},0,"");
 
 		//Uncomment to draw text
-//		this.mObjectLibrary.mCursors.add(mLine1);
+		this.mObjectLibrary.mCursors.add(mLine1);
 //		this.mObjectLibrary.mCursors.add(mLine2);
 //		
 	}
@@ -76,8 +77,9 @@ public class WaterWorldState extends MainMenuState {
 			mCameraVelocity[1] = 0.0f; //Stop when it hits the y=0 plane
 		}
 		
-		mLine1.setValue(String.format("Near: %.1f,%.1f,%.1f",GameGlobal.inst().getCamera().getEyePos()[2], GameGlobal.inst().getCamera().getEyePos()[0], GameGlobal.inst().getCamera().getEyePos()[1]));
-		mLine2.setValue(String.format("Aspect: %.2f",GameGlobal.inst().getCamera().getAspect()));
+		Wave w = mObjectLibrary.mWaters.get(0).getWaves().get(1);
+		mLine1.setValue("Wave direction: %.2f,%.2f",w.getDirection().getX(), w.getDirection().getZ());
+//		mLine2.setValue(String.format("Aspect: %.2f",GameGlobal.inst().getCamera().getAspect()));
 	}
 	
 	@Override

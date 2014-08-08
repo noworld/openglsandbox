@@ -33,6 +33,20 @@ public class Vec4 extends Vec3 {
 		return new Vec4(Float.valueOf(vals[0]), Float.valueOf(vals[1]),
 				Float.valueOf(vals[2]), Float.valueOf(vals[3]));
 	}
+
+	public float[] toFloatArray(Vec4 vec) {
+		float[] f = new float[4];
+		f[0] = vec.getX();
+		f[1] = vec.getY();
+		f[2] = vec.getZ();
+		f[3] = vec.getW();
+		return f;
+	}
+	
+	public static Vec4 fromFloatArray(float[] f) {
+		if(f == null || f.length < 4) throw new IllegalArgumentException("Could not load Vec4 from insufficient float array.");
+		return new Vec4(f[0],f[1],f[2],f[3]);
+	}
 	
 	@Override
 	public boolean equals(Object o) {

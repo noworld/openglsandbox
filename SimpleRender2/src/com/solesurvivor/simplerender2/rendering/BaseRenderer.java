@@ -248,6 +248,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		setGlOptions(settings.getOptions());
 
 		GLES20.glBlendFunc(settings.getBlendFunc().getSource(), settings.getBlendFunc().getDest());
+		
+		boolean[] params = new boolean[1];
+		GLES20.glGetBooleanv(GLES20.GL_BLEND_DST_ALPHA, params, 0);
+		SSLog.d(TAG, "Destination Alpha: %s", params[0]);
 
 	}
 	
@@ -344,7 +348,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void multiplyWaterOn() {
 		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
 		GLES20.glDisable(GLES20.GL_DITHER);
-		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
 		GLES20.glDepthMask(false);
 //		GLES20.glBlendFuncSeparate(GLES20.GL_CONSTANT_COLOR, GLES20.GL_SRC_COLOR, GLES20.GL_ONE, GLES20.GL_ZERO);
 		GLES20.glBlendFunc(GLES20.GL_ZERO, GLES20.GL_SRC_COLOR);

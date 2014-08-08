@@ -54,5 +54,17 @@ public class Vec2 {
 		String[] vals = s.split(COMMA);
 		return new Vec2(Float.valueOf(vals[0]), Float.valueOf(vals[1]));
 	}
+	
+	public static float[] toFloatArray(Vec2 vec) {
+		float[] f = new float[2];
+		f[0] = vec.getX();
+		f[1] = vec.getY();
+		return f;
+	}
+	
+	public static Vec2 fromFloatArray(float[] f) {
+		if(f == null || f.length < 2) throw new IllegalArgumentException("Could not load Vec2 from insufficient float array.");
+		return new Vec2(f[0],f[1]);
+	}
 
 }

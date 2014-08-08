@@ -191,6 +191,9 @@ public class GameObjectLoader {
 		    Wave w = new Wave(amp, dir, len, spd);
 		    w.setTimeScale(tsc);
 		    w.setPhaseShift(phs);
+		    
+		    
+		    
 		    waves.add(w);
 		}
 		
