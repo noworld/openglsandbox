@@ -133,7 +133,9 @@ public final class R {
         public static final int v_ui=0x7f040016;
         public static final int v_water=0x7f040017;
         public static final int v_water2=0x7f040018;
-        public static final int v_water_old=0x7f040019;
+        public static final int v_water_exp_peak=0x7f040019;
+        public static final int v_water_old=0x7f04001a;
+        public static final int v_water_radial=0x7f04001b;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;

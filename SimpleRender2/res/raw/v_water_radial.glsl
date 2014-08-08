@@ -11,7 +11,8 @@ struct wave {
 
 const float CONST_TIME = 1.0;
 const int MAX_WAVES = 3;
-const float K_EXP = 2.0;
+const float K_EXP = 2.5;
+const vec2 CENTER = vec2(0.01,0.01);
 
 uniform float     u_InitialHeight;
 uniform int       u_NumWaves;
@@ -41,10 +42,14 @@ void main()
 	//Add up the height of all the waves
 	for(int i = 0; i < u_NumWaves; i++) {		
 		wave u_Wave = u_Waves[i];
+		vec2 radDir = normalize(CENTER - a_Position.xz);
+		
 		float phase = (u_Time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
-		//float phase = (CONST_TIME * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
-		float angle = (dot(u_Wave.direction.xz, a_Position.xz) * u_Wave.frequency) + phase;
-		height = height + u_Wave.amplitude * sin(angle);
+		float angle = (dot(radDir, a_Position.xz) * u_Wave.frequency) + phase;
+		
+		//New sin function with exponent k
+		height = height + 2.0 * u_Wave.amplitude * pow(((sin(angle)+1.0)/2.0), K_EXP);
+		
 		float xDir = u_Wave.direction.x * cos(angle);
 		float yDir = (cos(2.0 * angle)+1.0)/2.0;
 		float zDir = u_Wave.direction.z * cos(angle);
