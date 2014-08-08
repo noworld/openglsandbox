@@ -44,11 +44,7 @@ void main()
 		float phase = (u_Time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
 		//float phase = (CONST_TIME * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
 		float angle = (dot(u_Wave.direction.xz, a_Position.xz) * u_Wave.frequency) + phase;
-		
-		//New sin function with exponent k for peaks
-		//Don't really use on sin waves, but for texture waves
-		height = height + 2.0 * u_Wave.amplitude * pow(((sin(angle)+1.0)/2.0), K_EXP);
-		
+		height = height + u_Wave.amplitude * sin(angle);
 		float xDir = u_Wave.direction.x * cos(angle);
 		float yDir = (cos(2.0 * angle)+1.0)/2.0;
 		float zDir = u_Wave.direction.z * cos(angle);
@@ -57,7 +53,7 @@ void main()
 	
 	//Set the height on the point
 	vec4 position = a_Position;
-	position.y = position.y + height;	
+	position.y = height;	
 	position.x = position.x + u_InitialHeight;
 	position.z = position.z + u_InitialHeight;
                          
