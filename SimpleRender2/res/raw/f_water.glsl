@@ -9,6 +9,7 @@ varying vec3  v_Position;		 // Interpolated position for this fragment.
 varying vec3  v_Normal;
 varying vec2  v_TexCoordinate;   // Interpolated texture coordinate per fragment.
 varying float v_Transp;
+varying float v_InitialHeight;
   
 // The entry point for our fragment shader.
 void main()                    		
@@ -30,9 +31,14 @@ void main()
     diffuse = diffuse + 0.5;
 
 	// Multiply the color by the diffuse illumination level and texture value to get final output color.
-	vec4 color = (diffuse * texture2D(u_Texture, v_TexCoordinate));
-	//gl_FragColor = vec4(color.rgb, v_Transp);
-    gl_FragColor = vec4(CONST_COLOR * diffuse, 0.5);
+	if(v_InitialHeight > -1.0) {
+		vec4 color = (diffuse * texture2D(u_Texture, v_TexCoordinate));
+		gl_FragColor = vec4(diffuse * color.rgb, v_Transp);
+	} else {
+		gl_FragColor = vec4(1.0,1.0,1.0,1.0);
+	}
+	
+    //gl_FragColor = vec4(CONST_COLOR * diffuse, 0.95);
     
     
   }                                                                     	

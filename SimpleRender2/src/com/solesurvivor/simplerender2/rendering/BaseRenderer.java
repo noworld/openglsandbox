@@ -89,8 +89,20 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 	}
 	
+	public int loadToDynamicIbo(byte[] iboBytes) {
+		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes, GLES20.GL_DYNAMIC_DRAW);
+	}
+	
 	public int loadToIbo(byte[] iboBytes) {
-		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes);
+		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes, GLES20.GL_STATIC_DRAW);
+	}
+	
+	public int reloadDynamicIbo(byte[] iboBytes, int bufIdx) {
+		return reloadIbo(iboBytes, bufIdx, GLES20.GL_DYNAMIC_DRAW);
+	}
+	
+	public int reloadIbo(byte[] iboBytes, int bufIdx, int usage) {
+		return loadExistingGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes, bufIdx, usage);
 	}
 	
 	public int loadToIboReverse(byte[] iboBytes) {
@@ -98,14 +110,14 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public int loadToVbo(byte[] vboBbytes) {
-		return loadGLBuffer(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes);
+		return loadGLBuffer(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes, GLES20.GL_STATIC_DRAW);
 	}
 	
 	public int loadToVboReverse(byte[] vboBbytes) {
 		return loadGLBufferReverse(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes);
 	}
 	
-	public int loadGLBuffer(int glTarget, int glType, byte[] bytes) {
+	public int loadGLBuffer(int glTarget, int glType, byte[] bytes, int usage) {
 		int bufIdx = -1;
 
 		final int buffers[] = new int[1];
@@ -115,6 +127,12 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		}
 
 		bufIdx = buffers[0];
+				
+		return loadExistingGLBuffer(glTarget, glType, bytes, bufIdx, usage);
+	}
+	
+	public int loadExistingGLBuffer(int glTarget, int glType, byte[] bytes, int bufIdx, int usage) {
+		
 		Buffer buf = null;
 		int dataSize = -1;
 	
@@ -133,7 +151,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		GLES20.glBindBuffer(glTarget, bufIdx);
-		GLES20.glBufferData(glTarget, buf.capacity() * dataSize, buf, GLES20.GL_STATIC_DRAW);
+		GLES20.glBufferData(glTarget, buf.capacity() * dataSize, buf, usage);
 		GLES20.glBindBuffer(glTarget, 0);
 				
 		return bufIdx;
@@ -316,25 +334,45 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		
 	}
 	
-	public void drawWater(Water water, List<Light> lights) {
-		
-		/*XXX DEBUG*/
-//		GLES20.glDisable(GLES20.GL_BLEND);
-		//Log.d(TAG, String.format("GL_DEPTH_TEST Enabled: %s", GLES20.glIsEnabled(GLES20.GL_DEPTH_TEST)));
+	public void waterOn() {
+		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
+		GLES20.glDisable(GLES20.GL_DITHER);
+		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+	}
+	
+	public void multiplyWaterOn() {
 		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
 		GLES20.glDisable(GLES20.GL_DITHER);
 		GLES20.glDisable(GLES20.GL_CULL_FACE);
 		GLES20.glDepthMask(false);
+//		GLES20.glBlendFuncSeparate(GLES20.GL_CONSTANT_COLOR, GLES20.GL_SRC_COLOR, GLES20.GL_ONE, GLES20.GL_ZERO);
 		GLES20.glBlendFunc(GLES20.GL_ZERO, GLES20.GL_SRC_COLOR);
-//		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-//		GLES20.glBlendEquationSeparate(GLES20.GL_FUNC_ADD, GLES20.GL_FUNC_ADD);
-//		GLES20.glBlendFuncSeparate(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA, GLES20.GL_ONE, GLES20.GL_ZERO);
-//		GLES20.glBlendFuncSeparate(GLES20.GL_ONE, GLES20.GL_ZERO,  GLES20.GL_ONE, GLES20.GL_ZERO);		
-//		GLES20.glEnable(GLES20.GL_STENCIL_TEST);		
-//		GLES20.glStencilFuncSeparate(GLES20.GL_FRONT_AND_BACK, GLES20.GL_LEQUAL, 0, Integer.MAX_VALUE);
-//		GLES20.glStencilOp(GLES20.GL_ZERO, GLES20.GL_ZERO, GLES20.GL_ZERO);
-		/*XXX DEBUG*/
-			
+	}
+	
+	public void addWaterOn() {
+		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
+		GLES20.glDisable(GLES20.GL_DITHER);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		GLES20.glDepthMask(false);
+		//GLES20.glBlendFuncSeparate(GLES20.GL_ONE, GLES20.GL_ONE, GLES20.GL_ZERO, GLES20.GL_ZERO);
+		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE); 
+	}
+	
+	public void waterOff() {
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDepthFunc(GLES20.GL_LESS);
+		GLES20.glDepthMask(true);
+		GLES20.glEnable(GLES20.GL_DITHER);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
+		GLES20.glBlendEquation(GLES20.GL_FUNC_ADD);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+	}
+	
+	public void drawWater(Water water, List<Light> lights) {
+	
 		Geometry geo = water.getGeometry();
 		
 		float[] mvpMatrix = new float[16];
@@ -350,6 +388,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		int u_time = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Time");
 		int u_transp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Transp");
 		int u_numwaves = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NumWaves");
+		int u_inith = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_InitialHeight");
 
 		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
 		int a_txc = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_TexCoordinate");
@@ -422,25 +461,20 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		// Draw	
-		/* Draw the arrays as triangles */
+		/* Draw the arrays as triangles */		
+		
+		multiplyWaterOn();
+		GLES20.glUniform1f(u_inith, 0.0f);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
+		addWaterOn();
+		GLES20.glUniform1f(u_inith, -0.02f);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-		
-		/*XXX DEBUG*/
-		GLES20.glEnable(GLES20.GL_BLEND);
-		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDepthFunc(GLES20.GL_LESS);
-		GLES20.glDepthMask(true);
-		GLES20.glEnable(GLES20.GL_DITHER);
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
-		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
-		GLES20.glBlendEquation(GLES20.GL_FUNC_ADD);
-		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-		/*XXX DEBUG*/
-		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);		
+		waterOff();
 		checkError();
 		
 	}

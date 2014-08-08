@@ -40,7 +40,7 @@
     
       <string-array name="plane">
         <item>POS_X|0.0</item>
-        <item>POS_Y|-2.5</item>
+        <item>POS_Y|-3.0</item>
         <item>POS_Z|-5.0</item>
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>

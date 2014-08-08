@@ -3,6 +3,7 @@ package com.solesurvivor.simplerender2.fsm;
 import android.graphics.Point;
 
 import com.solesurvivor.simplerender2.scene.GameObjectLibrary;
+import com.solesurvivor.util.math.Vec3;
 
 public interface GameState<T> {
 
@@ -24,4 +25,5 @@ public interface GameState<T> {
 	public float[] getAgentViewMatrix();
 	public float[] getProjectionMatrix();
 	public void impulseView(float x, float y, float z);
+	public float getDistanceToCamera(Vec3 point);
 }

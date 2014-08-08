@@ -8,6 +8,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.solesurvivor.simplerender2.fsm.GameState;
 import com.solesurvivor.simplerender2.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2.rendering.DrawingConstants;
 import com.solesurvivor.simplerender2.rendering.Geometry;
@@ -15,6 +16,7 @@ import com.solesurvivor.simplerender2.rendering.RendererManager;
 import com.solesurvivor.simplerender2.rendering.shaders.ShaderManager;
 import com.solesurvivor.simplerender2.rendering.textures.TextureManager;
 import com.solesurvivor.simplerender2.rendering.water.Wave;
+import com.solesurvivor.simplerender2.scene.Light;
 import com.solesurvivor.simplerender2.scene.Water;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
@@ -52,7 +54,7 @@ public class SortedWater  {
 		List<Wave> waves = new ArrayList<Wave>(1);
 		Wave w = new Wave();
 		w.setDirection(new Vec3(0.0f,0.0f,1.0f));
-		w.setAmplitude(0.5f);
+		w.setAmplitude(0.15f);
 		w.setWavelength(1.5f);
 		waves.add(w);	
 		mGeometry = new Geometry();
@@ -68,17 +70,21 @@ public class SortedWater  {
 		
 		mGeometry.mElementStride = (VERTEX_DATA_SIZE + TEXTURE_DATA_SIZE) * DrawingConstants.BYTES_PER_FLOAT;
 		mGeometry.mShaderHandle = ShaderManager.getShaderId("water_shader");
-		mGeometry.mTextureHandle = TextureManager.getTextureId("quads");
+		mGeometry.mTextureHandle = TextureManager.getTextureId("wavemapd1");
 		
 		buildMesh();
 		loadVboGeometry();		
 		loadIboGeometry();
-		mWater = new Water(waves, mGeometry, TextureManager.getTextureId("quads"), ShaderManager.getShaderId("water_shader"));
-		Matrix.translateM(mGeometry.mModelMatrix, 0, 0.0f, -1.0f, -5.0f);
+		mWater = new Water(waves, mGeometry, TextureManager.getTextureId("wavemapd1"), ShaderManager.getShaderId("water_shader"));
+		Matrix.translateM(mGeometry.mModelMatrix, 0, 0.0f, -2.6f, -5.0f);
 	}
 
-	public Water getWater() {
-		return mWater;
+	public void render(List<Light> mLights) {
+		BaseRenderer ren = RendererManager.inst().getRenderer();
+		reloadIboGeometry();
+		ren.waterOn();
+		ren.drawWater(mWater, mLights);
+		ren.waterOff();
 	}
 	
 	private void loadVboGeometry() {
@@ -103,20 +109,41 @@ public class SortedWater  {
 		mGeometry.mDatBufIndex = mVboHandle;
 	}
 	
-	private void loadIboGeometry() {
+	private void reloadIboGeometry() {
 		Collections.sort(mSortedPrims);		
 		short[] iboShorts = new short[mSortedPrims.size()*TRI];
 		for(int i = 0, j = 0; i < mSortedPrims.size(); i++, j += TRI) {
 			SortablePrim sp = mSortedPrims.get(i);
-			iboShorts[j] = sp.mPos[0];
-			iboShorts[j+1] = sp.mPos[1];
-			iboShorts[j+2] = sp.mPos[2];
+			iboShorts[j] = sp.mPosIdx[0];
+			iboShorts[j+1] = sp.mPosIdx[1];
+			iboShorts[j+2] = sp.mPosIdx[2];
 		}
 		
 		byte[] iboBytes = SSArrayUtil.shortToByteArray(iboShorts);
 		
 		BaseRenderer ren = RendererManager.inst().getRenderer();
-		mIboHandle = ren.loadToIbo(iboBytes);
+		ren.reloadDynamicIbo(iboBytes, mIboHandle);
+		mGeometry.mNumElements = iboShorts.length;
+		
+		if(DEBUG_MESH_DATA) {
+			SSLog.d(TAG, "Number of Water Elements: %s", mGeometry.mNumElements);
+		}
+	}
+	
+	private void loadIboGeometry() {
+		Collections.sort(mSortedPrims);		
+		short[] iboShorts = new short[mSortedPrims.size()*TRI];
+		for(int i = 0, j = 0; i < mSortedPrims.size(); i++, j += TRI) {
+			SortablePrim sp = mSortedPrims.get(i);
+			iboShorts[j] = sp.mPosIdx[0];
+			iboShorts[j+1] = sp.mPosIdx[1];
+			iboShorts[j+2] = sp.mPosIdx[2];
+		}
+		
+		byte[] iboBytes = SSArrayUtil.shortToByteArray(iboShorts);
+		
+		BaseRenderer ren = RendererManager.inst().getRenderer();
+		mIboHandle = ren.loadToDynamicIbo(iboBytes);
 		mGeometry.mIdxBufIndex = mIboHandle;
 		mGeometry.mNumElements = iboShorts.length;
 		
@@ -196,27 +223,53 @@ public class SortedWater  {
 	}
 	
 	private class SortablePrim implements Comparable<SortablePrim> {
-		public short[] mPos;
-		public float mAvgZ;
+		public short[] mPosIdx;
+		public Vec3[] mPoints;
+		public Vec3 mAvgPos;
 		
 		public SortablePrim(Vec3[] points, short[] posIndicies) {
-			mAvgZ = (points[0].getZ() + points[1].getZ() + points[2].getZ())/3.0f;
-			mPos = posIndicies;
+			mPoints = points;
+			mAvgPos = getAvgPos();
+			mPosIdx = posIndicies;
+		}
+
+		private Vec3 getAvgPos() {
+			float avgX = 0.0f;
+			float avgY = 0.0f;
+			float avgZ = 0.0f;
+			
+			for(int i = 0; i < mPoints.length; i++) {
+				avgX += mPoints[i].getX();
+				avgY += mPoints[i].getY();
+				avgZ += mPoints[i].getZ();
+			}
+			
+			avgX = avgX/mPoints.length;
+			avgY = avgY/mPoints.length;
+			avgZ = avgZ/mPoints.length;
+			
+			return new Vec3(avgX, avgY, avgZ);
 		}
 
 		@Override
-		public int compareTo(SortablePrim arg0) {
-			if(arg0 == null) throw new NullPointerException("Cannot compare to null. (SortablePrim)");
-		
-			return Float.compare(mAvgZ,arg0.mAvgZ);
+		public int compareTo(SortablePrim other) {
+			if(other == null) throw new NullPointerException("Cannot compare to null. (SortablePrim)");
+			GameState<GameWorld> state = GameWorld.inst().getCurrentState();
+			float myD = state.getDistanceToCamera(mAvgPos);
+			float otherD = state.getDistanceToCamera(other.mAvgPos);
+			return Float.compare(myD, otherD);
 		}
 		
 		@Override
 		public boolean equals(Object o) {
-			if(o == null || !(o instanceof SortablePrim)) {return false;}
-			
+			if(o == null || !(o instanceof SortablePrim)) {return false;}			
 			SortablePrim sp = (SortablePrim)o;
-			return sp.mAvgZ == mAvgZ ;
+			if(this.mPoints.length != sp.mPoints.length) return false;
+			for(int i = 0; i < mPoints.length; i++) {
+				if(!mPoints[i].equals(sp.mPoints[i])) return false;
+			}
+			
+			return true;
 		}
 	}
 

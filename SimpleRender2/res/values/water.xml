@@ -16,10 +16,11 @@
     
     <array name="ocean_waves">
         <item>@array/large_wave</item>
+        <item>@array/small_wave</item>
     </array>
     
     <string-array name="large_wave">
-        <item>AMPLITUDE|0.5</item>
+        <item>AMPLITUDE|0.15</item>
         <item>DIRECTION|0.0,0.0,1.0</item><!-- Y-up -->
         <item>WAVELENGTH|1.5</item>
         <item>SPEED|1.0</item>

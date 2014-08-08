@@ -20,11 +20,11 @@ import com.solesurvivor.simplerender2.text.FontManager;
 public class WaterWorldState extends MainMenuState {
 	
 	private static final String TAG = WaterWorldState.class.getSimpleName();
+	private static final boolean RENDER_WATER = true;
 	
 	private float mAccumulatedRotation = 0.0f;
 	private Cursor mLine1 = null;
 	private Cursor mLine2 = null;
-	private SortedWater mWater;
 	
 	public WaterWorldState() {
 		Context ctx = GameGlobal.inst().getContext();
@@ -43,7 +43,6 @@ public class WaterWorldState extends MainMenuState {
 //		this.mObjectLibrary.mCursors.add(mLine1);
 //		this.mObjectLibrary.mCursors.add(mLine2);
 //		
-		mWater = new SortedWater();
 	}
 
 	@Override
@@ -51,6 +50,7 @@ public class WaterWorldState extends MainMenuState {
 		Log.d(TAG, "Entering Water World State");
 		RendererManager.inst().getRenderer().initOpenGL(mGlSettings);
 		GameGlobal.inst().setCamera(this.mCamera);
+
 	}
 
 	@Override
@@ -143,13 +143,11 @@ public class WaterWorldState extends MainMenuState {
 	protected void renderWater() {
 		BaseRenderer ren = RendererManager.inst().getRenderer();		
 		
-//		ren.setGlOptions(mWaterOptions);
-		for(Water w : mObjectLibrary.mWaters) {
-			ren.drawWater(w, mObjectLibrary.mLights);
-		}
-//		ren.setGlOptions(mGlSettings.getOptions());
-		
-		ren.drawWater(mWater.getWater(),  mObjectLibrary.mLights);
+		if(RENDER_WATER) {
+			for(Water w : mObjectLibrary.mWaters) {
+				ren.drawWater(w, mObjectLibrary.mLights);
+			}
+		}	
 		
 	}
 	

@@ -20,6 +20,7 @@ import com.solesurvivor.simplerender2.scene.GameObjectLibrary;
 import com.solesurvivor.simplerender2.scene.Light;
 import com.solesurvivor.simplerender2.scene.UiElement;
 import com.solesurvivor.simplerender2.text.Cursor;
+import com.solesurvivor.util.math.Vec3;
 
 public class MainMenuState implements GameState<GameWorld> {
 	
@@ -125,6 +126,11 @@ public class MainMenuState implements GameState<GameWorld> {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public float getDistanceToCamera(Vec3 point) {
+		return 0.0f;
 	}
 
 	@Override
