@@ -7,7 +7,7 @@ public class Light {
 	
 	public float mIntensity;
 	public float[] mDirection = new float[3];
-	public float[] mRGBColor = new float[3];
+	public float[] mRGBAColor = {1.0f,1.0f,1.0f,1.0f};
 	
 	public boolean mCastsShadow;
 	

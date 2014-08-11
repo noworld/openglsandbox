@@ -12,6 +12,7 @@ import com.solesurvivor.simplerender2.loading.GameObjectLoader;
 import com.solesurvivor.simplerender2.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2.rendering.GlSettings;
 import com.solesurvivor.simplerender2.rendering.RendererManager;
+import com.solesurvivor.simplerender2.rendering.shaders.ShaderManager;
 import com.solesurvivor.simplerender2.rendering.water.Wave;
 import com.solesurvivor.simplerender2.scene.Light;
 import com.solesurvivor.simplerender2.scene.Water;
@@ -21,7 +22,7 @@ import com.solesurvivor.simplerender2.text.FontManager;
 public class WaterWorldState extends MainMenuState {
 	
 	private static final String TAG = WaterWorldState.class.getSimpleName();
-	private static final boolean RENDER_WATER = true;
+	private static final boolean RENDER_LIBRARY_WATER = true;
 	
 	private float mAccumulatedRotation = 0.0f;
 	private Cursor mLine1 = null;
@@ -40,6 +41,13 @@ public class WaterWorldState extends MainMenuState {
 		mLine1 = new Cursor(FontManager.getFont("Nightwatcher BB"), new float[]{1.5f,1.5f,1.0f},new float[]{-900.0f,480.0f,-4.0f},0,"");
 		mLine2 = new Cursor(FontManager.getFont("Nightwatcher BB"), new float[]{1.5f,1.5f,1.0f},new float[]{-900.0f,420.0f,-4.0f},0,"");
 
+		Light light = new Light();
+		Matrix.setIdentityM(light.mModelMatrix, 0);
+		light.mShaderHandle = ShaderManager.getShaderId("point_shader");
+		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -2.5f);
+		light.mRGBAColor = new float[]{1.0f,0.5f,0.0f,1.0f}; 
+		mObjectLibrary.mLights.add(light);
+		
 		//Uncomment to draw text
 		this.mObjectLibrary.mCursors.add(mLine1);
 //		this.mObjectLibrary.mCursors.add(mLine2);
@@ -60,12 +68,11 @@ public class WaterWorldState extends MainMenuState {
 		super.execute(target);
 		mAccumulatedRotation += 0.5f;
 		if(mAccumulatedRotation >= 360.0f) mAccumulatedRotation = 0.0f;
-		for(Light light : mObjectLibrary.mLights) {
-			Matrix.setIdentityM(light.mModelMatrix, 0);
-			Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
-			Matrix.rotateM(light.mModelMatrix, 0, mAccumulatedRotation, 0.0f, 1.0f, 0.0f);
-			Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 2.0f);
-		}
+		Light light = mObjectLibrary.mLights.get(0);
+		Matrix.setIdentityM(light.mModelMatrix, 0);
+		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
+		Matrix.rotateM(light.mModelMatrix, 0, mAccumulatedRotation, 0.0f, 1.0f, 0.0f);
+		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 3.0f);
 		
 		/*XXX FIRST PHYSICS! - Jump*/
 		float dTSecs = ((float)mDeltaT) / (1000.0f);		
@@ -143,9 +150,9 @@ public class WaterWorldState extends MainMenuState {
 	}
 	
 	protected void renderWater() {
-		BaseRenderer ren = RendererManager.inst().getRenderer();		
 		
-		if(RENDER_WATER) {
+		if(RENDER_LIBRARY_WATER) {
+			BaseRenderer ren = RendererManager.inst().getRenderer();	
 			for(Water w : mObjectLibrary.mWaters) {
 				ren.drawWater(w, mObjectLibrary.mLights);
 			}

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -47,8 +48,8 @@ import com.solesurvivor.simplerender2.text.Font;
 import com.solesurvivor.simplerender2.text.FontManager;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
-import com.solesurvivor.util.logging.SSLog;
 import com.solesurvivor.util.math.Vec3;
+import com.solesurvivor.util.math.Vec4;
 
 public class GameObjectLoader {
 
@@ -188,16 +189,52 @@ public class GameObjectLoader {
 		    float tsc = Float.valueOf(properties.get(WaveDescriptorEnum.TIME_SCALE.toString()));
 		    float phs = Float.valueOf(properties.get(WaveDescriptorEnum.PHASE_SHIFT.toString()));
 		    
-		    Wave w = new Wave(amp, dir, len, spd);
+//		    Wave w = new Wave(amp, dir, len, spd);
+		    Wave w = new Wave(amp, dir, len);
 		    w.setTimeScale(tsc);
 		    w.setPhaseShift(phs);
-		    
-		    
-		    
 		    waves.add(w);
 		}
 		
+		//Load random waves based on current waves
+		int MAX_WAVES = 8;
+		int numAddlWaves = MAX_WAVES/waves.size();
+		
+		Random randy = new Random(1L);
+		List<Wave> randomWaves = new ArrayList<Wave>(MAX_WAVES);
+		for(Wave w : waves) {
+			for(int i = 0; i < numAddlWaves; i++) {
+				if(randomWaves.size() + waves.size() == MAX_WAVES) break;
+				randomWaves.add(genNewWave(w, randy));				
+			}
+			if(randomWaves.size() + waves.size() == MAX_WAVES) break;
+		}
+		
+		waves.addAll(randomWaves);
+		
 		return waves;
+	}
+
+	private static Wave genNewWave(Wave w, Random randy) {
+		float amp = 1.0f;
+		float len = 1.0f;
+		Vec4 dir = new Vec4(w.getDirection().getX(),
+				w.getDirection().getY(),
+				w.getDirection().getZ(),
+				1.0f);
+		
+		float halfW = w.getWavelength()/2.0f;
+		len = (randy.nextFloat() * halfW) + halfW;
+		amp = (w.getAmplitude()/w.getWavelength()) * len;
+		
+		float devDeg = (10.0f * randy.nextFloat()) - 5.0f;
+		float[] rotMat = new float[16];
+		Matrix.setIdentityM(rotMat, 0);
+		Matrix.rotateM(rotMat, 0, devDeg, 0.0f, 1.0f, 0.0f);
+		float[] destDir = new float[4];		
+		Matrix.multiplyMV(destDir, 0, rotMat, 0, Vec4.toFloatArray(dir), 0);
+
+		return new Wave(amp, dir, len);
 	}
 
 	private static IntermediateGeometry parseIntermediateGeometry(InputStream is) throws IOException {

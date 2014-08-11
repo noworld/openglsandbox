@@ -34,7 +34,7 @@ public class Vec4 extends Vec3 {
 				Float.valueOf(vals[2]), Float.valueOf(vals[3]));
 	}
 
-	public float[] toFloatArray(Vec4 vec) {
+	public static float[] toFloatArray(Vec4 vec) {
 		float[] f = new float[4];
 		f[0] = vec.getX();
 		f[1] = vec.getY();

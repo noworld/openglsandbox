@@ -14,7 +14,7 @@
     
     <array name="point_shader">
         <item >@raw/v_point</item> 
-        <item >@raw/f_white</item>  
+        <item >@raw/f_point</item>  
     </array>
     
     <array name="ui_shader">

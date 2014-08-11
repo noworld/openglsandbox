@@ -1,4 +1,5 @@
 struct wave {
+	int wave_type; //0=linear, 1=radial
 	float amplitude;
 	vec3  direction;
 	float wavelength;
@@ -10,7 +11,7 @@ struct wave {
 };
 
 const float CONST_TIME = 1.0;
-const int MAX_WAVES = 5;
+const int MAX_WAVES = 15;
 const float K_EXP = 2.0;
 const float Q_SCALE = 0.75;
 
@@ -60,7 +61,7 @@ void main()
 		xDisp = xDisp + ((q * u_Wave.amplitude) * u_Wave.direction.x * cosA);		
 		zDisp = zDisp + ((q * u_Wave.amplitude) * u_Wave.direction.z * cosA);
 
-		height = height + u_Wave.amplitude * sinA;
+		height = height + (u_Wave.amplitude * sinA);
 		
 		float wa = u_Wave.frequency * u_Wave.amplitude;
 		float xDir = u_Wave.direction.x * wa * cosA;

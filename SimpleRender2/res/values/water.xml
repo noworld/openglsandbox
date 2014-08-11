@@ -20,7 +20,7 @@
     </array>
     
     <string-array name="large_wave">
-        <item>AMPLITUDE|0.15</item>
+        <item>AMPLITUDE|0.1</item>
         <item>DIRECTION|0.0,0.0,1.0</item><!-- Y-up -->
         <item>WAVELENGTH|1.5</item>
         <item>SPEED|1.0</item>
@@ -29,7 +29,7 @@
     </string-array>
     
     <string-array name="small_wave">
-        <item>AMPLITUDE|0.1</item>
+        <item>AMPLITUDE|0.075</item>
         <item>DIRECTION|0.5,0.0,0.5</item><!-- Y-up -->
         <item>WAVELENGTH|1.5</item>
         <item>SPEED|1.33</item>

@@ -110,7 +110,7 @@ public class SortedWater  {
 	}
 	
 	private void reloadIboGeometry() {
-		Collections.sort(mSortedPrims);		
+//		Collections.sort(mSortedPrims);		
 		short[] iboShorts = new short[mSortedPrims.size()*TRI];
 		for(int i = 0, j = 0; i < mSortedPrims.size(); i++, j += TRI) {
 			SortablePrim sp = mSortedPrims.get(i);
@@ -131,7 +131,7 @@ public class SortedWater  {
 	}
 	
 	private void loadIboGeometry() {
-		Collections.sort(mSortedPrims);		
+//		Collections.sort(mSortedPrims);		
 		short[] iboShorts = new short[mSortedPrims.size()*TRI];
 		for(int i = 0, j = 0; i < mSortedPrims.size(); i++, j += TRI) {
 			SortablePrim sp = mSortedPrims.get(i);
