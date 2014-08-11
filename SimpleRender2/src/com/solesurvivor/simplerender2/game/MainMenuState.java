@@ -137,6 +137,11 @@ public class MainMenuState implements GameState<GameWorld> {
 	public void resizeViewport(Point point) {
 		this.mCamera.resizeViewport(point);
 	}
+	
+	@Override
+	public float[] getAgentViewRotation() {
+		return mCameraRotation;
+	}
 
 	@Override
 	public void translateView(float x, float y, float z) {

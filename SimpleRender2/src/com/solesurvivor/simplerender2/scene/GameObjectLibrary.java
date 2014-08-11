@@ -14,5 +14,6 @@ public class GameObjectLibrary {
 	public List<Light> mLights = new ArrayList<Light>();
 	public List<Cursor> mCursors = new ArrayList<Cursor>();
 	public List<Water> mWaters = new ArrayList<Water>();
+	public List<Sky> mSkies = new ArrayList<Sky>();
 	
 }

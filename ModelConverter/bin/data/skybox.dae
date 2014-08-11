@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.71.0 commit date:2014-06-25, commit time:18:36, hash:9337574</authoring_tool>
+    </contributor>
+    <created>2014-08-11T13:50:49</created>
+    <modified>2014-08-11T13:50:49</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_images/>
+  <library_effects>
+    <effect id="Material-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <color sid="diffuse">0.64 0.64 0.64 1</color>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.5 0.5 0.5 1</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">50</float>
+            </shininess>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_materials>
+    <material id="Material-material" name="Material">
+      <instance_effect url="#Material-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="skybox-mesh" name="skybox">
+      <mesh>
+        <source id="skybox-mesh-positions">
+          <float_array id="skybox-mesh-positions-array" count="24">1 -0.999998 -1.000002 1 -1.000002 0.999998 -1 -1.000002 0.9999979 -0.9999997 -0.999998 -1.000002 1 1.000002 -0.9999975 0.9999994 0.999998 1.000003 -1 0.999998 1.000002 -1 1.000002 -0.999998</float_array>
+          <technique_common>
+            <accessor source="#skybox-mesh-positions-array" count="8" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="skybox-mesh-normals">
+          <float_array id="skybox-mesh-normals-array" count="24">-0.5773492 0.5773187 0.5773492 0.5773492 0.5773187 0.5773492 0.5773492 0.5773492 -0.5773187 -0.5773492 -0.5773492 0.5773187 -0.5773492 -0.5773492 -0.5773492 0.5773492 -0.5773187 -0.5773492 -0.5773492 0.5773492 -0.5773492 0.5773492 -0.5773492 0.5773492</float_array>
+          <technique_common>
+            <accessor source="#skybox-mesh-normals-array" count="8" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="skybox-mesh-map-0">
+          <float_array id="skybox-mesh-map-0-array" count="72">0.5003451 0.3333624 0.2504107 0.3333628 0.2504102 8.71122e-5 0.5003453 0.6666379 0.5003456 0.999913 0.2504116 0.9999133 0.75028 0.3333622 0.75028 0.6666381 0.5003453 0.6666379 1.000214 0.3333625 1.000215 0.6666384 0.75028 0.6666381 4.76539e-4 0.3333631 0.2504107 0.3333628 0.2504111 0.6666382 0.5003453 0.6666379 0.2504111 0.6666382 0.2504107 0.3333628 0.5003446 8.67844e-5 0.5003451 0.3333624 0.2504102 8.71122e-5 0.2504111 0.6666382 0.5003453 0.6666379 0.2504116 0.9999133 0.5003451 0.3333624 0.75028 0.3333622 0.5003453 0.6666379 0.75028 0.3333622 1.000214 0.3333625 0.75028 0.6666381 4.76897e-4 0.6666384 4.76539e-4 0.3333631 0.2504111 0.6666382 0.5003451 0.3333624 0.5003453 0.6666379 0.2504107 0.3333628</float_array>
+          <technique_common>
+            <accessor source="#skybox-mesh-map-0-array" count="36" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="skybox-mesh-vertices">
+          <input semantic="POSITION" source="#skybox-mesh-positions"/>
+        </vertices>
+        <polylist material="Material-material" count="12">
+          <input semantic="VERTEX" source="#skybox-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#skybox-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#skybox-mesh-map-0" offset="2" set="0"/>
+          <vcount>3 3 3 3 3 3 3 3 3 3 3 3 </vcount>
+          <p>0 0 0 3 1 1 2 2 2 4 3 3 5 4 4 6 5 5 1 6 6 5 4 7 4 3 8 2 2 9 6 5 10 5 4 11 2 2 12 3 1 13 7 7 14 4 3 15 7 7 16 3 1 17 1 6 18 0 0 19 2 2 20 7 7 21 4 3 22 6 5 23 0 0 24 1 6 25 4 3 26 1 6 27 2 2 28 5 4 29 6 5 30 2 2 31 7 7 32 0 0 33 4 3 34 3 1 35</p>
+        </polylist>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers/>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="SkyBoxObj" name="SkyBoxObj" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <instance_geometry url="#skybox-mesh">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="Material-material" target="#Material-material"/>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

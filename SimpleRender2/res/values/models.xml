@@ -1,6 +1,14 @@
 <resources>
     
-    <!-- Must be in specific order: Position, Color, Normal, (optional) Texcoord -->
+    <array name="models">
+        <item>@raw/mainmenu_ui</item>
+        <item>@raw/gamepad_ui</item>
+        <item>@raw/scar</item>
+        <item>@raw/box_plane</item>
+        <item>@raw/floor</item>
+        <item>@raw/skybox</item>
+    </array>
+    
     <array name="main_menu_models">
         <item>@raw/mainmenu_ui</item>
     </array>
@@ -25,6 +33,17 @@
         <item>SCALE_Z|1.0</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|blur_shader</item>
+    </string-array>
+    
+     <string-array name="skybox">
+        <item>POS_X|0.0</item>
+        <item>POS_Y|0.0</item>
+        <item>POS_Z|0.0</item>
+        <item>SCALE_X|1.0</item>
+        <item>SCALE_Y|1.0</item>
+        <item>SCALE_Z|1.0</item>
+        <item>TEXTURE_NAME|skybox</item>
+        <item>SHADER_NAME|model_shader</item>
     </string-array>
     
      <string-array name="floor">

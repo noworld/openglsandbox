@@ -9,10 +9,13 @@ import com.pimphand.simplerender2.R;
 import com.solesurvivor.simplerender2.input.InputEventBus;
 import com.solesurvivor.simplerender2.input.InputHandler;
 import com.solesurvivor.simplerender2.loading.GameObjectLoader;
+import com.solesurvivor.simplerender2.loading.GeometryManager;
 import com.solesurvivor.simplerender2.rendering.BaseRenderer;
+import com.solesurvivor.simplerender2.rendering.Geometry;
 import com.solesurvivor.simplerender2.rendering.GlSettings;
 import com.solesurvivor.simplerender2.rendering.RendererManager;
 import com.solesurvivor.simplerender2.rendering.shaders.ShaderManager;
+import com.solesurvivor.simplerender2.rendering.textures.TextureManager;
 import com.solesurvivor.simplerender2.rendering.water.Wave;
 import com.solesurvivor.simplerender2.scene.Light;
 import com.solesurvivor.simplerender2.scene.Water;
@@ -47,6 +50,10 @@ public class WaterWorldState extends MainMenuState {
 		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -2.5f);
 		light.mRGBAColor = new float[]{1.0f,0.5f,0.0f,1.0f}; 
 		mObjectLibrary.mLights.add(light);
+		
+		Geometry geo = GeometryManager.getGeometry("skybox");
+		geo.mShaderHandle = ShaderManager.getShaderId("model_shader");
+		geo.mTextureHandle = TextureManager.getTextureId("skybox");
 		
 		//Uncomment to draw text
 		this.mObjectLibrary.mCursors.add(mLine1);
@@ -92,6 +99,7 @@ public class WaterWorldState extends MainMenuState {
 	@Override
 	public void render(GameWorld target) {		
 		//TODO: Shift rendering to game objects and render back to front
+		renderSkybox();
 		renderLights();
 		renderModels();	
 		renderWater();
@@ -147,6 +155,12 @@ public class WaterWorldState extends MainMenuState {
 		if(mCameraTranslation[1] == 0.0f) {
 			super.impulseView(x, y, z);
 		}
+	}
+	
+	protected void renderSkybox() {
+		Geometry geo = GeometryManager.getGeometry("skybox");
+		BaseRenderer ren = RendererManager.inst().getRenderer();
+		ren.drawSkybox(geo, mObjectLibrary.mLights);
 	}
 	
 	protected void renderWater() {

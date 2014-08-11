@@ -185,7 +185,7 @@ public class GameObjectLoader {
 			float amp = Float.valueOf(properties.get(WaveDescriptorEnum.AMPLITUDE.toString()));
 		    Vec3 dir = 	Vec3.valueOf(properties.get(WaveDescriptorEnum.DIRECTION.toString()));
 		    float len = Float.valueOf(properties.get(WaveDescriptorEnum.WAVELENGTH.toString()));
-		    float spd = Float.valueOf(properties.get(WaveDescriptorEnum.SPEED.toString()));
+//		    float spd = Float.valueOf(properties.get(WaveDescriptorEnum.SPEED.toString()));
 		    float tsc = Float.valueOf(properties.get(WaveDescriptorEnum.TIME_SCALE.toString()));
 		    float phs = Float.valueOf(properties.get(WaveDescriptorEnum.PHASE_SHIFT.toString()));
 		    
@@ -402,6 +402,12 @@ public class GameObjectLoader {
 		}
 
 		return area;
+	}
+	
+	private static Geometry parseGeometryNew(String name, IntermediateGeometry ig) {
+		Geometry geo = GeometryManager.getGeometry(name);
+		
+		return geo;
 	}
 	
 	private static Geometry parseGeometry(String name, IntermediateGeometry ig) {		

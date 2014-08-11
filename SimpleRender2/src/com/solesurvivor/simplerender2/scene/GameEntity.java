@@ -7,7 +7,11 @@ import com.solesurvivor.simplerender2.rendering.Geometry;
 
 public class GameEntity extends GameObject {
 
-	private Geometry mGeometry;
+	protected Geometry mGeometry;
+	
+	public GameEntity() {
+		
+	}
 	
 	public GameEntity(Geometry geometry) {
 		this.mGeometry = geometry;

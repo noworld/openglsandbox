@@ -9,60 +9,60 @@ package com.pimphand.simplerender2;
 
 public final class R {
     public static final class array {
-        public static final int blur_shader=0x7f08001e;
-        public static final int btn_a=0x7f080024;
+        public static final int blur_shader=0x7f080020;
+        public static final int btn_a=0x7f080026;
         public static final int btn_a_inputarea=0x7f080002;
-        public static final int btn_b=0x7f080025;
+        public static final int btn_b=0x7f080027;
         public static final int btn_b_inputarea=0x7f080003;
-        public static final int btn_modelviewer=0x7f080023;
+        public static final int btn_modelviewer=0x7f080025;
         public static final int btn_modelviewer_inputarea=0x7f08000b;
-        public static final int btn_waterworld=0x7f080022;
+        public static final int btn_waterworld=0x7f080024;
         public static final int btn_waterworld_inputarea=0x7f08000a;
-        public static final int btn_x=0x7f080026;
+        public static final int btn_x=0x7f080028;
         public static final int btn_x_inputarea=0x7f080004;
-        public static final int btn_y=0x7f080027;
+        public static final int btn_y=0x7f080029;
         public static final int btn_y_inputarea=0x7f080005;
-        public static final int cube=0x7f08000f;
-        public static final int dpad=0x7f080028;
+        public static final int cube=0x7f080010;
+        public static final int dpad=0x7f08002a;
         public static final int dpad_inputarea_dn=0x7f080007;
         public static final int dpad_inputarea_lt=0x7f080008;
         public static final int dpad_inputarea_rt=0x7f080009;
         public static final int dpad_inputarea_up=0x7f080006;
-        public static final int floor=0x7f080010;
+        public static final int floor=0x7f080012;
         /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
          */
         public static final int fonts=0x7f080000;
         public static final int global=0x7f080001;
-        public static final int highresplane=0x7f080013;
-        public static final int inputarea_shader=0x7f080019;
-        public static final int large_wave=0x7f08002c;
-        /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
-         */
-        public static final int main_menu_models=0x7f08000c;
-        public static final int model_shader=0x7f08001b;
-        public static final int model_viewer_models=0x7f08000d;
-        public static final int ocean_water=0x7f08002a;
-        public static final int ocean_waves=0x7f08002b;
-        public static final int plane=0x7f080011;
-        public static final int point_shader=0x7f080017;
-        public static final int radial=0x7f080012;
-        public static final int scar=0x7f080014;
-        public static final int shaderPrograms=0x7f080016;
-        public static final int small_wave=0x7f08002d;
-        public static final int sprite_shader=0x7f08001a;
-        public static final int suzanne=0x7f080015;
-        public static final int text_shader=0x7f08001c;
-        public static final int textbox_main=0x7f080021;
-        public static final int textures=0x7f080020;
+        public static final int highresplane=0x7f080015;
+        public static final int inputarea_shader=0x7f08001b;
+        public static final int large_wave=0x7f08002e;
+        public static final int main_menu_models=0x7f08000d;
+        public static final int model_shader=0x7f08001d;
+        public static final int model_viewer_models=0x7f08000e;
+        public static final int models=0x7f08000c;
+        public static final int ocean_water=0x7f08002c;
+        public static final int ocean_waves=0x7f08002d;
+        public static final int plane=0x7f080013;
+        public static final int point_shader=0x7f080019;
+        public static final int radial=0x7f080014;
+        public static final int scar=0x7f080016;
+        public static final int shaderPrograms=0x7f080018;
+        public static final int skybox=0x7f080011;
+        public static final int small_wave=0x7f08002f;
+        public static final int sprite_shader=0x7f08001c;
+        public static final int suzanne=0x7f080017;
+        public static final int text_shader=0x7f08001e;
+        public static final int textbox_main=0x7f080023;
+        public static final int textures=0x7f080022;
         /**  Playing with shaders 
          */
-        public static final int toon_shader=0x7f08001d;
-        public static final int ui_shader=0x7f080018;
+        public static final int toon_shader=0x7f08001f;
+        public static final int ui_shader=0x7f08001a;
         /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
          */
-        public static final int water=0x7f080029;
-        public static final int water_shader=0x7f08001f;
-        public static final int water_world_models=0x7f08000e;
+        public static final int water=0x7f08002b;
+        public static final int water_shader=0x7f080021;
+        public static final int water_world_models=0x7f08000f;
     }
     public static final class attr {
     }
@@ -89,14 +89,15 @@ public final class R {
         public static final int quads=0x7f020009;
         public static final int sand=0x7f02000a;
         public static final int scar=0x7f02000b;
-        public static final int uipack_rpg_sheet=0x7f02000c;
-        public static final int uvgrid=0x7f02000d;
-        public static final int water_disp=0x7f02000e;
-        public static final int water_normals=0x7f02000f;
-        public static final int waterplain=0x7f020010;
-        public static final int wavemapd1=0x7f020011;
-        public static final int wavemapn1=0x7f020012;
-        public static final int wavemapn2=0x7f020013;
+        public static final int skybox=0x7f02000c;
+        public static final int uipack_rpg_sheet=0x7f02000d;
+        public static final int uvgrid=0x7f02000e;
+        public static final int water_disp=0x7f02000f;
+        public static final int water_normals=0x7f020010;
+        public static final int waterplain=0x7f020011;
+        public static final int wavemapd1=0x7f020012;
+        public static final int wavemapn1=0x7f020013;
+        public static final int wavemapn2=0x7f020014;
     }
     public static final class id {
         public static final int action_settings=0x7f0a0000;
@@ -127,17 +128,18 @@ public final class R {
         public static final int praetorium_bb_regular=0x7f040010;
         public static final int radial=0x7f040011;
         public static final int scar=0x7f040012;
-        public static final int v_blur=0x7f040013;
-        public static final int v_model=0x7f040014;
-        public static final int v_point=0x7f040015;
-        public static final int v_sprite=0x7f040016;
-        public static final int v_ui=0x7f040017;
-        public static final int v_water=0x7f040018;
-        public static final int v_water2=0x7f040019;
-        public static final int v_water_exp_peak=0x7f04001a;
-        public static final int v_water_gerstner_simple=0x7f04001b;
-        public static final int v_water_old=0x7f04001c;
-        public static final int v_water_radial=0x7f04001d;
+        public static final int skybox=0x7f040013;
+        public static final int v_blur=0x7f040014;
+        public static final int v_model=0x7f040015;
+        public static final int v_point=0x7f040016;
+        public static final int v_sprite=0x7f040017;
+        public static final int v_ui=0x7f040018;
+        public static final int v_water=0x7f040019;
+        public static final int v_water2=0x7f04001a;
+        public static final int v_water_exp_peak=0x7f04001b;
+        public static final int v_water_gerstner_simple=0x7f04001c;
+        public static final int v_water_old=0x7f04001d;
+        public static final int v_water_radial=0x7f04001e;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;

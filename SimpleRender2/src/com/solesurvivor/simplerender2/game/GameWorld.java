@@ -46,6 +46,10 @@ public class GameWorld {
 		return mCurrentState.getProjectionMatrix();
 	}
 	
+	public float[] getAgentViewRotation() {
+		return mCurrentState.getAgentViewRotation();
+	}
+	
 	public float[] getAgentViewMatrix() {
 		return mCurrentState.getAgentViewMatrix();
 	}

@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.71.0 commit date:2014-06-25, commit time:18:36, hash:9337574</authoring_tool>
     </contributor>
-    <created>2014-07-30T14:55:03</created>
-    <modified>2014-07-30T14:55:03</modified>
+    <created>2014-07-30T14:58:46</created>
+    <modified>2014-07-30T14:58:46</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -26,7 +26,7 @@
           </technique_common>
         </source>
         <source id="floor-mesh-normals">
-          <float_array id="floor-mesh-normals-array" count="6">0 -1 -8.78176e-7 0 -1 -8.78176e-7</float_array>
+          <float_array id="floor-mesh-normals-array" count="6">0 1 8.78176e-7 0 1 8.78176e-7</float_array>
           <technique_common>
             <accessor source="#floor-mesh-normals-array" count="2" stride="3">
               <param name="X" type="float"/>
@@ -36,7 +36,7 @@
           </technique_common>
         </source>
         <source id="floor-mesh-map-0">
-          <float_array id="floor-mesh-map-0-array" count="12">1.00099e-4 9.998e-5 0.9999001 1.0004e-4 0.9999001 0.9999001 9.998e-5 0.9999001 1.00099e-4 9.998e-5 0.9999001 0.9999001</float_array>
+          <float_array id="floor-mesh-map-0-array" count="12">1.00099e-4 9.998e-5 9.998e-5 0.9999001 0.9999001 0.9999001 0.9999001 1.0004e-4 1.00099e-4 9.998e-5 0.9999001 0.9999001</float_array>
           <technique_common>
             <accessor source="#floor-mesh-map-0-array" count="6" stride="2">
               <param name="S" type="float"/>
@@ -52,7 +52,7 @@
           <input semantic="NORMAL" source="#floor-mesh-normals" offset="1"/>
           <input semantic="TEXCOORD" source="#floor-mesh-map-0" offset="2" set="0"/>
           <vcount>3 3 </vcount>
-          <p>0 0 0 1 0 1 3 0 2 2 1 3 0 1 4 3 1 5</p>
+          <p>0 0 0 2 0 1 3 0 2 1 1 3 0 1 4 3 1 5</p>
         </polylist>
       </mesh>
     </geometry>

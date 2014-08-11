@@ -20,6 +20,7 @@
         <item>@drawable/waterplain</item>
         <item>@drawable/sand</item>
         <item>@drawable/quads</item>
+        <item>@drawable/skybox</item>
     </array>
 
     
