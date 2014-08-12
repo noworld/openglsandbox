@@ -435,15 +435,15 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void opaqueWaterOn() {
+		GLES20.glDisable(GLES20.GL_CULL_FACE);
 		GLES20.glDisable(GLES20.GL_BLEND);
 	}
 
 	public void addWaterOn() {
 		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
 		GLES20.glDisable(GLES20.GL_DITHER);
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
-		GLES20.glDepthMask(false);
-		//GLES20.glBlendFuncSeparate(GLES20.GL_ONE, GLES20.GL_ONE, GLES20.GL_ZERO, GLES20.GL_ZERO);
+		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		GLES20.glDepthMask(true);
 		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE); 
 	}
 
@@ -468,30 +468,36 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		float[] viewMatrix = GameWorld.inst().getAgentViewMatrix();
 
 		GLES20.glUseProgram(geo.mShaderHandle);
+		
+		/*
+		 *uniform mat4      u_MVPMatrix;      		       
+uniform mat4      u_MVMatrix;       
+uniform float     u_Time;
+uniform vec3      u_WaterColor;
+uniform int       u_NumWaves;
+
+uniform wave[MAX_WAVES] u_Waves;
+		  			
+attribute vec4 a_Position;
+
+uniform int       			u_NumLights;
+uniform vec3[MAX_LIGHTS]	u_LightPositons;
+		 * */
 
 		int u_mvp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVPMatrix");
 		int u_mv = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVMatrix");
-		int u_num_li = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NumLights");				
-		int u_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Texture");
+		int u_nrm = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NrmMatrix");		
 		int u_time = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Time");
-		int u_transp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Transp");
+		int u_w_col = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_WaterColor");
 		int u_numwaves = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NumWaves");
-		int u_inith = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_InitialHeight");
+		int u_num_li = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NumLights");
 
 		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
-		int a_txc = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_TexCoordinate");
-
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, geo.mTextureHandle);
-		GLES20.glUniform1i(u_texsampler, 0);
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.mDatBufIndex);
 
 		GLES20.glEnableVertexAttribArray(a_pos);
 		GLES20.glVertexAttribPointer(a_pos, geo.mPosSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mPosOffset);
-		GLES20.glEnableVertexAttribArray(a_txc);
-		GLES20.glVertexAttribPointer(a_txc, geo.mTxcSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mTxcOffset);
-		/*Normals are computed in the shader...*/
 
 		// --MV--
 
@@ -499,6 +505,19 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, geo.mModelMatrix, 0);
 		//MVP matrix is *actually MV* at this point
 		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
+		
+		//Create the Normal Matrix
+		float[] normalMatrix = new float[16];
+		Matrix.invertM(normalMatrix, 0, mvpMatrix, 0);		
+		Matrix.transposeM(normalMatrix, 0, normalMatrix, 0);
+//		normalMatrix = getLowerOrderMatrix(normalMatrix);
+		GLES20.glUniformMatrix4fv(u_nrm, 1, true, normalMatrix, 0);
+		
+//		SSLog.d(TAG, "MV matrix: [%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]", 
+//				mvpMatrix[0],mvpMatrix[1],mvpMatrix[2],mvpMatrix[3],
+//				mvpMatrix[4],mvpMatrix[5],mvpMatrix[6],mvpMatrix[7],
+//				mvpMatrix[8],mvpMatrix[9],mvpMatrix[10],mvpMatrix[11],
+//				mvpMatrix[12],mvpMatrix[13],mvpMatrix[14],mvpMatrix[15]);
 
 		// --MVP--
 
@@ -507,31 +526,27 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		//MVP is MVP at this point
 		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
 
-		// --LightPos--
-
-		/* Pass in the light position in eye space.	*/	
-		//Switching to view space...
+		//Lights
 		GLES20.glUniform1i(u_num_li, lights.size());
+		
 		for(int i = 0; i < lights.size(); i++) {
 			Light light = lights.get(i);
-			int u_lightpos = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_LightPoses[%s]",i));
-			int u_lightcol = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_LightColors[%s]",i));
+			int u_lightpos = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_LightPositons[%s]",i));
 			float[] lightPosWorldSpace = new float[4];
 			float[] lightPosEyeSpace = new float[4];
 			Matrix.multiplyMV(lightPosWorldSpace, 0, light.mModelMatrix, 0, light.mPosition, 0);
 			Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
 			GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
-			GLES20.glUniform4f(u_lightcol, light.mRGBAColor[0], light.mRGBAColor[1], light.mRGBAColor[2], light.mRGBAColor[3]);
 		}
 
 		//Time
 		double time = ((double)SystemClock.uptimeMillis()) / 1000.0;
 		GLES20.glUniform1f(u_time, (float)time);
 
-		//Transparency
-		GLES20.glUniform1f(u_transp, water.getTransparency());
-
-		//Wave
+		//Water Color
+		GLES20.glUniform3f(u_w_col, 0.1098f, 0.2549f, 0.3216f);
+		
+		//Waves
 		GLES20.glUniform1i(u_numwaves, water.getWaves().size());
 
 		for(int i = 0; i < water.getWaves().size(); i++) { 
@@ -556,23 +571,27 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		}
 
 		// Draw	
-		/* Draw the arrays as triangles */		
-
-		//		multiplyWaterOn();
 		opaqueWaterOn();
-		GLES20.glUniform1f(u_inith, 0.0f);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
-		//		addWaterOn();
-		//		GLES20.glUniform1f(u_inith, -0.02f);
-		//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
-		//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);		
 		waterOff();
+		
 		checkError();
+	}
 
+	private float[] getLowerOrderMatrix(float[] matrix) {
+		float[] newMat = null;
+		if(matrix.length == 16) {
+			newMat = new float[]{matrix[0],matrix[4],matrix[8],
+					             matrix[1],matrix[5],matrix[9],
+					             matrix[2],matrix[6],matrix[10]};
+		} else {
+			newMat = matrix;
+		}
+		return newMat;
 	}
 
 	public void drawUI(Geometry geo) {
@@ -768,14 +787,12 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	}
 
 	protected int checkError() {
-		int errorCode =  GLES20.GL_NO_ERROR;
 		int currentError = GLES20.glGetError();
-		/* Check for errors */
 		if(currentError != GLES20.GL_NO_ERROR) {			
 			SSLog.w(TAG, "OpenGL Error Encountered: " + interpretError(currentError));
 		}
 
-		return errorCode;
+		return currentError;
 	}
 
 	protected String interpretError(int errNum) {		

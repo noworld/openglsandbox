@@ -1,5 +1,6 @@
 precision mediump float;
 
+const vec3        WATER_COLOR = vec3(0.1098,0.2549,0.3216);
 const float       AMBIENT = 0.4;
 const int         MAX_LIGHTS = 5;
 uniform int       u_NumLights;
@@ -44,9 +45,11 @@ void main()
 
 	// Multiply the color by the diffuse illumination level and texture value to get final output color.
 	vec4 texColor = texture2D(u_Texture, v_TexCoordinate);
-	vec3 color = totalDiffuse * texColor.rgb;
+	//Ambient
+	totalDiffuse = totalDiffuse + 0.7;
+	vec3 color = totalDiffuse * WATER_COLOR.rgb;
 	//vec3 color = (texColor.rgb);
-	gl_FragColor = vec4(color, v_Transp);
+	gl_FragColor = vec4(v_Normal, v_Transp);
 	//gl_FragColor = vec4(0.0f, 0.4f, 0.8f, 1.0f);
     
   }                                                                     	

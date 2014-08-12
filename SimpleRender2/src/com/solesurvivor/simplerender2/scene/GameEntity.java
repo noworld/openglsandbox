@@ -21,6 +21,10 @@ public class GameEntity extends GameObject {
 		return mGeometry;
 	}
 	
+	public void setGeometry(Geometry geometry) {
+		this.mGeometry = geometry;
+	}
+	
 	public void scale(float x, float y, float z) {
 		Matrix.scaleM(this.mGeometry.mModelMatrix, 0, x, y, z);
 	}

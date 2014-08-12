@@ -60,4 +60,12 @@ public class Water extends GameEntity {
 		this.mShaderId = mShaderId;
 	}
 	
+	@Override
+	public void setGeometry(Geometry geometry) {
+		this.mGeometry = geometry;
+		this.mGeometry.mTextureHandle =  mTextureId;
+		this.mGeometry.mShaderHandle = mShaderId;
+	}
+	
+	
 }

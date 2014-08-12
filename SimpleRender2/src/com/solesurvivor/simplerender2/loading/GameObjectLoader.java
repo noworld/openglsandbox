@@ -197,20 +197,20 @@ public class GameObjectLoader {
 		}
 		
 		//Load random waves based on current waves
-		int MAX_WAVES = 8;
-		int numAddlWaves = MAX_WAVES/waves.size();
-		
-		Random randy = new Random(1L);
-		List<Wave> randomWaves = new ArrayList<Wave>(MAX_WAVES);
-		for(Wave w : waves) {
-			for(int i = 0; i < numAddlWaves; i++) {
-				if(randomWaves.size() + waves.size() == MAX_WAVES) break;
-				randomWaves.add(genNewWave(w, randy));				
-			}
-			if(randomWaves.size() + waves.size() == MAX_WAVES) break;
-		}
-		
-		waves.addAll(randomWaves);
+//		int MAX_WAVES = 8;
+//		int numAddlWaves = MAX_WAVES/waves.size();
+//		
+//		Random randy = new Random(1L);
+//		List<Wave> randomWaves = new ArrayList<Wave>(MAX_WAVES);
+//		for(Wave w : waves) {
+//			for(int i = 0; i < numAddlWaves; i++) {
+//				if(randomWaves.size() + waves.size() == MAX_WAVES) break;
+//				randomWaves.add(genNewWave(w, randy));				
+//			}
+//			if(randomWaves.size() + waves.size() == MAX_WAVES) break;
+//		}
+//		
+//		waves.addAll(randomWaves);
 		
 		return waves;
 	}

@@ -1,11 +1,15 @@
 package com.solesurvivor.simplerender2.scene;
 
+import android.annotation.TargetApi;
 import android.graphics.Point;
 import android.opengl.Matrix;
+import android.os.Build;
 import android.util.Log;
 
 import com.solesurvivor.simplerender2.rendering.RendererManager;
+import com.solesurvivor.util.logging.SSLog;
 
+@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class Camera {
 	
 	private static final String TAG = Camera.class.getSimpleName();
@@ -120,6 +124,8 @@ public class Camera {
 	
 	public void resizeViewport(Point newViewport) {
 		
+		float[] mFrustumMatrix = new float[16];
+		Matrix.setIdentityM(mFrustumMatrix, 0);
 		RendererManager.inst().getRenderer().resizeViewport(newViewport);
 		
 		this.mViewport = newViewport;
@@ -142,7 +148,19 @@ public class Camera {
 		final float near_ortho = 1.0f;
 		final float far_ortho = 200.0f;
 
-		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
+		Matrix.frustumM(mFrustumMatrix, 0, left, right, bottom, top, near, far);
+		SSLog.d(TAG, "Frustum matrix: [%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]", 
+				mFrustumMatrix[0],mFrustumMatrix[1],mFrustumMatrix[2],mFrustumMatrix[3],
+				mFrustumMatrix[4],mFrustumMatrix[5],mFrustumMatrix[6],mFrustumMatrix[7],
+				mFrustumMatrix[8],mFrustumMatrix[9],mFrustumMatrix[10],mFrustumMatrix[11],
+				mFrustumMatrix[12],mFrustumMatrix[13],mFrustumMatrix[14],mFrustumMatrix[15]);
+		
+		Matrix.perspectiveM(mProjectionMatrix, 0, 90.0f, ratio, near, far);
+		SSLog.d(TAG, "Perspective matrix: [%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]",
+				mProjectionMatrix[0],mProjectionMatrix[1],mProjectionMatrix[2],mProjectionMatrix[3],
+				mProjectionMatrix[4],mProjectionMatrix[5],mProjectionMatrix[6],mProjectionMatrix[7],
+				mProjectionMatrix[8],mProjectionMatrix[9],mProjectionMatrix[10],mProjectionMatrix[11],
+				mProjectionMatrix[12],mProjectionMatrix[13],mProjectionMatrix[14],mProjectionMatrix[15]);
 		Matrix.orthoM(mUiMatrix, 0, left_ortho, right_ortho, bottom_ortho, top_ortho, near_ortho, far_ortho);
 	}
 }

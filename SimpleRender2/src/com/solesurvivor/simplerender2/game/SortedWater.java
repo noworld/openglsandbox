@@ -31,7 +31,7 @@ public class SortedWater  {
 	private static final boolean DEBUG_MESH_DATA = false;
 	private static final float DEPTH = 12.21f;
 	private static final float WIDTH = 12.21f;
-	private static final int DIV = 64;
+	private static final int DIV = 160;
 	private static final int NUM_PRIMS = DIV*DIV*2;
 	private static final int NUM_VERTS = (DIV+1)*(DIV+1);
 	private static final float Y_VAL = 0.0f;
@@ -41,7 +41,6 @@ public class SortedWater  {
 	private static final int QUAD = 4;
 	private static final int START_INDEX = 0;
 	
-	private Water mWater;
 	private int mIboHandle;
 	private int mVboHandle;
 	private SparseArray<Vec3> mIndexedVerts;
@@ -75,16 +74,10 @@ public class SortedWater  {
 		buildMesh();
 		loadVboGeometry();		
 		loadIboGeometry();
-		mWater = new Water(waves, mGeometry, TextureManager.getTextureId("wavemapd1"), ShaderManager.getShaderId("water_shader"));
-		Matrix.translateM(mGeometry.mModelMatrix, 0, 0.0f, -2.6f, -5.0f);
 	}
-
-	public void render(List<Light> mLights) {
-		BaseRenderer ren = RendererManager.inst().getRenderer();
-		reloadIboGeometry();
-		ren.waterOn();
-		ren.drawWater(mWater, mLights);
-		ren.waterOff();
+	
+	public Geometry getGeometry() {
+		return mGeometry;
 	}
 	
 	private void loadVboGeometry() {

@@ -49,11 +49,20 @@ public class WaterWorldState extends MainMenuState {
 		light.mShaderHandle = ShaderManager.getShaderId("point_shader");
 		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -2.5f);
 		light.mRGBAColor = new float[]{1.0f,0.5f,0.0f,1.0f}; 
-		mObjectLibrary.mLights.add(light);
+//		mObjectLibrary.mLights.add(light);
 		
 		Geometry geo = GeometryManager.getGeometry("skybox");
-		geo.mShaderHandle = ShaderManager.getShaderId("model_shader");
-		geo.mTextureHandle = TextureManager.getTextureId("skybox");
+		geo.mShaderHandle = ShaderManager.getShaderId("skybox_shader");
+		geo.mTextureHandle = TextureManager.getTextureId("sea_skybox");		
+		
+//		SortedWater sw = new SortedWater();
+//		Geometry wat = sw.getGeometry();
+//		Matrix.setIdentityM(wat.mModelMatrix, 0);
+//		Matrix.translateM(wat.mModelMatrix, 0, 0.0f, -2.0f, -5.0f);
+//		mObjectLibrary.mWaters.get(0).setGeometry(wat);
+		
+//		this.translateView(0.0f, 3.0f, 0.0f);
+//		this.rotateView(-45.0f, 0.0f, 1.0f, 0.0f);
 		
 		//Uncomment to draw text
 		this.mObjectLibrary.mCursors.add(mLine1);
@@ -78,8 +87,8 @@ public class WaterWorldState extends MainMenuState {
 		Light light = mObjectLibrary.mLights.get(0);
 		Matrix.setIdentityM(light.mModelMatrix, 0);
 		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
-		Matrix.rotateM(light.mModelMatrix, 0, mAccumulatedRotation, 0.0f, 1.0f, 0.0f);
-		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 3.0f);
+//		Matrix.rotateM(light.mModelMatrix, 0, mAccumulatedRotation, 0.0f, 1.0f, 0.0f);
+//		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 1.0f);
 		
 		/*XXX FIRST PHYSICS! - Jump*/
 		float dTSecs = ((float)mDeltaT) / (1000.0f);		
@@ -91,8 +100,8 @@ public class WaterWorldState extends MainMenuState {
 			mCameraVelocity[1] = 0.0f; //Stop when it hits the y=0 plane
 		}
 		
-		Wave w = mObjectLibrary.mWaters.get(0).getWaves().get(1);
-		mLine1.setValue("Wave direction: %.2f,%.2f",w.getDirection().getX(), w.getDirection().getZ());
+//		Wave w = mObjectLibrary.mWaters.get(0).getWaves().get(1);
+		mLine1.setValue("Wave Normals.");
 //		mLine2.setValue(String.format("Aspect: %.2f",GameGlobal.inst().getCamera().getAspect()));
 	}
 	
@@ -119,9 +128,11 @@ public class WaterWorldState extends MainMenuState {
 	
 	@Override
 	public void translateView(float x, float y, float z) {
-		mCameraTranslation[0] += z * Math.sin(Math.toRadians(mCameraRotation[0])) * -1;				
+		mCameraTranslation[0] += z * Math.sin(Math.toRadians(mCameraRotation[0])) * -1;
+		mCameraTranslation[0] += x * Math.cos(Math.toRadians(mCameraRotation[0]));
 		mCameraTranslation[1] += y; //y-up
 		mCameraTranslation[2] += z * Math.cos(Math.toRadians(mCameraRotation[0]));
+		mCameraTranslation[2] += x * Math.sin(Math.toRadians(mCameraRotation[0])) * -1;
 	}
 
 	@Override

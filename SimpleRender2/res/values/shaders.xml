@@ -10,6 +10,7 @@
         <item>@array/toon_shader</item>
         <item>@array/blur_shader</item>
         <item>@array/water_shader</item>
+        <item>@array/skybox_shader</item>
     </array>
     
     <array name="point_shader">
@@ -37,6 +38,11 @@
         <item >@raw/f_model</item>  
     </array> 
     
+    <array name="skybox_shader">
+        <item >@raw/v_model</item> 
+        <item >@raw/f_texture</item>  
+    </array> 
+    
     <array name="text_shader">
         <item >@raw/v_ui</item> 
         <item >@raw/f_ui</item>  
@@ -56,7 +62,7 @@
     
     <array name="water_shader">
         <item >@raw/v_water2</item> 
-        <item >@raw/f_water</item>  
+        <item >@raw/f_water2</item>  
     </array>
 
 </resources>
