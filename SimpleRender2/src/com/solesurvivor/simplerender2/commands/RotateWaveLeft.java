@@ -32,7 +32,7 @@ public class RotateWaveLeft implements Command {
 			WaterWorldState state = (WaterWorldState)GameWorld.inst().getCurrentState();
 			Water water = state.getLibrary().mWaters.get(0);
 			if(water.getWaves().size() > 0) {
-				Wave wave = water.getWaves().get(1);
+				Wave wave = water.getWaves().get(0);
 				float[] waveDir = Vec3.toFloatArray(wave.getDirection());
 				float[] d = new float[4];				
 				System.arraycopy(waveDir, 0, d, 0, waveDir.length);				

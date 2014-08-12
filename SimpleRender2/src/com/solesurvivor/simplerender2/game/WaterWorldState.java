@@ -87,8 +87,8 @@ public class WaterWorldState extends MainMenuState {
 		Light light = mObjectLibrary.mLights.get(0);
 		Matrix.setIdentityM(light.mModelMatrix, 0);
 		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
-		Matrix.rotateM(light.mModelMatrix, 0, mAccumulatedRotation, 0.0f, 1.0f, 0.0f);
-		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 3.0f);
+//		Matrix.rotateM(light.mModelMatrix, 0, mAccumulatedRotation, 0.0f, 1.0f, 0.0f);
+//		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 3.0f);
 		
 		/*XXX FIRST PHYSICS! - Jump*/
 		float dTSecs = ((float)mDeltaT) / (1000.0f);		

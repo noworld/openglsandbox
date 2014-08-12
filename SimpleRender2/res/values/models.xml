@@ -39,11 +39,11 @@
         <item>POS_X|0.0</item>
         <item>POS_Y|0.0</item>
         <item>POS_Z|0.0</item>
-        <item>SCALE_X|1.0</item>
-        <item>SCALE_Y|1.0</item>
-        <item>SCALE_Z|1.0</item>
+        <item>SCALE_X|2.0</item>
+        <item>SCALE_Y|2.0</item>
+        <item>SCALE_Z|2.0</item>
         <item>TEXTURE_NAME|skybox</item>
-        <item>SHADER_NAME|model_shader</item>
+        <item>SHADER_NAME|skybox_shader</item>
     </string-array>
     
      <string-array name="floor">

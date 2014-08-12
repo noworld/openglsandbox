@@ -34,6 +34,7 @@ import com.solesurvivor.simplerender2.text.Font;
 import com.solesurvivor.simplerender2.text.FontManager;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
+import com.solesurvivor.util.math.Vec3;
 
 public class BaseRenderer implements GLSurfaceView.Renderer {
 
@@ -562,6 +563,7 @@ uniform vec3[MAX_LIGHTS]	u_LightPositons;
 
 			GLES20.glUniform1i(u_w_typ, w.getWaveType());
 			GLES20.glUniform1f(u_w_amp, w.getAmplitude());
+			
 			GLES20.glUniform3f(u_w_dir, w.getDirection().getX(),w.getDirection().getY(),w.getDirection().getZ());
 			GLES20.glUniform1f(u_w_frq, w.getFrequency());
 			GLES20.glUniform1f(u_w_spd, w.getSpeed());
