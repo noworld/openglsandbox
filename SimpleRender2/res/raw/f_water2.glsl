@@ -1,6 +1,6 @@
 precision mediump float;
 
-const float     AMBIENT = 0.1;
+const float     AMBIENT = 0.3;
 const float     DIFFUSE_REFLECTIVITY = 1.0;
 const float     DIFFUSE_INTENSITY = 5.0;
 const float     ALPHA = 1.0;

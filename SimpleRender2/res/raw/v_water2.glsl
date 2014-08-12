@@ -31,7 +31,7 @@ varying vec3 v_WaterColor;
 		  
 void main()                                                 	
 {	
-	float time = 0.0;
+	float time = u_Time;
 	float height = 0.0;
 	float xDisp = 0.0;
 	float zDisp = 0.0;

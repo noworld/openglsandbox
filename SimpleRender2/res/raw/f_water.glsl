@@ -1,28 +1,24 @@
 precision mediump float;
 
-const vec3        WATER_COLOR = vec3(0.1098,0.2549,0.3216);
-const float       AMBIENT = 0.4;
-const int         MAX_LIGHTS = 5;
-uniform int       u_NumLights;
-uniform sampler2D u_Texture;
-uniform vec3[MAX_LIGHTS] u_LightPoses;
-uniform vec4[MAX_LIGHTS] u_LightColors;
+const float     AMBIENT = 0.3;
+const float     DIFFUSE_REFLECTIVITY = 1.0;
+const float     DIFFUSE_INTENSITY = 5.0;
+const float     ALPHA = 1.0;
+const int       MAX_LIGHTS = 5;
+
+uniform int       			u_NumLights;
+uniform vec3[MAX_LIGHTS]	u_LightPositons;
   
-varying vec3  v_Position;		 // Interpolated position for this fragment.
-varying vec3  v_Normal;
-varying vec2  v_TexCoordinate;   // Interpolated texture coordinate per fragment.
-varying float v_Transp;
-varying float v_InitialHeight;
+varying vec3  v_Position;		// Interpolated position for this fragment.
+varying vec3  v_Normal;			// Normal for the wave surface as calculated in the vertex shader
+varying vec3  v_WaterColor;		// Watercolor from vertex shader
   
-// The entry point for our fragment shader.
 void main()                    		
 {	        
 	float totalDiffuse = 0.0;
-	vec4 combinedCol = vec4(0.0,0.0,0.0,0.0);
 	
 	for(int i = 0; i < u_NumLights; i++) {
-		vec3 u_LightPos = u_LightPoses[i];
-		vec4 u_LightCol = u_LightColors[i];
+		vec3 u_LightPos = u_LightPositons[i];
 		
 		// Will be used for attenuation.
     	float distance = length(u_LightPos - v_Position);               
@@ -32,25 +28,18 @@ void main()
 
 		// Calculate the dot product of the light vector and vertex normal. If the normal and light vector are
 		// pointing in the same direction then it will get max illumination.
-	    float diffuse = max(dot(v_Normal, lightVector), 0.0);               	  		  													  
+	    float diffuse = DIFFUSE_INTENSITY * DIFFUSE_REFLECTIVITY * max(dot(lightVector, v_Normal), 0.0);               	  		  													  
 	
 		// Add attenuation. 
 	    diffuse = diffuse * (1.0 / (1.0 + (0.25 * distance)));
-	    totalDiffuse = (totalDiffuse + diffuse)/2.0;
-	    
-	  	//Keep the running average
-	    combinedCol.rgb = ((combinedCol.rgb * (float(i))) + (u_LightCol.rgb * diffuse)) / (float(i+1));
-	    combinedCol.w =   ((combinedCol.w * (float(i))) + diffuse) / (float(i+1));   
+	    totalDiffuse = totalDiffuse + diffuse;
 	}
+	
+	//totalDiffuse = totalDiffuse + AMBIENT;
+	vec3 color = totalDiffuse * v_WaterColor;
+	gl_FragColor = vec4(color, ALPHA);
+	//gl_FragColor = vec4(v_WaterColor, ALPHA);
+	//gl_FragColor = vec4(v_Normal, ALPHA);
 
-	// Multiply the color by the diffuse illumination level and texture value to get final output color.
-	vec4 texColor = texture2D(u_Texture, v_TexCoordinate);
-	//Ambient
-	totalDiffuse = totalDiffuse + 0.7;
-	vec3 color = totalDiffuse * WATER_COLOR.rgb;
-	//vec3 color = (texColor.rgb);
-	gl_FragColor = vec4(v_Normal, v_Transp);
-	//gl_FragColor = vec4(0.0f, 0.4f, 0.8f, 1.0f);
-    
   }                                                                     	
 

@@ -55,11 +55,11 @@ public class WaterWorldState extends MainMenuState {
 		geo.mShaderHandle = ShaderManager.getShaderId("skybox_shader");
 		geo.mTextureHandle = TextureManager.getTextureId("sea_skybox");		
 		
-//		SortedWater sw = new SortedWater();
-//		Geometry wat = sw.getGeometry();
-//		Matrix.setIdentityM(wat.mModelMatrix, 0);
-//		Matrix.translateM(wat.mModelMatrix, 0, 0.0f, -2.0f, -5.0f);
-//		mObjectLibrary.mWaters.get(0).setGeometry(wat);
+		SortedWater sw = new SortedWater();
+		Geometry wat = sw.getGeometry();
+		Matrix.setIdentityM(wat.mModelMatrix, 0);
+		Matrix.translateM(wat.mModelMatrix, 0, 0.0f, -2.0f, -5.0f);
+		mObjectLibrary.mWaters.get(0).setGeometry(wat);
 		
 //		this.translateView(0.0f, 3.0f, 0.0f);
 //		this.rotateView(-45.0f, 0.0f, 1.0f, 0.0f);
@@ -87,8 +87,8 @@ public class WaterWorldState extends MainMenuState {
 		Light light = mObjectLibrary.mLights.get(0);
 		Matrix.setIdentityM(light.mModelMatrix, 0);
 		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
-//		Matrix.rotateM(light.mModelMatrix, 0, mAccumulatedRotation, 0.0f, 1.0f, 0.0f);
-//		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 1.0f);
+		Matrix.rotateM(light.mModelMatrix, 0, mAccumulatedRotation, 0.0f, 1.0f, 0.0f);
+		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 3.0f);
 		
 		/*XXX FIRST PHYSICS! - Jump*/
 		float dTSecs = ((float)mDeltaT) / (1000.0f);		
@@ -129,10 +129,10 @@ public class WaterWorldState extends MainMenuState {
 	@Override
 	public void translateView(float x, float y, float z) {
 		mCameraTranslation[0] += z * Math.sin(Math.toRadians(mCameraRotation[0])) * -1;
-		mCameraTranslation[0] += x * Math.cos(Math.toRadians(mCameraRotation[0]));
+		mCameraTranslation[0] += x * Math.sin(Math.toRadians(mCameraRotation[0] + 90)) * -1;
 		mCameraTranslation[1] += y; //y-up
 		mCameraTranslation[2] += z * Math.cos(Math.toRadians(mCameraRotation[0]));
-		mCameraTranslation[2] += x * Math.sin(Math.toRadians(mCameraRotation[0])) * -1;
+		mCameraTranslation[2] += x * Math.cos(Math.toRadians(mCameraRotation[0] + 90));
 	}
 
 	@Override
