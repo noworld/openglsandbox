@@ -73,11 +73,12 @@ void main()
 		
 		float wa = u_Wave.frequency * u_Wave.amplitude;
 		
-		//Sums for the normals, y up
+		//Directions for the normals, y up
 		float xDir = normDir.x * wa * cosA;
 		float zDir = normDir.z * wa * cosA;
 		float yDir = q * wa * sinA;
 		
+		//Sum the normals
 		normal = normal + vec3(xDir,yDir,zDir);
 	}
 	
