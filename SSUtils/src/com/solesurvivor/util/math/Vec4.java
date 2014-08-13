@@ -27,6 +27,11 @@ public class Vec4 extends Vec3 {
 	public float getA() {
 		return w;
 	}
+	
+	public Vec4 normalize() {
+		float len = (float)Math.sqrt((x*x) + (y*y) + (z*z));
+		return new Vec4(x/len, y/len, z/len, len);
+	}
 
 	public static Vec4 valueOf(String s) {
 		String[] vals = s.split(COMMA);

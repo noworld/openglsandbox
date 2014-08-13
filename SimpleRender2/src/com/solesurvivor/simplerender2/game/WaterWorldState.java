@@ -59,7 +59,7 @@ public class WaterWorldState extends MainMenuState {
 		Geometry wat = sw.getGeometry();
 		Matrix.setIdentityM(wat.mModelMatrix, 0);
 		Matrix.translateM(wat.mModelMatrix, 0, 0.0f, -2.0f, -5.0f);
-		mObjectLibrary.mWaters.get(0).setGeometry(wat);
+//		mObjectLibrary.mWaters.get(0).setGeometry(wat);
 		
 //		this.translateView(0.0f, 3.0f, 0.0f);
 //		this.rotateView(-45.0f, 0.0f, 1.0f, 0.0f);

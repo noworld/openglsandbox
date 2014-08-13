@@ -43,6 +43,11 @@ public class Vec2 {
 		return String.format("(%s,%s)",x,y);
 	}
 	
+	public Vec2 normalize() {
+		float len = (float)Math.sqrt((x*x) + (y*y));
+		return new Vec2(x/len, y/len);
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if(o == null || !(o instanceof Vec2)) return false;

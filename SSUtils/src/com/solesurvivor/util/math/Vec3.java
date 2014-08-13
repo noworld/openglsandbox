@@ -36,6 +36,11 @@ public class Vec3 extends Vec2 {
 		return z;
 	}
 	
+	public Vec3 normalize() {
+		float len = (float)Math.sqrt((x*x) + (y*y) + (z*z));
+		return new Vec3(x/len, y/len, z/len);
+	}
+	
 	@Override
 	public float getMagSq() {
 		return super.getMagSq()+(z*z);
