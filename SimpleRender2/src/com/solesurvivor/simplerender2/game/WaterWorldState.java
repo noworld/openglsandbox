@@ -54,18 +54,13 @@ public class WaterWorldState extends MainMenuState {
 		geo.mShaderHandle = ShaderManager.getShaderId("skybox_shader");
 		geo.mTextureHandle = TextureManager.getTextureId("sea_skybox");		
 		
-//		SortedWater sw = new SortedWater();
-//		Geometry wat = sw.getGeometry();
-//		Matrix.setIdentityM(wat.mModelMatrix, 0);
-//		Matrix.translateM(wat.mModelMatrix, 0, 0.0f, -2.0f, -5.0f);
-//		wat.mShaderHandle = ShaderManager.getShaderId("orange_shader");
-//		wat.mTextureHandle = TextureManager.getTextureId("orange");
-//		for(GameEntity ge : this.getLibrary().mEntities) {
-//			if(ge.getGeometry().mName.equals("plane"))  {
-//				ge.setGeometry(wat);
-//				break;
-//			}
-//		}
+		SortedWater sw = new SortedWater();
+		Geometry wat = sw.getGeometry();
+		Matrix.setIdentityM(wat.mModelMatrix, 0);
+		Matrix.translateM(wat.mModelMatrix, 0, 0.0f, -2.0f, -5.0f);
+		wat.mShaderHandle = ShaderManager.getShaderId("water_shader");
+		wat.mTextureHandle = TextureManager.getTextureId("orange");
+		this.mObjectLibrary.mWaters.get(0).setGeometry(wat);
 		
 //		this.translateView(0.0f, 3.0f, 0.0f);
 //		this.rotateView(-45.0f, 0.0f, 1.0f, 0.0f);

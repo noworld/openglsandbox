@@ -143,9 +143,10 @@ public final class R {
         public static final int v_water2=0x7f04001c;
         public static final int v_water3=0x7f04001d;
         public static final int v_water_exp_peak=0x7f04001e;
-        public static final int v_water_gerstner_simple=0x7f04001f;
-        public static final int v_water_old=0x7f040020;
-        public static final int v_water_radial=0x7f040021;
+        public static final int v_water_gerstner=0x7f04001f;
+        public static final int v_water_gerstner_simple=0x7f040020;
+        public static final int v_water_old=0x7f040021;
+        public static final int v_water_radial=0x7f040022;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;
