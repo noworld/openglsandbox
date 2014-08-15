@@ -16,7 +16,6 @@ import com.solesurvivor.simplerender2.rendering.GlSettings;
 import com.solesurvivor.simplerender2.rendering.RendererManager;
 import com.solesurvivor.simplerender2.rendering.shaders.ShaderManager;
 import com.solesurvivor.simplerender2.rendering.textures.TextureManager;
-import com.solesurvivor.simplerender2.rendering.water.Wave;
 import com.solesurvivor.simplerender2.scene.Light;
 import com.solesurvivor.simplerender2.scene.Water;
 import com.solesurvivor.simplerender2.text.Cursor;
@@ -25,7 +24,7 @@ import com.solesurvivor.simplerender2.text.FontManager;
 public class WaterWorldState extends MainMenuState {
 	
 	private static final String TAG = WaterWorldState.class.getSimpleName();
-	private static final boolean RENDER_LIBRARY_WATER = false;
+	private static final boolean RENDER_LIBRARY_WATER = true;
 	
 	private float mAccumulatedRotation = 0.0f;
 	private Cursor mLine1 = null;
@@ -59,7 +58,14 @@ public class WaterWorldState extends MainMenuState {
 //		Geometry wat = sw.getGeometry();
 //		Matrix.setIdentityM(wat.mModelMatrix, 0);
 //		Matrix.translateM(wat.mModelMatrix, 0, 0.0f, -2.0f, -5.0f);
-//		mObjectLibrary.mWaters.get(0).setGeometry(wat);
+//		wat.mShaderHandle = ShaderManager.getShaderId("orange_shader");
+//		wat.mTextureHandle = TextureManager.getTextureId("orange");
+//		for(GameEntity ge : this.getLibrary().mEntities) {
+//			if(ge.getGeometry().mName.equals("plane"))  {
+//				ge.setGeometry(wat);
+//				break;
+//			}
+//		}
 		
 //		this.translateView(0.0f, 3.0f, 0.0f);
 //		this.rotateView(-45.0f, 0.0f, 1.0f, 0.0f);

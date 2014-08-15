@@ -97,11 +97,7 @@ public class MainMenuState implements GameState<GameWorld> {
 		BaseRenderer ren = RendererManager.inst().getRenderer();
 		
 		for(GameEntity ge : this.getLibrary().mEntities) {
-			if(ge.getGeometry().mName.equals("plane"))  {
-				ren.drawGeometryMesh(ge.getGeometry(), this.getLibrary().mLights);
-			} else {
-				ren.drawGeometry(ge.getGeometry(), this.getLibrary().mLights);
-			}
+			ren.drawGeometry(ge.getGeometry(), this.getLibrary().mLights);
 		}
 	}
 	

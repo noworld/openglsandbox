@@ -38,8 +38,6 @@ import com.solesurvivor.util.logging.SSLog;
 public class BaseRenderer implements GLSurfaceView.Renderer {
 
 	private static final String TAG = BaseRenderer.class.getSimpleName();
-	
-	public volatile int mNumElements = 0;
 
 	/* --------------------------------- */
 	/* Event Methods that drive the game */
@@ -419,84 +417,6 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		checkError();
 
 	}
-	
-	public void drawGeometryMesh(Geometry geo, List<Light> lights) {
-
-		float[] mvpMatrix = new float[16];
-		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
-		float[] viewMatrix = GameWorld.inst().getAgentViewMatrix();
-
-		GLES20.glUseProgram(geo.mShaderHandle);
-
-		int u_mvp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVPMatrix");
-		int u_mv = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVMatrix");
-		int u_lightpos = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_LightPos");
-		int u_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Texture");
-
-		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
-		int a_nrm = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Normal");
-		int a_txc = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_TexCoordinate");
-
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, geo.mTextureHandle);
-		GLES20.glUniform1i(u_texsampler, 0);
-
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.mDatBufIndex);
-
-		GLES20.glEnableVertexAttribArray(a_pos);
-		GLES20.glVertexAttribPointer(a_pos, geo.mPosSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mPosOffset);
-
-		GLES20.glEnableVertexAttribArray(a_nrm);
-		GLES20.glVertexAttribPointer(a_nrm, geo.mNrmSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mNrmOffset);
-
-		GLES20.glEnableVertexAttribArray(a_txc);
-		GLES20.glVertexAttribPointer(a_txc, geo.mTxcSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mTxcOffset);
-
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-
-		// --MV--
-
-		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, geo.mModelMatrix, 0);
-		//MVP matrix is *actually MV* at this point
-		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
-
-		// --MVP--
-
-		/* Get the MVP Matrix: Multiply P * MV = MVP*/
-		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
-		//MVP is MVP at this point
-		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
-
-		// --LightPos--
-
-		/* Pass in the light position in eye space.	*/	
-		//Switching to view space...
-		//TODO: Handle multiple lights
-		Light light = lights.get(0);
-		float[] lightPosWorldSpace = new float[4];
-		float[] lightPosEyeSpace = new float[4];
-		Matrix.multiplyMV(lightPosWorldSpace, 0, light.mModelMatrix, 0, light.mPosition, 0);
-		Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
-		GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
-
-		// Draw
-
-		/* Draw the arrays as triangles */
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
-		//GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
-		//for(int i = 0; i < geo.mNumElements; i += 3) {
-		if(mNumElements < 0) mNumElements = geo.mNumElements;
-		if(mNumElements > geo.mNumElements) mNumElements = 0;
-		for(int i = 0; i < mNumElements; i += 3) {
-			GLES20.glDrawElements(GLES20.GL_LINE_LOOP, 3, GLES20.GL_UNSIGNED_SHORT, i);
-		}
-
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-
-		checkError();
-
-	}
 
 	public void waterOn() {
 		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
@@ -642,7 +562,6 @@ uniform vec3[MAX_LIGHTS]	u_LightPositons;
 
 			GLES20.glUniform1i(u_w_typ, w.getWaveType());
 			GLES20.glUniform1f(u_w_amp, w.getAmplitude());
-			
 			GLES20.glUniform3f(u_w_dir, w.getDirection().getX(),w.getDirection().getY(),w.getDirection().getZ());
 			GLES20.glUniform1f(u_w_frq, w.getFrequency());
 			GLES20.glUniform1f(u_w_spd, w.getSpeed());
@@ -654,10 +573,7 @@ uniform vec3[MAX_LIGHTS]	u_LightPositons;
 		// Draw	
 		opaqueWaterOn();
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
-//		GLES20.glDrawElements(GLES20.GL_LINE_LOOP, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
-		for(int i = 0; i < geo.mNumElements; i += 3) {
-			GLES20.glDrawElements(GLES20.GL_LINE_LOOP, 3, GLES20.GL_UNSIGNED_SHORT, i);
-		}
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);		

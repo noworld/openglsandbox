@@ -31,41 +31,41 @@ public class GeometryManager {
 	private static final String TAG = GeometryManager.class.getSimpleName();
 	private static final String NEWLINE = "\r\n";
 	private static final String PLUS = "+";
-	
+
 	private static Map<String, Geometry> mGeometries = new HashMap<String, Geometry>();
-	
+
 	private GeometryManager() {
-		
+
 	}
-	
+
 	public static Geometry addGeometry(String name, Geometry geometry) {
 		return mGeometries.put(name, geometry);
 	}
-	
+
 	public static Geometry getGeometry(String name) {
 		return mGeometries.get(name);
 	}
-	
+
 	public static Geometry removeGeometry(String name) {
 		return mGeometries.remove(name);
 	}
-	
+
 	public static void init() {
 
 		loadModelArray(R.array.models);
 	}
-	
+
 	public static void loadModelArray(int arrayId) {
 		Resources res =  GameGlobal.inst().getContext().getResources();
 		TypedArray modelArray = res.obtainTypedArray(arrayId);
-		
+
 		for(int i = 0; i < modelArray.length(); i++) {			
 
 			//Get the data from resources
 			int resourceId = modelArray.getResourceId(i, 0);
 			String resourceName = res.getResourceEntryName(resourceId);			
 			InputStream is = res.openRawResource(resourceId);
-			
+
 			try {
 				loadGeometries(resourceId, resourceName, is);
 			} finally {
@@ -73,7 +73,7 @@ public class GeometryManager {
 			}
 
 		}
-		
+
 		modelArray.recycle();
 	}
 
@@ -96,7 +96,7 @@ public class GeometryManager {
 			Geometry g = parseGeometry(name, ig);
 			mGeometries.put(name, g);
 		}
-		
+
 	}
 
 	private static RawGeometryBundle parseRawGeometry(InputStream is) throws IOException {
@@ -110,7 +110,7 @@ public class GeometryManager {
 
 		return rawGeo;
 	}
-	
+
 	private static Map<String, byte[]> parseFiles(InputStream is) throws IOException {
 		Map<String,byte[]> zipFiles = new HashMap<String,byte[]>();	
 		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));
@@ -123,7 +123,7 @@ public class GeometryManager {
 		}
 		return zipFiles;
 	}
-	
+
 	private static List<String> parseObjectNames(RawGeometryBundle rawGeo) {
 		List<String> objNames = new ArrayList<String>();
 
@@ -153,13 +153,13 @@ public class GeometryManager {
 
 		return descriptors;
 	}
-	
+
 	private static Geometry parseGeometry(String name, RawGeometryBundle ig) {		
 
 		Geometry geo = new Geometry();
 		geo.mName = name;
-//		String assetFileName = GameGlobal.inst().getVal(GlobalKeysEnum.ASSET_FILE_NAME);
-//		geo.mAssetXml = new String(ig.mFiles.get(assetFileName));
+		//		String assetFileName = GameGlobal.inst().getVal(GlobalKeysEnum.ASSET_FILE_NAME);
+		//		geo.mAssetXml = new String(ig.mFiles.get(assetFileName));
 
 
 		StringBuilder vboFile = new StringBuilder(name);
@@ -172,30 +172,6 @@ public class GeometryManager {
 
 		geo.mDatBufIndex = rend.loadToVbo(ig.mFiles.get(vboFile.toString()));
 		geo.mIdxBufIndex = rend.loadToIbo(ig.mFiles.get(iboFile.toString()));
-		
-		//XXX DEBUG CODE
-		if(name.equals("skybox")) {
-			float[] floats = SSArrayUtil.byteToFloatArrayBigEndian(ig.mFiles.get(vboFile.toString()));
-			short[] shorts = SSArrayUtil.byteToShortArrayBigEndian(ig.mFiles.get(iboFile.toString()));
-			
-			for(int i = 0; i < shorts.length; i++) {
-				SSLog.d(TAG, "*SKYBOX VERT[%s]: %s", i, shorts[i]);
-				
-				for(int j = 0; j < 3; j++) {
-					SSLog.d(TAG, "**SKYBOX POS[%s]: %s", (shorts[i]*8)+j, floats[(shorts[i]*8)+j]);
-				}
-				
-				for(int j = 3; j < 6; j++) {
-					SSLog.d(TAG, "**SKYBOX NRM[%s]: %s", (shorts[i]*8)+j, floats[(shorts[i]*8)+j]);
-				}
-				
-				for(int j = 6; j < 8; j++) {
-					SSLog.d(TAG, "**SKYBOX TXC[%s]: %s", (shorts[i]*8)+j, floats[(shorts[i]*8)+j]);
-				}
-			}
-			
-		}
-		//XXX DEBUG CODE
 
 		Map<String,String> desc = ig.mDescriptors.get(name);
 
@@ -210,11 +186,43 @@ public class GeometryManager {
 
 		geo.mNumElements = Integer.valueOf(desc.get(DescriptorKeysEnum.NUM_ELEMENTS.toString()));
 		geo.mElementStride = Integer.valueOf(desc.get(DescriptorKeysEnum.ELEMENT_STRIDE.toString()));
-		
+
+		//XXX DEBUG CODE
+//		if(name.equals("plane")) {
+//			float[] floats = SSArrayUtil.byteToFloatArrayBigEndian(ig.mFiles.get(vboFile.toString()));
+//			short[] shorts = SSArrayUtil.byteToShortArrayBigEndian(ig.mFiles.get(iboFile.toString()));
+//
+//			SSLog.d(TAG, "Elements: %s, Stride: %s", geo.mNumElements, geo.mElementStride);
+//			
+//			for(int i = 0; i < shorts.length; i++) {
+//
+//				if(i % 3 == 0) {
+//					SSLog.d(TAG, "*******FACE %s", i/3);
+//				}
+//
+//				SSLog.d(TAG, "**%s VERT[%s]: %s", name.toUpperCase(), i, shorts[i]);
+//
+//				for(int j = 0; j < 3; j++) {
+//					SSLog.d(TAG, "**%s POS[%s]: %s", name.toUpperCase(), (shorts[i]*8)+j, floats[(shorts[i]*8)+j]);
+//				}
+//
+//
+//				//						for(int j = 3; j < 6; j++) {
+//				//							SSLog.d(TAG, "**%s NRM[%s]: %s", name.toUpperCase(), (shorts[i]*8)+j, floats[(shorts[i]*8)+j]);
+//				//						}
+//				//						
+//				//						for(int j = 6; j < 8; j++) {
+//				//							SSLog.d(TAG, "**%s TXC[%s]: %s", name.toUpperCase(), (shorts[i]*8)+j, floats[(shorts[i]*8)+j]);
+//				//						}
+//			}
+//
+//		}
+		//XXX DEBUG CODE
+
 		return geo;
 
 	}
-	
+
 	private static class RawGeometryBundle {
 		public List<String> mObjectNames;
 		public Map<String,byte[]> mFiles;

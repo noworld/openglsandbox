@@ -1,6 +1,6 @@
 precision mediump float;
 
-const float     AMBIENT = 0.4;
+const float     AMBIENT = 0.3;
 const float     DIFFUSE_REFLECTIVITY = 1.0;
 const float     DIFFUSE_INTENSITY = 5.0;
 const float     ALPHA = 1.0;
@@ -16,7 +16,6 @@ varying vec3  v_WaterColor;		// Watercolor from vertex shader
 void main()                    		
 {	        
 	float totalDiffuse = 0.0;
-	float ambient = DIFFUSE_INTENSITY * DIFFUSE_REFLECTIVITY;
 	
 	for(int i = 0; i < u_NumLights; i++) {
 		vec3 u_LightPos = u_LightPositons[i];
@@ -29,17 +28,17 @@ void main()
 
 		// Calculate the dot product of the light vector and vertex normal. If the normal and light vector are
 		// pointing in the same direction then it will get max illumination.
-	    float diffuse = ambient * max(dot(lightVector, v_Normal), 0.0);               	  		  													  
+	    float diffuse = DIFFUSE_INTENSITY * DIFFUSE_REFLECTIVITY * max(dot(lightVector, v_Normal), 0.0);               	  		  													  
 	
 		// Add attenuation. 
 	    diffuse = diffuse * (1.0 / (1.0 + (0.25 * distance)));
 	    totalDiffuse = totalDiffuse + diffuse;
 	}
 	
-	//Ambient
-	totalDiffuse = totalDiffuse + AMBIENT;
+	//totalDiffuse = totalDiffuse + AMBIENT;
 	vec3 color = totalDiffuse * v_WaterColor;
 	gl_FragColor = vec4(color, ALPHA);
+	//gl_FragColor = vec4(v_WaterColor, ALPHA);
 	//gl_FragColor = vec4(v_Normal, ALPHA);
 
   }                                                                     	

@@ -108,7 +108,7 @@ public class GameObjectLoader {
 		light.mShaderHandle = ShaderManager.getShaderId("point_shader");
 		mLibrary.mLights.add(light);
 		
-//		mLibrary.mWaters.addAll(loadWater());
+		mLibrary.mWaters.addAll(loadWater());
 
 		return mLibrary;
 

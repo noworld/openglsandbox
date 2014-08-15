@@ -22,6 +22,8 @@
         <item>@drawable/quads</item>
         <item>@drawable/skybox2</item>
         <item>@drawable/sea_skybox</item>
+        <item>@drawable/orange</item>
+        <item>@drawable/white</item>
     </array>
 
     

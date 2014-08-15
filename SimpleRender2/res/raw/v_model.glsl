@@ -13,7 +13,7 @@ varying vec2 v_TexCoordinate;   // This will be passed into the fragment shader.
 void main()                                                 	
 {                                                         
 	// Transform the vertex into eye space. 	
-	v_Position = vec3(u_MVMatrix * a_Position);            		
+	v_Position = vec3(u_MVMatrix * a_Position);       		
 	
 	// Pass through the texture coordinate.
 	v_TexCoordinate = a_TexCoordinate;                                      
@@ -23,8 +23,6 @@ void main()
           
 	// gl_Position is a special variable used to store the final position.
 	// Multiply the vertex by the matrix to get the final point in normalized screen coordinates.
-	gl_Position = u_MVPMatrix * a_Position;                       	
-	
-	//To prevent z-clipping
-	//gl_Position.z = 0.0;	  
+	gl_Position =  u_MVPMatrix * a_Position;                       	
+
 }                                                          

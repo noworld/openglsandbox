@@ -15,43 +15,16 @@
     </string-array>
     
     <array name="ocean_waves">
-        <item>@array/small_wave</item>
+        <item>@array/large_wave</item>
     </array>
     
     <string-array name="large_wave">
-        <item>AMPLITUDE|0.1</item>
+        <item>AMPLITUDE|0.2</item>
         <item>DIRECTION|0.0,0.0,1.0</item><!-- Y-up -->
-        <item>WAVELENGTH|2.5</item>
-        <item>SPEED|0.66</item>
+        <item>WAVELENGTH|2.34</item>
+        <item>SPEED|1.667</item>
         <item>TIME_SCALE|1.0</item>
         <item>PHASE_SHIFT|0.0</item>
-    </string-array>
-    
-    <string-array name="wave1">
-        <item>AMPLITUDE|0.11</item>
-        <item>DIRECTION|0.5,0.0,0.5</item><!-- Y-up -->
-        <item>WAVELENGTH|1.5</item>
-        <item>SPEED|1.66</item>
-        <item>TIME_SCALE|1.0</item>
-        <item>PHASE_SHIFT|0.30</item>
-    </string-array>
-    
-    <string-array name="wave2">
-        <item>AMPLITUDE|0.05</item>
-        <item>DIRECTION|0.5,0.0,1.0</item><!-- Y-up -->
-        <item>WAVELENGTH|0.8</item>
-        <item>SPEED|2.5</item>
-        <item>TIME_SCALE|1.0</item>
-        <item>PHASE_SHIFT|0.0</item>
-    </string-array>
-    
-    <string-array name="small_wave">
-        <item>AMPLITUDE|0.05</item>
-        <item>DIRECTION|0.0,0.0,1.0</item><!-- Y-up -->
-        <item>WAVELENGTH|0.5</item>
-        <item>SPEED|1.66</item>
-        <item>TIME_SCALE|1.0</item>
-        <item>PHASE_SHIFT|0.12</item>
     </string-array>
     
 </resources>
