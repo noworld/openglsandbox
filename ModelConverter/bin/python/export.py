@@ -90,22 +90,6 @@ def write_mesh_files(obj, scene):
             ctr += 1
     bm.free()
     
-    ctr = 0
-    print("Counting to:",len(vboBytes))
-    while ctr < len(vboBytes):
-        px,py,pz,nx,ny,nz,tx,ty = struct.unpack_from(">8f", vboBytes, ctr)        
-        i = ctr/stride
-        print("*SKYBOX VERT:",i)
-        print("**SKYBOX POS[", ctr , "]:", px)
-        print("**SKYBOX POS[", ctr+4  , "]:", py)
-        print("**SKYBOX POS[", ctr+8 , "]:", pz)
-        print("**SKYBOX NRM[", ctr+12 , "]:", nx)
-        print("**SKYBOX NRM[", ctr+16 , "]:", ny)
-        print("**SKYBOX NRM[", ctr+20 , "]:", nz)
-        print("**SKYBOX TXC[", ctr+24 , "]:", tx)
-        print("**SKYBOX TXC[", ctr+28 , "]:", ty)
-        ctr += stride
-    
     fileVbo = open(work_path + file_name + vbo_ext, 'wb')
     fileVbo.write(vboBytes)
     fileVbo.close()
@@ -148,10 +132,10 @@ for scene in bpy.data.scenes:
                 zf.write(work_path + file_name + dsc_ext, file_name + dsc_ext, compress_type=compression)   
                 zf.write(work_path + file_name + vbo_ext, file_name + vbo_ext, compress_type=compression)
                 zf.write(work_path + file_name + ibo_ext, file_name + ibo_ext, compress_type=compression)
-                zf.write(work_path + "index", "index", compress_type=compression)
                 print("")
             else:
                 print("Not including",obj.name,"type is",obj.type,"visibility is",obj.is_visible(scene))
+        zf.write(work_path + "index", "index", compress_type=compression)
         zf.close()
 if(clear_work_directory):
     print("not implemented")

@@ -25,7 +25,7 @@ import com.solesurvivor.simplerender2.text.FontManager;
 public class WaterWorldState extends MainMenuState {
 	
 	private static final String TAG = WaterWorldState.class.getSimpleName();
-	private static final boolean RENDER_LIBRARY_WATER = true;
+	private static final boolean RENDER_LIBRARY_WATER = false;
 	
 	private float mAccumulatedRotation = 0.0f;
 	private Cursor mLine1 = null;
@@ -55,10 +55,10 @@ public class WaterWorldState extends MainMenuState {
 		geo.mShaderHandle = ShaderManager.getShaderId("skybox_shader");
 		geo.mTextureHandle = TextureManager.getTextureId("sea_skybox");		
 		
-		SortedWater sw = new SortedWater();
-		Geometry wat = sw.getGeometry();
-		Matrix.setIdentityM(wat.mModelMatrix, 0);
-		Matrix.translateM(wat.mModelMatrix, 0, 0.0f, -2.0f, -5.0f);
+//		SortedWater sw = new SortedWater();
+//		Geometry wat = sw.getGeometry();
+//		Matrix.setIdentityM(wat.mModelMatrix, 0);
+//		Matrix.translateM(wat.mModelMatrix, 0, 0.0f, -2.0f, -5.0f);
 //		mObjectLibrary.mWaters.get(0).setGeometry(wat);
 		
 //		this.translateView(0.0f, 3.0f, 0.0f);

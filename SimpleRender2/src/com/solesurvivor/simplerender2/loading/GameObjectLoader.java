@@ -108,7 +108,7 @@ public class GameObjectLoader {
 		light.mShaderHandle = ShaderManager.getShaderId("point_shader");
 		mLibrary.mLights.add(light);
 		
-		mLibrary.mWaters.addAll(loadWater());
+//		mLibrary.mWaters.addAll(loadWater());
 
 		return mLibrary;
 
@@ -415,8 +415,8 @@ public class GameObjectLoader {
 
 		Geometry geo = new Geometry();
 		geo.mName = name;
-		String assetFileName = GameGlobal.inst().getVal(GlobalKeysEnum.ASSET_FILE_NAME);
-		geo.mAssetXml = new String(ig.mFiles.get(assetFileName));
+//		String assetFileName = GameGlobal.inst().getVal(GlobalKeysEnum.ASSET_FILE_NAME);
+//		geo.mAssetXml = new String(ig.mFiles.get(assetFileName));
 
 
 		StringBuilder vboFile = new StringBuilder(name);

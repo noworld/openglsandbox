@@ -1,4 +1,8 @@
-+skybox
--skybox.v
--skybox.i
--skybox.dsc
++plane
+-plane.v
+-plane.i
+-plane.dsc
++cube
+-cube.v
+-cube.i
+-cube.dsc

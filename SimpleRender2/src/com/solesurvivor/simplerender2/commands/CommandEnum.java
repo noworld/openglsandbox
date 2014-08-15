@@ -20,7 +20,9 @@ public enum CommandEnum {
 	ROT_WAVE_LEFT(new RotateWaveLeft()),
 	ROT_WAVE_RIGHT(new RotateWaveRight()),
 	STRAFE_LEFT(new StrafeLeft()),
-	STRAFE_RIGHT(new StrafeRight());
+	STRAFE_RIGHT(new StrafeRight()),
+	MORE_ELEMENTS(new MoreElements()),
+	FEWER_ELEMENTS(new FewerElements());
 	
 	private Command mCommand;
 	
