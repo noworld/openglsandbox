@@ -65,6 +65,7 @@ def write_mesh_files(obj, scene):
     dscString += "\nPOS_SIZE=3"
     dscString += "\nTXC_SIZE=2"
     print("**** STRIDE IS:",stride)
+    ctr = 0
     for face in bm.faces:
         print("**** Face #",face.index)
         for loop in face.loops:
@@ -72,25 +73,21 @@ def write_mesh_files(obj, scene):
             pos = bm.verts[loop.vert.index].co
             print("**** Vert: %.5f,%.5f,%.5f" % (pos.x,pos.y,pos.z))
             if(round_verts):
-                struct.pack_into(">fff", vboBytes, loop.vert.index * stride, round(pos.x,5), round(pos.y,5), round(pos.z,5))
+                struct.pack_into(">fff", vboBytes, ctr * stride, round(pos.x,5), round(pos.y,5), round(pos.z,5))
             else:
-                struct.pack_into(">fff", vboBytes, loop.vert.index * stride, pos.x,pos.y,pos.z)
+                struct.pack_into(">fff", vboBytes, ctr * stride, pos.x,pos.y,pos.z)
             
             nrm = bm.verts[loop.vert.index].normal
             print("**** Normal: %.4f,%.4f,%.4f" % (nrm.x, nrm.y, nrm.z))
-            struct.pack_into(">fff", vboBytes, (loop.vert.index * stride) + nrm_offset, nrm.x,nrm.y,nrm.z)
+            struct.pack_into(">fff", vboBytes, (ctr * stride) + nrm_offset, nrm.x,nrm.y,nrm.z)
             
             if(uv_lay is not None):
                 txc = loop[uv_lay].uv
-                txc_x = txc.x
-                txc_y = txc.y
-                txc_index = (loop.vert.index * stride) + txc_offset
-                print("**** TXC Index:",txc_index)
-                print("**** Texture Coords (before):", txc_x, ",", txc_y)
-                struct.pack_into(">ff", vboBytes, txc_index, txc_x, txc_y)
-                print("**** Texture Coords (after):", txc_x, ",", txc_y)
+                print("**** Texture Coords:", txc.x, ",", txc.y)
+                struct.pack_into(">ff", vboBytes, (ctr * stride) + txc_offset, txc.x, 1-txc.y)
             
-            iboBytes += struct.pack(">h",loop.vert.index)
+            iboBytes += struct.pack(">h",ctr)
+            ctr += 1
     bm.free()
     
     ctr = 0
