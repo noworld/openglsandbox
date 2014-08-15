@@ -95,7 +95,8 @@ public class GameObjectLoader {
 					mLibrary.mInputHandlers.add(parseInputUiElement(name, ig));
 				} else if(objectType.equals(ObjectTypeEnum.UI_ELEMENT)) {
 					mLibrary.mDisplayElements.add(parseUiElement(name, ig));
-				} else if(objectType.equals(ObjectTypeEnum.GAME_ENTITY)) {
+				} else if(objectType.equals(ObjectTypeEnum.GAME_ENTITY)
+						|| objectType.equals(ObjectTypeEnum.GEOMETRY)) {
 					mLibrary.mEntities.add(parseGameEntity(name, ig));
 				}
 			}

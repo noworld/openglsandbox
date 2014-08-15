@@ -93,7 +93,7 @@ public final class R {
         public static final int sand=0x7f02000a;
         public static final int scar=0x7f02000b;
         public static final int sea_skybox=0x7f02000c;
-        public static final int skybox=0x7f02000d;
+        public static final int skybox2=0x7f02000d;
         public static final int uipack_rpg_sheet=0x7f02000e;
         public static final int uvgrid=0x7f02000f;
         public static final int water_disp=0x7f020010;

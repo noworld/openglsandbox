@@ -42,7 +42,7 @@
         <item>SCALE_X|2.0</item>
         <item>SCALE_Y|2.0</item>
         <item>SCALE_Z|2.0</item>
-        <item>TEXTURE_NAME|skybox</item>
+        <item>TEXTURE_NAME|skybox2</item>
         <item>SHADER_NAME|skybox_shader</item>
     </string-array>
     

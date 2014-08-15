@@ -22,7 +22,9 @@ import com.solesurvivor.simplerender2.game.GlobalKeysEnum;
 import com.solesurvivor.simplerender2.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2.rendering.Geometry;
 import com.solesurvivor.simplerender2.rendering.RendererManager;
+import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
+import com.solesurvivor.util.logging.SSLog;
 
 public class GeometryManager {
 
@@ -156,8 +158,8 @@ public class GeometryManager {
 
 		Geometry geo = new Geometry();
 		geo.mName = name;
-		String assetFileName = GameGlobal.inst().getVal(GlobalKeysEnum.ASSET_FILE_NAME);
-		geo.mAssetXml = new String(ig.mFiles.get(assetFileName));
+//		String assetFileName = GameGlobal.inst().getVal(GlobalKeysEnum.ASSET_FILE_NAME);
+//		geo.mAssetXml = new String(ig.mFiles.get(assetFileName));
 
 
 		StringBuilder vboFile = new StringBuilder(name);
@@ -170,6 +172,30 @@ public class GeometryManager {
 
 		geo.mDatBufIndex = rend.loadToVbo(ig.mFiles.get(vboFile.toString()));
 		geo.mIdxBufIndex = rend.loadToIbo(ig.mFiles.get(iboFile.toString()));
+		
+		//XXX DEBUG CODE
+		if(name.equals("skybox")) {
+			float[] floats = SSArrayUtil.byteToFloatArrayBigEndian(ig.mFiles.get(vboFile.toString()));
+			short[] shorts = SSArrayUtil.byteToShortArrayBigEndian(ig.mFiles.get(iboFile.toString()));
+			
+			for(int i = 0; i < shorts.length; i++) {
+				SSLog.d(TAG, "*SKYBOX VERT[%s]: %s", i, shorts[i]);
+				
+				for(int j = 0; j < 3; j++) {
+					SSLog.d(TAG, "**SKYBOX POS[%s]: %s", (shorts[i]*8)+j, floats[(shorts[i]*8)+j]);
+				}
+				
+				for(int j = 3; j < 6; j++) {
+					SSLog.d(TAG, "**SKYBOX NRM[%s]: %s", (shorts[i]*8)+j, floats[(shorts[i]*8)+j]);
+				}
+				
+				for(int j = 6; j < 8; j++) {
+					SSLog.d(TAG, "**SKYBOX TXC[%s]: %s", (shorts[i]*8)+j, floats[(shorts[i]*8)+j]);
+				}
+			}
+			
+		}
+		//XXX DEBUG CODE
 
 		Map<String,String> desc = ig.mDescriptors.get(name);
 

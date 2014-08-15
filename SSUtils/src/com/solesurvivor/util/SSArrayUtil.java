@@ -101,6 +101,12 @@ public class SSArrayUtil {
 		ByteBuffer.wrap(data).order(ByteOrder.nativeOrder()).asShortBuffer().get(shorts);
 		return shorts;
 	}
+	
+	public static short[] byteToShortArrayBigEndian(byte[] data) {
+		short[] shorts = new short[data.length / BYTES_PER_SHORT];
+		ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN).asShortBuffer().get(shorts);
+		return shorts;
+	}
 
 	public static byte[] floatToByteArray(float[] data) {
 		byte[] bytes = new byte[data.length * BYTES_PER_FLOAT];
@@ -119,6 +125,12 @@ public class SSArrayUtil {
 	public static float[] byteToFloatArray(byte[] data) {
 		float[] floats = new float[data.length / BYTES_PER_FLOAT];
 		ByteBuffer.wrap(data).order(ByteOrder.nativeOrder()).asFloatBuffer().get(floats);
+		return floats;
+	}
+	
+	public static float[] byteToFloatArrayBigEndian(byte[] data) {
+		float[] floats = new float[data.length / BYTES_PER_FLOAT];
+		ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN).asFloatBuffer().get(floats);
 		return floats;
 	}
 	
