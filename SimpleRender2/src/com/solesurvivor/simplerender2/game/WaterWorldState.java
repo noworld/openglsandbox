@@ -20,6 +20,7 @@ import com.solesurvivor.simplerender2.scene.Light;
 import com.solesurvivor.simplerender2.scene.Water;
 import com.solesurvivor.simplerender2.text.Cursor;
 import com.solesurvivor.simplerender2.text.FontManager;
+import com.solesurvivor.util.math.Vec3;
 
 public class WaterWorldState extends MainMenuState {
 	
@@ -102,7 +103,9 @@ public class WaterWorldState extends MainMenuState {
 		}
 		
 //		Wave w = mObjectLibrary.mWaters.get(0).getWaves().get(1);
-		mLine1.setValue("Wave Normals.");
+		Water water = this.mObjectLibrary.mWaters.get(0);
+		Vec3 waveDir = water.getWaves().get(0).getDirection();
+		mLine1.setValue(String.format("Direction: %.2f,%.2f,%.2f",waveDir.getX(),waveDir.getY(),waveDir.getZ()));
 //		mLine2.setValue(String.format("Aspect: %.2f",GameGlobal.inst().getCamera().getAspect()));
 	}
 	

@@ -508,8 +508,18 @@ uniform vec3[MAX_LIGHTS]	u_LightPositons;
 		
 		//Create the Normal Matrix
 		float[] normalMatrix = new float[16];
-		Matrix.invertM(normalMatrix, 0, mvpMatrix, 0);		
-		Matrix.transposeM(normalMatrix, 0, normalMatrix, 0);
+		//XXX HACK TRIAL AND ERROR
+//		Matrix.multiplyMM(normalMatrix, 0, GameWorld.inst().getCurrentState().getViewMatrix(), 0, geo.mModelMatrix, 0);
+//		Matrix.invertM(normalMatrix, 0, normalMatrix, 0);	
+//		Matrix.multiplyMM(normalMatrix, 0, GameWorld.inst().getWaveRotMatrix(), 0, mvpMatrix, 0);
+//		Matrix.invertM(normalMatrix, 0, normalMatrix, 0);	
+		//XXX HACK TRIAL AND ERROR
+		
+//		Matrix.setIdentityM(normalMatrix, 0);
+		if(!Matrix.invertM(normalMatrix, 0, mvpMatrix, 0)) {
+			Log.d(TAG,"Could not invert matrix.");
+		}
+//		Matrix.transposeM(normalMatrix, 0, normalMatrix, 0);
 //		normalMatrix = getLowerOrderMatrix(normalMatrix);
 		GLES20.glUniformMatrix4fv(u_nrm, 1, true, normalMatrix, 0);
 		

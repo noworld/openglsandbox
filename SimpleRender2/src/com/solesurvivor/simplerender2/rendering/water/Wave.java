@@ -64,6 +64,7 @@ public class Wave {
 	public void setWavelength(float wavelength) {
 		this.mWavelength = wavelength;
 		this.mFrequency = (float)Math.sqrt(GRAV * (DrawingConstants.TWO_PI/mWavelength));
+		//this.mFrequency = (float)(DrawingConstants.TWO_PI / mWavelength);
 		setSpeed((mWavelength/mFrequency) + 0.25f);
 	}
 

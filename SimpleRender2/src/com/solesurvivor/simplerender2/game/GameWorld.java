@@ -1,6 +1,7 @@
 package com.solesurvivor.simplerender2.game;
 
 import android.graphics.Point;
+import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2.fsm.GameState;
 import com.solesurvivor.simplerender2.input.InputEventBus;
@@ -12,9 +13,10 @@ public class GameWorld {
 	private GameState<GameWorld> mCurrentState;
 	private GameState<GameWorld> mPreviousState;
 	private Point mViewport = null;
+	private float[] mWaveRotMatrix = new float[16];
 
 	private GameWorld() {
-		
+		Matrix.setIdentityM(mWaveRotMatrix, 0);
 	}
 
 	public static GameWorld inst() {
@@ -52,6 +54,14 @@ public class GameWorld {
 	
 	public float[] getAgentViewMatrix() {
 		return mCurrentState.getAgentViewMatrix();
+	}
+	
+	public float[] getWaveRotMatrix() {
+		return mWaveRotMatrix;
+	}
+	
+	public void setWaveRotMatrix(float[] rot) {
+		mWaveRotMatrix = rot;
 	}
 	
 	public void update() {

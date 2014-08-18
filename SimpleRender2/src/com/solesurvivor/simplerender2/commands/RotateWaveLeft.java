@@ -37,6 +37,7 @@ public class RotateWaveLeft implements Command {
 				float[] d = new float[4];				
 				System.arraycopy(waveDir, 0, d, 0, waveDir.length);				
 				Matrix.multiplyMV(d, 0, mRotMatrix, 0, d, 0);
+				GameWorld.inst().setWaveRotMatrix(mRotMatrix);
 				wave.setDirection(Vec3.fromFloatArray(d));
 			}
 		}
