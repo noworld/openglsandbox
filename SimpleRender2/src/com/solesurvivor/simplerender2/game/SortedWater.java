@@ -1,10 +1,8 @@
 package com.solesurvivor.simplerender2.game;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import android.opengl.Matrix;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -16,8 +14,6 @@ import com.solesurvivor.simplerender2.rendering.RendererManager;
 import com.solesurvivor.simplerender2.rendering.shaders.ShaderManager;
 import com.solesurvivor.simplerender2.rendering.textures.TextureManager;
 import com.solesurvivor.simplerender2.rendering.water.Wave;
-import com.solesurvivor.simplerender2.scene.Light;
-import com.solesurvivor.simplerender2.scene.Water;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
 import com.solesurvivor.util.math.Vec2;

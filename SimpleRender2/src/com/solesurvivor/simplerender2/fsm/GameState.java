@@ -27,4 +27,5 @@ public interface GameState<T> {
 	public float[] getProjectionMatrix();
 	public void impulseView(float x, float y, float z);
 	public float getDistanceToCamera(Vec3 point);
+	float[] getCameraPos();
 }

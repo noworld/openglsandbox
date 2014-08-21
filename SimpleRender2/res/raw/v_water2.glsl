@@ -18,7 +18,7 @@ uniform mat4      u_MVPMatrix;
 uniform mat4      u_MVMatrix; 
 uniform mat4      u_NrmMatrix;  
 uniform float     u_Time;
-uniform vec3      u_WaterColor;
+uniform vec4      u_WaterColor;
 uniform int       u_NumWaves;
 
 uniform wave[MAX_WAVES] u_Waves;
@@ -27,11 +27,11 @@ attribute vec4 a_Position;
 		  
 varying vec3 v_Position;  
 varying vec3 v_Normal;    		          		  
-varying vec3 v_WaterColor;  
+varying vec4 v_WaterColor;  
 		  
 void main()                                                 	
 {	
-	float time = 0.0;
+	float time = u_Time;
 	float height = 0.0;
 	float xDisp = 0.0;
 	float zDisp = 0.0;

@@ -31,7 +31,7 @@ varying vec3 v_WaterColor;
 		  
 void main()                                                 	
 {	
-	float time = u_Time;
+	float time = 0.0;
 	float height = 0.0;
 	float xDisp = 0.0;
 	float zDisp = 0.0;
@@ -44,7 +44,6 @@ void main()
 		//vec3 normDir = normalize(u_Wave.direction);
 		vec3 normDir = u_Wave.direction;
 		float phase = (time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
-		//float angle = dot((u_Wave.frequency * normDir.xz), a_Position.xz) + phase;
 		float angle = (u_Wave.frequency * dot(normDir.xz, a_Position.xz)) + phase;
 		float sinA = sin(angle);
 		float cosA = cos(angle);
@@ -65,6 +64,7 @@ void main()
 	for(int i = 0; i < u_NumWaves; i++) {		
 		wave u_Wave = u_Waves[i];
 		vec3 normDir = u_Wave.direction;
+		
 		float q = (1.0 / (u_Wave.frequency * u_Wave.amplitude)) * Q_SCALE;
 		float phase = (time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
 		float angle = (u_Wave.frequency * dot(normDir.xz, position.xz)) + phase;
@@ -73,11 +73,12 @@ void main()
 		
 		float wa = u_Wave.frequency * u_Wave.amplitude;
 		
-		//Sums for the normals, y up
+		//Directions for the normals, y up
 		float xDir = normDir.x * wa * cosA;
 		float zDir = normDir.z * wa * cosA;
 		float yDir = q * wa * sinA;
 		
+		//Sum the normals
 		normal = normal + vec3(xDir,yDir,zDir);
 	}
 	
@@ -88,8 +89,8 @@ void main()
 
 	//Translate to view space and pass in the position and normal
 	v_Position = vec3(u_MVMatrix * position);
-	//v_Normal = vec3(u_NrmMatrix * vec4(normal, 0.0));
 	v_Normal = normalize(vec3(u_NrmMatrix * vec4(normal,1.0)));
+	
 	gl_Position = u_MVPMatrix * position;
 	
 }       

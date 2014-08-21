@@ -1,7 +1,5 @@
 package com.solesurvivor.simplerender2.rendering.water;
 
-import android.util.FloatMath;
-
 import com.solesurvivor.simplerender2.rendering.DrawingConstants;
 import com.solesurvivor.util.math.Vec3;
 
@@ -20,25 +18,22 @@ public class Wave {
 	private float mPhaseConst = mSpeed * mFrequency;
 	private float mTimeScale = 1.0f;
 	private float mPhaseShift = 0.0f;
-	private float mWavelenBufIdx = 0;
 	
 	public Wave() {
-		setWavelength(mWavelength);
+		setWavelenFreqSpd(mWavelength);
 	}
-	
-//	public Wave(float amplitude, float[])
 	
 	public Wave(float amplitude, Vec3 direction, float wavelength, float speed) {
 		this.mAmplitude = amplitude;
 		this.mDirection = direction;		
-		this.mSpeed = speed;
-		setWavelength(wavelength);
+		setWavelenFreqSpd(wavelength);
+		setSpeed(speed);
 	}
 	
 	public Wave(float amplitude, Vec3 direction, float wavelength) {
 		this.mAmplitude = amplitude;
 		this.mDirection = direction;		
-		setWavelength(wavelength);
+		setWavelenFreqSpd(wavelength);
 	}
 
 	public float getAmplitude() {
@@ -63,8 +58,11 @@ public class Wave {
 
 	public void setWavelength(float wavelength) {
 		this.mWavelength = wavelength;
+	}
+	
+	public void setWavelenFreqSpd(float wavelength) {
+		this.mWavelength = wavelength;
 		this.mFrequency = (float)Math.sqrt(GRAV * (DrawingConstants.TWO_PI/mWavelength));
-		//this.mFrequency = (float)(DrawingConstants.TWO_PI / mWavelength);
 		setSpeed((mWavelength/mFrequency) + 0.25f);
 	}
 

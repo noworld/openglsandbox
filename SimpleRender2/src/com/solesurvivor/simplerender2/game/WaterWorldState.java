@@ -88,7 +88,7 @@ public class WaterWorldState extends MainMenuState {
 		if(mAccumulatedRotation >= 360.0f) mAccumulatedRotation = 0.0f;
 		Light light = mObjectLibrary.mLights.get(0);
 		Matrix.setIdentityM(light.mModelMatrix, 0);
-		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
+		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, -10.0f);      
 //		Matrix.rotateM(light.mModelMatrix, 0, mAccumulatedRotation, 0.0f, 1.0f, 0.0f);
 //		Matrix.translateM(light.mModelMatrix, 0, 0.0f, 0.0f, 3.0f);
 		

@@ -16,14 +16,24 @@
     
     <array name="ocean_waves">
         <item>@array/large_wave</item>
+        <item>@array/small_wave</item>
     </array>
     
     <string-array name="large_wave">
-        <item>AMPLITUDE|0.2</item>
+        <item>AMPLITUDE|0.15</item>
         <item>DIRECTION|0.0,0.0,1.0</item><!-- Y-up -->
         <item>WAVELENGTH|2.34</item>
         <item>SPEED|1.667</item>
         <item>TIME_SCALE|1.0</item>
+        <item>PHASE_SHIFT|0.0</item>
+    </string-array>
+    
+    <string-array name="small_wave">
+        <item>AMPLITUDE|0.1</item>
+        <item>DIRECTION|0.5,0.0,0.5</item><!-- Y-up -->
+        <item>WAVELENGTH|0.9</item>
+        <item>SPEED|2.333</item>
+        <item>TIME_SCALE|1.2</item>
         <item>PHASE_SHIFT|0.0</item>
     </string-array>
     

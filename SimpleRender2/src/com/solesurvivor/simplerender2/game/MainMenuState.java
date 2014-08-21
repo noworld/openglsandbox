@@ -180,4 +180,9 @@ public class MainMenuState implements GameState<GameWorld> {
 		return mCamera.getViewMatrix();
 	}
 
+	@Override
+	public float[] getCameraPos() {
+		return this.mCameraTranslation;
+	}
+
 }

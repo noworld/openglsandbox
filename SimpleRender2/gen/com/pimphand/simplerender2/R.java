@@ -49,6 +49,7 @@ public final class R {
         public static final int shaderPrograms=0x7f080018;
         public static final int skybox=0x7f080011;
         public static final int skybox_shader=0x7f08001e;
+        public static final int small_wave=0x7f080030;
         public static final int sprite_shader=0x7f08001c;
         public static final int suzanne=0x7f080017;
         public static final int text_shader=0x7f08001f;

@@ -56,6 +56,10 @@ public class GameWorld {
 		return mCurrentState.getAgentViewMatrix();
 	}
 	
+	public float[] getCameraPos() {
+		return mCurrentState.getCameraPos();
+	}
+	
 	public float[] getWaveRotMatrix() {
 		return mWaveRotMatrix;
 	}
