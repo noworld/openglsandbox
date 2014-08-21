@@ -16,25 +16,55 @@
     
     <array name="ocean_waves">
         <item>@array/large_wave</item>
+        <item>@array/large_wave2</item>
         <item>@array/small_wave</item>
+        <item>@array/small_wave2</item>
+        <item>@array/small_wave3</item>
     </array>
     
     <string-array name="large_wave">
         <item>AMPLITUDE|0.15</item>
-        <item>DIRECTION|0.0,0.0,1.0</item><!-- Y-up -->
-        <item>WAVELENGTH|2.34</item>
+        <item>DIRECTION|0.0,0.0,1.0</item><!-- Y-`up -->
+        <item>WAVELENGTH|9.5</item>
+        <item>SPEED|0.887</item>
+        <item>TIME_SCALE|1.0</item>
+        <item>PHASE_SHIFT|0.0</item>
+    </string-array>
+    
+    <string-array name="large_wave2">
+        <item>AMPLITUDE|0.08</item>
+        <item>DIRECTION|0.2,0.0,0.8</item><!-- Y-`up -->
+        <item>WAVELENGTH|4.2</item>
         <item>SPEED|1.667</item>
         <item>TIME_SCALE|1.0</item>
         <item>PHASE_SHIFT|0.0</item>
     </string-array>
     
     <string-array name="small_wave">
-        <item>AMPLITUDE|0.1</item>
+        <item>AMPLITUDE|0.01</item>
         <item>DIRECTION|0.5,0.0,0.5</item><!-- Y-up -->
-        <item>WAVELENGTH|0.9</item>
-        <item>SPEED|2.333</item>
-        <item>TIME_SCALE|1.2</item>
+        <item>WAVELENGTH|2.3</item>
+        <item>SPEED|3.8</item>
+        <item>TIME_SCALE|1.0</item>
         <item>PHASE_SHIFT|0.0</item>
+    </string-array>
+    
+    <string-array name="small_wave2">
+        <item>AMPLITUDE|0.01</item>
+        <item>DIRECTION|0.25,0.0,0.75</item><!-- Y-up -->
+        <item>WAVELENGTH|3.2</item>
+        <item>SPEED|1.5</item>
+        <item>TIME_SCALE|1.0</item>
+        <item>PHASE_SHIFT|0.3</item>
+    </string-array>
+    
+    <string-array name="small_wave3">
+        <item>AMPLITUDE|0.01</item>
+        <item>DIRECTION|0.666,0.0,0.333</item><!-- Y-up -->
+        <item>WAVELENGTH|2.6</item>
+        <item>SPEED|2.333</item>
+        <item>TIME_SCALE|1.0</item>
+        <item>PHASE_SHIFT|0.7</item>
     </string-array>
     
 </resources>

@@ -36,6 +36,7 @@ public final class R {
         public static final int highresplane=0x7f080015;
         public static final int inputarea_shader=0x7f08001b;
         public static final int large_wave=0x7f08002f;
+        public static final int large_wave2=0x7f080030;
         public static final int main_menu_models=0x7f08000d;
         public static final int model_shader=0x7f08001d;
         public static final int model_viewer_models=0x7f08000e;
@@ -49,7 +50,9 @@ public final class R {
         public static final int shaderPrograms=0x7f080018;
         public static final int skybox=0x7f080011;
         public static final int skybox_shader=0x7f08001e;
-        public static final int small_wave=0x7f080030;
+        public static final int small_wave=0x7f080031;
+        public static final int small_wave2=0x7f080032;
+        public static final int small_wave3=0x7f080033;
         public static final int sprite_shader=0x7f08001c;
         public static final int suzanne=0x7f080017;
         public static final int text_shader=0x7f08001f;

@@ -467,24 +467,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
 		float[] viewMatrix = GameWorld.inst().getAgentViewMatrix();
-		float[] cameraPos = GameWorld.inst().getCameraPos();
 
 		GLES20.glUseProgram(geo.mShaderHandle);
-		
-		/*
-		 *uniform mat4      u_MVPMatrix;      		       
-uniform mat4      u_MVMatrix;       
-uniform float     u_Time;
-uniform vec3      u_WaterColor;
-uniform int       u_NumWaves;
-
-uniform wave[MAX_WAVES] u_Waves;
-		  			
-attribute vec4 a_Position;
-
-uniform int       			u_NumLights;
-uniform vec3[MAX_LIGHTS]	u_LightPositons;
-		 * */
 
 		int u_mvp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVPMatrix");
 		int u_mv = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVMatrix");
@@ -509,41 +493,30 @@ uniform vec3[MAX_LIGHTS]	u_LightPositons;
 		//MVP matrix is *actually MV* at this point
 		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
 		
-		//Create the Normal Matrix
-		float[] normalMatrix = new float[16];
-		//XXX HACK TRIAL AND ERROR
-//		Matrix.multiplyMM(normalMatrix, 0, GameWorld.inst().getCurrentState().getViewMatrix(), 0, geo.mModelMatrix, 0);
-//		Matrix.invertM(normalMatrix, 0, normalMatrix, 0);	
-//		Matrix.multiplyMM(normalMatrix, 0, GameWorld.inst().getWaveRotMatrix(), 0, mvpMatrix, 0);
-//		Matrix.invertM(normalMatrix, 0, normalMatrix, 0);	
-		//XXX HACK TRIAL AND ERROR
 		
-//		Matrix.setIdentityM(normalMatrix, 0);
+		
+		// -- Create the Normal Matrix --
+		float[] normalMatrix = new float[16];
 		if(!Matrix.invertM(normalMatrix, 0, mvpMatrix, 0)) {
 			Log.d(TAG,"Could not invert matrix.");
 		}
-//		Matrix.transposeM(normalMatrix, 0, normalMatrix, 0);
-//		normalMatrix = getLowerOrderMatrix(normalMatrix);
-		GLES20.glUniformMatrix4fv(u_nrm, 1, true, normalMatrix, 0);
+		GLES20.glUniformMatrix4fv(u_nrm, 1, true, normalMatrix, 0); //Transpose
+
 		
-//		SSLog.d(TAG, "MV matrix: [%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]//[%.2f,%.2f,%.2f,%.2f]", 
-//				mvpMatrix[0],mvpMatrix[1],mvpMatrix[2],mvpMatrix[3],
-//				mvpMatrix[4],mvpMatrix[5],mvpMatrix[6],mvpMatrix[7],
-//				mvpMatrix[8],mvpMatrix[9],mvpMatrix[10],mvpMatrix[11],
-//				mvpMatrix[12],mvpMatrix[13],mvpMatrix[14],mvpMatrix[15]);
-
+		
 		// --MVP--
-
+		
 		/* Get the MVP Matrix: Multiply P * MV = MVP*/
 		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
 		//MVP is MVP at this point
 		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
 		
 		//Camera Position
-		GLES20.glUniform3fv(u_eye_pos, 1, cameraPos, 0);
+		GLES20.glUniform3fv(u_eye_pos, 1, viewMatrix, 12);
 
 		//Lights
-		GLES20.glUniform1i(u_num_li, lights.size());
+//		GLES20.glUniform1i(u_num_li, lights.size());
+		GLES20.glUniform1i(u_num_li, 1);
 		
 		for(int i = 0; i < lights.size(); i++) {
 			Light light = lights.get(i);

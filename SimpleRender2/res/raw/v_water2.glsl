@@ -12,7 +12,7 @@ struct wave {
 
 const float CONST_TIME = 1.0;
 const int MAX_WAVES = 15;
-const float Q_SCALE = 0.45;
+const float Q_SCALE = 0.9;
 
 uniform mat4      u_MVPMatrix;      		       
 uniform mat4      u_MVMatrix; 
@@ -31,7 +31,7 @@ varying vec4 v_WaterColor;
 		  
 void main()                                                 	
 {	
-	float time = u_Time;
+	float time = u_Time * 0.5;
 	float height = 0.0;
 	float xDisp = 0.0;
 	float zDisp = 0.0;
@@ -40,7 +40,7 @@ void main()
 	//Sum the positions
 	for(int i = 0; i < u_NumWaves; i++) {		
 		wave u_Wave = u_Waves[i];
-		float q = (1.0 / (u_Wave.frequency * u_Wave.amplitude)) * Q_SCALE;
+		float q = (1.0 / (u_Wave.frequency * u_Wave.amplitude * float(u_NumWaves)));
 		//vec3 normDir = normalize(u_Wave.direction);
 		vec3 normDir = u_Wave.direction;
 		float phase = (time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
@@ -65,7 +65,7 @@ void main()
 		wave u_Wave = u_Waves[i];
 		vec3 normDir = u_Wave.direction;
 		
-		float q = (1.0 / (u_Wave.frequency * u_Wave.amplitude)) * Q_SCALE;
+		float q = (1.0 / (u_Wave.frequency * u_Wave.amplitude * float(u_NumWaves)));
 		float phase = (time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
 		float angle = (u_Wave.frequency * dot(normDir.xz, position.xz)) + phase;
 		float sinA = sin(angle);

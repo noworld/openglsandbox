@@ -1,11 +1,11 @@
 precision mediump float;
 
-const float     AMBIENT = 0.3;
+const float     AMBIENT = 0.6;
 const float     DIFFUSE_REFLECTIVITY = 1.0;
 const float     DIFFUSE_INTENSITY = 5.0;
 
 const float     SPECULAR_REFLECTIVITY = 1.0;
-const float     SPECULAR_INTENSITY = 5.0;
+const float     SPECULAR_INTENSITY = 2.0;
 const int       SPECULAR_K = 2;
 
 const int       MAX_LIGHTS = 5;
@@ -38,7 +38,7 @@ void main()
 	    float diffuse = DIFFUSE_INTENSITY * DIFFUSE_REFLECTIVITY * max(dot(lightVector, v_Normal), 0.0); 
 	    vec3 r = (-lightVector) + (2.0*(max(dot(lightVector, v_Normal), 0.0))*v_Normal);
 	    float rdotv =  max(dot(r, eyeVector), 0.0);
-	    float specular = SPECULAR_INTENSITY * SPECULAR_REFLECTIVITY * rdotv * rdotv; //hacking (r.v)^2 									  
+	    float specular = SPECULAR_INTENSITY * SPECULAR_REFLECTIVITY * rdotv * rdotv * rdotv; //hacking (r.v)^3									  
 	
 		// Add attenuation. 
 	    diffuse = diffuse * (1.0 / (1.0 + (0.25 * distance)));
