@@ -19,7 +19,6 @@
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>SCALE_Z|1.0</item>
-        <item>COMMAND|ROT_WAVE_LEFT</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>
@@ -31,7 +30,7 @@
         <item>SCALE_X|1.0</item>
         <item>SCALE_Y|1.0</item>
         <item>SCALE_Z|1.0</item>
-        <item>COMMAND|ROT_WAVE_RIGHT</item>
+        <item>COMMAND|JUMP</item>
         <item>TEXTURE_NAME|uvgrid</item>
         <item>SHADER_NAME|inputarea_shader</item>
     </string-array>

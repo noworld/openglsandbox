@@ -186,6 +186,8 @@ public class GameObjectLoader {
 			float amp = Float.valueOf(properties.get(WaveDescriptorEnum.AMPLITUDE.toString()));
 		    Vec3 dir = 	Vec3.valueOf(properties.get(WaveDescriptorEnum.DIRECTION.toString()));
 		    float len = Float.valueOf(properties.get(WaveDescriptorEnum.WAVELENGTH.toString()));
+		    len = len * 0.5f;
+		    amp = amp * 0.75f;
 //		    float spd = Float.valueOf(properties.get(WaveDescriptorEnum.SPEED.toString()));
 		    float tsc = Float.valueOf(properties.get(WaveDescriptorEnum.TIME_SCALE.toString()));
 		    float phs = Float.valueOf(properties.get(WaveDescriptorEnum.PHASE_SHIFT.toString()));

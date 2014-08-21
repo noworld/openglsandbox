@@ -61,8 +61,8 @@
     </array>
     
     <array name="water_shader">
-        <item >@raw/v_water2</item> 
-        <item >@raw/f_water2</item>  
+        <item >@raw/v_water3</item> 
+        <item >@raw/f_water3</item>  
     </array>
 
 </resources>
