@@ -1,0 +1,12 @@
+<resources>
+    
+     <array name="shaderPrograms">
+        <item>@array/skybox_shader</item>
+    </array>
+    
+    <array name="skybox_shader">
+        <item >@raw/v_skybox</item> 
+        <item >@raw/f_skybox</item>  
+    </array> 
+
+</resources>

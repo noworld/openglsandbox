@@ -1,0 +1,7 @@
+<resources>
+    
+    <array name="models">
+        <item>@raw/gamepad_ui</item>
+    </array>
+  
+</resources>
