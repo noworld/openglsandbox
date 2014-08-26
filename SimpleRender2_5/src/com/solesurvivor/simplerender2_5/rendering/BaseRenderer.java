@@ -1,6 +1,9 @@
 package com.solesurvivor.simplerender2_5.rendering;
 
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -10,6 +13,7 @@ import android.graphics.Point;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 import android.util.Log;
 import android.view.Display;
 
@@ -17,6 +21,7 @@ import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.game.states.GameStateManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
+import com.solesurvivor.simplerender2_5.scene.Skybox;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
 
@@ -58,9 +63,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GameWorld.init();
 		synchronized(GameWorld.inst()) {
 			Display d = GameGlobal.inst().getWindowManager().getDefaultDisplay();
-			@SuppressWarnings("deprecation")
-			Point p = new Point(d.getWidth(),d.getHeight());
-			//			d.getSize(p); //Requires API 13+			
+			Point p = new Point(0,0);
+			d.getSize(p); //Requires API 13+			
 			GameWorld.inst().resizeViewport(new Point(p.x, p.y));
 		}
 	}
@@ -81,11 +85,11 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 //	public int loadToDynamicIbo(byte[] iboBytes) {
 //		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes, GLES20.GL_DYNAMIC_DRAW);
 //	}
-//
-//	public int loadToIbo(byte[] iboBytes) {
-//		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes, GLES20.GL_STATIC_DRAW);
-//	}
-//
+
+	public int loadToIbo(byte[] iboBytes) {
+		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes, GLES20.GL_STATIC_DRAW);
+	}
+
 //	public int reloadDynamicIbo(byte[] iboBytes, int bufIdx) {
 //		return reloadIbo(iboBytes, bufIdx, GLES20.GL_DYNAMIC_DRAW);
 //	}
@@ -97,55 +101,55 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 //	public int loadToIboReverse(byte[] iboBytes) {
 //		return loadGLBufferReverse(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes);
 //	}
-//
-//	public int loadToVbo(byte[] vboBbytes) {
-//		return loadGLBuffer(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes, GLES20.GL_STATIC_DRAW);
-//	}
-//
+
+	public int loadToVbo(byte[] vboBbytes) {
+		return loadGLBuffer(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes, GLES20.GL_STATIC_DRAW);
+	}
+
 //	public int loadToVboReverse(byte[] vboBbytes) {
 //		return loadGLBufferReverse(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes);
 //	}
 //
-//	public int loadGLBuffer(int glTarget, int glType, byte[] bytes, int usage) {
-//		int bufIdx = -1;
-//
-//		final int buffers[] = new int[1];
-//		GLES20.glGenBuffers(1, buffers, 0);		
-//		if(buffers[0] < 1) {
-//			Log.e(TAG, "IBO buffer could not be created.");
-//		}
-//
-//		bufIdx = buffers[0];
-//
-//		return loadExistingGLBuffer(glTarget, glType, bytes, bufIdx, usage);
-//	}
-//
-//	public int loadExistingGLBuffer(int glTarget, int glType, byte[] bytes, int bufIdx, int usage) {
-//
-//		Buffer buf = null;
-//		int dataSize = -1;
-//
-//		if(glType == GLES20.GL_UNSIGNED_SHORT) {
-//
-//			ShortBuffer iboBuf = SSArrayUtil.bytesToShortBufBigEndian(bytes);
-//			buf = iboBuf;
-//			dataSize = DrawingConstants.BYTES_PER_SHORT;
-//
-//		} else if(glType == GLES20.GL_FLOAT) {
-//
-//			FloatBuffer vboBuf = SSArrayUtil.bytesToFloatBufBigEndian(bytes);
-//			buf = vboBuf;
-//			dataSize = DrawingConstants.BYTES_PER_FLOAT;
-//
-//		}
-//
-//		GLES20.glBindBuffer(glTarget, bufIdx);
-//		GLES20.glBufferData(glTarget, buf.capacity() * dataSize, buf, usage);
-//		GLES20.glBindBuffer(glTarget, 0);
-//
-//		return bufIdx;
-//	}
-//
+	public int loadGLBuffer(int glTarget, int glType, byte[] bytes, int usage) {
+		int bufIdx = -1;
+
+		final int buffers[] = new int[1];
+		GLES20.glGenBuffers(1, buffers, 0);		
+		if(buffers[0] < 1) {
+			Log.e(TAG, "IBO buffer could not be created.");
+		}
+
+		bufIdx = buffers[0];
+
+		return loadExistingGLBuffer(glTarget, glType, bytes, bufIdx, usage);
+	}
+
+	public int loadExistingGLBuffer(int glTarget, int glType, byte[] bytes, int bufIdx, int usage) {
+
+		Buffer buf = null;
+		int dataSize = -1;
+
+		if(glType == GLES20.GL_UNSIGNED_SHORT) {
+
+			ShortBuffer iboBuf = SSArrayUtil.bytesToShortBufBigEndian(bytes);
+			buf = iboBuf;
+			dataSize = DrawingConstants.BYTES_PER_SHORT;
+
+		} else if(glType == GLES20.GL_FLOAT) {
+
+			FloatBuffer vboBuf = SSArrayUtil.bytesToFloatBufBigEndian(bytes);
+			buf = vboBuf;
+			dataSize = DrawingConstants.BYTES_PER_FLOAT;
+
+		}
+
+		GLES20.glBindBuffer(glTarget, bufIdx);
+		GLES20.glBufferData(glTarget, buf.capacity() * dataSize, buf, usage);
+		GLES20.glBindBuffer(glTarget, 0);
+
+		return bufIdx;
+	}
+
 //	public int loadGLBufferReverse(int glTarget, int glType, byte[] bytes) {
 //		int bufIdx = -1;
 //
@@ -235,112 +239,74 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	/* Draw methods to be called externally */
 	/* ------------------------------------ */
 
-//	public void initOpenGL(GlSettings settings) {
-//		Log.d(TAG, "Renderer.initOpenGL");
-//
-//		// Set the background clear color
-//		float[] color = settings.getGlClearColor();
-//		GLES20.glClearColor(color[0],color[1],color[2],color[3]);
-//
-//		setGlOptions(settings.getOptions());
-//
-//		GLES20.glBlendFunc(settings.getBlendFunc().getSource(), settings.getBlendFunc().getDest());
-//
-//		boolean[] params = new boolean[1];
-//		GLES20.glGetBooleanv(GLES20.GL_BLEND_DST_ALPHA, params, 0);
-//		SSLog.d(TAG, "Destination Alpha: %s", params[0]);
-//
-//	}
-//
-//	public void setGlOptions(List<GlOption> options) {
-//
-//		for(GlOption glo : options) {
-//			if(glo.isEnabled()) {
-//				GLES20.glEnable(glo.getIndex());
-//			} else {
-//				GLES20.glDisable(glo.getIndex());
-//			}
-//		}
-//	}
-//
-//	public void drawSkybox(Geometry geo, List<Light> lights) {
-//
-//		float[] mvpMatrix = new float[16];
-//		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
-//		float[] viewMatrix = new float[16];
-//			
-//		GLES20.glDepthMask(false);
-//
-//		GLES20.glUseProgram(geo.mShaderHandle);
-//
-//		int u_mvp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVPMatrix");
-//		int u_mv = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVMatrix");
-//		int u_lightpos = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_LightPos");
-//		int u_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Texture");
-//
-//		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
-//		int a_nrm = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Normal");
-//		int a_txc = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_TexCoordinate");
-//
-//		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, geo.mTextureHandle);
-//		GLES20.glUniform1i(u_texsampler, 0);
-//
-//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.mDatBufIndex);
-//
-//		GLES20.glEnableVertexAttribArray(a_pos);
-//		GLES20.glVertexAttribPointer(a_pos, geo.mPosSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mPosOffset);
-//
-//		GLES20.glEnableVertexAttribArray(a_nrm);
-//		GLES20.glVertexAttribPointer(a_nrm, geo.mNrmSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mNrmOffset);
-//
-//		GLES20.glEnableVertexAttribArray(a_txc);
-//		GLES20.glVertexAttribPointer(a_txc, geo.mTxcSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mTxcOffset);
-//
-//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-//
-//		// --MV--
-//
-//		/* Get the MV Matrix: Multiply V * M  = MV */
-//		Matrix.setIdentityM(viewMatrix, 0);
-//		float[] camRot = GameWorld.inst().getCurrentState().getAgentViewRotation();
-//		Matrix.rotateM(viewMatrix, 0, camRot[0], camRot[1], camRot[2], camRot[3]);
-//		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, geo.mModelMatrix, 0);
-//		//MVP matrix is *actually MV* at this point
-//		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
-//
-//		// --MVP--
-//
-//		/* Get the MVP Matrix: Multiply P * MV = MVP*/
-//		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
-//		//MVP is MVP at this point
-//		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
-//
-//		// --LightPos--
-//
-//		/* Pass in the light position in eye space.	*/	
-//		//Switching to view space...
-//		//TODO: Handle multiple lights
-//		Light light = lights.get(0);
-//		float[] lightPosWorldSpace = new float[4];
-//		float[] lightPosEyeSpace = new float[4];
-//		Matrix.multiplyMV(lightPosWorldSpace, 0, light.mModelMatrix, 0, light.mPosition, 0);
-//		Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
-//		GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
-//
-//		// Draw
-//
-//		/* Draw the arrays as triangles */
-//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
-//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
-//
-//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-//		GLES20.glDepthMask(true);
-//
-//		checkError();
-//
-//	}
-//
+	public void initOpenGLDefault() {
+		Log.d(TAG, "Renderer.initOpenGL");
+
+		// Set the background clear color
+		GLES20.glClearColor(1.0f,1.0f,1.0f,1.0f);
+
+	}
+
+	public void drawSkybox(Skybox skybox) {
+
+		float[] mvpMatrix = new float[16];
+		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
+		float[] viewMatrix = new float[16];
+		int shaderHandle = skybox.getShader();
+		int textureHandle = skybox.getTexture();
+			
+		GLES20.glDepthMask(false);
+
+		GLES20.glUseProgram(shaderHandle);
+
+		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
+		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
+//		int u_lightpos = GLES20.glGetUniformLocation(shaderHandle, "u_LightPos");
+		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
+
+		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
+//		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
+//		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
+
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+		GLES20.glUniform1i(u_texsampler, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, skybox.getPosHandle());
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, skybox.getPosSize(), GLES20.GL_FLOAT, false, skybox.getElementStride(), skybox.getPosOffset());
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+		// --MV--
+
+		/* Get the MV Matrix: Multiply V * M  = MV */
+		Matrix.setIdentityM(viewMatrix, 0);
+		float[] camRot = mCurrentCamera.getRotation();
+		Matrix.rotateM(viewMatrix, 0, camRot[0], camRot[1], camRot[2], camRot[3]);
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, skybox.getModelMatrix(), 0);
+		//MVP matrix is *actually MV* at this point
+		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
+
+		// --MVP--
+
+		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+
+		// Draw
+
+		/* Draw the arrays as triangles */		
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, skybox.getIdxHandle());
+		GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, skybox.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		checkError();
+	}
+
 //	public void drawGeometry(Geometry geo, List<Light> lights) {
 //
 //		float[] mvpMatrix = new float[16];

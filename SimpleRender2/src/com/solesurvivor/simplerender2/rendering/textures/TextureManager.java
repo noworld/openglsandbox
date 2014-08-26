@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.ETC1Util;
+import android.opengl.GLES20;
 import android.util.Log;
 
 import com.pimphand.simplerender2.R;
@@ -47,7 +48,12 @@ public class TextureManager {
 			// Read in the resource
 			final Bitmap bitmap = BitmapFactory.decodeResource(res, resourceId, options);
 			
-			mTextures.put(resourceName, ren.loadTexture(bitmap));	
+			if(resourceName.equals("skybox2")) {
+				mTextures.put(resourceName, ren.loadTexture(bitmap, GLES20.GL_TEXTURE_CUBE_MAP));
+			} else {
+				mTextures.put(resourceName, ren.loadTexture(bitmap, GLES20.GL_TEXTURE_2D));
+			}
+				
 			
 			bitmap.recycle();
 			

@@ -2,6 +2,7 @@ package com.solesurvivor.simplerender2.rendering;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.List;
 
@@ -211,22 +212,30 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		return shaderHandle;
 	}
 
-	public int loadTexture(Bitmap bitmap) {
+	public int loadTexture(Bitmap bitmap, int texType) {
 		int[] textureHandle = new int[1];
 
 		GLES20.glGenTextures(1, textureHandle, 0);
 
 		if (textureHandle[0] != 0) {
 			// Bind to the texture in OpenGL
-			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+			GLES20.glBindTexture(texType, textureHandle[0]);
 
 			// Set filtering
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+			GLES20.glTexParameteri(texType, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+			GLES20.glTexParameteri(texType, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
 			// Load the bitmap into the bound texture.
-			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);			
-
+			if(texType == GLES20.GL_TEXTURE_CUBE_MAP) {
+				int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
+				IntBuffer pixelBuf = SSArrayUtil.arrayToIntBuffer(pixels);
+				bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+				GLES20.glTexImage2D(texType, 0, GLES20.GL_RGB, bitmap.getWidth(), bitmap.getHeight(), 0, GLES20.GL_RGB, GLES20.GL_UNSIGNED_BYTE, pixelBuf);
+			} else {
+				GLUtils.texImage2D(texType, 0, bitmap, 0);
+			}
+						
+			
 		}
 
 		if (textureHandle[0] == 0) {

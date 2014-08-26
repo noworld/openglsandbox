@@ -17,6 +17,9 @@ public class Camera {
 	protected Point mViewport = new Point(0,0);
 	protected float mNear = 0.5f;
 	protected float mFar = 200.0f;
+	protected float[] mTranslation = {0.0f, 0.0f, 0.0f};
+	protected float[] mRotation = {0.0f, 0.0f, 0.0f, 1.0f};
+	protected float[] mVelocity = {0.0f, 0.0f, 0.0f};
 	
 	public Camera() {		
 		orient();
@@ -121,4 +124,29 @@ public class Camera {
 		Matrix.perspectiveM(mProjectionMatrix, 0, 90.0f, ratio, near, far);
 		Matrix.orthoM(mOrthoMatrix, 0, left_ortho, right_ortho, bottom_ortho, top_ortho, near, near);
 	}
+
+	public float[] getTranslation() {
+		return mTranslation;
+	}
+
+	public void setTranslation(float[] mCameraTranslation) {
+		this.mTranslation = mCameraTranslation;
+	}
+
+	public float[] getRotation() {
+		return mRotation;
+	}
+
+	public void setRotation(float[] mCameraRotation) {
+		this.mRotation = mCameraRotation;
+	}
+
+	public float[] getVelocity() {
+		return mVelocity;
+	}
+
+	public void setVelocity(float[] mCameraVelocity) {
+		this.mVelocity = mCameraVelocity;
+	}
+
 }
