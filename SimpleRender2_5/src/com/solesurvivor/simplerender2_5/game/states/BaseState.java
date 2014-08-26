@@ -16,8 +16,8 @@ public abstract class BaseState implements GameState {
 	private static final String TAG = BaseState.class.getSimpleName();
 	
 	protected Long mDeltaT;
-	protected Long mLastT;
-	protected Scene mScene;
+	protected Long mLastT = SystemClock.uptimeMillis();
+	protected Scene mScene = new Scene();
 	protected List<InputHandler> mInputHandlers = new ArrayList<InputHandler>();
 
 	@Override

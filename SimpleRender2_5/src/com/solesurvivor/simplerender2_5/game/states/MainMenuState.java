@@ -17,7 +17,7 @@ public class MainMenuState extends BaseState {
 	
 	public MainMenuState() {
 		mCamera = new Camera();
-		int skyboxTexture = TextureManager.getTextureId("skybox");
+		int skyboxTexture = TextureManager.getTextureId("tenerife_cube");
 		int skyboxShader = ShaderManager.getShaderId("skybox_shader");
 		Skybox skybox = new Skybox(skyboxShader, skyboxTexture);
 		mScene.addChild(skybox);
@@ -27,6 +27,22 @@ public class MainMenuState extends BaseState {
 	public void enter() {
 		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		RendererManager.getRenderer().initOpenGLDefault();
+	}
+	
+	@Override
+	public void execute() {
+		float[] camRot = mCamera.getRotation();
+		float rotation = camRot[0] + 0.5f;
+		
+		if(rotation > 360.0f) {
+			rotation = rotation - 360.0f;
+		} else if(rotation < 0.0f) {
+			rotation = rotation + 360.0f;
+		}
+		
+		camRot[0] = rotation;
+		camRot[2] = 1.0f;
+		mCamera.setRotation(camRot);
 	}
 	
 	@Override

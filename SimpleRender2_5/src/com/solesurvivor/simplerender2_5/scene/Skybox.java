@@ -2,6 +2,7 @@ package com.solesurvivor.simplerender2_5.scene;
 
 import android.opengl.Matrix;
 
+import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.util.SSArrayUtil;
@@ -15,16 +16,48 @@ public class Skybox implements Node {
 	protected int mTextureHandle;
 	protected int mPosHandle;
 	protected int mIdxHandle;
-	protected float[] mVertices = {-1.0f, -1.0f,  1.0f,
-						1.0f, -1.0f,  1.0f,
-						-1.0f,  1.0f,  1.0f,
-						1.0f,  1.0f,  1.0f,
-						-1.0f, -1.0f, -1.0f,
-						1.0f, -1.0f, -1.0f,
-						-1.0f,  1.0f, -1.0f,
-						1.0f,  1.0f, -1.0f};
-	protected short[] mIndexes = {0, 1, 2, 3, 7, 1, 5, 4, 7, 6, 2, 4, 0, 1};
+//	protected float[] mVertices = {-1.0f, -1.0f,  1.0f,
+//						1.0f, -1.0f,  1.0f,
+//						-1.0f,  1.0f,  1.0f,
+//						1.0f,  1.0f,  1.0f,
+//						-1.0f, -1.0f, -1.0f,
+//						1.0f, -1.0f, -1.0f,
+//						-1.0f,  1.0f, -1.0f,
+//						1.0f,  1.0f, -1.0f};
+//	protected short[] mIndexes = {0, 1, 2,
+//			1,2,3, 
+//			2,3,7, 
+//			3,7,1, 
+//			7,1,5, 
+//			1,5,4, 
+//			5,4,7, 
+//			4,7,6, 
+//			7,6,2, 
+//			6,2,4, 
+//			2,4,0, 
+//			4,0,1};
+	protected float[] mVertices = {-10.0f, -10.0f,  10.0f,
+			10.0f, -10.0f,  10.0f,
+			-10.0f,  10.0f,  10.0f,
+			10.0f,  10.0f,  10.0f,
+			-10.0f, -10.0f, -10.0f,
+			10.0f, -10.0f, -10.0f,
+			-10.0f,  10.0f, -10.0f,
+			10.0f,  10.0f, -10.0f};
+	protected short[] mIndexes = {4,7,6,
+			7,4,5,			
+			0,6,2,
+			6,0,4,
+			5,3,7,
+			3,5,1,
+			1,2,3,
+			2,1,0,
+			4,1,5,
+			4,0,1,
+			7,3,2,
+			2,6,7};
 	protected int mPosSize = 3;
+//	protected int mNumElements = 12;
 	protected int mNumElements = 36;
 	protected int mElementStride = 12;
 	protected int mPosOffset = 0;
@@ -39,6 +72,7 @@ public class Skybox implements Node {
 		mIdxHandle = ren.loadToIbo(SSArrayUtil.shortToByteArray(mIndexes));
 		
 		Matrix.setIdentityM(mModelMatrix, 0);
+//		Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -5.0f);
 	}
 
 	public int getShader() {
@@ -117,8 +151,8 @@ public class Skybox implements Node {
 
 	@Override
 	public void render() {
-		// TODO Auto-generated method stub
-		
+		BaseRenderer ren = RendererManager.getRenderer();
+		ren.drawSkybox(this);
 	}
 
 	@Override

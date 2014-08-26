@@ -2,7 +2,8 @@ package com.solesurvivor.simplerender2_5.scene;
 
 import android.graphics.Point;
 import android.opengl.Matrix;
-import android.util.Log;
+
+import com.solesurvivor.util.logging.SSLog;
 
 public class Camera {
 	
@@ -11,14 +12,15 @@ public class Camera {
 	protected float[] mViewMatrix = new float[16];	
 	protected float[] mProjectionMatrix  = new float[16];
 	protected float[] mOrthoMatrix = new float[16];
-	protected float[] mEyePos = {0.0f, 0.0f, -0.5f};
+	protected float[] mEyePos = {0.0f, 0.0f, 0.0f};
 	protected float[] mLookVector = {0.0f, 0.0f, -1.0f};
 	protected float[] mUpVector = {0.0f, 1.0f, 0.0f};	
 	protected Point mViewport = new Point(0,0);
 	protected float mNear = 0.5f;
 	protected float mFar = 200.0f;
+	protected float mFov = 62.0f;
 	protected float[] mTranslation = {0.0f, 0.0f, 0.0f};
-	protected float[] mRotation = {0.0f, 0.0f, 0.0f, 1.0f};
+	protected float[] mRotation = {0.0f, 0.0f, 0.0f, 0.0f};
 	protected float[] mVelocity = {0.0f, 0.0f, 0.0f};
 	
 	public Camera() {		
@@ -83,30 +85,22 @@ public class Camera {
 				mUpVector[0], mUpVector[1], mUpVector[2]);
 	}
 	
-	public void adjustFar(float adj) {
-		this.mFar += adj;
-		if(mFar <= mNear) mFar = mNear + 0.1f;
-		Log.d(TAG, String.format("FAR IS: %s", mFar));
-		resizeViewport(mViewport);
-	}
-	
 	public float getFar() {
 		return this.mFar;
 	}
 	
-	public void adjustNear(float adj) {
-		this.mNear += adj;
-		if(mNear <= 0.0f) mNear = 0.001f;
-		if(mFar <= mNear) mFar = mNear + 0.1f;
-		Log.d(TAG, String.format("NEAR IS: %s", mNear));
-		resizeViewport(mViewport);
-	}
-	
+
 	public float getNear() {
 		return this.mNear;
 	}
 	
 	public void resizeViewport(Point newViewport) {
+		if(newViewport == null) {
+			SSLog.d(TAG, "Null viewport sent to camera.");
+			return;
+		} else {
+			SSLog.d(TAG, "Resizing camera viewport: %s,%s", newViewport.x, newViewport.y);
+		}
 
 		this.mViewport = newViewport;
 
@@ -121,8 +115,8 @@ public class Camera {
 		final float top_ortho = (mViewport.y/2);
 		
 		//Rig for a 90 deg FOV
-		Matrix.perspectiveM(mProjectionMatrix, 0, 90.0f, ratio, near, far);
-		Matrix.orthoM(mOrthoMatrix, 0, left_ortho, right_ortho, bottom_ortho, top_ortho, near, near);
+		Matrix.perspectiveM(mProjectionMatrix, 0, mFov, ratio, near, far);
+		Matrix.orthoM(mOrthoMatrix, 0, left_ortho, right_ortho, bottom_ortho, top_ortho, near, far);
 	}
 
 	public float[] getTranslation() {

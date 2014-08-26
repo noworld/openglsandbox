@@ -44,11 +44,12 @@ public class GameWorld {
 
 		if(mCurrentState != null) {
 			mCurrentState.exit();
-			this.mPreviousState = mCurrentState;
+			mPreviousState = mCurrentState;
 		}
 		
 		mCurrentState = state;
 
+		mCurrentState.resizeViewport(mViewport);
 		mCurrentState.enter();
 
 		return true;
@@ -63,7 +64,10 @@ public class GameWorld {
 	}
 	
 	public void resizeViewport(Point viewport) {
-		this.mViewport = viewport;
+		mViewport = viewport;
+		if(mCurrentState != null) {
+			mCurrentState.resizeViewport(viewport);
+		}
 	}
 	
 }

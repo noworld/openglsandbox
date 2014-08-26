@@ -1,13 +1,44 @@
 <resources>
     
-    <array name="textures">
+    <array name="textures_2d">
         <item>@drawable/btn_a</item>
         <item>@drawable/btn_b</item>
         <item>@drawable/btn_x</item>
         <item>@drawable/btn_y</item>
         <item>@drawable/dpad</item>
-        <item>@drawable/skybox</item>
+    </array>
+    
+    <array name="textures_cube">
+        <item>@array/skybox_cube</item>
+        <item>@array/citadella_cube</item>
+        <item>@array/tenerife_cube</item>
+    </array>
+    
+    <array name="skybox_cube">
+        <item>@drawable/skybox0</item>
+        <item>@drawable/skybox1</item>
+        <item>@drawable/skybox2</item>
+        <item>@drawable/skybox3</item>
+        <item>@drawable/skybox4</item>
+        <item>@drawable/skybox5</item>
+    </array>
+    
+    <array name="citadella_cube">
+        <item>@drawable/citadella0</item>
+        <item>@drawable/citadella1</item>
+        <item>@drawable/citadella2</item>
+        <item>@drawable/citadella3</item>
+        <item>@drawable/citadella4</item>
+        <item>@drawable/citadella5</item>
+    </array>
+    
+    <array name="tenerife_cube">
+        <item>@drawable/tenerife0</item>
+        <item>@drawable/tenerife1</item>
+        <item>@drawable/tenerife2</item>
+        <item>@drawable/tenerife3</item>
+        <item>@drawable/tenerife4</item>
+        <item>@drawable/tenerife5</item>
     </array>
 
-    
 </resources>

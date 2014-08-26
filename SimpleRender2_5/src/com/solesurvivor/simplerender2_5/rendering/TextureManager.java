@@ -13,28 +13,37 @@ import android.util.Log;
 
 import com.solesurvivor.simplerender2_5.R;
 import com.solesurvivor.simplerender2_5.game.GameGlobal;
+import com.solesurvivor.util.logging.SSLog;
 
 public class TextureManager {
 	
 	private static final String TAG = TextureManager.class.getSimpleName();
 
+	private static final int[] IMAGE_ORDER = {GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+		GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+		GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+		GLES20.GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+		GLES20.GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+		GLES20.GL_TEXTURE_CUBE_MAP_POSITIVE_Z};
+	
 	private static Map<String,Integer> mTextures = new HashMap<String,Integer>();
 	
 	public static void init() {
 		Log.i(TAG, String.format("Supports ETC1 Textures: %s", ETC1Util.isETC1Supported()));
-		loadTextures();
+		load2DTextures();
+		loadCubeMapTextures();
 	}
 	
 	public static int getTextureId(String name) {
 		return mTextures.get(name);		
 	}
 
-	private static void loadTextures() {
+	private static void load2DTextures() {
 
 		Resources res =  GameGlobal.inst().getContext().getResources();
 		BaseRenderer ren = RendererManager.getRenderer();
 
-		TypedArray textures = res.obtainTypedArray(R.array.textures);
+		TypedArray textures = res.obtainTypedArray(R.array.textures_2d);
 
 		final BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inScaled = false;
@@ -45,17 +54,53 @@ public class TextureManager {
 
 			// Read in the resource
 			final Bitmap bitmap = BitmapFactory.decodeResource(res, resourceId, options);
-			
-			if(resourceName.equals("skybox2")) {
-				mTextures.put(resourceName, ren.loadTexture(bitmap, GLES20.GL_TEXTURE_CUBE_MAP));
-			} else {
-				mTextures.put(resourceName, ren.loadTexture(bitmap, GLES20.GL_TEXTURE_2D));
-			}
-				
+
+			mTextures.put(resourceName, ren.loadTexture(bitmap));
 			
 			bitmap.recycle();
 			
 			Log.d(TAG, String.format("Loaded texture %s", resourceName));
+		}
+
+		textures.recycle();
+	}
+	
+	private static void loadCubeMapTextures() {
+
+		Resources res =  GameGlobal.inst().getContext().getResources();
+		BaseRenderer ren = RendererManager.getRenderer();
+
+		TypedArray textures = res.obtainTypedArray(R.array.textures_cube);
+		
+		final BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inScaled = false;
+		
+		for(int i = 0; i < textures.length(); i++) {			
+			
+//			each entry should have 6 cubemap textures			
+			int resourceId = textures.getResourceId(i, 0);
+			String resourceName = res.getResourceEntryName(resourceId);
+
+			TypedArray cubeMapImages = res.obtainTypedArray(resourceId);
+			Bitmap[] cubeBitmaps = new Bitmap[cubeMapImages.length()];
+			
+			for(int j = 0; j < cubeMapImages.length(); j++) {
+				int cubeImageId = cubeMapImages.getResourceId(j, 0);
+				String cubeImageName = res.getResourceEntryName(cubeImageId);
+				SSLog.d(TAG, "Loading cubemap %s: %s", j, cubeImageName);
+				
+				// Read in the resource
+				cubeBitmaps[j] = BitmapFactory.decodeResource(res, cubeImageId, options);				
+			}
+			
+			mTextures.put(resourceName, ren.loadCubeMap(cubeBitmaps, IMAGE_ORDER));
+			
+			for(Bitmap b : cubeBitmaps) {
+				b.recycle();
+			}
+			cubeMapImages.recycle();
+		
+			Log.d(TAG, String.format("Loaded texture as cubemap %s", resourceName));
 		}
 
 		textures.recycle();

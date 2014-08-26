@@ -1,6 +1,7 @@
 package com.solesurvivor.simplerender2_5.rendering;
 
 import com.solesurvivor.simplerender2_5.SimpleRender25SurfaceView;
+import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.util.logging.SSLog;
 
 public class RendererManager {
@@ -12,6 +13,7 @@ public class RendererManager {
 
 	
 	public static void init() {
+		mGLSurfaceView = new SimpleRender25SurfaceView(GameGlobal.inst().getContext());
 		mGLSurfaceView.setEGLContextClientVersion(2);
 		mRenderer = new BaseRenderer();
 		mGLSurfaceView.setRenderer(mRenderer);
