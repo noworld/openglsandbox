@@ -2,6 +2,8 @@ package com.solesurvivor.simplerender2_5.scene;
 
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
@@ -146,7 +148,7 @@ public class Skybox implements Node, Drawable {
 
 	@Override
 	public void addChild(Node n) {
-
+		throw new NotImplementedException();
 	}
 
 	@Override
@@ -178,10 +180,5 @@ public class Skybox implements Node, Drawable {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	@Override
-	public int[] getTextureBuffers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 }

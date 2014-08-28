@@ -4,7 +4,8 @@ import android.graphics.Point;
 
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
-import com.solesurvivor.simplerender2_5.scene.Plane;
+import com.solesurvivor.simplerender2_5.scene.Plane_16_9;
+import com.solesurvivor.simplerender2_5.scene.ProceduralTexture_16_9;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
 
 public class MainMenuState extends BaseState {
@@ -19,9 +20,12 @@ public class MainMenuState extends BaseState {
 		
 		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
 		mScene.addChild(skybox);
+				
+		Plane_16_9 plane = new Plane_16_9("plane_shader", "dpad");
+		ProceduralTexture_16_9 texture = new ProceduralTexture_16_9("tex_shader");
+		texture.addChild(plane);
 		
-		Plane plane = new Plane("plane_shader","dpad");
-		mScene.addChild(plane);
+		mScene.addChild(texture);
 	}
 
 	@Override
