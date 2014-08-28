@@ -11,6 +11,11 @@ import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.rendering.ShaderManager;
 import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 
+/**
+ * Use with tex_shader
+ * @author nicholas.waun
+ * (C)2014 Nicholas Waun. All rights reserved.
+ */
 public class ProceduralTexture2D extends Rectangle implements Node {
 
 	@SuppressWarnings("unused")

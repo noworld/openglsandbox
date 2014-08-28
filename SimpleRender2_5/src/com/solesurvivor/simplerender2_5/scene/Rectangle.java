@@ -45,6 +45,10 @@ public abstract class Rectangle implements Drawable {
 		Matrix.setIdentityM(mModelMatrix, 0);
 	}
 	
+	public Point getDimension() {
+		return mDimension;
+	}
+	
 	@Override
 	public int getDatBufHandle() {
 		return mDatHandle;
