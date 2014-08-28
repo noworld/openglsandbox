@@ -1,7 +1,10 @@
 package com.solesurvivor.simplerender2_5.rendering;
 
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.List;
 
@@ -19,10 +22,12 @@ import android.view.Display;
 
 import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
+import com.solesurvivor.simplerender2_5.game.states.GameStateEnum;
 import com.solesurvivor.simplerender2_5.game.states.GameStateManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.Drawable;
 import com.solesurvivor.simplerender2_5.scene.Light;
+import com.solesurvivor.simplerender2_5.scene.Plane;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
@@ -48,9 +53,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		Log.d(TAG, "Renderer.onSurfaceChanged");
-		GLES20.glViewport(0, 0, width, height);
+		Log.d(TAG, "Renderer.onSurfaceChanged");		
 		synchronized(GameWorld.inst()) {			
+			this.resizeViewport(width, height);
 			GameWorld.inst().resizeViewport(new Point(width, height));
 		}
 	}
@@ -61,14 +66,16 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		TextureManager.init();
 //		FontManager.init();
 //		GeometryManager.init();
-		GameStateManager.init();
 		GameWorld.init();
 		synchronized(GameWorld.inst()) {
 			Display d = GameGlobal.inst().getWindowManager().getDefaultDisplay();
 			Point p = new Point(0,0);
 			d.getSize(p); //Requires API 13+			
-			GameWorld.inst().resizeViewport(new Point(p.x, p.y));
+			GameWorld.inst().resizeViewport(new Point(p.x, p.y));			
 		}
+		
+		GameStateManager.init();
+		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.MAIN_MENU));
 	}
 
 
@@ -78,6 +85,15 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 	public void setCurrentCamera(Camera cam) {
 		this.mCurrentCamera = cam;
+	}
+	
+	public void resizeViewport(int width, int height) {
+		GLES20.glViewport(0, 0, width, height);
+	}
+	
+	public void resetViewportToWorld() {
+		Point view = GameWorld.inst().getViewport();
+		GLES20.glViewport(0, 0, view.x, view.y);
 	}
 	
 	public void clearOpenGL() {
@@ -258,6 +274,33 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		return textureHandle[0];
 	}
+	
+	public int[] genTextureBuffer() {
+		//frame, depth, texture
+		int[] buffers = new int[3];
+		GLES20.glGenFramebuffers(1, buffers, 0);
+		GLES20.glGenRenderbuffers(1, buffers, 1);
+		GLES20.glGenTextures(1, buffers, 2);
+		
+		//texture
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, buffers[2]);
+		
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+		
+		Point view = GameWorld.inst().getViewport();
+		int size = view.x * view.y * DrawingConstants.BYTES_PER_FLOAT;
+		IntBuffer pixelBuf = ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder()).asIntBuffer();
+		GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGB, view.x, view.y, 0, GLES20.GL_RGB, GLES20.GL_UNSIGNED_SHORT_5_6_5, pixelBuf);
+		
+		//depth
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, buffers[1]);
+		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, view.x, view.y);
+		
+		return buffers;
+	}
 
 	/* ------------------------------------ */
 	/* Draw methods to be called externally */
@@ -331,14 +374,16 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		checkError();
 	}
 
-	public void drawGeometry(Drawable geo) {
+	public void drawGeometry(Drawable draw) {
+		
+		renderTexture(draw);
 
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
 		float[] viewMatrix = mCurrentCamera.getViewMatrix();
 		
-		int shaderHandle = geo.getShaderHandle();
-		int textureHandle = geo.getTextureHandle();
+		int shaderHandle = draw.getShaderHandle();
+		int textureHandle = draw.getTextureHandle();
 
 		GLES20.glUseProgram(shaderHandle);
 
@@ -355,19 +400,19 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
 		GLES20.glUniform1i(u_texsampler, 0);
 
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.getDatBufHandle());
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, draw.getDatBufHandle());
 
 		GLES20.glEnableVertexAttribArray(a_pos);
-		GLES20.glVertexAttribPointer(a_pos, geo.getPosSize(), GLES20.GL_FLOAT, false, geo.getElementStride(), geo.getPosOffset());
+		GLES20.glVertexAttribPointer(a_pos, draw.getPosSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getPosOffset());
 
 		if(a_nrm > -1) {
 			GLES20.glEnableVertexAttribArray(a_nrm);
-			GLES20.glVertexAttribPointer(a_nrm, geo.getNrmSize(), GLES20.GL_FLOAT, false, geo.getElementStride(), geo.getNrmOffset());
+			GLES20.glVertexAttribPointer(a_nrm, draw.getNrmSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getNrmOffset());
 		}
 
 		if(a_txc > -1) {
 			GLES20.glEnableVertexAttribArray(a_txc);
-			GLES20.glVertexAttribPointer(a_txc, geo.getTxcSize(), GLES20.GL_FLOAT, false, geo.getElementStride(), geo.getTxcOffset());
+			GLES20.glVertexAttribPointer(a_txc, draw.getTxcSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getTxcOffset());
 		}
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -375,7 +420,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// --MV--
 
 		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, geo.getModelMatrix(), 0);
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, draw.getModelMatrix(), 0);
 		//MVP matrix is *actually MV* at this point
 		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
 
@@ -391,7 +436,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		/* Pass in the light position in eye space.	*/	
 		//Switching to view space...
 		//TODO: Handle multiple lights
-		List<Light> lights = geo.getLights();
+		List<Light> lights = draw.getLights();
 		if(lights != null) {
 			Light light = lights.get(0);
 			float[] lightPosWorldSpace = new float[4];
@@ -404,13 +449,125 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// Draw
 
 		/* Draw the arrays as triangles */
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.getIdxBufHandle());
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, draw.getIdxBufHandle());
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, draw.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 
 		checkError();
 
+	}
+	
+	public void renderTexture(Drawable draw) {
+
+		clearTexture(draw);
+		
+		float[] mvpMatrix = new float[16];
+		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
+		float[] viewMatrix = mCurrentCamera.getViewMatrix();
+
+		int textureHandle = draw.getTextureHandle();
+		int shaderHandle = ShaderManager.getShaderId("tex_shader");
+
+		GLES20.glUseProgram(shaderHandle);
+
+		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
+		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
+		int u_lightpos = GLES20.glGetUniformLocation(shaderHandle, "u_LightPos");
+		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
+
+		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
+		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
+		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
+
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+		GLES20.glUniform1i(u_texsampler, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, draw.getDatBufHandle());
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, draw.getPosSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getPosOffset());
+
+		if(a_nrm > -1) {
+			GLES20.glEnableVertexAttribArray(a_nrm);
+			GLES20.glVertexAttribPointer(a_nrm, draw.getNrmSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getNrmOffset());
+		}
+
+		if(a_txc > -1) {
+			GLES20.glEnableVertexAttribArray(a_txc);
+			GLES20.glVertexAttribPointer(a_txc, draw.getTxcSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getTxcOffset());
+		}
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+		// --MV--
+
+		/* Get the MV Matrix: Multiply V * M  = MV */
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, draw.getModelMatrix(), 0);
+		//MVP matrix is *actually MV* at this point
+		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
+
+		// --MVP--
+
+		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+
+		// --LightPos--
+
+		/* Pass in the light position in eye space.	*/	
+		//Switching to view space...
+		//TODO: Handle multiple lights
+		List<Light> lights = draw.getLights();
+		if(lights != null) {
+			Light light = lights.get(0);
+			float[] lightPosWorldSpace = new float[4];
+			float[] lightPosEyeSpace = new float[4];
+			Matrix.multiplyMV(lightPosWorldSpace, 0, light.mModelMatrix, 0, light.mPosition, 0);
+			Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
+			GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
+		}
+
+		// Draw
+
+		/* Draw the arrays as triangles */
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, draw.getIdxBufHandle());
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, draw.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		checkError();
+				
+		
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+//		resetViewportToWorld();
+	}
+	
+	public void clearTexture(Drawable draw) {
+		//frame, depth, texture
+		int[] buffers = draw.getTextureBuffers();
+		
+		//Viewport should match texture size
+//		int[] projection = new int[16];
+//		Matrix.frustumM(projection, 0, -ratio, ratio, -1, 1, 0.5f, 10);
+//		GLES20.glViewport(0, 0, this.texW, this.texH);
+
+		//frame
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, buffers[0]);
+		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, buffers[2], 0);
+
+		// attach render buffer as depth buffer
+		GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, buffers[1]);
+		
+		if (GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER) != GLES20.GL_FRAMEBUFFER_COMPLETE) {
+			throw new RuntimeException("Frame buffer not ready.");
+		}
+
+		GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		GLES20.glClear( GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
+		
 	}
 
 //	public void waterOn() {

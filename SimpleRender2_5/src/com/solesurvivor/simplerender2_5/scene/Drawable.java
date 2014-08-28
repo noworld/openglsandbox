@@ -18,4 +18,5 @@ public interface Drawable {
 	public int getTxcOffset();
 	public float[] getModelMatrix();
 	public List<Light> getLights();
+	public int[] getTextureBuffers();
 }

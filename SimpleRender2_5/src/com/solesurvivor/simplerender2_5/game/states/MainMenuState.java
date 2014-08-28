@@ -1,7 +1,6 @@
 package com.solesurvivor.simplerender2_5.game.states;
 
 import android.graphics.Point;
-import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;

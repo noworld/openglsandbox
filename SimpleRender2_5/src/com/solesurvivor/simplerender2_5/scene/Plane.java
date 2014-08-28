@@ -7,7 +7,6 @@ import android.opengl.Matrix;
 import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.rendering.ShaderManager;
-import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 import com.solesurvivor.util.SSArrayUtil;
 
 public class Plane implements Node, Drawable {
@@ -16,7 +15,7 @@ public class Plane implements Node, Drawable {
 	private static final String TAG = Plane.class.getSimpleName();
 	
 	protected int mShaderHandle;
-	protected int mTextureHandle;
+	protected int[] mTextureBuffers;
 	protected int mPosHandle;
 	protected int mIdxHandle;
 //	protected float[] mVertices = {
@@ -45,10 +44,12 @@ public class Plane implements Node, Drawable {
 	
 	public Plane(String shaderName, String textureName) {
 		this.mShaderHandle = ShaderManager.getShaderId(shaderName);
-		this.mTextureHandle = TextureManager.getTextureId(textureName);
+//		this.mTextureHandle = TextureManager.getTextureId(textureName);
 		BaseRenderer ren = RendererManager.getRenderer();
 		mPosHandle = ren.loadToVbo(SSArrayUtil.floatToByteArray(mVertices));
 		mIdxHandle = ren.loadToIbo(SSArrayUtil.shortToByteArray(mIndexes));
+		int[] buffers = ren.genTextureBuffer();
+		this.mTextureBuffers = buffers;
 		Matrix.setIdentityM(mModelMatrix, 0);
 		Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -2.0f);
 	}
@@ -77,7 +78,7 @@ public class Plane implements Node, Drawable {
 
 	@Override
 	public int getTextureHandle() {
-		return this.mTextureHandle;
+		return this.mTextureBuffers[2];
 	}
 
 	@Override
@@ -139,5 +140,10 @@ public class Plane implements Node, Drawable {
 	@Override
 	public float[] getModelMatrix() {
 		return this.mModelMatrix;
+	}
+	
+	@Override
+	public int[] getTextureBuffers() {
+		return mTextureBuffers;
 	}
 }

@@ -3,6 +3,7 @@
      <array name="shaderPrograms">
         <item>@array/skybox_shader</item>
         <item>@array/plane_shader</item>
+        <item>@array/tex_shader</item>
     </array>
     
     <array name="skybox_shader">
@@ -13,6 +14,11 @@
     <array name="plane_shader">
         <item >@raw/v_plane</item> 
         <item >@raw/f_plane</item>  
+    </array>
+    
+    <array name="tex_shader">
+        <item >@raw/v_tex</item> 
+        <item >@raw/f_tex</item>  
     </array>
 
 </resources>

@@ -178,4 +178,10 @@ public class Skybox implements Node, Drawable {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public int[] getTextureBuffers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
