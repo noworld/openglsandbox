@@ -9,22 +9,15 @@ import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.util.SSArrayUtil;
 
-public abstract class Geometry_16_9 implements Drawable {
+public abstract class Rectangle implements Drawable {
 
 	@SuppressWarnings("unused")
-	private static final String TAG = Geometry_16_9.class.getSimpleName();
+	private static final String TAG = Rectangle.class.getSimpleName();
 	
-	public static final Point DIMENSION = new Point(1920,1080);
-	public static final float ASPECT_HEIGHT = 1.0f;
-	public static final float ASPECT_WIDTH = 16.0f/9.0f;
-
 	protected int mDatHandle;
 	protected int mIdxHandle;
-	protected float[] mVertices = {
-			/*vvv*/-ASPECT_WIDTH,  ASPECT_HEIGHT, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,0.0f,
-			/*vvv*/ ASPECT_WIDTH,  ASPECT_HEIGHT, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,0.0f,
-			/*vvv*/-ASPECT_WIDTH, -ASPECT_HEIGHT, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,1.0f,
-			/*vvv*/ ASPECT_WIDTH, -ASPECT_HEIGHT, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,1.0f};
+	protected Point mDimension;
+	protected float[] mVertices;
 	protected short[] mIndexes = {0,2,1,
 			1,2,3};
 	protected int mPosSize = 3;
@@ -37,7 +30,15 @@ public abstract class Geometry_16_9 implements Drawable {
 	protected int mTxcOffset = 24;
 	protected float[] mModelMatrix = new float[16];
 	
-	public Geometry_16_9() {
+	public Rectangle(Point dim) {
+		this.mDimension = dim;
+		float aspectWidth = ((float)dim.x)/((float)dim.y);
+		mVertices = new float[]{
+				/*vvv*/-aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,0.0f,
+				/*vvv*/ aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,0.0f,
+				/*vvv*/-aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,1.0f,
+				/*vvv*/ aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,1.0f};
+
 		BaseRenderer ren = RendererManager.getRenderer();
 		mDatHandle = ren.loadToVbo(SSArrayUtil.floatToByteArray(mVertices));
 		mIdxHandle = ren.loadToIbo(SSArrayUtil.shortToByteArray(mIndexes));

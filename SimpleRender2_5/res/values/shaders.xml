@@ -4,6 +4,7 @@
         <item>@array/skybox_shader</item>
         <item>@array/plane_shader</item>
         <item>@array/tex_shader</item>
+        <item>@array/hm_shader</item>
     </array>
     
     <array name="skybox_shader">
@@ -19,6 +20,11 @@
     <array name="tex_shader">
         <item >@raw/v_tex</item> 
         <item >@raw/f_tex</item>  
+    </array>
+    
+    <array name="hm_shader">
+        <item >@raw/v_heightmap</item> 
+        <item >@raw/f_heightmap</item>  
     </array>
 
 </resources>

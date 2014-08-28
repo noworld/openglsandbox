@@ -3,6 +3,7 @@ package com.solesurvivor.simplerender2_5.scene;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.Point;
 import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
@@ -10,10 +11,10 @@ import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.rendering.ShaderManager;
 import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 
-public class ProceduralTexture_16_9 extends Geometry_16_9 implements Node {
+public class ProceduralTexture2D extends Rectangle implements Node {
 
 	@SuppressWarnings("unused")
-	private static final String TAG = ProceduralTexture_16_9.class.getSimpleName();
+	private static final String TAG = ProceduralTexture2D.class.getSimpleName();
 	
 	//frame, depth, texture
 	//or just texture
@@ -22,15 +23,18 @@ public class ProceduralTexture_16_9 extends Geometry_16_9 implements Node {
 	protected List<Node> mChildren;
 	protected String mTextureName;
 	
-	public ProceduralTexture_16_9(String shaderName, String textureName) {
+	public ProceduralTexture2D(String shaderName, String textureName, Point dim) {
+		super(dim);
 		mChildren = new ArrayList<Node>();
 		this.mShaderHandle = ShaderManager.getShaderId(shaderName);
 		BaseRenderer ren = RendererManager.getRenderer();
-		mBuffers = ren.genTextureBuffer(DIMENSION);
+		mBuffers = ren.genTextureBuffer(mDimension);
 		this.mTextureName = textureName;
 		TextureManager.registerTexture(textureName, mBuffers[2]);
 		Matrix.setIdentityM(mModelMatrix, 0);
+		float orthoScale = ((float)mDimension.y)/2.0f;
 		Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -2.0f);
+		Matrix.scaleM(mModelMatrix, 0, orthoScale, orthoScale, 0.0f);
 	}
 
 	public int[] getBuffers() {

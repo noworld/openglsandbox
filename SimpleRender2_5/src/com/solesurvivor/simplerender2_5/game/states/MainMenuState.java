@@ -2,10 +2,11 @@ package com.solesurvivor.simplerender2_5.game.states;
 
 import android.graphics.Point;
 
+import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
-import com.solesurvivor.simplerender2_5.scene.Plane_16_9;
-import com.solesurvivor.simplerender2_5.scene.ProceduralTexture_16_9;
+import com.solesurvivor.simplerender2_5.scene.Plane;
+import com.solesurvivor.simplerender2_5.scene.ProceduralTexture2D;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
 
 public class MainMenuState extends BaseState {
@@ -16,15 +17,17 @@ public class MainMenuState extends BaseState {
 	protected Camera mCamera;
 	
 	public MainMenuState() {
+		Point viewport = GameWorld.inst().getViewport();
 		mCamera = new Camera();
+		mCamera.resizeViewport(viewport);
 		
 		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
 		mScene.addChild(skybox);
 		
 		//Creating procedural texture adds it to the manager
-		ProceduralTexture_16_9 texture = new ProceduralTexture_16_9("tex_shader", "procedural1");
+		ProceduralTexture2D texture = new ProceduralTexture2D("hm_shader", "procedural1", mCamera.getViewport());
 		//Plane will pull the procedural handle
-		Plane_16_9 plane = new Plane_16_9("plane_shader", "procedural1");
+		Plane plane = new Plane("plane_shader", "procedural1", mCamera.getViewport());
 		//Add plane as a child of the texture so tex renders first
 		texture.addChild(plane);
 		//add texture to the scene

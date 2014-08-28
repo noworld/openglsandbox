@@ -27,7 +27,7 @@ import com.solesurvivor.simplerender2_5.game.states.GameStateManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.Drawable;
 import com.solesurvivor.simplerender2_5.scene.Light;
-import com.solesurvivor.simplerender2_5.scene.ProceduralTexture_16_9;
+import com.solesurvivor.simplerender2_5.scene.ProceduralTexture2D;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
@@ -450,12 +450,12 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 	}
 	
-	public void renderTexture(ProceduralTexture_16_9 tex) {
+	public void renderTexture(ProceduralTexture2D tex) {
 		
 		clearTexture(tex);
 	
 		float[] mvpMatrix = new float[16];
-		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
+		float[] projectionMatrix = mCurrentCamera.getOrthoMatrix();
 		float[] viewMatrix = mCurrentCamera.getViewMatrix();
 
 		int textureHandle = tex.getTextureHandle();
@@ -535,7 +535,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 //		resetViewportToWorld();
 	}
 	
-	public void clearTexture(ProceduralTexture_16_9 tex) {
+	public void clearTexture(ProceduralTexture2D tex) {
 		//frame, depth, texture
 		int[] buffers = tex.getBuffers();
 		

@@ -3,6 +3,7 @@ package com.solesurvivor.simplerender2_5.scene;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.Point;
 import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
@@ -10,17 +11,17 @@ import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.rendering.ShaderManager;
 import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 
-public class Plane_16_9 extends Geometry_16_9 implements Node {
+public class Plane extends Rectangle implements Node {
 
 	@SuppressWarnings("unused")
-	private static final String TAG = Plane_16_9.class.getSimpleName();
+	private static final String TAG = Plane.class.getSimpleName();
 	
 	protected int mShaderHandle;
 	protected int mTextureHandle;
 	protected List<Node> mChildren;
 	
-	public Plane_16_9(String shaderName, String textureName) {
-		super();
+	public Plane(String shaderName, String textureName, Point dim) {
+		super(dim);
 		mChildren = new ArrayList<Node>();
 		this.mShaderHandle = ShaderManager.getShaderId(shaderName);
 		this.mTextureHandle = TextureManager.getTextureId(textureName);	
