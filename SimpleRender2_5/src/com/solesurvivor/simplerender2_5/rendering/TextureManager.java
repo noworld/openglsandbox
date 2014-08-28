@@ -105,4 +105,8 @@ public class TextureManager {
 
 		textures.recycle();
 	}
+	
+	public static Integer registerTexture(String name, Integer handle) {
+		return mTextures.put(name, handle);
+	}
 }

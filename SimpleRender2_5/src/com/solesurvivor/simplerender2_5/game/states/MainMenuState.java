@@ -20,11 +20,14 @@ public class MainMenuState extends BaseState {
 		
 		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
 		mScene.addChild(skybox);
-				
-		Plane_16_9 plane = new Plane_16_9("plane_shader", "dpad");
-		ProceduralTexture_16_9 texture = new ProceduralTexture_16_9("tex_shader");
-		texture.addChild(plane);
 		
+		//Creating procedural texture adds it to the manager
+		ProceduralTexture_16_9 texture = new ProceduralTexture_16_9("tex_shader", "procedural1");
+		//Plane will pull the procedural handle
+		Plane_16_9 plane = new Plane_16_9("plane_shader", "procedural1");
+		//Add plane as a child of the texture so tex renders first
+		texture.addChild(plane);
+		//add texture to the scene
 		mScene.addChild(texture);
 	}
 
