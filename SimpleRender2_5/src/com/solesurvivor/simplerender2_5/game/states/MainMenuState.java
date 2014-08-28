@@ -1,11 +1,11 @@
 package com.solesurvivor.simplerender2_5.game.states;
 
 import android.graphics.Point;
+import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
-import com.solesurvivor.simplerender2_5.rendering.ShaderManager;
-import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
+import com.solesurvivor.simplerender2_5.scene.Plane;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
 
 public class MainMenuState extends BaseState {
@@ -17,10 +17,12 @@ public class MainMenuState extends BaseState {
 	
 	public MainMenuState() {
 		mCamera = new Camera();
-		int skyboxTexture = TextureManager.getTextureId("tenerife_cube");
-		int skyboxShader = ShaderManager.getShaderId("skybox_shader");
-		Skybox skybox = new Skybox(skyboxShader, skyboxTexture);
+		
+		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
 		mScene.addChild(skybox);
+		
+		Plane plane = new Plane("plane_shader","dpad");
+		mScene.addChild(plane);
 	}
 
 	@Override
@@ -31,18 +33,7 @@ public class MainMenuState extends BaseState {
 	
 	@Override
 	public void execute() {
-		float[] camRot = mCamera.getRotation();
-		float rotation = camRot[0] + 0.5f;
-		
-		if(rotation > 360.0f) {
-			rotation = rotation - 360.0f;
-		} else if(rotation < 0.0f) {
-			rotation = rotation + 360.0f;
-		}
-		
-		camRot[0] = rotation;
-		camRot[2] = 1.0f;
-		mCamera.setRotation(camRot);
+
 	}
 	
 	@Override

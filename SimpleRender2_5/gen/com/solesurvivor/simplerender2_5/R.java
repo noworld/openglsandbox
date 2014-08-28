@@ -9,18 +9,19 @@ package com.solesurvivor.simplerender2_5;
 
 public final class R {
     public static final class array {
-        public static final int citadella_cube=0x7f080008;
+        public static final int citadella_cube=0x7f080009;
         /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
          */
         public static final int fonts=0x7f080000;
         public static final int global=0x7f080001;
         public static final int models=0x7f080002;
+        public static final int plane_shader=0x7f080005;
         public static final int shaderPrograms=0x7f080003;
-        public static final int skybox_cube=0x7f080007;
+        public static final int skybox_cube=0x7f080008;
         public static final int skybox_shader=0x7f080004;
-        public static final int tenerife_cube=0x7f080009;
-        public static final int textures_2d=0x7f080005;
-        public static final int textures_cube=0x7f080006;
+        public static final int tenerife_cube=0x7f08000a;
+        public static final int textures_2d=0x7f080006;
+        public static final int textures_cube=0x7f080007;
     }
     public static final class attr {
     }
@@ -73,11 +74,13 @@ public final class R {
         public static final int simple_render25=0x7f090000;
     }
     public static final class raw {
-        public static final int f_skybox=0x7f040000;
-        public static final int gamepad_ui=0x7f040001;
-        public static final int nightwatcher_bb=0x7f040002;
-        public static final int praetorium_bb_regular=0x7f040003;
-        public static final int v_skybox=0x7f040004;
+        public static final int f_plane=0x7f040000;
+        public static final int f_skybox=0x7f040001;
+        public static final int gamepad_ui=0x7f040002;
+        public static final int nightwatcher_bb=0x7f040003;
+        public static final int praetorium_bb_regular=0x7f040004;
+        public static final int v_plane=0x7f040005;
+        public static final int v_skybox=0x7f040006;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;

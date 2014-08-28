@@ -10,6 +10,7 @@ public class Camera {
 	private static final String TAG = Camera.class.getSimpleName();
 
 	protected float[] mViewMatrix = new float[16];	
+	protected boolean mViewDirty = false;
 	protected float[] mProjectionMatrix  = new float[16];
 	protected float[] mOrthoMatrix = new float[16];
 	protected float[] mEyePos = {0.0f, 0.0f, 0.0f};
@@ -20,7 +21,7 @@ public class Camera {
 	protected float mFar = 200.0f;
 	protected float mFov = 62.0f;
 	protected float[] mTranslation = {0.0f, 0.0f, 0.0f};
-	protected float[] mRotation = {0.0f, 0.0f, 0.0f, 0.0f};
+	protected float[] mRotation = {0.0f, 0.0f, 0.0f, 1.0f};
 	protected float[] mVelocity = {0.0f, 0.0f, 0.0f};
 	
 	public Camera() {		
@@ -57,18 +58,16 @@ public class Camera {
 	public Point getViewport() {
 		return mViewport;
 	}
-
-	public void setViewport(Point viewport) {
-		this.mViewport = viewport;
-	}
 	
 	public float[] getViewMatrix() {
+		if(mViewDirty) {
+			Matrix.setIdentityM(mViewMatrix, 0);
+			orient();
+			Matrix.rotateM(mViewMatrix, 0, mRotation[0], mRotation[1], mRotation[2], mRotation[3]);		
+			Matrix.translateM(mViewMatrix, 0, mTranslation[0], mTranslation[1], mTranslation[2]);
+			mViewDirty = false;
+		}
 		return mViewMatrix;
-	}
-
-	public void setViewMatrix(float[] viewMatrix) {
-		this.mViewMatrix = viewMatrix;
-		orient();
 	}
 	
 	public float[] getProjectionMatrix() {
@@ -83,6 +82,7 @@ public class Camera {
 		Matrix.setLookAtM(mViewMatrix, 0, mEyePos[0], mEyePos[1], mEyePos[2], 
 				mLookVector[0], mLookVector[1], mLookVector[2],
 				mUpVector[0], mUpVector[1], mUpVector[2]);
+		mViewDirty = true;
 	}
 	
 	public float getFar() {
@@ -125,6 +125,7 @@ public class Camera {
 
 	public void setTranslation(float[] mCameraTranslation) {
 		this.mTranslation = mCameraTranslation;
+		mViewDirty = true;
 	}
 
 	public float[] getRotation() {
@@ -133,6 +134,7 @@ public class Camera {
 
 	public void setRotation(float[] mCameraRotation) {
 		this.mRotation = mCameraRotation;
+		mViewDirty = true;
 	}
 
 	public float[] getVelocity() {
@@ -141,6 +143,7 @@ public class Camera {
 
 	public void setVelocity(float[] mCameraVelocity) {
 		this.mVelocity = mCameraVelocity;
+		mViewDirty = true;
 	}
 
 }
