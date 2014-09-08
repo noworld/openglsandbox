@@ -46,6 +46,10 @@ public class ProceduralTexture2D extends Rectangle implements Node {
 		return mBuffers;
 	}
 	
+	public void setBuffers(int[] buffers) {
+		this.mBuffers = buffers;
+	}
+	
 	public String getTextureName() {
 		return mTextureName;
 	}

@@ -9,8 +9,6 @@
     </array>
     
     <array name="textures_cube">
-        <item>@array/skybox_cube</item>
-        <item>@array/citadella_cube</item>
         <item>@array/tenerife_cube</item>
     </array>
     

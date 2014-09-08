@@ -14,13 +14,13 @@ public class HeightmapTexture2D extends ProceduralTexture2D implements Node {
 	@SuppressWarnings("unused")
 	private static final String TAG = HeightmapTexture2D.class.getSimpleName();
 
-	protected int mIterations = 20;
+	protected int mIterations = 100;
 	protected float mMaxHeight = 1.0f;
 	protected float mMinHeight = 0.0f;
 	
 	public HeightmapTexture2D(String shaderName, String textureName, Point dim) {
 		super(shaderName, textureName, dim);
-		RendererManager.getRenderer().renderHeightmap(this, mIterations, mMaxHeight, mMinHeight, 1);
+		RendererManager.getRenderer().renderEllipse(this, mIterations, mMaxHeight, mMinHeight, 1);
 
 	}
 	

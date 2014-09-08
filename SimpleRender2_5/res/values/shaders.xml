@@ -23,8 +23,8 @@
     </array>
     
     <array name="hm_shader">
-        <item >@raw/v_heightmap</item> 
-        <item >@raw/f_heightmap</item>  
+        <item >@raw/v_ellipse</item> 
+        <item >@raw/f_ellipse</item>  
     </array>
 
 </resources>

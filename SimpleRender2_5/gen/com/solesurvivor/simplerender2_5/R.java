@@ -76,17 +76,22 @@ public final class R {
         public static final int simple_render25=0x7f090000;
     }
     public static final class raw {
-        public static final int f_heightmap=0x7f040000;
-        public static final int f_plane=0x7f040001;
-        public static final int f_skybox=0x7f040002;
-        public static final int f_tex=0x7f040003;
-        public static final int gamepad_ui=0x7f040004;
-        public static final int nightwatcher_bb=0x7f040005;
-        public static final int praetorium_bb_regular=0x7f040006;
-        public static final int v_heightmap=0x7f040007;
-        public static final int v_plane=0x7f040008;
-        public static final int v_skybox=0x7f040009;
-        public static final int v_tex=0x7f04000a;
+        public static final int f_crosshairs=0x7f040000;
+        public static final int f_ellipse=0x7f040001;
+        public static final int f_heightmap=0x7f040002;
+        public static final int f_heightmap2=0x7f040003;
+        public static final int f_plane=0x7f040004;
+        public static final int f_skybox=0x7f040005;
+        public static final int f_tex=0x7f040006;
+        public static final int gamepad_ui=0x7f040007;
+        public static final int nightwatcher_bb=0x7f040008;
+        public static final int praetorium_bb_regular=0x7f040009;
+        public static final int v_ellipse=0x7f04000a;
+        public static final int v_heightmap=0x7f04000b;
+        public static final int v_heightmap2=0x7f04000c;
+        public static final int v_plane=0x7f04000d;
+        public static final int v_skybox=0x7f04000e;
+        public static final int v_tex=0x7f04000f;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;

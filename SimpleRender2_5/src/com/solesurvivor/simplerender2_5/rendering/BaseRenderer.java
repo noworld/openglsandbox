@@ -522,11 +522,11 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		//		resetViewportToWorld();
 	}
+	
+	public void renderHeightmapOld(ProceduralTexture2D tex, int numIterations, float maxHeight, float minHeight, int seed) {
 
-	public void renderHeightmap(ProceduralTexture2D tex, int numIterations, float maxHeight, float minHeight, int seed) {
-
-		int[] tempBuffers = genTextureBuffer(tex.getDimension());
-		clearTexture(tempBuffers);
+		int[] tempBuf = genTextureBuffer(GameWorld.inst().getViewport());
+		clearTexture(tempBuf);
 		clearTexture(tex.getBuffers());
 
 		float[] mvpMatrix = new float[16];
@@ -542,7 +542,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
 		int u_dim = GLES20.glGetUniformLocation(shaderHandle, "u_Dimensions");
 		int u_height = GLES20.glGetUniformLocation(shaderHandle, "u_Height");
-		int u_line_vec = GLES20.glGetUniformLocation(shaderHandle, "u_LineVec");
+		int u_line_vec0 = GLES20.glGetUniformLocation(shaderHandle, "u_LineVec[0]");
+		int u_line_vec1 = GLES20.glGetUniformLocation(shaderHandle, "u_LineVec[1]");
 		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
 
 		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
@@ -552,9 +553,6 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
-		
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tempBuffers[2]);
 		
 		GLES20.glUniform2f(u_dim, tex.getDimension().x, tex.getDimension().y);
 
@@ -595,31 +593,225 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		/* Draw the arrays as triangles */
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, tex.getIdxBufHandle());
 		
-		Random randy = new Random(1);
-		for(int i = 0; i < numIterations; i++) {			
-			float height = maxHeight - (((maxHeight - minHeight) * ((float)i)) / numIterations);		
-			float dx = randy.nextFloat() - randy.nextFloat();
-			float dy = randy.nextFloat() - randy.nextFloat();
-			GLES20.glUniform2f(u_line_vec, dx, dy);			
+		float aspect = ((float)tex.getDimension().x) / ((float)tex.getDimension().y);
+		
+		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		
+//		float height = 1.0f/((float)numIterations);
+//		float height = 0.5f;
+//		GLES20.glUniform1f(u_height, height);
+		
+//		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, tex.getBuffers()[1]);
+//		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, tex.getBuffers()[0]);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex.getBuffers()[2]);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tempBuf[2]);
+		
+		Random randy = new Random(11);
+		numIterations = 3;
+		for(int i = 0; i < numIterations; i++) {
+			
+			float height = maxHeight - ((maxHeight - minHeight) * ((float)i)) / numIterations;
+			SSLog.d(TAG, "Hieght at iter %s is %.2f", i, height);
 			GLES20.glUniform1f(u_height, height);
 			
+			float x1 = randy.nextFloat();
+			float y1 = randy.nextFloat();
+			float x2 = randy.nextFloat();
+			float y2 = randy.nextFloat();
+			//This gives range between -1 and 1
+			float dx1 = x2 - x1;
+			float dy1 = y2 - y1;
+			//Assuming landscape
+			dx1 = dx1 * aspect;
+			
+			x1 = randy.nextFloat();
+			y1 = randy.nextFloat();
+			x2 = randy.nextFloat();
+			y2 = randy.nextFloat();
+			float dx2 = x2 - x1;
+			float dy2 = y2 - y1;
+			//Assuming landscape
+			dx2 = dx2 * aspect;
+			GLES20.glUniform2f(u_line_vec0, dx1, dy1);
+			GLES20.glUniform2f(u_line_vec1, dx2-dx1, dy2-dy1);
+			
+			SSLog.d(TAG, "Input vectors: (%.2f,%.2f), (%.2f,%.2f)", dx1, dy1, dx2-dx1, dy2-dy1);
+			
 			if(i % 2 == 0) {
+				//On Even counts, render from TEXTURE0 to TEXTURE1
 				GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+				
+				//From texture 0
+				GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, tempBuf[1]);
+				GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, tempBuf[0]);
+				GLES20.glUniform1i(u_texsampler, 1);
+			} else {
+				//On Odd counts, render from TEXTURE1 to TEXTURE0
+				GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 				GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, tex.getBuffers()[1]);
 				GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, tex.getBuffers()[0]);
-				GLES20.glUniform1i(u_texsampler, 0);
-			} else {
-				GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
-				GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, tempBuffers[1]);
-				GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, tempBuffers[0]);
-				GLES20.glUniform1i(u_texsampler, 0);
+				
+				//From texture 0
+				GLES20.glUniform1i(u_texsampler, 0);				
 			}
+			
+//			if(i % 2 == 0) {
+//				GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+//				GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, tempBuffers[1]);
+//				GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, tempBuffers[0]);
+//				GLES20.glUniform1i(u_texsampler, 1);
+//			} else {
+//				GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+//				GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, tex.getBuffers()[1]);
+//				GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, tex.getBuffers()[0]);
+//				GLES20.glUniform1i(u_texsampler, 0);
+//			}
 			
 			GLES20.glDrawElements(GLES20.GL_TRIANGLES, tex.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
 			checkError();
 		}
 		
+		//If we did an even number of renderings
+		//Then the final rendering is to the temp buffer
+		//So copy it over
+		if(numIterations % 2 == 0) {
+			//Delete the old texture
+			GLES20.glDeleteFramebuffers(1, tex.getBuffers(), 0);
+			GLES20.glDeleteRenderbuffers(1, tex.getBuffers(), 1);
+			GLES20.glDeleteTextures(1, tex.getBuffers(), 2);
+			tex.setBuffers(tempBuf);
+			
+		} else {
+			//Delete the temp texture
+			GLES20.glDeleteFramebuffers(1, tempBuf, 0);
+			GLES20.glDeleteRenderbuffers(1, tempBuf, 1);
+			GLES20.glDeleteTextures(1, tempBuf, 2);
+		}
+		
+		
+		
+		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+		//		resetViewportToWorld();
+	}
 
+	public void renderEllipse(ProceduralTexture2D tex, int numIterations, float maxHeight, float minHeight, int seed) {
+
+//		int[] tempBuf = genTextureBuffer(GameWorld.inst().getViewport());
+//		clearTexture(tempBuf);
+		clearTexture(tex.getBuffers());
+
+		float[] mvpMatrix = new float[16];
+		float[] projectionMatrix = mCurrentCamera.getOrthoMatrix();
+		float[] viewMatrix = mCurrentCamera.getViewMatrix();
+
+		int textureHandle = tex.getTextureHandle();
+		int shaderHandle = tex.getShaderHandle();
+
+		GLES20.glUseProgram(shaderHandle);
+
+		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
+		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
+		int u_water = GLES20.glGetUniformLocation(shaderHandle, "u_WaterColor");
+		int u_land = GLES20.glGetUniformLocation(shaderHandle, "u_LandColor");
+		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
+		int u_num_ell = GLES20.glGetUniformLocation(shaderHandle, "u_NumEllipses");
+
+		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
+		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
+		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
+
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, tex.getDatBufHandle());
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, tex.getPosSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getPosOffset());
+
+		if(a_nrm > -1) {
+			GLES20.glEnableVertexAttribArray(a_nrm);
+			GLES20.glVertexAttribPointer(a_nrm, tex.getNrmSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getNrmOffset());
+		}
+
+		if(a_txc > -1) {
+			GLES20.glEnableVertexAttribArray(a_txc);
+			GLES20.glVertexAttribPointer(a_txc, tex.getTxcSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getTxcOffset());
+		}
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+		// --MV--
+
+		/* Get the MV Matrix: Multiply V * M  = MV */
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, tex.getModelMatrix(), 0);
+		//MVP matrix is *actually MV* at this point
+		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
+
+		// --MVP--
+
+		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+
+		// Draw
+		
+		//Colors
+		GLES20.glUniform4f(u_water, 0.0f, 0.0f, 1.0f, 1.0f);
+		GLES20.glUniform4f(u_land, 0.0f, 1.0f, 0.0f, 1.0f);
+
+		float aspect = ((float)tex.getDimension().x) / ((float)tex.getDimension().y);
+		
+		//Ellipses
+		int numEllipses = 1;
+		GLES20.glUniform1i(u_num_ell, numEllipses);
+		for(int i = 0; i < numEllipses; i++) {
+//			Random randy = new Random(1);
+			float rmin = 1.0f;
+			float rmaj = 1.0f;
+			float rfocsq = (rmaj*rmaj) - (rmin*rmin);
+			
+			int u_rmin = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].min", i));
+			int u_rmaj = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].maj", i));
+			int u_rminsq = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].minsq", i));
+			int u_rmajsq = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].majsq", i));
+			int u_rfocsq = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].rfocsq", i));
+			int u_loc = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].loc", i));
+			
+			GLES20.glUniform1f(u_rmin, rmin);
+			GLES20.glUniform1f(u_rminsq, rmin*rmin);
+			GLES20.glUniform1f(u_rmaj, rmaj);
+			GLES20.glUniform1f(u_rmajsq, rmaj*rmaj);
+			GLES20.glUniform1f(u_rfocsq, rfocsq);
+			GLES20.glUniform2f(u_loc, 0.0f, 0.0f);
+		}
+		
+		/* Draw the arrays as triangles */
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, tex.getIdxBufHandle());
+		
+		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex.getBuffers()[2]);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, tex.getBuffers()[1]);
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, tex.getBuffers()[0]);
+		GLES20.glUniform1i(u_texsampler, 0);
+
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, tex.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+		checkError();
+
+		GLES20.glDisable(GLES20.GL_BLEND);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		//		resetViewportToWorld();
@@ -644,8 +836,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			throw new RuntimeException("Frame buffer not ready.");
 		}
 
-		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		GLES20.glClear( GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
+		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
 	}
 
