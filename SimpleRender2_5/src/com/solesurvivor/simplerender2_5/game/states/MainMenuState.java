@@ -24,12 +24,11 @@ public class MainMenuState extends BaseState {
 		
 		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
 		mScene.addChild(skybox);
-		
 		//Creating procedural texture adds it to the manager
 //		ProceduralTexture2D texture = new ProceduralTexture2D("hm_shader", "procedural1", mCamera.getViewport());
-		HeightmapTexture2D texture = new HeightmapTexture2D("hm_shader", "procedural1", mCamera.getViewport());
+		HeightmapTexture2D texture = new HeightmapTexture2D("hm_shader", "procedural1", new Point(800,600));
 		//Plane will pull the procedural handle
-		Plane plane = new Plane("plane_shader", "procedural1", mCamera.getViewport());
+		Plane plane = new Plane("plane_shader", "procedural1", new Point(800,600));
 		//Add plane as a child of the texture so tex renders first
 		texture.addChild(plane);
 		//add texture to the scene

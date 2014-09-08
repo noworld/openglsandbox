@@ -34,10 +34,10 @@ public abstract class Rectangle implements Drawable {
 		this.mDimension = dim;
 		float aspectWidth = ((float)dim.x)/((float)dim.y);
 		mVertices = new float[]{
-				/*vvv*/-aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,0.0f,
-				/*vvv*/ aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,0.0f,
-				/*vvv*/-aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,1.0f,
-				/*vvv*/ aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,1.0f};
+				/*vvv*/-aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,1.0f,
+				/*vvv*/ aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,1.0f,
+				/*vvv*/-aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,0.0f,
+				/*vvv*/ aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,0.0f};
 
 		BaseRenderer ren = RendererManager.getRenderer();
 		mDatHandle = ren.loadToVbo(SSArrayUtil.floatToByteArray(mVertices));

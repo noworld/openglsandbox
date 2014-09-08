@@ -20,7 +20,7 @@ public class HeightmapTexture2D extends ProceduralTexture2D implements Node {
 	
 	public HeightmapTexture2D(String shaderName, String textureName, Point dim) {
 		super(shaderName, textureName, dim);
-		RendererManager.getRenderer().renderEllipse(this, mIterations, mMaxHeight, mMinHeight, 1);
+		RendererManager.getRenderer().renderEllipse(this);
 
 	}
 	

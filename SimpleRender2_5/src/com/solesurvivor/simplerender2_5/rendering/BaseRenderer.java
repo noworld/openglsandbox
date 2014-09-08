@@ -14,6 +14,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
@@ -29,6 +30,7 @@ import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.Drawable;
 import com.solesurvivor.simplerender2_5.scene.Light;
 import com.solesurvivor.simplerender2_5.scene.ProceduralTexture2D;
+import com.solesurvivor.simplerender2_5.scene.RandomEllipse;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
@@ -701,23 +703,15 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		//		resetViewportToWorld();
 	}
 
-	public void renderEllipse(ProceduralTexture2D tex, int numIterations, float maxHeight, float minHeight, int seed) {
+	public void renderEllipse(ProceduralTexture2D tex) {
 
-//		int[] tempBuf = genTextureBuffer(GameWorld.inst().getViewport());
-//		clearTexture(tempBuf);
 		clearTexture(tex.getBuffers());
-
-		float[] mvpMatrix = new float[16];
-		float[] projectionMatrix = mCurrentCamera.getOrthoMatrix();
-		float[] viewMatrix = mCurrentCamera.getViewMatrix();
 
 		int textureHandle = tex.getTextureHandle();
 		int shaderHandle = tex.getShaderHandle();
 
 		GLES20.glUseProgram(shaderHandle);
-
-		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
-		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
+		
 		int u_water = GLES20.glGetUniformLocation(shaderHandle, "u_WaterColor");
 		int u_land = GLES20.glGetUniformLocation(shaderHandle, "u_LandColor");
 		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
@@ -726,7 +720,6 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
 		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
 		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
-
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
@@ -748,36 +741,39 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
-		// --MV--
-
-		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, tex.getModelMatrix(), 0);
-		//MVP matrix is *actually MV* at this point
-		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
-
-		// --MVP--
-
-		/* Get the MVP Matrix: Multiply P * MV = MVP*/
-		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
-		//MVP is MVP at this point
-		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
-
 		// Draw
+		GLES20.glViewport(0, 0, tex.getDimension().x, tex.getDimension().y);		
 		
 		//Colors
 		GLES20.glUniform4f(u_water, 0.0f, 0.0f, 1.0f, 1.0f);
 		GLES20.glUniform4f(u_land, 0.0f, 1.0f, 0.0f, 1.0f);
-
-		float aspect = ((float)tex.getDimension().x) / ((float)tex.getDimension().y);
 		
-		//Ellipses
+		//Ellipses		
+		
+		Random randy = new Random(13);
+		
+		float[] levels = {0.5f, 0.25f};		
+		RandomEllipse elli = new RandomEllipse(randy, levels);
+		
 		int numEllipses = 1;
+		
+		if(elli.getEllipses() != null) {
+			numEllipses += elli.getEllipses().length;
+		}
+		
+		RandomEllipse[] ellipses = new RandomEllipse[numEllipses];
+						
+		if(elli.getEllipses() != null) {
+			System.arraycopy(elli.getEllipses(), 0, ellipses, 1, elli.getEllipses().length);
+		}
+		
+		ellipses[0] = elli;
+		
 		GLES20.glUniform1i(u_num_ell, numEllipses);
-		for(int i = 0; i < numEllipses; i++) {
-//			Random randy = new Random(1);
-			float rmin = 1.0f;
-			float rmaj = 1.0f;
-			float rfocsq = (rmaj*rmaj) - (rmin*rmin);
+		
+		for(int i = 0; i < numEllipses; i++) {			
+			
+			RandomEllipse elli2 = ellipses[i];
 			
 			int u_rmin = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].min", i));
 			int u_rmaj = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].maj", i));
@@ -785,13 +781,15 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			int u_rmajsq = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].majsq", i));
 			int u_rfocsq = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].rfocsq", i));
 			int u_loc = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].loc", i));
+			int u_oper = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Ellipses[%s].oper", i));
 			
-			GLES20.glUniform1f(u_rmin, rmin);
-			GLES20.glUniform1f(u_rminsq, rmin*rmin);
-			GLES20.glUniform1f(u_rmaj, rmaj);
-			GLES20.glUniform1f(u_rmajsq, rmaj*rmaj);
-			GLES20.glUniform1f(u_rfocsq, rfocsq);
-			GLES20.glUniform2f(u_loc, 0.0f, 0.0f);
+			GLES20.glUniform1f(u_rmin, elli2.getAxes().x);
+			GLES20.glUniform1f(u_rminsq, elli2.getAxesSq().x);
+			GLES20.glUniform1f(u_rmaj, elli2.getAxes().y);
+			GLES20.glUniform1f(u_rmajsq, elli2.getAxesSq().y);
+			GLES20.glUniform1f(u_rfocsq, elli2.getRFocSq());
+			GLES20.glUniform1i(u_oper, elli2.getOper());
+			GLES20.glUniform2f(u_loc, elli2.getLocation().x, elli2.getLocation().y);
 		}
 		
 		/* Draw the arrays as triangles */
@@ -811,6 +809,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, tex.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
 		checkError();
 
+		Point viewport = GameWorld.inst().getViewport();
+		GLES20.glViewport(0, 0,viewport.x, viewport.y);	
+		
 		GLES20.glDisable(GLES20.GL_BLEND);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);

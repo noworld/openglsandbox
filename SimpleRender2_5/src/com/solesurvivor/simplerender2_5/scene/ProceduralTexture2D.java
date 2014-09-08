@@ -33,13 +33,9 @@ public class ProceduralTexture2D extends Rectangle implements Node {
 		mChildren = new ArrayList<Node>();
 		this.mShaderHandle = ShaderManager.getShaderId(shaderName);
 		BaseRenderer ren = RendererManager.getRenderer();
-		mBuffers = ren.genTextureBuffer(mDimension);
+		mBuffers = ren.genTextureBuffer(dim);
 		this.mTextureName = textureName;
 		TextureManager.registerTexture(textureName, mBuffers[2]);
-		Matrix.setIdentityM(mModelMatrix, 0);
-		float orthoScale = ((float)mDimension.y)/2.0f;
-		Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -2.0f);
-		Matrix.scaleM(mModelMatrix, 0, orthoScale, orthoScale, 0.0f);
 	}
 
 	public int[] getBuffers() {
