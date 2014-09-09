@@ -14,6 +14,7 @@ public class GameStateManager {
 		Map<GameStateEnum,GameState> states = new HashMap<GameStateEnum,GameState>();
 		
 		states.put(GameStateEnum.MAIN_MENU, new MainMenuState());
+		states.put(GameStateEnum.WATER_RENDERING, new WaterRenderingState());
 
 		sGameStates = Collections.unmodifiableMap(states);
 	}

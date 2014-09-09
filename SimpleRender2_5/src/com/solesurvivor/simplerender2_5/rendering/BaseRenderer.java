@@ -78,7 +78,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		}
 
 		GameStateManager.init();
-		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.MAIN_MENU));
+		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.WATER_RENDERING));
 	}
 
 

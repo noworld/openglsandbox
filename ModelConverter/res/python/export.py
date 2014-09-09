@@ -2,10 +2,14 @@
 #Custom Properties:
 #scene.hzg_file_name - name of zip file to write
 #object.hzg_type - type of object to be populated by the reading program
+#	- Defaults to "ENTITY"
+#	- GEO_MIPMAP - Used for terrain geometry
 #object.hzg_export_mode - how to export the data for this object
-#	- POSITION_ONLY - Write tightly packed vertex position data, no normals or texture coordinates
+#	- V   - Write tightly packed vertex position data, no normals or texture coordinates (VVV)
+#	- VC  - Write Vertex position and Texture Coordinates in VVVCC format.
 #	- VNC - Write packed Vertex/Normal/TexCoord data in VVVNNNCC format
-#
+#object.hzg_round - integer, how many places to round decimals
+
 import bpy
 import bmesh
 import zipfile
@@ -23,7 +27,7 @@ bps = 2
 clear_work_directory = True
 proj_path = os.environ.get("BLENDER_EXPORT_WORK", "C:\\Users\\nicholas.waun\\git\\openglsandbox\\ModelConverter")
 #out_path = proj_path+"\\res\\out\\"
-out_path = "C:\\Users\\nicholas.waun\\git\\openglsandbox\\SimpleRender2\\res\\raw\\"
+out_path = "C:\\Users\\nicholas.waun\\git\\openglsandbox\\SimpleRender2_5\\res\\raw\\"
 work_path = proj_path+"\\res\\work\\"
 dsc_ext = ".dsc"
 vbo_ext = ".v"
@@ -31,6 +35,8 @@ ibo_ext = ".i"
 def write_mesh_files(obj, scene):
     scene.objects.active = obj
     file_name = obj.name
+    export_mode = obj["hzg_export_mode"] or "VNC" 
+    print("HZG_EXPORT_MODE is",export_mode)
     bpy.ops.object.modifier_apply(modifier='Subsurf')
     round_verts = obj.get("hzg_round",0)
     bm = bmesh.new()
@@ -43,19 +49,26 @@ def write_mesh_files(obj, scene):
     uv_lay = bm.loops.layers.uv.active #This will be None if object is not unwrapped
     print("Active layer:",uv_lay)
    
-    if(uv_lay is None):
+    if(uv_lay is None or export_mode == "V"):
         print("UV coords will not be exported for",obj.name)
         nrm_offset = 3 * bpf
         txc_offset = -1
         stride = 6 * bpf
+    elif(export_mode == "VC"):
+        print("Normals will not be exported for",obj.name)
+        nrm_offset = -1
+        txc_offset = 3 * bpf
+        stride = 5 * bpf
     else:
+        print("Exporting data in VNC format for",obj.name)
         nrm_offset = 3 * bpf
         txc_offset = 6 * bpf
         stride = 8 * bpf
+        
     vboBytes = bytearray(len(bm.faces)*3*stride)
     iboBytes = bytearray()
     dscString = "OBJECT_NAME=%s" % obj.name
-    dscString += "\nOBJECT_TYPE=GAME_ENTITY"
+    dscString += "\nOBJECT_TYPE=%s" % (obj["hzg_type"] or "ENTITY")
     dscString += "\nNUM_ELEMENTS=%i" % (len(bm.faces)*3)
     dscString += "\nPOS_OFFSET=0"
     dscString += "\nNRM_OFFSET=%i" % nrm_offset
@@ -67,23 +80,24 @@ def write_mesh_files(obj, scene):
     print("**** STRIDE IS:",stride)
     ctr = 0
     for face in bm.faces:
-        print("**** Face #",face.index)
+#        print("**** Face #",face.index)
         for loop in face.loops:
-            print("**** Loop vert #",loop.vert.index)
+#            print("**** Loop vert #",loop.vert.index)
             pos = bm.verts[loop.vert.index].co
-            print("**** Vert: %.5f,%.5f,%.5f" % (pos.x,pos.y,pos.z))
+#            print("**** Vert: %.5f,%.5f,%.5f" % (pos.x,pos.y,pos.z))
             if(round_verts):
                 struct.pack_into(">fff", vboBytes, ctr * stride, round(pos.x,5), round(pos.y,5), round(pos.z,5))
             else:
                 struct.pack_into(">fff", vboBytes, ctr * stride, pos.x,pos.y,pos.z)
             
-            nrm = bm.verts[loop.vert.index].normal
-            print("**** Normal: %.4f,%.4f,%.4f" % (nrm.x, nrm.y, nrm.z))
-            struct.pack_into(">fff", vboBytes, (ctr * stride) + nrm_offset, nrm.x,nrm.y,nrm.z)
+            if(export_mode == "VNC"):
+                nrm = bm.verts[loop.vert.index].normal
+#                print("**** Normal: %.4f,%.4f,%.4f" % (nrm.x, nrm.y, nrm.z))
+                struct.pack_into(">fff", vboBytes, (ctr * stride) + nrm_offset, nrm.x,nrm.y,nrm.z)
             
-            if(uv_lay is not None):
+            if(uv_lay is not None and export_mode != "V"):
                 txc = loop[uv_lay].uv
-                print("**** Texture Coords:", txc.x, ",", txc.y)
+#                print("**** Texture Coords:", txc.x, ",", txc.y)
                 struct.pack_into(">ff", vboBytes, (ctr * stride) + txc_offset, txc.x, 1-txc.y)
             
             iboBytes += struct.pack(">h",ctr)

@@ -7,14 +7,14 @@ import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
 
-public class MainMenuState extends BaseState {
+public class WaterRenderingState extends BaseState {
 
 	@SuppressWarnings("unused")
-	private static final String TAG = MainMenuState.class.getSimpleName();
+	private static final String TAG = WaterRenderingState.class.getSimpleName();
 	
 	protected Camera mCamera;
 	
-	public MainMenuState() {
+	public WaterRenderingState() {
 		Point viewport = GameWorld.inst().getViewport();
 		mCamera = new Camera();
 		mCamera.resizeViewport(viewport);

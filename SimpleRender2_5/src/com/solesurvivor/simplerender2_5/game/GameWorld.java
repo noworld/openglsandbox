@@ -3,9 +3,6 @@ package com.solesurvivor.simplerender2_5.game;
 import android.graphics.Point;
 
 import com.solesurvivor.simplerender2_5.game.states.GameState;
-import com.solesurvivor.simplerender2_5.game.states.GameStateEnum;
-import com.solesurvivor.simplerender2_5.game.states.GameStateManager;
-import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 
 
 public class GameWorld {
