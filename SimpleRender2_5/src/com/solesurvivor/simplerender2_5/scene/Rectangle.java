@@ -106,7 +106,7 @@ public abstract class Rectangle implements Drawable {
 	}
 	
 	@Override
-	public float[] getModelMatrix() {
+	public float[] getWorldMatrix() {
 		return this.mModelMatrix;
 	}
 }

@@ -4,6 +4,8 @@ public class TerrainTile implements Node {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = TerrainTile.class.getSimpleName();
+	
+//	protected GeoMipLevel[] mMiplevels;
 
 	@Override
 	public void update() {

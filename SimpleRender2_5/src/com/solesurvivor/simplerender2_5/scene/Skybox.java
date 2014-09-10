@@ -130,7 +130,7 @@ public class Skybox implements Node, Drawable {
 	}
 
 	@Override
-	public float[] getModelMatrix() {
+	public float[] getWorldMatrix() {
 		return mModelMatrix;
 	}
 

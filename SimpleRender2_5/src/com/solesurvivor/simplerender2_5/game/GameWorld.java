@@ -1,6 +1,7 @@
 package com.solesurvivor.simplerender2_5.game;
 
 import android.graphics.Point;
+import android.os.SystemClock;
 
 import com.solesurvivor.simplerender2_5.game.states.GameState;
 
@@ -12,6 +13,9 @@ public class GameWorld {
 	private GameState mCurrentState;
 	private GameState mPreviousState;
 	private Point mViewport;
+	
+	private long mDeltaT = 0L;
+	private long mLastT = SystemClock.uptimeMillis(); 
 
 	private GameWorld() {
 
@@ -29,7 +33,10 @@ public class GameWorld {
 		return mCurrentState;
 	}
 	
-	public void update() {	
+	public void update() {
+		long tempT = SystemClock.uptimeMillis();
+		mDeltaT = tempT - mLastT;
+		mLastT = tempT;
 		this.mCurrentState.execute();
 	}
 
@@ -65,6 +72,10 @@ public class GameWorld {
 		if(mCurrentState != null) {
 			mCurrentState.resizeViewport(viewport);
 		}
+	}
+	
+	public long getDeltaT() {
+		return mDeltaT;
 	}
 	
 }

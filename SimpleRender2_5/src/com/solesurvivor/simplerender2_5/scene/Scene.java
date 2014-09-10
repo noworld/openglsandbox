@@ -12,7 +12,9 @@ public class Scene implements Node {
 
 	@Override
 	public void update() {
-		
+		for(Node n : mChildren) {
+			n.update();
+		}
 	}
 
 	@Override

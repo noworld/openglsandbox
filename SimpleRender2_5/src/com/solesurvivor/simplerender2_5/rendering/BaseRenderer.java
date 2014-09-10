@@ -344,7 +344,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		Matrix.setIdentityM(viewMatrix, 0);
 		float[] camRot = mCurrentCamera.getRotation();
 		Matrix.rotateM(viewMatrix, 0, camRot[0], camRot[1], camRot[2], camRot[3]);
-		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, skybox.getModelMatrix(), 0);
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, skybox.getWorldMatrix(), 0);
 		//MVP matrix is *actually MV* at this point
 		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
 
@@ -412,7 +412,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// --MV--
 
 		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, draw.getModelMatrix(), 0);
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, draw.getWorldMatrix(), 0);
 
 		if(u_mv > -1) {
 			//MVP matrix is *actually MV* at this point
@@ -432,7 +432,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		//Switching to view space...
 		//TODO: Handle multiple lights
 		List<Light> lights = draw.getLights();
-		if(lights != null) {
+		if(lights != null && lights.size() > 0) {
 			Light light = lights.get(0);
 			float[] lightPosWorldSpace = new float[4];
 			float[] lightPosEyeSpace = new float[4];
@@ -501,7 +501,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// --MV--
 
 		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, tex.getModelMatrix(), 0);
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, tex.getWorldMatrix(), 0);
 		//MVP matrix is *actually MV* at this point
 		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
 
@@ -579,7 +579,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// --MV--
 
 		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, tex.getModelMatrix(), 0);
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, tex.getWorldMatrix(), 0);
 		//MVP matrix is *actually MV* at this point
 		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
 

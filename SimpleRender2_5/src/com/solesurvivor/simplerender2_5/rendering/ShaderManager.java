@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -25,7 +26,38 @@ public class ShaderManager {
 	}
 	
 	public static int getShaderId(String name) {
-		return mShaders.get(name);
+		Integer shader = null;
+
+		if(StringUtils.isNotBlank(name)) {
+			shader = mShaders.get(name);
+		}
+		
+		if(shader == null) {
+			shader = -1;
+		}
+		
+		return shader;
+	}
+	
+	public static int getShaderId(String name, String... alternate) {
+		Integer shader = getShaderId(name);
+		
+		if(shader != null && shader > -1) {
+			return shader;
+		} else {
+			for(String s : alternate) {
+				if(StringUtils.isNotBlank(s)) {
+					shader = getShaderId(s);
+					if(shader != null) break;
+				}
+			}
+		}
+		
+		if(shader == null) {
+			shader = -1;
+		}
+		
+		return shader;
 	}
 	
 	private static void loadShaders() {

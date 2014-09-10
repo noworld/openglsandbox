@@ -16,6 +16,6 @@ public interface Drawable {
 	public int getPosOffset();
 	public int getNrmOffset();
 	public int getTxcOffset();
-	public float[] getModelMatrix();
+	public float[] getWorldMatrix();
 	public List<Light> getLights();
 }

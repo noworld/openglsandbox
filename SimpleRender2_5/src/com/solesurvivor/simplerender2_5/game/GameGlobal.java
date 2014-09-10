@@ -18,6 +18,7 @@ public class GameGlobal {
 	public static final String NEWLINE = "\r\n";
 	public static final String PLUS = "+";
 	public static final String COMMA = ",";
+	public static final String DOT = ".";
 	public static final String ARRAY_RESOURCE_TYPE = "array";
 	public static final String RESOURCE_PACKAGE = "com.solesurvivor.simplerender2_5";
 	

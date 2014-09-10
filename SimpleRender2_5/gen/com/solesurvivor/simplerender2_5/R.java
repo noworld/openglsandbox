@@ -65,6 +65,7 @@ public final class R {
         public static final int tenerife3=0x7f020018;
         public static final int tenerife4=0x7f020019;
         public static final int tenerife5=0x7f02001a;
+        public static final int uvgrid=0x7f02001b;
     }
     public static final class id {
         public static final int action_settings=0x7f0a0000;

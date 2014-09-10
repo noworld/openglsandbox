@@ -3,6 +3,8 @@ package com.solesurvivor.simplerender2_5.rendering;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -35,7 +37,38 @@ public class TextureManager {
 	}
 	
 	public static int getTextureId(String name) {
-		return mTextures.get(name);		
+		Integer texture = null;
+		
+		if(StringUtils.isNotBlank(name)) {
+			texture = mTextures.get(name);
+		}
+		
+		if(texture == null) {
+			texture = -1;
+		}
+		
+		return texture;		
+	}
+	
+	public static int getTextureId(String name, String... alternate) {
+		Integer texture = getTextureId(name);
+		
+		if(texture != null && texture > -1) {
+			return texture;
+		} else {
+			for(String s : alternate) {
+				if(StringUtils.isNotBlank(s)) {
+					texture = getTextureId(s);
+					if(texture != null) break;
+				}
+			}
+		}
+		
+		if(texture == null) {
+			texture = -1;
+		}
+		
+		return texture;
 	}
 
 	private static void load2DTextures() {

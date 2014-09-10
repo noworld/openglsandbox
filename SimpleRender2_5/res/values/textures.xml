@@ -6,6 +6,7 @@
         <item>@drawable/btn_x</item>
         <item>@drawable/btn_y</item>
         <item>@drawable/dpad</item>
+        <item>@drawable/uvgrid</item>
     </array>
     
     <array name="textures_cube">
