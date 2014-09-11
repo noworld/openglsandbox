@@ -23,7 +23,7 @@ public class GeometryNode implements Node {
 
 	@Override
 	public void update() {
-		float angle = (GameWorld.inst().getDeltaT() / 900) * 1.0f; //1 deg per second
+		float angle = (GameWorld.inst().getDeltaT() / 1000.0f) * 10.0f;
 		mGeometry.rotate(angle, new Vec3(1.0f, 0.0f, 0.0f));
 	}
 

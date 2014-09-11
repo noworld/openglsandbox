@@ -34,22 +34,18 @@ public class Geometry implements Drawable {
 	protected int mTextureHandle;
 	protected List<Light> mLights;
 	
-	protected float[] mRotMatrix;
-	protected float[] mTransMatrix;
-	protected float[] mScaleMatrix;
+	protected Vec3 mTransDir;
+	protected Vec3 mScaleFac;
 	protected Vec3 mRotAxes;
-	protected float mRotAngle = 0.0f;
+	protected float mRotAngle;	
 	
 	protected boolean mDirty = true;
 	
 	protected Geometry() {
 		super();
-		mWorldMatrix = new float[16];
-		mRotMatrix = new float[16];
-		mTransMatrix = new float[16];
-		mScaleMatrix = new float[16];
-		resetTransforms();
+		mWorldMatrix = new float[16];		
 		mLights = new ArrayList<Light>();
+		resetTransforms();
 	}
 
 	public Geometry(String name, int shaderHandle, int dataBufHandle, int idxBufHandle,
@@ -146,39 +142,41 @@ public class Geometry implements Drawable {
 	}
 	
 	public void rotate(float angle, Vec3 dir) {
-		Matrix.rotateM(mRotMatrix, 0, angle, dir.getX(), dir.getY(), dir.getZ());
-		mRotAxes = dir.normalize();
+		if(mRotAxes == null) {
+			mRotAxes = dir.normalizeClone();
+		} else {
+			mRotAxes.add(dir);
+			mRotAxes.normalize();
+		}
+		
 		mRotAngle += angle;
 		mDirty = true;
 	}
 	
 	public void translate(Vec3 dir) {
-		Matrix.translateM(mTransMatrix, 0, dir.getX(), dir.getY(), dir.getZ());
+		mTransDir.add(dir);
 		mDirty = true;
 	}
 	
-	public void scale(Vec3 scale) {
-		Matrix.scaleM(mScaleMatrix, 0, scale.getX(), scale.getY(), scale.getZ());
+	public void scale(Vec3 fac) {
+		mScaleFac.componentScale(fac);
 		mDirty = true;
 	}
 	
 	public void resetTransforms() {
 		Matrix.setIdentityM(mWorldMatrix, 0);
-		Matrix.setIdentityM(mRotMatrix, 0);
-		Matrix.setIdentityM(mTransMatrix, 0);
-		Matrix.setIdentityM(mScaleMatrix, 0);
+		mTransDir = new Vec3(0.0f,0.0f,0.0f);
+		mScaleFac = new Vec3(1.0f,1.0f,1.0f);
+		mRotAxes = null;
+		mRotAngle = 0.0f;	
 		mDirty = false;
 	}
 	
 	private void applyTransforms() {
-		float[] temp = new float[16];
-		Matrix.setIdentityM(temp, 0);
-		Matrix.multiplyMM(mWorldMatrix, 0, mTransMatrix, 0, temp, 0);
+		Matrix.setIdentityM(mWorldMatrix, 0);		
+		Matrix.translateM(mWorldMatrix, 0, mTransDir.getX(), mTransDir.getY(), mTransDir.getZ());
 		Matrix.rotateM(mWorldMatrix, 0, mRotAngle, mRotAxes.getX(), mRotAxes.getY(), mRotAxes.getZ());
-		
-//		mWorldMatrix = temp;
-//		Matrix.multiplyMM(temp2, 0, mRotMatrix, 0, mWorldMatrix, 0);
-//		mWorldMatrix = temp2;
+		Matrix.scaleM(mWorldMatrix, 0, mScaleFac.getX(), mScaleFac.getY(), mScaleFac.getZ());
 
 		mDirty = false;
 	}

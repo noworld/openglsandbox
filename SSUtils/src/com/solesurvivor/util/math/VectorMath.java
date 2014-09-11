@@ -1,6 +1,5 @@
 package com.solesurvivor.util.math;
 
-import android.util.FloatMath;
 
 public class VectorMath {
 	

@@ -14,7 +14,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
@@ -370,6 +369,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 	public void drawGeometry(Drawable draw) {
 
+		float[] mvMatrix = new float[16];
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
 		float[] viewMatrix = mCurrentCamera.getViewMatrix();
@@ -409,20 +409,20 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
-		// --MV--
-
+		// --MV--		
+		
 		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, draw.getWorldMatrix(), 0);
+		Matrix.multiplyMM(mvMatrix, 0, viewMatrix, 0, draw.getWorldMatrix(), 0);
 
 		if(u_mv > -1) {
-			//MVP matrix is *actually MV* at this point
-			GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
+			GLES20.glUniformMatrix4fv(u_mv, 1, false, mvMatrix, 0); //1282
 		}
 
 		// --MVP--
 
 		/* Get the MVP Matrix: Multiply P * MV = MVP*/
-		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvMatrix, 0);
+		
 		//MVP is MVP at this point
 		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
 

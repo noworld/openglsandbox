@@ -28,9 +28,44 @@ public class Vec4 extends Vec3 {
 		return w;
 	}
 	
-	public Vec4 normalize() {
-		float len = (float)Math.sqrt((x*x) + (y*y) + (z*z));
-		return new Vec4(x/len, y/len, z/len, len);
+	public void normalize() {
+		if(x != 0.0f || y != 0.0f || z != 0.0f) { //Cannot normalize 0 vector
+			float len = (float)Math.sqrt((x*x) + (y*y) + (z*z));
+			x /= len;
+			y /= len;
+			z /= len;
+			w = 1/len;
+		}
+	}
+	
+	public Vec4 normalizeClone() {
+		if(x != 0.0f || y != 0.0f || z != 0.0f) { //Cannot normalize 0 vector
+			float len = (float)Math.sqrt((x*x) + (y*y) + (z*z));
+			return new Vec4(x/len, y/len, z/len, 1/len);
+		}
+		
+		return new Vec4(x,y,z,w);
+	}
+	
+	public void add(Vec4 other) {
+		this.x += other.x;
+		this.y += other.y;
+		this.z += other.z;
+		this.w += other.w;
+	}
+	
+	public void scale(float fac) {
+		this.x *= fac;
+		this.y *= fac;
+		this.z *= fac;
+		this.w *= fac;
+	}
+	
+	public void componentScale(Vec4 other) {
+		this.x *= other.x;
+		this.y *= other.y;
+		this.z *= other.z;
+		this.w *= other.w;
 	}
 
 	public static Vec4 valueOf(String s) {

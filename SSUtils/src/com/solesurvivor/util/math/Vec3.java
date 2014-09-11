@@ -36,9 +36,41 @@ public class Vec3 extends Vec2 {
 		return z;
 	}
 	
-	public Vec3 normalize() {
-		float len = (float)Math.sqrt((x*x) + (y*y) + (z*z));
-		return new Vec3(x/len, y/len, z/len);
+
+	public void normalize() {
+		if(x != 0.0f || y != 0.0f || z != 0.0f) { //Cannot normalize 0 vector
+			float len = (float)Math.sqrt((x*x) + (y*y) + (z*z));
+			x /= len;
+			y /= len;
+			z /= len;
+		}
+	}
+	
+	public Vec3 normalizeClone() {
+		if(x != 0.0f || y != 0.0f || z != 0.0f) { //Cannot normalize 0 vector
+			float len = (float)Math.sqrt((x*x) + (y*y) + (z*z));
+			return new Vec3(x/len, y/len, z/len);
+		}
+		
+		return new Vec3(x,y,z);
+	}
+	
+	public void add(Vec3 other) {
+		this.x += other.x;
+		this.y += other.y;
+		this.z += other.z;
+	}
+	
+	public void scale(float fac) {
+		this.x *= fac;
+		this.y *= fac;
+		this.z *= fac;
+	}
+	
+	public void componentScale(Vec3 other) {
+		this.x *= other.x;
+		this.y *= other.y;
+		this.z *= other.z;
 	}
 	
 	@Override

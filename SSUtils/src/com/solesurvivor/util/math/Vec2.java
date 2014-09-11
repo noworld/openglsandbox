@@ -43,9 +43,36 @@ public class Vec2 {
 		return String.format("(%s,%s)",x,y);
 	}
 	
-	public Vec2 normalize() {
-		float len = (float)Math.sqrt((x*x) + (y*y));
-		return new Vec2(x/len, y/len);
+	public void normalize() {
+		if(x != 0.0f || y != 0.0f) { //Cannot normalize 0 vector
+			float len = (float)Math.sqrt((x*x) + (y*y));
+			x /= len;
+			y /= len;
+		}
+	}
+	
+	public Vec2 normalizeClone() {
+		if(x != 0.0f || y != 0.0f) { //Cannot normalize 0 vector
+			float len = (float)Math.sqrt((x*x) + (y*y));
+			return new Vec2(x/len, y/len);
+		}
+		
+		return new Vec2(x,y);
+	}
+	
+	public void add(Vec2 other) {
+		this.x += other.x;
+		this.y += other.y;
+	}
+	
+	public void scale(float fac) {
+		this.x *= fac;
+		this.y *= fac;
+	}
+	
+	public void componentScale(Vec2 other) {
+		this.x *= other.x;
+		this.y *= other.y;
 	}
 	
 	@Override
