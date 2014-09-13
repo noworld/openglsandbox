@@ -366,8 +366,12 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		checkError();
 	}
-
+	
 	public void drawGeometry(Drawable draw) {
+		drawGeometry(draw, draw.getWorldMatrix());
+	}
+
+	public void drawGeometry(Drawable draw, float[] mModelMatrix) {
 
 		float[] mvMatrix = new float[16];
 		float[] mvpMatrix = new float[16];
@@ -412,7 +416,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// --MV--		
 		
 		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.multiplyMM(mvMatrix, 0, viewMatrix, 0, draw.getWorldMatrix(), 0);
+		Matrix.multiplyMM(mvMatrix, 0, viewMatrix, 0, mModelMatrix, 0);
 
 		if(u_mv > -1) {
 			GLES20.glUniformMatrix4fv(u_mv, 1, false, mvMatrix, 0); //1282

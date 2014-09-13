@@ -15,5 +15,8 @@ public enum GlobalKeysEnum {
 	MESH_SUFFIX,
 	
 	//Global Input Handlers
-	BACK_BUTTON_INPUT_HANDLER;
+	BACK_BUTTON_INPUT_HANDLER,
+	
+	//Camera
+	INITIAL_CAMERA_HEIGHT;
 }

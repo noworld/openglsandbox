@@ -11,6 +11,9 @@
             <item>IBO_FILE_EXT|.i</item>
             <item>INDEX_FILE_NAME|index</item>
             <item>ASSET_FILE_NAME|asset.xml</item>
-            <item>MESH_SUFFIX|-mesh</item>            
+            <item>MESH_SUFFIX|-mesh</item>   
+            
+            <!-- CAMERA -->
+            <item>INITIAL_CAMERA_HEIGHT|2.0f</item>   
         </string-array>    
     </resources>

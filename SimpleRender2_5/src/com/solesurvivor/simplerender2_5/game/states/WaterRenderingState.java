@@ -1,19 +1,15 @@
 package com.solesurvivor.simplerender2_5.game.states;
 
-import java.io.IOException;
-import java.util.List;
-
 import android.graphics.Point;
+import android.opengl.Matrix;
 
-import com.solesurvivor.simplerender2_5.R;
+import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
-import com.solesurvivor.simplerender2_5.io.GeometryIO;
+import com.solesurvivor.simplerender2_5.game.GlobalKeysEnum;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
-import com.solesurvivor.simplerender2_5.scene.Geometry;
-import com.solesurvivor.simplerender2_5.scene.GeometryNode;
+import com.solesurvivor.simplerender2_5.scene.SeaTilesManager;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
-import com.solesurvivor.util.logging.SSLog;
 
 public class WaterRenderingState extends BaseState {
 
@@ -24,21 +20,21 @@ public class WaterRenderingState extends BaseState {
 	
 	public WaterRenderingState() {
 		Point viewport = GameWorld.inst().getViewport();
-		mCamera = new Camera();
+		mCamera = new Camera();		
 		mCamera.resizeViewport(viewport);
+		float camHeight = Float.valueOf(GameGlobal.inst().getVal(GlobalKeysEnum.INITIAL_CAMERA_HEIGHT));
+		float[] eyePos = mCamera.getEyePos();
+		float[] lookVec = mCamera.getLookVector();
+		eyePos[1] += camHeight;
+		lookVec[1] += camHeight;
+		mCamera.setEyePos(eyePos);
+		mCamera.setLookVector(lookVec);
 		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		
 		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
 		mScene.addChild(skybox);
 		
-		try {
-			List<Geometry> geoMipPlanes = GeometryIO.loadGeometry(R.raw.geomip);
-			for(Geometry geo : geoMipPlanes) {
-				mScene.addChild(new GeometryNode(geo));
-			}
-		} catch (IOException e) {
-			SSLog.e(TAG, "Error loading geomip.", e);
-		}
+		mScene.addChild(new SeaTilesManager());
 	}
 
 	@Override
@@ -50,6 +46,10 @@ public class WaterRenderingState extends BaseState {
 	@Override
 	public void execute() {
 		super.execute();
+		float angle = GameWorld.inst().getDeltaT() / 1000.0f * 5.0f;
+		float[] rot = mCamera.getRotation();
+		float[] newRot = {rot[0] + angle, 0.0f, 1.0f, 0.0f};
+		mCamera.setRotation(newRot);
 	}
 	
 	@Override

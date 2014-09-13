@@ -3,10 +3,9 @@ package com.solesurvivor.simplerender2_5.scene;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.solesurvivor.util.math.Vec3;
-
 import android.opengl.Matrix;
-import android.test.MoreAsserts;
+
+import com.solesurvivor.util.math.Vec3;
 
 public class Geometry implements Drawable {
 
@@ -172,10 +171,12 @@ public class Geometry implements Drawable {
 		mDirty = false;
 	}
 	
-	private void applyTransforms() {
+	protected void applyTransforms() {
 		Matrix.setIdentityM(mWorldMatrix, 0);		
 		Matrix.translateM(mWorldMatrix, 0, mTransDir.getX(), mTransDir.getY(), mTransDir.getZ());
-		Matrix.rotateM(mWorldMatrix, 0, mRotAngle, mRotAxes.getX(), mRotAxes.getY(), mRotAxes.getZ());
+		if(mRotAxes != null) {
+			Matrix.rotateM(mWorldMatrix, 0, mRotAngle, mRotAxes.getX(), mRotAxes.getY(), mRotAxes.getZ());
+		}
 		Matrix.scaleM(mWorldMatrix, 0, mScaleFac.getX(), mScaleFac.getY(), mScaleFac.getZ());
 
 		mDirty = false;
