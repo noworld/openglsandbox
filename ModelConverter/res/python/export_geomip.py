@@ -25,10 +25,10 @@ bpf = 4
 bpi = 4
 bps = 2
 clear_work_directory = True
-proj_path = os.environ.get("BLENDER_EXPORT_WORK", "C:\\Users\\nicholas.waun\\git\\openglsandbox\\ModelConverter")
-#out_path = proj_path+"\\res\\out\\"
-out_path = "C:\\Users\\nicholas.waun\\git\\openglsandbox\\SimpleRender2_5\\res\\raw\\"
-work_path = proj_path+"\\res\\work\\"
+home_path = "C:" + os.environ.get("HOMEPATH","\\Users\\nicholas.waun")
+proj_path = home_path + "\\git\\openglsandbox\\ModelConverter"
+out_path = home_path + "\\git\\openglsandbox\\SimpleRender2_5\\res\\raw\\"
+work_path = proj_path + "\\res\\work\\"
 dsc_ext = ".dsc"
 vbo_ext = ".v"
 ibo_ext = ".i"
@@ -78,13 +78,21 @@ def write_mesh_files(obj, scene):
     dscString += "\nPOS_SIZE=3"
     dscString += "\nTXC_SIZE=2"
     print("**** STRIDE IS:",stride)
+    
+    #Build Vertex Grid
+    for v in range(0, len(bm.verts)):
+        pos = bm.verts[v].co
+        print("Vert %i: %.5f,%.5f,%.5f" % (v,pos.x,pos.y,pos.z))
+        print("Is Boundary %i: %s" % (v,bm.verts[v].is_boundary))
+    
+    
     ctr = 0
     for face in bm.faces:
-#        print("**** Face #",face.index)
+        print("**** Face #",face.index)
         for loop in face.loops:
-#            print("**** Loop vert #",loop.vert.index)
+            print("**** Loop vert #",loop.vert.index)
             pos = bm.verts[loop.vert.index].co
-#            print("**** Vert: %.5f,%.5f,%.5f" % (pos.x,pos.y,pos.z))
+            print("**** Vert: %.5f,%.5f,%.5f" % (pos.x,pos.y,pos.z))
             if(round_verts):
                 struct.pack_into(">fff", vboBytes, ctr * stride, round(pos.x,5), round(pos.y,5), round(pos.z,5))
             else:
