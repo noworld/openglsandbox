@@ -82,29 +82,38 @@ def write_geometry_data():
     #generate block indexes    
     for i in range(blk_sz-1):
         degen = 0
+        a_degen = 0
         for j in range(blk_sz):
             if(i % 2 == 0):
                 up_index = j + (i * blk_sz)
+                degen = up_index
                 alt_up_index = alt_up_index = up_index + blk_sz
-                degen = alt_up_index
-                print("  up:",up_index)
+                a_degen = alt_up_index                
+                if(i == 0 or (i > 0 and j != 0)):
+                    print("  up:",up_index)
+                    iboBytes += struct.pack(">h",up_index)
+                    idx_ctr = idx_ctr + 1
+                  
                 print("a_up:",alt_up_index)
-                iboBytes += struct.pack(">hh",up_index,alt_up_index)
-                idx_ctr = idx_ctr + 2
+                iboBytes += struct.pack(">h",alt_up_index)
+                idx_ctr = idx_ctr + 1
             else:
                 dn_index = (blk_sz * i * 2) + blk_sz - 1 - j
+                a_degen = dn_index
                 print("  dn:",dn_index)
                 iboBytes += struct.pack(">h",dn_index)
                 idx_ctr = idx_ctr + 1
                 if(j < blk_sz - 1):
                     alt_dn_index = (blk_sz * i) + blk_sz - 2 - j
+                    degen = alt_dn_index
                     print("a_dn:",alt_dn_index)
                     iboBytes += struct.pack(">h",alt_dn_index)
                     idx_ctr = idx_ctr + 1
-        if(i < blk_sz - 2 and i % 2 == 0):
+        if(i < blk_sz - 2):
             print("_dgn",degen)
-            iboBytes += struct.pack(">h",degen)
-            idx_ctr = idx_ctr + 1
+            print("_dgn",a_degen)
+            iboBytes += struct.pack(">hh",degen,a_degen)
+            idx_ctr = idx_ctr + 2
 	
 	#generate ring fill data
     print("Data for RING FILL")
@@ -123,32 +132,41 @@ def write_geometry_data():
             vboBytes += struct.pack(">ff",u,v)
             dat_ctr = dat_ctr + 4
 	
-    #generate ring fill indexes    
+    #generate ring fill indexes 
     for i in range(z_sz-1):
         degen = 0
+        a_degen = 0
         for j in range(x_sz):
             if(i % 2 == 0):
                 up_index = j + (i * x_sz)
+                degen = up_index
                 alt_up_index = alt_up_index = up_index + x_sz
-                degen = alt_up_index
-                print("  up:",up_index)
+                a_degen = alt_up_index                
+                if(i == 0 or (i > 0 and j != 0)):
+                    print("  up:",up_index)
+                    iboBytes += struct.pack(">h",up_index)
+                    idx_ctr = idx_ctr + 1
+                  
                 print("a_up:",alt_up_index)
-                iboBytes += struct.pack(">hh",up_index,alt_up_index)
-                idx_ctr = idx_ctr + 2
+                iboBytes += struct.pack(">h",alt_up_index)
+                idx_ctr = idx_ctr + 1
             else:
                 dn_index = (x_sz * i * 2) + x_sz - 1 - j
+                a_degen = dn_index
                 print("  dn:",dn_index)
                 iboBytes += struct.pack(">h",dn_index)
                 idx_ctr = idx_ctr + 1
                 if(j < x_sz - 1):
                     alt_dn_index = (x_sz * i) + x_sz - 2 - j
+                    degen = alt_dn_index
                     print("a_dn:",alt_dn_index)
                     iboBytes += struct.pack(">h",alt_dn_index)
                     idx_ctr = idx_ctr + 1
-        if(i < z_sz - 2 and i % 2 == 0):
+        if(i < z_sz - 2):
             print("_dgn",degen)
-            iboBytes += struct.pack(">h",degen)
-            idx_ctr = idx_ctr + 1
+            print("_dgn",a_degen)
+            iboBytes += struct.pack(">hh",degen,a_degen)
+            idx_ctr = idx_ctr + 2
 	
 	#generate interior fill data
     print("Data for INTERIOR FILL")
@@ -171,29 +189,38 @@ def write_geometry_data():
 	#generate interior fill indexes
     for i in range(z_sz-1):
         degen = 0
+        a_degen = 0
         for j in range(x_sz):
             if(i % 2 == 0):
                 up_index = j + (i * x_sz)
+                degen = up_index
                 alt_up_index = alt_up_index = up_index + x_sz
-                degen = alt_up_index
-                print("  up:",up_index)
+                a_degen = alt_up_index                
+                if(i == 0 or (i > 0 and j != 0)):
+                    print("  up:",up_index)
+                    iboBytes += struct.pack(">h",up_index)
+                    idx_ctr = idx_ctr + 1
+                  
                 print("a_up:",alt_up_index)
-                iboBytes += struct.pack(">hh",up_index,alt_up_index)
-                idx_ctr = idx_ctr + 2
+                iboBytes += struct.pack(">h",alt_up_index)
+                idx_ctr = idx_ctr + 1
             else:
                 dn_index = (x_sz * i * 2) + x_sz - 1 - j
+                a_degen = dn_index
                 print("  dn:",dn_index)
                 iboBytes += struct.pack(">h",dn_index)
                 idx_ctr = idx_ctr + 1
                 if(j < x_sz - 1):
                     alt_dn_index = (x_sz * i) + x_sz - 2 - j
+                    degen = alt_dn_index
                     print("a_dn:",alt_dn_index)
                     iboBytes += struct.pack(">h",alt_dn_index)
                     idx_ctr = idx_ctr + 1
-        if(i < z_sz - 2 and i % 2 == 0):
+        if(i < z_sz - 2):
             print("_dgn",degen)
-            iboBytes += struct.pack(">h",degen)
-            idx_ctr = idx_ctr + 1
+            print("_dgn",a_degen)
+            iboBytes += struct.pack(">hh",degen,a_degen)
+            idx_ctr = idx_ctr + 2
 	
     interior_trim_num_el = idx_ctr - int_fill_index
 	
