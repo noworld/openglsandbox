@@ -5,6 +5,7 @@
         <item>@array/plane_shader</item>
         <item>@array/tex_shader</item>
         <item>@array/hm_shader</item>
+        <item>@array/clipmap_shader</item>
     </array>
     
     <array name="skybox_shader">
@@ -20,6 +21,11 @@
     <array name="tex_shader">
         <item >@raw/v_tex</item> 
         <item >@raw/f_tex</item>  
+    </array>
+    
+    <array name="clipmap_shader">
+        <item >@raw/v_clipmap</item> 
+        <item >@raw/f_clipmap</item>  
     </array>
     
     <array name="hm_shader">

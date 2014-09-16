@@ -4,14 +4,16 @@ import org.apache.commons.lang.ArrayUtils;
 
 import android.opengl.Matrix;
 
+import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
+import com.solesurvivor.util.logging.SSLog;
 
 
 public class TerrainClipmap implements Node {
 	
 	protected static final int MATRIX_SZ = 16;
-	protected static final int NUM_BLOCKS = 1; //12;
+	protected static final int NUM_BLOCKS = 4; //12;
 	protected static final int NUM_RING_FILL = 1; //4;
 	protected static final int NUM_INTERIOR_TRIM = 1;
 	
@@ -30,6 +32,8 @@ public class TerrainClipmap implements Node {
 	protected int mResolution;
 	
 	protected BaseRenderer mRenderer;
+	
+	protected float angle = 0.0f;
 	
 	
 	public TerrainClipmap(Geometry clipmap, ClipmapData data) {
@@ -57,9 +61,11 @@ public class TerrainClipmap implements Node {
 		
 		float n_half_sz = -(mSideLength/2.0f);
 		
-		for(int i = 0; i < mBlockMat.length; i += MATRIX_SZ) {
-			Matrix.setIdentityM(mBlockMat, i);
-			Matrix.translateM(mBlockMat, i, n_half_sz, 0.0f, n_half_sz);
+		for(int i = 0; i < NUM_BLOCKS; i++) {
+			int matIdx = i * MATRIX_SZ;
+			Matrix.setIdentityM(mBlockMat, matIdx);
+			Matrix.translateM(mBlockMat, matIdx, n_half_sz, 0.0f, n_half_sz);
+			Matrix.rotateM(mBlockMat, matIdx, 270, 1.0f, 0.0f, 0.0f);
 		}
 		
 		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
@@ -74,7 +80,14 @@ public class TerrainClipmap implements Node {
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
+//		angle = angle + GameWorld.inst().getDeltaT() / 1000.0f * 10.0f;
+//		SSLog.d(TAG, "Angle: %.3f", angle);
+//		float n_half_sz = -(mSideLength/2.0f);
+//		for(int i = 0; i < mBlockMat.length; i += MATRIX_SZ) {
+//			Matrix.setIdentityM(mBlockMat, i);
+//			Matrix.translateM(mBlockMat, i, n_half_sz, 0.0f, n_half_sz);
+//			Matrix.rotateM(mBlockMat, i, angle, 1.0f, 0.0f, 0.0f);
+//		}
 		
 	}
 

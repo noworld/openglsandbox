@@ -46,9 +46,11 @@ txc_step = 1 / (e_res - 1)         #distance between texture coordinates
 file_name = "geoclip"
 
 #Settings for reading geometry into the program
+pos_size = 2          #2 = XZ, 3 = XYZ
+txc_size = 2          #UV
 nrm_offset = -1       #normals not generated
-txc_offset = 2 * bpf  #texture coords after position data
-stride = 4 * bpf      #2 positions (x,z), 2 coords
+txc_offset = pos_size * bpf            #texture coords after position data
+stride = (txc_size + pos_size) * bpf   #3 positions (x,y,z), 2 coords
 block_index = 0       #index in the buffer of the block geometry
 ring_fill_index = 0   #index in the buffer of the ring fill geometry
 int_fill_index = 0    #index in the buffer of the interior fill geometry
@@ -71,12 +73,13 @@ def write_geometry_data():
     for x in range(blk_sz):
         for z in range(blk_sz):
             bx = x * pos_step
+            by = 0.0
             bz = z * pos_step
-            u = x * txc_step
-            v = z * txc_step
+            v = x * txc_step
+            u = z * txc_step
             print("VERT %i,%i: %.3f,%.3f / %.3f,%.3f" % (x,z,bx,bz,u,v))
             vboBytes += struct.pack(">ff",bx,bz)
-            vboBytes += struct.pack(">ff",u,v)
+            vboBytes += struct.pack(">ff",u,1.0-v)
             dat_ctr = dat_ctr + 4
 	
     #generate block indexes    
@@ -124,11 +127,12 @@ def write_geometry_data():
     for x in range(z_sz):
         for z in range(x_sz):
             bx = x * pos_step
+            by = 0.0
             bz = z * pos_step
             u = x * txc_step
             v = z * txc_step
             print("VERT %i,%i: %.3f,%.3f / %.3f,%.3f" % (x,z,bx,bz,u,v))
-            vboBytes += struct.pack(">ff",bx,bz)
+            vboBytes += struct.pack(">fff",bx,by,bz)
             vboBytes += struct.pack(">ff",u,v)
             dat_ctr = dat_ctr + 4
 	
@@ -178,11 +182,12 @@ def write_geometry_data():
     for x in range(z_sz):
         for z in range(x_sz):
             bx = x * pos_step
+            by = 0.0
             bz = z * pos_step
             u = x * txc_step
             v = z * txc_step
             print("VERT %i,%i: %.3f,%.3f / %.3f,%.3f" % (x,z,bx,bz,u,v))
-            vboBytes += struct.pack(">ff",bx,bz)
+            vboBytes += struct.pack(">fff",bx,by,bz)
             vboBytes += struct.pack(">ff",u,v)
             dat_ctr = dat_ctr + 4
 	
@@ -239,14 +244,15 @@ def write_geometry_data():
 def write_descriptor(ring_fill_index,int_trim_index,ring_fill_num_el,interior_trim_num_el):
     dscString = "OBJECT_NAME=%s" % file_name
     dscString += "\nOBJECT_TYPE=GEO_MIPMAP"
+    dscString += "\nSHADER=clipmap_shader"
     dscString += "\nPOS_OFFSET=0"
     dscString += "\nNRM_OFFSET=%i" % nrm_offset
     dscString += "\nTXC_OFFSET=%i" % txc_offset
     dscString += "\nELEMENT_STRIDE=%i" % stride
     dscString += "\nNUM_ELEMENTS=%i" % ring_fill_index
     dscString += "\nNRM_SIZE=-1"
-    dscString += "\nPOS_SIZE=2"
-    dscString += "\nTXC_SIZE=2"
+    dscString += "\nPOS_SIZE=%i" % pos_size
+    dscString += "\nTXC_SIZE=%i" % txc_size
     dscString += "\nSIDE_LENGTH=%i" % (s_len)
     dscString += "\nRESOLUTION=%i" % (e_res)
     dscString += "\nBLOCK_INDEX=0"
