@@ -32,7 +32,8 @@ vbo_ext = ".v"
 ibo_ext = ".i"
 zip_ext = ".zip"
 file_name = "geomip"
-min_edge_res = 3 #Highest mip level will be a 3x3 grid with 9 verts
+#min_edge_res = 3 #Highest mip level will be a 3x3 grid with 9 verts
+edge_res_exp = 8 # edge resolution of the L0 clipmap will be (2^exp - 1) 
 max_mip_level = 2 #max mip level, min is 0
 
 def get_edge_res(cml, mr):
