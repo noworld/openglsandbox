@@ -409,12 +409,12 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glEnableVertexAttribArray(a_pos);
 		GLES20.glVertexAttribPointer(a_pos, draw.getPosSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getPosOffset());
 
-		if(a_nrm > -1) {
+		if(a_nrm > -1 && draw.getNrmOffset() > -1 && draw.getNrmSize() > -1) {
 			GLES20.glEnableVertexAttribArray(a_nrm);
 			GLES20.glVertexAttribPointer(a_nrm, draw.getNrmSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getNrmOffset());
 		}
 
-		if(a_txc > -1) {
+		if(a_txc > -1 && draw.getTxcOffset() > -1 && draw.getTxcSize() > -1) {
 			GLES20.glEnableVertexAttribArray(a_txc);
 			GLES20.glVertexAttribPointer(a_txc, draw.getTxcSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getTxcOffset());
 		}
