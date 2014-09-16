@@ -35,7 +35,7 @@ file_name = "geomip"
 #Grid settings
 e_res_exp = 4                      #edge resolution of the L0 clipmap will be (2^exp - 1)
 e_res = math.pow(2,e_res_exp) - 1  #n resolution of one edge
-mm_level = 2                       #mip levels 0-mm_level will be generated
+#mm_level = 2                       #mip levels 0-mm_level will be generated
 s_len = 20.0                       #length of one side of the L0 mesh
 h_len = s_len / 2.0                #half the length
 blk_sz = int((e_res + 1) / 4)           #m block size of (n + 1)/4
@@ -57,28 +57,6 @@ int_fill_index = 0    #index in the buffer of the interior fill geometry
 #**********************************************************
 #*****                  FUNCTIONS                     *****
 #**********************************************************
-
-#***
-#Write the descriptor file to the work directory
-def write_descriptor():
-    dscString = "OBJECT_NAME=%s" % file_name
-    dscString += "\nOBJECT_TYPE=GEO_MIPMAP"
-    dscString += "\nPOS_OFFSET=0"
-    dscString += "\nNRM_OFFSET=%i" % nrm_offset
-    dscString += "\nTXC_OFFSET=%i" % txc_offset
-    dscString += "\nELEMENT_STRIDE=%i" % stride
-    dscString += "\nNRM_SIZE=-1"
-    dscString += "\nPOS_SIZE=2"
-    dscString += "\nTXC_SIZE=2"
-    dscString += "\nMAX_MIP_LEVEL=%i" % (mm_level)
-    dscString += "\nBLOCK_INDEX=0"
-    dscString += "\nRING_FILL_INDEX=%i" % (ring_fill_index)
-    dscString += "\nINTERIOR_FILL_INDEX=%i" % (int_fill_index)
-    
-    fileDsc = open(work_path + file_name + dsc_ext, 'w')
-    fileDsc.write(dscString)
-    fileDsc.close()
-    return
     
 #***
 #Write the descriptor file to the work directory
@@ -223,13 +201,50 @@ def write_geometry_data():
     fileIbo = open(work_path + file_name + ibo_ext, 'wb')
     fileIbo.write(iboBytes)
     fileIbo.close()
+    
+    return [ring_fill_index,int_fill_index]
+
+#***
+#Write the descriptor file to the work directory
+def write_descriptor(ring_fill_index,int_fill_index):
+    dscString = "OBJECT_NAME=%s" % file_name
+    dscString += "\nOBJECT_TYPE=GEO_MIPMAP"
+    dscString += "\nPOS_OFFSET=0"
+    dscString += "\nNRM_OFFSET=%i" % nrm_offset
+    dscString += "\nTXC_OFFSET=%i" % txc_offset
+    dscString += "\nELEMENT_STRIDE=%i" % stride
+    dscString += "\nNRM_SIZE=-1"
+    dscString += "\nPOS_SIZE=2"
+    dscString += "\nTXC_SIZE=2"
+#    dscString += "\nMAX_MIP_LEVEL=%i" % (mm_level)
+    dscString += "\nBLOCK_INDEX=0"
+    dscString += "\nRING_FILL_INDEX=%i" % (ring_fill_index)
+    dscString += "\nINTERIOR_FILL_INDEX=%i" % (int_fill_index)
+    
+    fileDsc = open(work_path + file_name + dsc_ext, 'w')
+    fileDsc.write(dscString)
+    fileDsc.close()
+    return
+    
+#***
+#Write the index file to the work directory
+def write_index_file():
+    idxString = "+" + file_name + "\n"
+    idxString += "-" + file_name + vbo_ext + "\n"
+    idxString += "-" + file_name + ibo_ext + "\n"
+    idxString += "-" + file_name + dsc_ext + "\n"
+    
+    fileIdx = open(work_path + "index", 'a')
+    fileIdx.write(idxString)
+    fileIdx.close()
     return
 
 #***
 #Write the data files to the work directory
 def write_work_files():
-    write_geometry_data()
-    write_descriptor()
+    (ring_fill_index,int_fill_index) = write_geometry_data()
+    write_descriptor(ring_fill_index,int_fill_index)
+    write_index_file()
     return
 
 #***    
@@ -247,7 +262,7 @@ print("Running in",sys.argv[0])
 print(sys.version_info);
 
 #Log program parameters
-print("Generating mips 0 --",mm_level)
+#print("Generating mips 0 --",mm_level)
 print("Max edge resolution:",e_res)
 print("Mesh side length:",s_len)
 print("")
