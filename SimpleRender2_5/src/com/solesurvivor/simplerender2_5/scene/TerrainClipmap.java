@@ -60,13 +60,36 @@ public class TerrainClipmap implements Node {
 		mInteriorMat = new float[NUM_INTERIOR_TRIM * MATRIX_SZ];
 		
 		float n_half_sz = -(mSideLength/2.0f);
+		float quad_width = ((float)mSideLength) / (((float)mResolution) - 1.0f);
+		float block_sz = (((float)mResolution) + 1.0f) / 4.0f;
+		float block_disp = quad_width * (block_sz - 1.0f);
 		
-		for(int i = 0; i < NUM_BLOCKS; i++) {
-			int matIdx = i * MATRIX_SZ;
-			Matrix.setIdentityM(mBlockMat, matIdx);
-			Matrix.translateM(mBlockMat, matIdx, n_half_sz, 0.0f, n_half_sz);
-			Matrix.rotateM(mBlockMat, matIdx, 270, 1.0f, 0.0f, 0.0f);
-		}
+		//12 blocks arranged like so
+		//http://http.developer.nvidia.com/GPUGems2/elementLinks/02_clipmaps_05.jpg
+		int idx = 0;
+		
+		//1
+		int matIdx = idx * MATRIX_SZ;		
+		Matrix.setIdentityM(mBlockMat, matIdx);
+		Matrix.translateM(mBlockMat, matIdx, n_half_sz, 0.0f, -12.0f);
+		idx++;
+		
+		//2
+		matIdx = idx * MATRIX_SZ;		
+		Matrix.setIdentityM(mBlockMat, matIdx);
+		Matrix.translateM(mBlockMat, matIdx, n_half_sz + (idx * block_disp), 0.0f, -12.0f);
+		idx++;
+		
+		//3
+		matIdx = idx * MATRIX_SZ;		
+		Matrix.setIdentityM(mBlockMat, matIdx);
+		Matrix.translateM(mBlockMat, matIdx, n_half_sz + (idx * block_disp) + (quad_width * 2.0f), 0.0f, -12.0f);
+		idx++;
+		
+		//4
+		matIdx = idx * MATRIX_SZ;		
+		Matrix.setIdentityM(mBlockMat, matIdx);
+		Matrix.translateM(mBlockMat, matIdx, n_half_sz + (idx * block_disp) + (quad_width * 2.0f), 0.0f, -12.0f);
 		
 		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
 			Matrix.setIdentityM(mRingMat, i);

@@ -33,20 +33,20 @@ zip_ext = ".zip"
 file_name = "geomip"
 
 #Grid settings
-e_res_exp = 4                      #edge resolution of the L0 clipmap will be (2^exp - 1)
+e_res_exp = 8                      #edge resolution of the L0 clipmap will be (2^exp - 1)
 e_res = math.pow(2,e_res_exp) - 1  #n resolution of one edge
 #mm_level = 2                       #mip levels 0-mm_level will be generated
 s_len = 20.0                       #length of one side of the L0 mesh
 h_len = s_len / 2.0                #half the length
 blk_sz = int((e_res + 1) / 4)           #m block size of (n + 1)/4
-pos_step = s_len / (e_res - 1)  #distance between vertexes in the grid 
+pos_step = s_len / (e_res - 1)  #distance between vertexes in the grid
 txc_step = 1 / (e_res - 1)         #distance between texture coordinates
 
 #General object data
 file_name = "geoclip"
 
 #Settings for reading geometry into the program
-pos_size = 2          #2 = XZ, 3 = XYZ
+pos_size = 3          #2 = XZ, 3 = XYZ
 txc_size = 2          #UV
 nrm_offset = -1       #normals not generated
 txc_offset = pos_size * bpf            #texture coords after position data
@@ -78,7 +78,7 @@ def write_geometry_data():
             v = x * txc_step
             u = z * txc_step
             print("VERT %i,%i: %.3f,%.3f / %.3f,%.3f" % (x,z,bx,bz,u,v))
-            vboBytes += struct.pack(">ff",bx,bz)
+            vboBytes += struct.pack(">fff",bx,by,bz)
             vboBytes += struct.pack(">ff",u,1.0-v)
             dat_ctr = dat_ctr + 4
 	
@@ -90,9 +90,9 @@ def write_geometry_data():
             if(i % 2 == 0):
                 up_index = j + (i * blk_sz)
                 degen = up_index
-                alt_up_index = alt_up_index = up_index + blk_sz
+                alt_up_index = up_index + blk_sz
                 a_degen = alt_up_index                
-                if(i == 0 or (i > 0 and j != 0)):
+                if(i == 0 or (i > 0 and j > 0)):
                     print("  up:",up_index)
                     iboBytes += struct.pack(">h",up_index)
                     idx_ctr = idx_ctr + 1
@@ -101,17 +101,19 @@ def write_geometry_data():
                 iboBytes += struct.pack(">h",alt_up_index)
                 idx_ctr = idx_ctr + 1
             else:
-                dn_index = (blk_sz * i * 2) + blk_sz - 1 - j
-                a_degen = dn_index
-                print("  dn:",dn_index)
-                iboBytes += struct.pack(">h",dn_index)
-                idx_ctr = idx_ctr + 1
-                if(j < blk_sz - 1):
-                    alt_dn_index = (blk_sz * i) + blk_sz - 2 - j
-                    degen = alt_dn_index
-                    print("a_dn:",alt_dn_index)
-                    iboBytes += struct.pack(">h",alt_dn_index)
+                dn_index = (i * blk_sz) + blk_sz - 1 - j
+                if(j > 0):
+                    degen = dn_index
+                    print("  dn:",dn_index)
+                    iboBytes += struct.pack(">h",dn_index)
                     idx_ctr = idx_ctr + 1
+                    
+                #if(j < blk_sz - 1):
+                alt_dn_index = ((i + 1) * blk_sz) + blk_sz - 1 - j
+                a_degen = alt_dn_index
+                print("a_dn:",alt_dn_index)
+                iboBytes += struct.pack(">h",alt_dn_index)
+                idx_ctr = idx_ctr + 1
         if(i < blk_sz - 2):
             print("_dgn",degen)
             print("_dgn",a_degen)
@@ -305,6 +307,7 @@ print(sys.version_info);
 #print("Generating mips 0 --",mm_level)
 print("Max edge resolution:",e_res)
 print("Mesh side length:",s_len)
+print("Block size:",blk_sz)
 print("")
 
 #clear the index file
