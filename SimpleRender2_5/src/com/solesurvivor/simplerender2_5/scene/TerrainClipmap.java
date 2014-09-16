@@ -93,6 +93,7 @@ public class TerrainClipmap implements Node {
 		
 		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
 			Matrix.setIdentityM(mRingMat, i);
+			Matrix.translateM(mRingMat, i, 0.0f, 0.0f, -13.0f);
 		}
 		
 		for(int i = 0; i < mInteriorMat.length; i += MATRIX_SZ) {
@@ -103,14 +104,14 @@ public class TerrainClipmap implements Node {
 
 	@Override
 	public void update() {
-//		angle = angle + GameWorld.inst().getDeltaT() / 1000.0f * 10.0f;
-//		SSLog.d(TAG, "Angle: %.3f", angle);
-//		float n_half_sz = -(mSideLength/2.0f);
-//		for(int i = 0; i < mBlockMat.length; i += MATRIX_SZ) {
-//			Matrix.setIdentityM(mBlockMat, i);
-//			Matrix.translateM(mBlockMat, i, n_half_sz, 0.0f, n_half_sz);
-//			Matrix.rotateM(mBlockMat, i, angle, 1.0f, 0.0f, 0.0f);
-//		}
+		angle = angle + GameWorld.inst().getDeltaT() / 1000.0f * 10.0f;
+		SSLog.d(TAG, "Angle: %.3f", angle);
+		float n_half_sz = -(mSideLength/2.0f);
+		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
+			Matrix.setIdentityM(mRingMat, i);
+			Matrix.translateM(mRingMat, i, n_half_sz, 0.0f, -13.0f);
+			Matrix.rotateM(mRingMat, i, angle, 1.0f, 0.0f, 0.0f);
+		}
 		
 	}
 
@@ -118,6 +119,10 @@ public class TerrainClipmap implements Node {
 	public void render() {
 		for(int i = 0; i < mBlockMat.length; i += MATRIX_SZ) {
 			mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mBlockMat, i, i + MATRIX_SZ));
+		}
+		
+		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
+			mRenderer.drawGeometryTristrips(mRingFill, ArrayUtils.subarray(mRingMat, i, i + MATRIX_SZ));
 		}
 
 	}
