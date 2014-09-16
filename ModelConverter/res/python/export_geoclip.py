@@ -70,27 +70,31 @@ def write_geometry_data():
 
     #generate block data	
     print("Data for BLOCK")
-    for x in range(blk_sz):
-        for z in range(blk_sz):
+    x_sz = blk_sz
+    z_sz = blk_sz
+    for x in range(x_sz):
+        for z in range(z_sz):
             bx = x * pos_step
             by = 0.0
             bz = z * pos_step
-            v = x * txc_step
-            u = z * txc_step
+            u = x * txc_step
+            v = z * txc_step
             print("VERT %i,%i: %.3f,%.3f / %.3f,%.3f" % (x,z,bx,bz,u,v))
             vboBytes += struct.pack(">fff",bx,by,bz)
             vboBytes += struct.pack(">ff",u,1.0-v)
             dat_ctr = dat_ctr + 4
 	
-    #generate block indexes    
-    for i in range(blk_sz-1):
+    #generate block indexes
+    x_sz = blk_sz
+    z_sz = blk_sz    
+    for i in range(z_sz-1):
         degen = 0
         a_degen = 0
-        for j in range(blk_sz):
+        for j in range(x_sz):
             if(i % 2 == 0):
-                up_index = j + (i * blk_sz)
+                up_index = j + (i * x_sz)
                 degen = up_index
-                alt_up_index = up_index + blk_sz
+                alt_up_index = up_index + x_sz
                 a_degen = alt_up_index                
                 if(i == 0 or (i > 0 and j > 0)):
                     print("  up:",up_index)
@@ -101,20 +105,20 @@ def write_geometry_data():
                 iboBytes += struct.pack(">h",alt_up_index)
                 idx_ctr = idx_ctr + 1
             else:
-                dn_index = (i * blk_sz) + blk_sz - 1 - j
+                dn_index = (i * x_sz) + x_sz - 1 - j
                 if(j > 0):
                     degen = dn_index
                     print("  dn:",dn_index)
                     iboBytes += struct.pack(">h",dn_index)
                     idx_ctr = idx_ctr + 1
                     
-                #if(j < blk_sz - 1):
-                alt_dn_index = ((i + 1) * blk_sz) + blk_sz - 1 - j
+                #if(j < x_sz - 1):
+                alt_dn_index = ((i + 1) * x_sz) + x_sz - 1 - j
                 a_degen = alt_dn_index
                 print("a_dn:",alt_dn_index)
                 iboBytes += struct.pack(">h",alt_dn_index)
                 idx_ctr = idx_ctr + 1
-        if(i < blk_sz - 2):
+        if(i < z_sz - 2):
             print("_dgn",degen)
             print("_dgn",a_degen)
             iboBytes += struct.pack(">hh",degen,a_degen)
