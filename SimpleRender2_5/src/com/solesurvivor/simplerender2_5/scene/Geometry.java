@@ -46,6 +46,23 @@ public class Geometry implements Drawable {
 		mLights = new ArrayList<Light>();
 		resetTransforms();
 	}
+	
+	public Geometry(Geometry geo) {
+		this();
+		this.mName = geo.mName;
+		this.mShaderHandle = geo.mShaderHandle;
+		this.mDataBufHandle = geo.mDataBufHandle;
+		this.mIdxBufHandle = geo.mIdxBufHandle;
+		this.mPosSize = geo.mPosSize;
+		this.mNrmSize = geo.mNrmSize;
+		this.mTxcSize = geo.mTxcSize;
+		this.mPosOffset = geo.mPosOffset;
+		this.mNrmOffset = geo.mNrmOffset;
+		this.mTxcOffset = geo.mTxcOffset;
+		this.mNumElements = geo.mNumElements;
+		this.mElementStride = geo.mElementStride;
+		this.mTextureHandle = geo.mTextureHandle;
+	}
 
 	public Geometry(String name, int shaderHandle, int dataBufHandle, int idxBufHandle,
 			int posSize, int nrmSize, int txcSize, int posOffset,
@@ -138,6 +155,22 @@ public class Geometry implements Drawable {
 	@Override
 	public List<Light> getLights() {
 		return mLights;
+	}
+	
+	public void setPosOffset(int offset) {
+		this.mPosOffset = offset;
+	}
+	
+	public void setNrmOffset(int offset) {
+		this.mNrmOffset = offset;
+	}
+	
+	public void setTxcOffset(int offset) {
+		this.mTxcOffset = offset;
+	}
+	
+	public void setNumElements(int numElements) {
+		this.mNumElements = numElements;
 	}
 	
 	public void rotate(float angle, Vec3 dir) {

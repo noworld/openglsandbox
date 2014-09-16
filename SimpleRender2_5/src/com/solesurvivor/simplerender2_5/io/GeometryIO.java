@@ -21,7 +21,7 @@ import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.rendering.ShaderManager;
 import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
-import com.solesurvivor.simplerender2_5.scene.TerrainTile;
+import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
 import com.solesurvivor.util.SSPropertyUtil;
 
 public class GeometryIO {
@@ -30,19 +30,55 @@ public class GeometryIO {
 	@SuppressWarnings("unused")
 	private static final String TAG = GeometryIO.class.getSimpleName();
 	
-	public static TerrainTile loadGeoMips(int resId) throws IOException {
-//		List<GeoMipLevel> levels = new ArrayList<GeoMipLevel>();
+	public static TerrainClipmap loadClipmap(int resId) throws IOException {
+		List<Geometry> geoList = new ArrayList<Geometry>();
 
 		IntermediateGeometry ig = parseIntermediateGeometry(resId);
+		BaseRenderer ren = RendererManager.getRenderer();
+		TerrainClipmap.ClipmapData cmapData = new TerrainClipmap.ClipmapData();
 		
 		for(String s : ig.mObjectNames) {
-			if(ig.mDescriptors.get(s).get("OBJECT_TYPE").equals("GEO_MIPMAP")) {
-//				GeoMipLevel level = new GeoMipLevel();
-//				levels.add(level);
+			Map<String,String> desc = ig.mDescriptors.get(s);
+			if(desc.get("OBJECT_TYPE").equals("GEO_MIPMAP")) {
+				String name = desc.get("OBJECT_NAME");
+				int shader = ShaderManager.getShaderId(desc.get("SHADER"), "tex_shader");
+				int texture = TextureManager.getTextureId(desc.get("TEXTURE"), "uvgrid");
+				int numElements = Integer.valueOf(desc.get("NUM_ELEMENTS"));
+				int elementStride = Integer.valueOf(desc.get("ELEMENT_STRIDE"));
+				int posSize = Integer.valueOf(desc.get("POS_SIZE"));
+				int posOffset = Integer.valueOf(desc.get("POS_OFFSET"));
+				int nrmSize = Integer.valueOf(desc.get("NRM_SIZE"));
+				int nrmOffset = Integer.valueOf(desc.get("NRM_OFFSET"));
+				int txcSize = Integer.valueOf(desc.get("TXC_SIZE"));
+				int txcOffset = Integer.valueOf(desc.get("TXC_OFFSET"));
+				
+				cmapData.mBlockIndex =  Integer.valueOf(desc.get("BLOCK_INDEX"));
+				cmapData.mInteriorTrimIndex =  Integer.valueOf(desc.get("INTERIOR_TRIM_INDEX"));
+				cmapData.mInteriorTrimNumElements =  Integer.valueOf(desc.get("INTERIOR_TRIM_NUM_ELEMENTS"));
+				cmapData.mResolution =  Integer.valueOf(desc.get("RESOLUTION"));
+				cmapData.mRingFillIndex =  Integer.valueOf(desc.get("RING_FILL_INDEX"));
+				cmapData.mRingFillNumElements =  Integer.valueOf(desc.get("RING_FILL_NUM_ELEMENTS"));
+				cmapData.mSideLength =  Integer.valueOf(desc.get("SIDE_LENGTH"));
+
+				byte[] vboBytes = ig.mFiles.get(s + ".v");
+				byte[] iboBytes = ig.mFiles.get(s + ".i");
+
+				int datBufHandle = ren.loadToVbo(vboBytes);
+				int idxBufHandle = ren.loadToIbo(iboBytes);
+
+				Geometry geo = new Geometry(name, shader, datBufHandle, idxBufHandle,
+						posSize, nrmSize, txcSize,
+						posOffset, nrmOffset, txcOffset,
+						numElements, elementStride, texture);
+				geoList.add(geo);
 			}
 		}
 		
-		return null;
+		//Assume only 1 clipmap object
+		Geometry clipMesh = geoList.get(0);
+		TerrainClipmap clipmap = new TerrainClipmap(clipMesh, cmapData);
+		
+		return clipmap;
 	}
 	
 	public static List<Geometry> loadGeometry(int resId) throws IOException {
@@ -64,7 +100,7 @@ public class GeometryIO {
 			int nrmOffset = Integer.valueOf(desc.get("NRM_OFFSET"));
 			int txcSize = Integer.valueOf(desc.get("TXC_SIZE"));
 			int txcOffset = Integer.valueOf(desc.get("TXC_OFFSET"));
-			
+
 			byte[] vboBytes = ig.mFiles.get(s + ".v");
 			byte[] iboBytes = ig.mFiles.get(s + ".i");
 			

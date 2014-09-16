@@ -2,7 +2,7 @@
     
     <array name="models">
         <item>@raw/gamepad_ui</item>
-        <item>@raw/geomip</item>
+        <item>@raw/geoclip</item>
     </array>
 
 </resources>

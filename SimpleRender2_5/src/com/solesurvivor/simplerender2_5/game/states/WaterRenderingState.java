@@ -1,15 +1,18 @@
 package com.solesurvivor.simplerender2_5.game.states;
 
-import android.graphics.Point;
-import android.opengl.Matrix;
+import java.io.IOException;
 
+import android.graphics.Point;
+
+import com.solesurvivor.simplerender2_5.R;
 import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.game.GlobalKeysEnum;
+import com.solesurvivor.simplerender2_5.io.GeometryIO;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
-import com.solesurvivor.simplerender2_5.scene.SeaTilesManager;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
+import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
 
 public class WaterRenderingState extends BaseState {
 
@@ -34,7 +37,13 @@ public class WaterRenderingState extends BaseState {
 		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
 		mScene.addChild(skybox);
 		
-		mScene.addChild(new SeaTilesManager());
+		try {
+			TerrainClipmap clipMap = GeometryIO.loadClipmap(R.raw.geoclip);
+			mScene.addChild(clipMap);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

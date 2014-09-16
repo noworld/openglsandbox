@@ -154,6 +154,7 @@ def write_geometry_data():
     print("Data for INTERIOR FILL")
     print("INTERIOR FILL offset:",idx_ctr)
     int_fill_index = idx_ctr
+    ring_fill_num_el = idx_ctr - ring_fill_index
     x_sz = (2 * blk_sz) + 1
     z_sz = 2
     for x in range(z_sz):
@@ -194,6 +195,8 @@ def write_geometry_data():
             iboBytes += struct.pack(">h",degen)
             idx_ctr = idx_ctr + 1
 	
+    interior_trim_num_el = idx_ctr - int_fill_index
+	
 	#write the work files
     fileVbo = open(work_path + file_name + vbo_ext, 'wb')
     fileVbo.write(vboBytes)
@@ -202,24 +205,28 @@ def write_geometry_data():
     fileIbo.write(iboBytes)
     fileIbo.close()
     
-    return [ring_fill_index,int_fill_index]
+    return [ring_fill_index,int_fill_index,ring_fill_num_el,interior_trim_num_el]
 
 #***
 #Write the descriptor file to the work directory
-def write_descriptor(ring_fill_index,int_fill_index):
+def write_descriptor(ring_fill_index,int_trim_index,ring_fill_num_el,interior_trim_num_el):
     dscString = "OBJECT_NAME=%s" % file_name
     dscString += "\nOBJECT_TYPE=GEO_MIPMAP"
     dscString += "\nPOS_OFFSET=0"
     dscString += "\nNRM_OFFSET=%i" % nrm_offset
     dscString += "\nTXC_OFFSET=%i" % txc_offset
     dscString += "\nELEMENT_STRIDE=%i" % stride
+    dscString += "\nNUM_ELEMENTS=%i" % ring_fill_index
     dscString += "\nNRM_SIZE=-1"
     dscString += "\nPOS_SIZE=2"
     dscString += "\nTXC_SIZE=2"
-#    dscString += "\nMAX_MIP_LEVEL=%i" % (mm_level)
+    dscString += "\nSIDE_LENGTH=%i" % (s_len)
+    dscString += "\nRESOLUTION=%i" % (e_res)
     dscString += "\nBLOCK_INDEX=0"
     dscString += "\nRING_FILL_INDEX=%i" % (ring_fill_index)
-    dscString += "\nINTERIOR_FILL_INDEX=%i" % (int_fill_index)
+    dscString += "\nRING_FILL_NUM_ELEMENTS=%i" % ring_fill_num_el
+    dscString += "\nINTERIOR_TRIM_INDEX=%i" % (int_trim_index)
+    dscString += "\nINTERIOR_TRIM_NUM_ELEMENTS=%i" % interior_trim_num_el
     
     fileDsc = open(work_path + file_name + dsc_ext, 'w')
     fileDsc.write(dscString)
@@ -242,8 +249,8 @@ def write_index_file():
 #***
 #Write the data files to the work directory
 def write_work_files():
-    (ring_fill_index,int_fill_index) = write_geometry_data()
-    write_descriptor(ring_fill_index,int_fill_index)
+    (ring_fill_index,int_fill_index,ring_fill_num_el,interior_trim_num_el) = write_geometry_data()
+    write_descriptor(ring_fill_index,int_fill_index,ring_fill_num_el,interior_trim_num_el)
     write_index_file()
     return
 

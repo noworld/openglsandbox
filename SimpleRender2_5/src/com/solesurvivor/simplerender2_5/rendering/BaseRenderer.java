@@ -368,10 +368,18 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public void drawGeometry(Drawable draw) {
-		drawGeometry(draw, draw.getWorldMatrix());
+		drawGeometry(draw, draw.getWorldMatrix(), GLES20.GL_TRIANGLES);
+	}
+	
+	public void drawGeometry(Drawable draw, float[] mModelMatrix) {
+		drawGeometry(draw, mModelMatrix, GLES20.GL_TRIANGLES);
+	}
+	
+	public void drawGeometryTristrips(Drawable draw, float[] mModelMatrix) {
+		drawGeometry(draw, mModelMatrix, GLES20.GL_TRIANGLE_STRIP);
 	}
 
-	public void drawGeometry(Drawable draw, float[] mModelMatrix) {
+	public void drawGeometry(Drawable draw, float[] mModelMatrix, int primType) {
 
 		float[] mvMatrix = new float[16];
 		float[] mvpMatrix = new float[16];
@@ -447,10 +455,11 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		// Draw
 
-		/* Draw the arrays as triangles */
+//		GLES20.glDisable(GLES20.GL_CULL_FACE);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, draw.getIdxBufHandle());
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, draw.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+		GLES20.glDrawElements(primType, draw.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
 
+//		GLES20.glEnable(GLES20.GL_CULL_FACE);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 
 		checkError();
