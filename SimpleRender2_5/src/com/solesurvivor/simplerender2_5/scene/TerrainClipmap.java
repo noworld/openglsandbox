@@ -13,7 +13,7 @@ import com.solesurvivor.util.logging.SSLog;
 public class TerrainClipmap implements Node {
 	
 	protected static final int MATRIX_SZ = 16;
-	protected static final int NUM_BLOCKS = 4; //12;
+	protected static final int NUM_BLOCKS = 12; //12;
 	protected static final int NUM_RING_FILL = 1; //4;
 	protected static final int NUM_INTERIOR_TRIM = 1;
 	
@@ -59,46 +59,107 @@ public class TerrainClipmap implements Node {
 		mRingMat = new float[NUM_RING_FILL * MATRIX_SZ];
 		mInteriorMat = new float[NUM_INTERIOR_TRIM * MATRIX_SZ];
 		
-		float n_half_sz = -(mSideLength/2.0f);
-		float quad_width = ((float)mSideLength) / (((float)mResolution) - 1.0f);
-		float block_sz = (((float)mResolution) + 1.0f) / 4.0f;
-		float block_disp = quad_width * (block_sz - 1.0f);
+		float nHalfSz = -(mSideLength/2.0f);
+		float quadWidth = ((float)mSideLength) / (((float)mResolution) - 1.0f);
+		float blockSz = (((float)mResolution) + 1.0f) / 4.0f;
+		float blockDisp = quadWidth * (blockSz - 1.0f);
 		
 		//12 blocks arranged like so
 		//http://http.developer.nvidia.com/GPUGems2/elementLinks/02_clipmaps_05.jpg
 		int idx = 0;
+		int xIdx = 0;
+		int zIdx = 0;
 		
 		//1
-		int matIdx = idx * MATRIX_SZ;		
-		Matrix.setIdentityM(mBlockMat, matIdx);
-		Matrix.translateM(mBlockMat, matIdx, n_half_sz, 0.0f, n_half_sz);
+		int matIdx = idx * MATRIX_SZ;
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
 		idx++;
+		xIdx++;
 		
 		//2
 		matIdx = idx * MATRIX_SZ;		
-		Matrix.setIdentityM(mBlockMat, matIdx);
-		Matrix.translateM(mBlockMat, matIdx, n_half_sz + (idx * block_disp), 0.0f, n_half_sz);
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
 		idx++;
+		xIdx++;
 		
 		//3
 		matIdx = idx * MATRIX_SZ;		
-		Matrix.setIdentityM(mBlockMat, matIdx);
-		Matrix.translateM(mBlockMat, matIdx, n_half_sz + (idx * block_disp) + (quad_width * 2.0f), 0.0f, n_half_sz);
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
 		idx++;
+		xIdx++;
 		
 		//4
 		matIdx = idx * MATRIX_SZ;		
-		Matrix.setIdentityM(mBlockMat, matIdx);
-		Matrix.translateM(mBlockMat, matIdx, n_half_sz + (idx * block_disp) + (quad_width * 2.0f), 0.0f, n_half_sz);
-		
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
+		idx++;
+		xIdx = 0;
+		zIdx++;
+
+		//5
+		matIdx = idx * MATRIX_SZ;		
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
+		idx++;
+		xIdx += 3;
+
+		//6
+		matIdx = idx * MATRIX_SZ;		
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
+		idx++;
+		xIdx = 0;
+		zIdx++;
+
+		//7
+		matIdx = idx * MATRIX_SZ;		
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
+		idx++;
+		xIdx += 3;
+
+		//8
+		matIdx = idx * MATRIX_SZ;		
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
+		idx++;
+		xIdx = 0;
+		zIdx++;
+
+		//9
+		matIdx = idx * MATRIX_SZ;		
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
+		idx++;
+		xIdx++;
+
+		//10
+		matIdx = idx * MATRIX_SZ;		
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
+		idx++;
+		xIdx++;
+
+		//11
+		matIdx = idx * MATRIX_SZ;		
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
+		idx++;
+		xIdx++;
+
+		//12
+		matIdx = idx * MATRIX_SZ;		
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
+
 		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
 			Matrix.setIdentityM(mRingMat, i);
-			Matrix.translateM(mRingMat, i, n_half_sz + (block_disp * 2.0f), 0.0f, n_half_sz);
+			Matrix.translateM(mRingMat, i, nHalfSz + (blockDisp * 2.0f), 0.0f, nHalfSz);
 		}
 		
 		for(int i = 0; i < mInteriorMat.length; i += MATRIX_SZ) {
 			Matrix.setIdentityM(mInteriorMat, i);
 		}
+	}
+	
+	private float[] getBlockMatrix(float nHalfSz, float xIdx, float zIdx, float blockDisp, float quadWidth) {
+		float centerDispX = xIdx > 1 ? 2.0f : 0.0f;
+		float centerDispZ = zIdx > 1 ? 2.0f : 0.0f;
+		float[] mat = new float[16];
+		Matrix.setIdentityM(mat, 0);
+		Matrix.translateM(mat, 0, nHalfSz + (xIdx * blockDisp) + (quadWidth * centerDispX), 0.0f, nHalfSz + (zIdx * blockDisp) + (quadWidth * centerDispZ));
+		return mat;
 	}
 	
 
