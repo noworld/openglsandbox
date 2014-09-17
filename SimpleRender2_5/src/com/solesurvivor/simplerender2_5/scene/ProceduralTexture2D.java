@@ -79,4 +79,10 @@ public class ProceduralTexture2D extends Rectangle implements Node {
 	public int getTextureHandle() {
 		return mBuffers[2];
 	}
+
+	@Override
+	public int getIdxOffset() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

@@ -1,3 +1,0 @@
-texture_name=santaspritesheet
-shader_name=sprite_shader
-obj_type=sprite

@@ -28,6 +28,7 @@ public class Geometry implements Drawable {
 	
 	protected int mNumElements;
 	protected int mElementStride;
+	protected int mIdxOffset = 0;
 	
 	protected float[] mWorldMatrix;
 	protected int mTextureHandle;
@@ -128,6 +129,11 @@ public class Geometry implements Drawable {
 	public int getElementStride() {
 		return mElementStride;
 	}
+	
+	@Override
+	public int getIdxOffset() {
+		return mIdxOffset;
+	}
 
 	@Override
 	public int getPosOffset() {
@@ -167,6 +173,10 @@ public class Geometry implements Drawable {
 	
 	public void setTxcOffset(int offset) {
 		this.mTxcOffset = offset;
+	}
+	
+	public void setIdxOffset(int offset) {
+		this.mIdxOffset = offset;
 	}
 	
 	public void setNumElements(int numElements) {

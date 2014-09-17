@@ -60,4 +60,10 @@ public class Plane extends Rectangle implements Node {
 		return this.mTextureHandle;
 	}
 
+	@Override
+	public int getIdxOffset() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

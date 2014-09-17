@@ -13,6 +13,7 @@ public interface Drawable {
 	public int getTxcSize();
 	public int getNumElements();
 	public int getElementStride();
+	public int getIdxOffset();
 	public int getPosOffset();
 	public int getNrmOffset();
 	public int getTxcOffset();

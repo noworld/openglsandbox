@@ -44,13 +44,13 @@ public class TerrainClipmap implements Node {
 		mRingFill = new Geometry(clipmap);
 		mInteriorTrim = new Geometry(clipmap);
 		
-		mRingFill.setPosOffset(data.mRingFillIndex);
-		mRingFill.setTxcOffset(mRingFill.getTxcOffset() + data.mRingFillIndex);
-		mRingFill.setNumElements(data.mRingFillNumElements);
-		
-		mInteriorTrim.setPosOffset(data.mInteriorTrimIndex);
-		mInteriorTrim.setTxcOffset(mInteriorTrim.getTxcOffset() + data.mInteriorTrimIndex);
+		mInteriorTrim.setIdxOffset(data.mInteriorTrimIndex);
 		mInteriorTrim.setNumElements(data.mInteriorTrimNumElements);
+		
+		mRingFill.setIdxOffset(data.mRingFillIndex);
+		//XXX Why is this off by 2???
+		mRingFill.setNumElements(data.mRingFillNumElements + 2);
+		
 		
 		mSideLength = data.mSideLength;
 		mResolution = data.mResolution;
@@ -93,7 +93,7 @@ public class TerrainClipmap implements Node {
 		
 		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
 			Matrix.setIdentityM(mRingMat, i);
-			Matrix.translateM(mRingMat, i, 0.0f, 0.0f, -13.0f);
+			Matrix.translateM(mRingMat, i, n_half_sz + (block_disp * 2.0f), 0.0f, -12.0f);
 		}
 		
 		for(int i = 0; i < mInteriorMat.length; i += MATRIX_SZ) {
@@ -104,14 +104,14 @@ public class TerrainClipmap implements Node {
 
 	@Override
 	public void update() {
-		angle = angle + GameWorld.inst().getDeltaT() / 1000.0f * 10.0f;
-		SSLog.d(TAG, "Angle: %.3f", angle);
-		float n_half_sz = -(mSideLength/2.0f);
-		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
-			Matrix.setIdentityM(mRingMat, i);
-			Matrix.translateM(mRingMat, i, n_half_sz, 0.0f, -13.0f);
-			Matrix.rotateM(mRingMat, i, angle, 1.0f, 0.0f, 0.0f);
-		}
+//		angle = angle + GameWorld.inst().getDeltaT() / 1000.0f * 10.0f;
+//		SSLog.d(TAG, "Angle: %.3f", angle);
+//		float n_half_sz = -(mSideLength/2.0f);
+//		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
+//			Matrix.setIdentityM(mRingMat, i);
+//			Matrix.translateM(mRingMat, i, n_half_sz, 0.0f, -13.0f);
+//			Matrix.rotateM(mRingMat, i, angle, 1.0f, 0.0f, 0.0f);
+//		}
 		
 	}
 
