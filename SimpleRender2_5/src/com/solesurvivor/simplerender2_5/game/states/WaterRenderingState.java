@@ -55,10 +55,14 @@ public class WaterRenderingState extends BaseState {
 	@Override
 	public void execute() {
 		super.execute();
-//		float angle = GameWorld.inst().getDeltaT() / 1000.0f * 5.0f;
-//		float[] rot = mCamera.getRotation();
-//		float[] newRot = {rot[0] + angle, 0.0f, 1.0f, 0.0f};
-//		mCamera.setRotation(newRot);
+		float angle = GameWorld.inst().getDeltaT() / 1000.0f * 5.0f;
+		float height = GameWorld.inst().getDeltaT() / 1000.0f * 0.5f;
+		float[] rot = mCamera.getRotation();
+		float[] eye = mCamera.getEyePos();
+		float[] look = mCamera.getLookVector();
+		mCamera.setRotation(new float[]{rot[0] + angle, 0.0f, 1.0f, 0.0f});
+		mCamera.setEyePos(new float[]{eye[0], eye[1]+height, eye[2]});
+		mCamera.setLookVector(new float[]{0.0f, 2.0f, -1.0f});
 	}
 	
 	@Override

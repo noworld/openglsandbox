@@ -312,7 +312,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
-		float[] viewMatrix = new float[16];
+		float[] viewMatrix = mCurrentCamera.getViewMatrix();
 		int shaderHandle = skybox.getShaderHandle();
 		int textureHandle = skybox.getTextureHandle();
 
@@ -340,10 +340,11 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// --MV--
 
 		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.setIdentityM(viewMatrix, 0);
-		float[] camRot = mCurrentCamera.getRotation();
-		Matrix.rotateM(viewMatrix, 0, camRot[0], camRot[1], camRot[2], camRot[3]);
-		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, skybox.getWorldMatrix(), 0);
+		float[] tempView = new float[16];
+		Matrix.setIdentityM(tempView, 0);
+		// Do not copy camera translation. It should always be 0,0 in the skybox
+		System.arraycopy(viewMatrix, 0, tempView, 0, 12);
+		Matrix.multiplyMM(mvpMatrix, 0, tempView, 0, skybox.getWorldMatrix(), 0);
 		//MVP matrix is *actually MV* at this point
 		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
 
