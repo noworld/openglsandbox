@@ -61,7 +61,7 @@ public class Plane extends Rectangle implements Node {
 	}
 
 	@Override
-	public int getIdxOffset() {
+	public int getElementOffset() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

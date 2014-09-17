@@ -182,7 +182,7 @@ public class Skybox implements Node, Drawable {
 	}
 
 	@Override
-	public int getIdxOffset() {
+	public int getElementOffset() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

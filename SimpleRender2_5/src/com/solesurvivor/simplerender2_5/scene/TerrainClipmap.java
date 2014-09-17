@@ -4,17 +4,15 @@ import org.apache.commons.lang.ArrayUtils;
 
 import android.opengl.Matrix;
 
-import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
-import com.solesurvivor.util.logging.SSLog;
 
 
 public class TerrainClipmap implements Node {
 	
 	protected static final int MATRIX_SZ = 16;
-	protected static final int NUM_BLOCKS = 12; //12;
-	protected static final int NUM_RING_FILL = 1; //4;
+	protected static final int NUM_BLOCKS = 12;
+	protected static final int NUM_RING_FILL = 4; //4;
 	protected static final int NUM_INTERIOR_TRIM = 1;
 	
 	@SuppressWarnings("unused")
@@ -44,12 +42,11 @@ public class TerrainClipmap implements Node {
 		mRingFill = new Geometry(clipmap);
 		mInteriorTrim = new Geometry(clipmap);
 		
-		mInteriorTrim.setIdxOffset(data.mInteriorTrimIndex);
-		mInteriorTrim.setNumElements(data.mInteriorTrimNumElements);
+		mRingFill.setElementOffset(data.mRingFillIndex);
+		mRingFill.setNumElements(data.mRingFillNumElements);
 		
-		mRingFill.setIdxOffset(data.mRingFillIndex);
-		//XXX Why is this off by 2???
-		mRingFill.setNumElements(data.mRingFillNumElements + 2);
+		mInteriorTrim.setElementOffset(data.mInteriorTrimIndex);
+		mInteriorTrim.setNumElements(data.mInteriorTrimNumElements);
 		
 		
 		mSideLength = data.mSideLength;
@@ -71,82 +68,78 @@ public class TerrainClipmap implements Node {
 		int zIdx = 0;
 		
 		//1
-		int matIdx = idx * MATRIX_SZ;
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-		idx++;
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		xIdx++;
 		
 		//2
-		matIdx = idx * MATRIX_SZ;		
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-		idx++;
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		xIdx++;
 		
 		//3
-		matIdx = idx * MATRIX_SZ;		
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-		idx++;
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		xIdx++;
 		
 		//4
-		matIdx = idx * MATRIX_SZ;		
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-		idx++;
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		xIdx = 0;
 		zIdx++;
 
 		//5
-		matIdx = idx * MATRIX_SZ;		
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-		idx++;
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		xIdx += 3;
 
 		//6
-		matIdx = idx * MATRIX_SZ;		
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-		idx++;
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		xIdx = 0;
 		zIdx++;
 
 		//7
-		matIdx = idx * MATRIX_SZ;		
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-		idx++;
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		xIdx += 3;
 
 		//8
-		matIdx = idx * MATRIX_SZ;		
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-		idx++;
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		xIdx = 0;
 		zIdx++;
 
 		//9
-		matIdx = idx * MATRIX_SZ;		
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-		idx++;
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		xIdx++;
 
 		//10
-		matIdx = idx * MATRIX_SZ;		
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-		idx++;
+	
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		xIdx++;
 
-		//11
-		matIdx = idx * MATRIX_SZ;		
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-		idx++;
+		//11	
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		xIdx++;
 
 		//12
-		matIdx = idx * MATRIX_SZ;		
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, matIdx, MATRIX_SZ);
-
-		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
-			Matrix.setIdentityM(mRingMat, i);
-			Matrix.translateM(mRingMat, i, nHalfSz + (blockDisp * 2.0f), 0.0f, nHalfSz);
-		}
+		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
+		
+		//Four ring fills
+		//1
+		idx = 0;
+		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);
+		Matrix.translateM(mRingMat, idx++ * MATRIX_SZ, nHalfSz + (blockDisp * 2.0f), 0.0f, nHalfSz);
+		
+		//2
+		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
+		Matrix.translateM(mRingMat, idx * MATRIX_SZ, 0.0f, 0.0f, 0.0f);
+		Matrix.rotateM(mRingMat, idx++ * MATRIX_SZ, 90, 0.0f, 1.0f, 0.0f);
+		
+		
+		//3
+		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
+		Matrix.translateM(mRingMat, idx * MATRIX_SZ, nHalfSz + (blockDisp * 2.0f), 0.0f, nHalfSz);
+		Matrix.rotateM(mRingMat, idx++ * MATRIX_SZ, 180, 0.0f, 1.0f, 0.0f);
+		
+		//4
+		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
+		Matrix.translateM(mRingMat, idx * MATRIX_SZ, nHalfSz + (blockDisp * 2.0f), 0.0f, nHalfSz);
+		Matrix.rotateM(mRingMat, idx * MATRIX_SZ, 270, 0.0f, 1.0f, 0.0f);
+		
 		
 		for(int i = 0; i < mInteriorMat.length; i += MATRIX_SZ) {
 			Matrix.setIdentityM(mInteriorMat, i);
