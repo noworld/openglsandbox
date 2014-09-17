@@ -88,6 +88,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void setCurrentCamera(Camera cam) {
 		this.mCurrentCamera = cam;
 	}
+	
+	public Camera getCurrentCamera() {
+		return mCurrentCamera;
+	}
 
 	public void resizeViewport(int width, int height) {
 		GLES20.glViewport(0, 0, width, height);

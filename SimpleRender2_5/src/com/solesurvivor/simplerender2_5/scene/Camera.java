@@ -20,8 +20,6 @@ public class Camera {
 	protected float mNear = 0.5f;
 	protected float mFar = 200.0f;
 	protected float mFov = 62.0f;
-	protected float[] mTranslation = {0.0f, 0.0f, 0.0f};
-	protected float[] mRotation = {0.0f, 0.0f, 0.0f, 1.0f};
 	protected float[] mVelocity = {0.0f, 0.0f, 0.0f};
 	
 	public Camera() {		
@@ -34,7 +32,7 @@ public class Camera {
 
 	public void setEyePos(float[] eyePos) {
 		this.mEyePos = eyePos;
-		orient();
+		mViewDirty = true;
 	}
 
 	public float[] getLookVector() {
@@ -43,7 +41,7 @@ public class Camera {
 
 	public void setLookVector(float[] lookVector) {
 		this.mLookVector = lookVector;
-		orient();
+		mViewDirty = true;
 	}
 
 	public float[] getUpVector() {
@@ -52,7 +50,7 @@ public class Camera {
 
 	public void setUpVector(float[] upVector) {
 		this.mUpVector = upVector;
-		orient();
+		mViewDirty = true;
 	}
 	
 	public Point getViewport() {
@@ -61,11 +59,7 @@ public class Camera {
 	
 	public float[] getViewMatrix() {
 		if(mViewDirty) {
-			Matrix.setIdentityM(mViewMatrix, 0);
 			orient();
-			Matrix.rotateM(mViewMatrix, 0, mRotation[0], mRotation[1], mRotation[2], mRotation[3]);		
-			Matrix.translateM(mViewMatrix, 0, mTranslation[0], mTranslation[1], mTranslation[2]);
-			mViewDirty = false;
 		}
 		return mViewMatrix;
 	}
@@ -82,7 +76,7 @@ public class Camera {
 		Matrix.setLookAtM(mViewMatrix, 0, mEyePos[0], mEyePos[1], mEyePos[2], 
 				mLookVector[0], mLookVector[1], mLookVector[2],
 				mUpVector[0], mUpVector[1], mUpVector[2]);
-		mViewDirty = true;
+		mViewDirty = false;
 	}
 	
 	public float getFar() {
@@ -117,24 +111,6 @@ public class Camera {
 		//Rig for a 90 deg FOV
 		Matrix.perspectiveM(mProjectionMatrix, 0, mFov, ratio, near, far);
 		Matrix.orthoM(mOrthoMatrix, 0, left_ortho, right_ortho, bottom_ortho, top_ortho, near, far);
-	}
-
-	public float[] getTranslation() {
-		return mTranslation;
-	}
-
-	public void setTranslation(float[] mCameraTranslation) {
-		this.mTranslation = mCameraTranslation;
-		mViewDirty = true;
-	}
-
-	public float[] getRotation() {
-		return mRotation;
-	}
-
-	public void setRotation(float[] mCameraRotation) {
-		this.mRotation = mCameraRotation;
-		mViewDirty = true;
 	}
 
 	public float[] getVelocity() {

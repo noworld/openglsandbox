@@ -3,7 +3,8 @@ package com.solesurvivor.simplerender2_5.commands;
 public enum CommandEnum {
 
 	SHOW_MAIN_MENU(new ShowMainMenu()),
-	REVERT_STATE(new RevertStateCommand());
+	REVERT_STATE(new RevertStateCommand()),
+	ROTATE_VIEW(new RotateViewCommand());
 	
 	private Command mCommand;
 	

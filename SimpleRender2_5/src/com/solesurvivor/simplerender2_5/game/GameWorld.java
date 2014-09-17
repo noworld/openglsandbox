@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.os.SystemClock;
 
 import com.solesurvivor.simplerender2_5.game.states.GameState;
+import com.solesurvivor.simplerender2_5.input.InputEventBus;
 
 
 public class GameWorld {
@@ -37,6 +38,7 @@ public class GameWorld {
 		long tempT = SystemClock.uptimeMillis();
 		mDeltaT = tempT - mLastT;
 		mLastT = tempT;
+		InputEventBus.inst().executeCommands(mCurrentState.getInputs());
 		this.mCurrentState.execute();
 	}
 

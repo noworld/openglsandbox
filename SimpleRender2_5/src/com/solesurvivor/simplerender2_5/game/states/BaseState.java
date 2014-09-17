@@ -46,5 +46,10 @@ public abstract class BaseState implements GameState {
 	public long getDeltaT() {
 		return mDeltaT;
 	}
+	
+	@Override
+	public List<InputHandler> getInputs() {
+		return mInputHandlers;
+	}
 
 }

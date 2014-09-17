@@ -5,12 +5,16 @@ import java.io.IOException;
 import android.graphics.Point;
 
 import com.solesurvivor.simplerender2_5.R;
+import com.solesurvivor.simplerender2_5.commands.CommandEnum;
 import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.game.GlobalKeysEnum;
+import com.solesurvivor.simplerender2_5.input.InputUiElement;
+import com.solesurvivor.simplerender2_5.input.ScreenInputArea;
 import com.solesurvivor.simplerender2_5.io.GeometryIO;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
+import com.solesurvivor.simplerender2_5.scene.Plane;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
 import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
 
@@ -44,6 +48,10 @@ public class WaterRenderingState extends BaseState {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		InputUiElement element = new InputUiElement("screen", new Plane("tex_shader","uvgrid",viewport), new ScreenInputArea());
+		element.registerCommand(CommandEnum.ROTATE_VIEW.getCommand());
+		mInputHandlers.add(element);
 	}
 
 	@Override
@@ -54,15 +62,7 @@ public class WaterRenderingState extends BaseState {
 	
 	@Override
 	public void execute() {
-		super.execute();
-		float angle = GameWorld.inst().getDeltaT() / 1000.0f * 5.0f;
-		float height = GameWorld.inst().getDeltaT() / 1000.0f * 0.5f;
-		float[] rot = mCamera.getRotation();
-		float[] eye = mCamera.getEyePos();
-		float[] look = mCamera.getLookVector();
-		mCamera.setRotation(new float[]{rot[0] + angle, 0.0f, 1.0f, 0.0f});
-		mCamera.setEyePos(new float[]{eye[0], eye[1]+height, eye[2]});
-		mCamera.setLookVector(new float[]{0.0f, 2.0f, -1.0f});
+		
 	}
 	
 	@Override
