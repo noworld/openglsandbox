@@ -12,7 +12,7 @@ public class TerrainClipmap implements Node {
 	
 	protected static final int MATRIX_SZ = 16;
 	protected static final int NUM_BLOCKS = 12;
-	protected static final int NUM_RING_FILL = 1; //4;
+	protected static final int NUM_RING_FILL = 4;
 	protected static final int NUM_INTERIOR_TRIM = 1;
 	
 	@SuppressWarnings("unused")
@@ -122,23 +122,23 @@ public class TerrainClipmap implements Node {
 		//1
 		idx = 0;
 		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);
-//		Matrix.translateM(mRingMat, idx++ * MATRIX_SZ, nHalfSz + (blockDisp * 2.0f), 0.0f, nHalfSz);
+		Matrix.translateM(mRingMat, idx++ * MATRIX_SZ, -quadWidth, 0.0f, nHalfSz);
 		
 		//2
-//		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
-//		Matrix.translateM(mRingMat, idx * MATRIX_SZ, 0.0f, 0.0f, 0.0f);
-//		Matrix.rotateM(mRingMat, idx++ * MATRIX_SZ, 90, 0.0f, 1.0f, 0.0f);
+		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
+		Matrix.translateM(mRingMat, idx * MATRIX_SZ, -nHalfSz - blockDisp, 0.0f, quadWidth);
+		Matrix.rotateM(mRingMat, idx++ * MATRIX_SZ, 90, 0.0f, 1.0f, 0.0f);
 		
 		
 		//3
-//		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
-//		Matrix.translateM(mRingMat, idx * MATRIX_SZ, nHalfSz + (blockDisp * 2.0f), 0.0f, nHalfSz);
-//		Matrix.rotateM(mRingMat, idx++ * MATRIX_SZ, 180, 0.0f, 1.0f, 0.0f);
+		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
+		Matrix.translateM(mRingMat, idx * MATRIX_SZ, quadWidth, 0.0f, -nHalfSz);
+		Matrix.rotateM(mRingMat, idx++ * MATRIX_SZ, 180, 0.0f, 1.0f, 0.0f);
 		
 		//4
-//		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
-//		Matrix.translateM(mRingMat, idx * MATRIX_SZ, nHalfSz + (blockDisp * 2.0f), 0.0f, nHalfSz);
-//		Matrix.rotateM(mRingMat, idx * MATRIX_SZ, 270, 0.0f, 1.0f, 0.0f);
+		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
+		Matrix.translateM(mRingMat, idx * MATRIX_SZ, nHalfSz + blockDisp, 0.0f, -quadWidth);
+		Matrix.rotateM(mRingMat, idx * MATRIX_SZ, -90, 0.0f, 1.0f, 0.0f);
 		
 		
 		for(int i = 0; i < mInteriorMat.length; i += MATRIX_SZ) {
