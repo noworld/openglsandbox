@@ -122,11 +122,13 @@ def write_geometry_data():
     #generate ring fill data
     print("Data for RING FILL")
     print("RING FILL offset:",idx_ctr)
+    print("RING FILL DATA offset:",dat_ctr/5)
     ring_fill_index = idx_ctr
+    ring_fill_data_index = int(dat_ctr / 5)
     x_sz = 3
     z_sz = blk_sz
-    for x in range(x_sz):
-        for z in range(z_sz):
+    for z in range(z_sz):
+        for x in range(x_sz):
             bx = x * pos_step
             by = 0.0
             bz = z * pos_step
@@ -143,9 +145,9 @@ def write_geometry_data():
         a_degen = 0
         for j in range(x_sz):
             if(i % 2 == 0):
-                up_index = j + (i * x_sz) #+ ring_fill_index
+                up_index = j + (i * x_sz) + ring_fill_data_index
                 degen = up_index
-                alt_up_index = up_index + x_sz #+ ring_fill_index
+                alt_up_index = up_index + x_sz
                 a_degen = alt_up_index                
                 if(i == 0 or (i > 0 and j > 0)):
                     print("  up:",up_index)
@@ -155,13 +157,13 @@ def write_geometry_data():
                 iboBytes += struct.pack(">h",alt_up_index)
                 idx_ctr = idx_ctr + 1
             else:
-                dn_index = (i * x_sz) + x_sz - 1 - j #+ ring_fill_index
+                dn_index = (i * x_sz) + x_sz - 1 - j + ring_fill_data_index
                 if(j > 0):
                     degen = dn_index
                     print("  dn:",dn_index)
                     iboBytes += struct.pack(">h",dn_index)
                     idx_ctr = idx_ctr + 1
-                alt_dn_index = ((i + 1) * x_sz) + x_sz - 1 - j #+ ring_fill_index
+                alt_dn_index = ((i + 1) * x_sz) + x_sz - 1 - j + ring_fill_data_index
                 a_degen = alt_dn_index
                 print("a_dn:",alt_dn_index)
                 iboBytes += struct.pack(">h",alt_dn_index)
