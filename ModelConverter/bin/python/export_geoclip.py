@@ -52,8 +52,6 @@ nrm_offset = -1       #normals not generated
 txc_offset = pos_size * bpf            #texture coords after position data
 stride = (txc_size + pos_size) * bpf   #3 positions (x,y,z), 2 coords
 block_index = 0       #index in the buffer of the block geometry
-ring_fill_index = 0   #index in the buffer of the ring fill geometry
-int_fill_index = 0    #index in the buffer of the interior fill geometry
 
 
 #**********************************************************
@@ -68,7 +66,8 @@ def write_geometry_data():
     dat_ctr = 0
     idx_ctr = 0
 
-    #generate block data	
+    #generate block data
+    blk_num_elements = 0
     print("Data for BLOCK")
     x_sz = blk_sz
     z_sz = blk_sz
@@ -83,7 +82,7 @@ def write_geometry_data():
             vboBytes += struct.pack(">fff",bx,by,bz)
             vboBytes += struct.pack(">ff",u,1.0-v)
             dat_ctr = dat_ctr + 5
-	
+
     #generate block indexes
     for i in range(z_sz-1):
         degen = 0
@@ -118,9 +117,11 @@ def write_geometry_data():
             print("_dgn",a_degen)
             iboBytes += struct.pack(">hh",degen,a_degen)
             idx_ctr = idx_ctr + 2
-	
+            
+    blk_num_elements = idx_ctr
+
     #generate ring fill data
-    print("Data for RING FILL")
+    print("\nData for RING FILL")
     print("RING FILL offset:",int(idx_ctr * bps))
     print("RING FILL DATA offset:",int(dat_ctr / 5))
     ring_fill_index_count = idx_ctr
@@ -139,7 +140,7 @@ def write_geometry_data():
             vboBytes += struct.pack(">fff",bx,by,bz)
             vboBytes += struct.pack(">ff",u,1.0-v)
             dat_ctr = dat_ctr + 5
-	
+
     #generate ring fill indexes 
     for i in range(z_sz-1):
         degen = 0
@@ -175,12 +176,80 @@ def write_geometry_data():
             iboBytes += struct.pack(">hh",degen,a_degen)
             idx_ctr = idx_ctr + 2
     ring_fill_num_el = idx_ctr - ring_fill_index_count
-	
-    #generate interior fill data
-    print("Data for INTERIOR FILL")
-    print("INTERIOR FILL offset:",dat_ctr)
-    int_fill_index = idx_ctr
-    int_fill_num_el = idx_ctr - int_fill_index
+    print("RING FILL NUM ELEMENTS:",ring_fill_num_el)
+
+    #generate interior trim data
+    print("\nData for INTERIOR TRIM")
+    print("INTERIOR FILL offset:",int(idx_ctr * bps))
+    print("INTERIOR FILL DATA offset:",int(dat_ctr / 5))
+    int_fill_index_count = idx_ctr
+    int_fill_index = int(idx_ctr * bps)
+    int_fill_data_index = int(dat_ctr / 5)
+    x_sz = (2 * blk_sz) + 1
+    z_sz = 2
+    for z in range(z_sz):
+        for x in range(x_sz):
+            bx = x * pos_step
+            by = 0.0
+            bz = z * pos_step
+            u = x * txc_step
+            v = z * txc_step
+            print("VERT %i,%i: %.3f,%.3f / %.3f,%.3f" % (x,z,bx,bz,u,v))
+            vboBytes += struct.pack(">fff",bx,by,bz)
+            vboBytes += struct.pack(">ff",u,1.0-v)
+            dat_ctr = dat_ctr + 5
+            
+    x_disp = pos_step * ((2 * blk_sz) - 1)
+    z_disp = pos_step * 2
+    x_sz = 2
+    z_sz = (2 * blk_sz) - 1
+    for z in range(z_sz):
+        for x in range(x_sz):
+            bx = (x * pos_step) + x_disp
+            by = 0.0
+            bz = z * pos_step + z_disp
+            u = x * txc_step
+            v = z * txc_step
+            print("VERT %i,%i: %.3f,%.3f / %.3f,%.3f" % (x,z,bx,bz,u,v))
+            vboBytes += struct.pack(">fff",bx,by,bz)
+            vboBytes += struct.pack(">ff",u,1.0-v)
+            dat_ctr = dat_ctr + 5
+
+    #generate interior trim indexes 
+    x_sz = (2 * blk_sz) + 2
+    z_sz = 2
+    for i in range(z_sz):
+        degen = 0
+        a_degen = 0
+        for j in range(x_sz):
+            if(i % 2 == 0):
+                up_index = j + (i * x_sz) + int_fill_data_index
+                degen = up_index * 2
+                alt_up_index = up_index + x_sz
+                a_degen = alt_up_index
+                if(i == 0 or (i > 0 and j > 0)):
+                    print("  up:",up_index)
+                    iboBytes += struct.pack(">h",up_index)
+                    idx_ctr = idx_ctr + 1
+                print("a_up:",alt_up_index)
+                iboBytes += struct.pack(">h",alt_up_index)
+                idx_ctr = idx_ctr + 1
+            elif(j < (2 * blk_sz) - 1):
+                dn_index = (blk_sz * 4) + (j * 2) + 3 + int_fill_data_index
+                alt_dn_index = dn_index - 1
+                print("  dn:",dn_index)
+                print("a_dn:",alt_dn_index)
+                iboBytes += struct.pack(">hh",dn_index,alt_dn_index)
+                idx_ctr = idx_ctr + 2                
+
+#        if(i < z_sz - 1):
+#            print("_dgn",a_degen)
+#            print("_dgn",degen)
+#            iboBytes += struct.pack(">hh",a_degen,degen)
+#            idx_ctr = idx_ctr + 2
+            
+    int_fill_num_el = idx_ctr - int_fill_index_count
+    print("INTERIOR TRIM NUM ELEMENTS:",int_fill_num_el)
     
     print("FINAL IDX COUNT:",idx_ctr)
     print("FINAL DAT COUNT:",dat_ctr)
@@ -190,8 +259,8 @@ def write_geometry_data():
     
     print("LEN VBO:",len(vboBytes))
     print("LEN IBO:",len(iboBytes))
-	
-	#write the work files
+
+    #write the work files
     fileVbo = open(work_path + file_name + vbo_ext, 'wb')
     fileVbo.write(vboBytes)
     fileVbo.close()
@@ -199,11 +268,11 @@ def write_geometry_data():
     fileIbo.write(iboBytes)
     fileIbo.close()
     
-    return [ring_fill_index,int_fill_index,ring_fill_num_el,int_fill_num_el]
+    return [ring_fill_index,int_fill_index,ring_fill_num_el,int_fill_num_el,blk_num_elements]
 
 #***
 #Write the descriptor file to the work directory
-def write_descriptor(ring_fill_index,int_trim_index,ring_fill_num_el,interior_trim_num_el):
+def write_descriptor(ring_fill_index,int_trim_index,ring_fill_num_el,interior_trim_num_el,blk_num_elements):
     dscString = "OBJECT_NAME=%s" % file_name
     dscString += "\nOBJECT_TYPE=GEO_MIPMAP"
     dscString += "\nSHADER=clipmap_shader"
@@ -211,7 +280,7 @@ def write_descriptor(ring_fill_index,int_trim_index,ring_fill_num_el,interior_tr
     dscString += "\nNRM_OFFSET=%i" % nrm_offset
     dscString += "\nTXC_OFFSET=%i" % txc_offset
     dscString += "\nELEMENT_STRIDE=%i" % stride
-    dscString += "\nNUM_ELEMENTS=%i" % ring_fill_index
+    dscString += "\nNUM_ELEMENTS=%i" % blk_num_elements
     dscString += "\nNRM_SIZE=-1"
     dscString += "\nPOS_SIZE=%i" % pos_size
     dscString += "\nTXC_SIZE=%i" % txc_size
@@ -244,8 +313,8 @@ def write_index_file():
 #***
 #Write the data files to the work directory
 def write_work_files():
-    (ring_fill_index,int_fill_index,ring_fill_num_el,interior_trim_num_el) = write_geometry_data()
-    write_descriptor(ring_fill_index,int_fill_index,ring_fill_num_el,interior_trim_num_el)
+    (ring_fill_index,int_fill_index,ring_fill_num_el,interior_trim_num_el,blk_num_elements) = write_geometry_data()
+    write_descriptor(ring_fill_index,int_fill_index,ring_fill_num_el,interior_trim_num_el,blk_num_elements)
     write_index_file()
     return
 

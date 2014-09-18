@@ -48,7 +48,6 @@ public class TerrainClipmap implements Node {
 		mInteriorTrim.setElementOffset(data.mInteriorTrimIndex);
 		mInteriorTrim.setNumElements(data.mInteriorTrimNumElements);
 		
-		
 		mSideLength = data.mSideLength;
 		mResolution = data.mResolution;
 		
@@ -169,6 +168,10 @@ public class TerrainClipmap implements Node {
 		
 		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
 			mRenderer.drawGeometryTristrips(mRingFill, ArrayUtils.subarray(mRingMat, i, i + MATRIX_SZ));
+		}
+		
+		for(int i = 0; i < mInteriorMat.length; i += MATRIX_SZ) {
+			mRenderer.drawGeometryTristrips(mInteriorTrim, ArrayUtils.subarray(mInteriorMat, i, i + MATRIX_SZ));
 		}
 
 	}
