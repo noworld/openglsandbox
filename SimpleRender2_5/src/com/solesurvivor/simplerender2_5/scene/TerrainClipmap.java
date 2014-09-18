@@ -139,10 +139,13 @@ public class TerrainClipmap implements Node {
 		Matrix.translateM(mRingMat, idx * MATRIX_SZ, nHalfSz + blockDisp, 0.0f, -quadWidth);
 		Matrix.rotateM(mRingMat, idx * MATRIX_SZ, -90, 0.0f, 1.0f, 0.0f);
 		
+		//1 interior fill
+		idx = 0;
+		Matrix.setIdentityM(mInteriorMat, idx * MATRIX_SZ);		
+		float disp = (nHalfSz - quadWidth) / 2;
+		Matrix.translateM(mInteriorMat, idx * MATRIX_SZ, disp, 0.0f, disp);
 		
-		for(int i = 0; i < mInteriorMat.length; i += MATRIX_SZ) {
-			Matrix.setIdentityM(mInteriorMat, i);
-		}
+//		Matrix.rotateM(mInteriorMat, idx * MATRIX_SZ, -90, 0.0f, 1.0f, 0.0f);
 	}
 	
 	private float[] getBlockMatrix(float nHalfSz, float xIdx, float zIdx, float blockDisp, float quadWidth) {
@@ -163,7 +166,7 @@ public class TerrainClipmap implements Node {
 	@Override
 	public void render() {
 		for(int i = 0; i < mBlockMat.length; i += MATRIX_SZ) {
-			mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mBlockMat, i, i + MATRIX_SZ));
+				mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mBlockMat, i, i + MATRIX_SZ));
 		}
 		
 		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {

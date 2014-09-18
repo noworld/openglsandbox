@@ -208,24 +208,24 @@ def write_geometry_data():
             bx = (x * pos_step) + x_disp
             by = 0.0
             bz = z * pos_step + z_disp
-            u = x * txc_step
-            v = z * txc_step
+            u = x * txc_step + (txc_step * z_sz)
+            v = z * txc_step + (txc_step * x_sz)
             print("VERT %i,%i: %.3f,%.3f / %.3f,%.3f" % (x,z,bx,bz,u,v))
             vboBytes += struct.pack(">fff",bx,by,bz)
             vboBytes += struct.pack(">ff",u,1.0-v)
             dat_ctr = dat_ctr + 5
 
     #generate interior trim indexes 
-    x_sz = (2 * blk_sz) + 2
+    x_sz = (2 * blk_sz) + 1
     z_sz = 2
     for i in range(z_sz):
         degen = 0
         a_degen = 0
         for j in range(x_sz):
             if(i % 2 == 0):
-                up_index = j + (i * x_sz) + int_fill_data_index
-                degen = up_index * 2
+                up_index = j + (i * x_sz) + int_fill_data_index                
                 alt_up_index = up_index + x_sz
+                degen = alt_up_index - 1
                 a_degen = alt_up_index
                 if(i == 0 or (i > 0 and j > 0)):
                     print("  up:",up_index)
@@ -242,11 +242,11 @@ def write_geometry_data():
                 iboBytes += struct.pack(">hh",dn_index,alt_dn_index)
                 idx_ctr = idx_ctr + 2                
 
-#        if(i < z_sz - 1):
-#            print("_dgn",a_degen)
-#            print("_dgn",degen)
-#            iboBytes += struct.pack(">hh",a_degen,degen)
-#            idx_ctr = idx_ctr + 2
+        if(i < z_sz - 1):
+            print("_dgn",a_degen)
+            print("_dgn",degen)
+            iboBytes += struct.pack(">hh",a_degen,degen)
+            idx_ctr = idx_ctr + 2
             
     int_fill_num_el = idx_ctr - int_fill_index_count
     print("INTERIOR TRIM NUM ELEMENTS:",int_fill_num_el)
