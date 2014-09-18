@@ -42,11 +42,8 @@ public class TerrainClipmap implements Node {
 		mRingFill = new Geometry(clipmap);
 		mInteriorTrim = new Geometry(clipmap);
 		
-		mRingFill.setElementOffset(118);
-		mRingFill.setNumElements(118);
-//		mRingFill.setPosOffset(64);
-//		mRingFill.setElementOffset(64);
-//		mRingFill.setNumElements(48);
+		mRingFill.setElementOffset(data.mRingFillIndex);
+		mRingFill.setNumElements(data.mRingFillNumElements);
 		
 		mInteriorTrim.setElementOffset(data.mInteriorTrimIndex);
 		mInteriorTrim.setNumElements(data.mInteriorTrimNumElements);

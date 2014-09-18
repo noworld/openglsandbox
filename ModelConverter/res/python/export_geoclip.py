@@ -121,9 +121,10 @@ def write_geometry_data():
 	
     #generate ring fill data
     print("Data for RING FILL")
-    print("RING FILL offset:",idx_ctr)
-    print("RING FILL DATA offset:",dat_ctr/5)
-    ring_fill_index = idx_ctr
+    print("RING FILL offset:",int(idx_ctr * bps))
+    print("RING FILL DATA offset:",int(dat_ctr / 5))
+    ring_fill_index_count = idx_ctr
+    ring_fill_index = int(idx_ctr * bps)
     ring_fill_data_index = int(dat_ctr / 5)
     x_sz = 3
     z_sz = blk_sz
@@ -173,61 +174,22 @@ def write_geometry_data():
             print("_dgn",a_degen)
             iboBytes += struct.pack(">hh",degen,a_degen)
             idx_ctr = idx_ctr + 2
-    ring_fill_num_el = idx_ctr - ring_fill_index
+    ring_fill_num_el = idx_ctr - ring_fill_index_count
 	
     #generate interior fill data
     print("Data for INTERIOR FILL")
     print("INTERIOR FILL offset:",dat_ctr)
     int_fill_index = idx_ctr
-    x_sz = (2 * blk_sz) + 1
-    z_sz = 2
-    for x in range(x_sz):
-        for z in range(z_sz):
-            bx = x * pos_step
-            by = 0.0
-            bz = z * pos_step
-            u = x * txc_step
-            v = z * txc_step
-            print("VERT %i,%i: %.3f,%.3f / %.3f,%.3f" % (x,z,bx,bz,u,v))
-            vboBytes += struct.pack(">fff",bx,by,bz)
-            vboBytes += struct.pack(">ff",u,1.0-v)
-            dat_ctr = dat_ctr + 5
-	
-	#generate interior fill indexes
-    for i in range(z_sz-1):
-        degen = 0
-        a_degen = 0
-        for j in range(x_sz):
-            if(i % 2 == 0):
-                up_index = j + (i * x_sz) #+ interior_fill_data_start
-                degen = up_index
-                alt_up_index = up_index + x_sz #+ interior_fill_data_start
-                a_degen = alt_up_index                
-                if(i == 0 or (i > 0 and j > 0)):
-                    print("  up:",up_index)
-                    iboBytes += struct.pack(">h",up_index)
-                    idx_ctr = idx_ctr + 1
-                print("a_up:",alt_up_index)
-                iboBytes += struct.pack(">h",alt_up_index)
-                idx_ctr = idx_ctr + 1
-            else:
-                dn_index = (i * x_sz) + x_sz - 1 - j #+ interior_fill_data_start
-                if(j > 0):
-                    degen = dn_index
-                    print("  dn:",dn_index)
-                    iboBytes += struct.pack(">h",dn_index)
-                    idx_ctr = idx_ctr + 1
-                alt_dn_index = ((i + 1) * x_sz) + x_sz - 1 - j #+ interior_fill_data_start
-                a_degen = alt_dn_index
-                print("a_dn:",alt_dn_index)
-                iboBytes += struct.pack(">h",alt_dn_index)
-                idx_ctr = idx_ctr + 1
-        if(i < z_sz - 2):
-            print("_dgn",degen)
-            print("_dgn",a_degen)
-            iboBytes += struct.pack(">hh",degen,a_degen)
-            idx_ctr = idx_ctr + 2
     int_fill_num_el = idx_ctr - int_fill_index
+    
+    print("FINAL IDX COUNT:",idx_ctr)
+    print("FINAL DAT COUNT:",dat_ctr)
+    
+    print("EXPECTED IBO LENGTH:",idx_ctr * 2)
+    print("EXPECTED VBO LENGTH:",dat_ctr * 4)
+    
+    print("LEN VBO:",len(vboBytes))
+    print("LEN IBO:",len(iboBytes))
 	
 	#write the work files
     fileVbo = open(work_path + file_name + vbo_ext, 'wb')
