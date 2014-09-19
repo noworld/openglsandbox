@@ -41,7 +41,7 @@ public class TerrainClipmap implements Node {
 		mSideLength = data.mSideLength;
 		mResolution = data.mResolution;
 		
-		mMipMults = new float[]{1.0f, 2.0f, 4.0f, 8.0f, 16.0f};
+		mMipMults = new float[]{1.0f, 2.0f, 4.0f, 8.0f, 16.0f, 32.0f};
 		mMipRng = new int[]{0,5};
 		
 		mBlockMat = new float[NUM_BLOCKS * MATRIX_SZ];
@@ -157,7 +157,7 @@ public class TerrainClipmap implements Node {
 				mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mBlockMat, i, i + MATRIX_SZ), mipScale);
 			}
 
-			if(h == 0) {
+			if(h == mMipRng[0]) {
 				for(int i = 0; i < mFillMat.length; i += MATRIX_SZ) {
 					mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mFillMat, i, i + MATRIX_SZ), mipScale);
 				}
