@@ -154,12 +154,12 @@ public class TerrainClipmap implements Node {
 		for(int h = mMipRng[0]; h < mMipRng[1]; h++) {
 			float mipScale = mMipMults[h];
 			for(int i = 0; i < mBlockMat.length; i += MATRIX_SZ) {
-				mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mBlockMat, i, i + MATRIX_SZ), mipScale);
+				mRenderer.drawClipMap(mBlock, ArrayUtils.subarray(mBlockMat, i, i + MATRIX_SZ), mipScale);
 			}
 
 			if(h == mMipRng[0]) {
 				for(int i = 0; i < mFillMat.length; i += MATRIX_SZ) {
-					mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mFillMat, i, i + MATRIX_SZ), mipScale);
+					mRenderer.drawClipMap(mBlock, ArrayUtils.subarray(mFillMat, i, i + MATRIX_SZ), mipScale);
 				}
 			}
 		}

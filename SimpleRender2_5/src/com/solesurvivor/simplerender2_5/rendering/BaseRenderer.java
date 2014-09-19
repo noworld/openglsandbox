@@ -372,19 +372,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		checkError();
 	}
 	
-	public void drawGeometry(Drawable draw) {
-		drawGeometry(draw, draw.getWorldMatrix(), -1.0f, GLES20.GL_TRIANGLES);
-	}
-	
-	public void drawGeometry(Drawable draw, float[] mModelMatrix) {
-		drawGeometry(draw, mModelMatrix, -1.0f, GLES20.GL_TRIANGLES);
-	}
-	
-	public void drawGeometryTristrips(Drawable draw, float[] mModelMatrix, float mipMult) {
-		drawGeometry(draw, mModelMatrix, mipMult, GLES20.GL_TRIANGLE_STRIP);
-	}
-
-	public void drawGeometry(Drawable draw, float[] modelMatrix, float mipMult, int primType) {
+	public void drawClipMap(Drawable draw, float[] modelMatrix, float mipMult) {
 
 		float[] mvMatrix = new float[16];
 		float[] mvpMatrix = new float[16];
@@ -398,10 +386,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
 		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
-		int u_m = GLES20.glGetUniformLocation(shaderHandle, "u_MMatrix");
 		int u_lightpos = GLES20.glGetUniformLocation(shaderHandle, "u_LightPos");
 		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
-		int u_mipmult = GLES20.glGetUniformLocation(shaderHandle, "u_MipMult");
 
 		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
 		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
@@ -469,13 +455,108 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		// Draw
 
-		GLES20.glDisable(GLES20.GL_CULL_FACE);
 		GLES20.glFrontFace(GLES20.GL_CW);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, draw.getIdxBufHandle());
+		GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, draw.getNumElements(), GLES20.GL_UNSIGNED_SHORT, draw.getElementOffset());
+
+		GLES20.glFrontFace(GLES20.GL_CCW);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		checkError();
+
+	}
+	
+	public void drawGeometry(Drawable draw) {
+		drawGeometry(draw, draw.getWorldMatrix(), GLES20.GL_TRIANGLES);
+	}
+	
+	public void drawGeometry(Drawable draw, float[] mModelMatrix) {
+		drawGeometry(draw, mModelMatrix, GLES20.GL_TRIANGLES);
+	}
+	
+	public void drawGeometryTristrips(Drawable draw, float[] mModelMatrix) {
+		drawGeometry(draw, mModelMatrix, GLES20.GL_TRIANGLE_STRIP);
+	}
+
+	public void drawGeometry(Drawable draw, float[] modelMatrix, int primType) {
+
+		float[] mvMatrix = new float[16];
+		float[] mvpMatrix = new float[16];
+		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
+		float[] viewMatrix = mCurrentCamera.getViewMatrix();
+
+		int shaderHandle = draw.getShaderHandle();
+		int textureHandle = draw.getTextureHandle();
+
+		GLES20.glUseProgram(shaderHandle);
+
+		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
+		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
+		int u_lightpos = GLES20.glGetUniformLocation(shaderHandle, "u_LightPos");
+		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
+
+		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
+		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
+		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
+
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+		GLES20.glUniform1i(u_texsampler, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, draw.getDatBufHandle());
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, draw.getPosSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getPosOffset());
+
+		if(a_nrm > -1 && draw.getNrmOffset() > -1 && draw.getNrmSize() > -1) {
+			GLES20.glEnableVertexAttribArray(a_nrm);
+			GLES20.glVertexAttribPointer(a_nrm, draw.getNrmSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getNrmOffset());
+		}
+
+		if(a_txc > -1 && draw.getTxcOffset() > -1 && draw.getTxcSize() > -1) {
+			GLES20.glEnableVertexAttribArray(a_txc);
+			GLES20.glVertexAttribPointer(a_txc, draw.getTxcSize(), GLES20.GL_FLOAT, false, draw.getElementStride(), draw.getTxcOffset());
+		}
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+		
+		// --MV--		
+		
+		/* Get the MV Matrix: Multiply V * M  = MV */
+		Matrix.multiplyMM(mvMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+
+		if(u_mv > -1) {
+			GLES20.glUniformMatrix4fv(u_mv, 1, false, mvMatrix, 0); //1282
+		}
+
+		// --MVP--
+
+		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvMatrix, 0);
+		
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+
+		// --LightPos--
+
+		/* Pass in the light position in eye space.	*/	
+		//Switching to view space...
+		//TODO: Handle multiple lights
+		List<Light> lights = draw.getLights();
+		if(lights != null && lights.size() > 0) {
+			Light light = lights.get(0);
+			float[] lightPosWorldSpace = new float[4];
+			float[] lightPosEyeSpace = new float[4];
+			Matrix.multiplyMV(lightPosWorldSpace, 0, light.mModelMatrix, 0, light.mPosition, 0);
+			Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
+			GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
+		}
+
+		// Draw
+
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, draw.getIdxBufHandle());
 		GLES20.glDrawElements(primType, draw.getNumElements(), GLES20.GL_UNSIGNED_SHORT, draw.getElementOffset());
 
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
-		GLES20.glFrontFace(GLES20.GL_CCW);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 
 		checkError();
