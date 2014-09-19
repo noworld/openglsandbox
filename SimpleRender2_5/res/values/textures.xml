@@ -7,6 +7,7 @@
         <item>@drawable/btn_y</item>
         <item>@drawable/dpad</item>
         <item>@drawable/uvgrid</item>
+        <item>@drawable/water</item>
     </array>
     
     <array name="textures_cube">

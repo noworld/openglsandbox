@@ -25,7 +25,7 @@
     
     <array name="clipmap_shader">
         <item >@raw/v_clipmap_w</item> 
-        <item >@raw/f_clipmap</item>  
+        <item >@raw/f_clipmap_w</item>  
     </array>
     
     <array name="hm_shader">

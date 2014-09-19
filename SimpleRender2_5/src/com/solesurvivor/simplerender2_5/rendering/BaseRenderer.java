@@ -34,6 +34,7 @@ import com.solesurvivor.simplerender2_5.scene.RandomEllipse;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
+import com.solesurvivor.util.math.Vec3;
 
 public class BaseRenderer implements GLSurfaceView.Renderer {
 
@@ -387,8 +388,11 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
 		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
+		int u_m = GLES20.glGetUniformLocation(shaderHandle, "u_MMatrix");
+		int u_v = GLES20.glGetUniformLocation(shaderHandle, "u_VMatrix");
 		int u_nrm = GLES20.glGetUniformLocation(shaderHandle, "u_NrmMatrix");
-		int u_lightpos = GLES20.glGetUniformLocation(shaderHandle, "u_LightPos");
+		int u_eye_pos = GLES20.glGetUniformLocation(shaderHandle, "u_EyePos");
+		int u_lightdir = GLES20.glGetUniformLocation(shaderHandle, "u_LightDir");
 		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
 
 		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
@@ -416,12 +420,21 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		
+		// --V--
+		if(u_v > -1) {
+			GLES20.glUniformMatrix4fv(u_v, 1, false, viewMatrix, 0); //1282
+		}
+		
 		// --M--
 		float[] temp = new float[16];
 		Matrix.setIdentityM(temp, 0);
 		Matrix.scaleM(temp, 0, mipMult, 1.0f, mipMult);
 		float[] newmm = new float[16];
 		Matrix.multiplyMM(newmm, 0, temp, 0, modelMatrix, 0);
+		
+		if(u_m > -1) {
+			GLES20.glUniformMatrix4fv(u_m, 1, false, newmm, 0); //1282
+		}
 
 		// --MV--		
 		
@@ -431,6 +444,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		if(u_mv > -1) {
 			GLES20.glUniformMatrix4fv(u_mv, 1, false, mvMatrix, 0); //1282
 		}
+		
+		//Camera Position
+		GLES20.glUniform3fv(u_eye_pos, 1, viewMatrix, 12);
 		
 		// -- Create the Normal Matrix --
 		float[] normalMatrix = new float[16];
@@ -450,17 +466,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// --LightPos--
 
 		/* Pass in the light position in eye space.	*/	
-		//Switching to view space...
-		//TODO: Handle multiple lights
-		List<Light> lights = draw.getLights();
-		if(lights != null && lights.size() > 0) {
-			Light light = lights.get(0);
-			float[] lightPosWorldSpace = new float[4];
-			float[] lightPosEyeSpace = new float[4];
-			Matrix.multiplyMV(lightPosWorldSpace, 0, light.mModelMatrix, 0, light.mPosition, 0);
-			Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
-			GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
-		}
+		//Switching to view space...	
+		Vec3 lightDir = new Vec3(0.0f, -1.0f, 1.0f);
+		lightDir.normalize();
+		GLES20.glUniform3f(u_lightdir, lightDir.getX(), lightDir.getY(), lightDir.getZ());
 		
 		// -- WAVE --
 		int u_time = GLES20.glGetUniformLocation(shaderHandle, "u_Time");

@@ -17,11 +17,14 @@ uniform int       u_NumWaves;
 
 uniform mat4 u_MVPMatrix;	       
 uniform mat4 u_MVMatrix;
+uniform mat4 u_MMatrix;
+uniform mat4 u_VMatrix;
 uniform mat4 u_NrmMatrix;
 		  			
 attribute vec4 a_Position;
 attribute vec2 a_TexCoordinate;	
 		  
+varying vec2 v_TexCoordinate;
 varying vec3 v_Position;     		          		
 varying vec3 v_Normal;
 varying vec4 v_WaterColor;
@@ -81,8 +84,11 @@ void main()
 	//Pass the color to the fragment shader
 	v_WaterColor = u_WaterColor;
 
+	//v_TexCoordinate = a_TexCoordinate;
+	v_TexCoordinate = vec4(u_MMatrix * vec4(a_TexCoordinate.s, 0.0, a_TexCoordinate.t, 1.0)).xz;
+
 	//Translate to view space and pass in the position and normal
-	v_Position = vec3(u_MVMatrix * position);
+	v_Position = vec3(u_VMatrix * position);
 	v_Normal = normalize(vec3(u_NrmMatrix * vec4(normal,1.0)));
 	
 	gl_Position = u_MVPMatrix * a_Position;                    	

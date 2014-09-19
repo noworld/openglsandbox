@@ -67,6 +67,7 @@ public final class R {
         public static final int tenerife4=0x7f020019;
         public static final int tenerife5=0x7f02001a;
         public static final int uvgrid=0x7f02001b;
+        public static final int water=0x7f02001c;
     }
     public static final class id {
         public static final int action_settings=0x7f0a0000;
@@ -78,8 +79,8 @@ public final class R {
         public static final int simple_render25=0x7f090000;
     }
     public static final class raw {
-        public static final int f_clipmap=0x7f040000;
-        public static final int f_clipmap_bak=0x7f040001;
+        public static final int f_clipmap_bak=0x7f040000;
+        public static final int f_clipmap_w=0x7f040001;
         public static final int f_crosshairs=0x7f040002;
         public static final int f_ellipse=0x7f040003;
         public static final int f_heightmap=0x7f040004;

@@ -40,7 +40,7 @@ s_len = 20.0                       #length of one side of the L0 mesh
 h_len = s_len / 2.0                #half the length
 blk_sz = int((e_res + 1) / 4)           #m block size of (n + 1)/4
 pos_step = s_len / (e_res - 1)  #distance between vertexes in the grid
-txc_step = 1 / (e_res - 1)         #distance between texture coordinates
+txc_step = 1 / (4*(blk_sz - 1))         #distance between texture coordinates
 
 #General object data
 file_name = "geoclip"
