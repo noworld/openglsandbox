@@ -373,18 +373,18 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public void drawGeometry(Drawable draw) {
-		drawGeometry(draw, draw.getWorldMatrix(), GLES20.GL_TRIANGLES);
+		drawGeometry(draw, draw.getWorldMatrix(), -1.0f, GLES20.GL_TRIANGLES);
 	}
 	
 	public void drawGeometry(Drawable draw, float[] mModelMatrix) {
-		drawGeometry(draw, mModelMatrix, GLES20.GL_TRIANGLES);
+		drawGeometry(draw, mModelMatrix, -1.0f, GLES20.GL_TRIANGLES);
 	}
 	
-	public void drawGeometryTristrips(Drawable draw, float[] mModelMatrix) {
-		drawGeometry(draw, mModelMatrix, GLES20.GL_TRIANGLE_STRIP);
+	public void drawGeometryTristrips(Drawable draw, float[] mModelMatrix, float mipMult) {
+		drawGeometry(draw, mModelMatrix, mipMult, GLES20.GL_TRIANGLE_STRIP);
 	}
 
-	public void drawGeometry(Drawable draw, float[] mModelMatrix, int primType) {
+	public void drawGeometry(Drawable draw, float[] mModelMatrix, float mipMult, int primType) {
 
 		float[] mvMatrix = new float[16];
 		float[] mvpMatrix = new float[16];
@@ -400,10 +400,15 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
 		int u_lightpos = GLES20.glGetUniformLocation(shaderHandle, "u_LightPos");
 		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
+		int u_mipmult = GLES20.glGetUniformLocation(shaderHandle, "u_MipMult");
 
 		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
 		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
 		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
+		
+		if(u_mipmult > -1 && mipMult > -1.0f) {
+			GLES20.glUniform3f(u_mipmult, mipMult, 1.0f, mipMult);
+		}
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);

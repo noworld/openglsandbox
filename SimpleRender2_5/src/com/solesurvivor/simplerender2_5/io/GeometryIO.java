@@ -21,7 +21,7 @@ import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.rendering.ShaderManager;
 import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
-import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
+import com.solesurvivor.simplerender2_5.scene.TerrainClipmap2;
 import com.solesurvivor.util.SSPropertyUtil;
 
 public class GeometryIO {
@@ -30,12 +30,12 @@ public class GeometryIO {
 	@SuppressWarnings("unused")
 	private static final String TAG = GeometryIO.class.getSimpleName();
 	
-	public static TerrainClipmap loadClipmap(int resId) throws IOException {
+	public static TerrainClipmap2 loadClipmap(int resId) throws IOException {
 		List<Geometry> geoList = new ArrayList<Geometry>();
 
 		IntermediateGeometry ig = parseIntermediateGeometry(resId);
 		BaseRenderer ren = RendererManager.getRenderer();
-		TerrainClipmap.ClipmapData cmapData = new TerrainClipmap.ClipmapData();
+		TerrainClipmap2.ClipmapData cmapData = new TerrainClipmap2.ClipmapData();
 		
 		for(String s : ig.mObjectNames) {
 			Map<String,String> desc = ig.mDescriptors.get(s);
@@ -51,13 +51,8 @@ public class GeometryIO {
 				int nrmOffset = Integer.valueOf(desc.get("NRM_OFFSET"));
 				int txcSize = Integer.valueOf(desc.get("TXC_SIZE"));
 				int txcOffset = Integer.valueOf(desc.get("TXC_OFFSET"));
-				
-				cmapData.mBlockIndex =  Integer.valueOf(desc.get("BLOCK_INDEX"));
-				cmapData.mInteriorTrimIndex =  Integer.valueOf(desc.get("INTERIOR_TRIM_INDEX"));
-				cmapData.mInteriorTrimNumElements =  Integer.valueOf(desc.get("INTERIOR_TRIM_NUM_ELEMENTS"));
+
 				cmapData.mResolution =  Integer.valueOf(desc.get("RESOLUTION"));
-				cmapData.mRingFillIndex =  Integer.valueOf(desc.get("RING_FILL_INDEX"));
-				cmapData.mRingFillNumElements =  Integer.valueOf(desc.get("RING_FILL_NUM_ELEMENTS"));
 				cmapData.mSideLength =  Integer.valueOf(desc.get("SIDE_LENGTH"));
 
 				byte[] vboBytes = ig.mFiles.get(s + ".v");
@@ -76,7 +71,7 @@ public class GeometryIO {
 		
 		//Assume only 1 clipmap object
 		Geometry clipMesh = geoList.get(0);
-		TerrainClipmap clipmap = new TerrainClipmap(clipMesh, cmapData);
+		TerrainClipmap2 clipmap = new TerrainClipmap2(clipMesh, cmapData);
 		
 		return clipmap;
 	}
