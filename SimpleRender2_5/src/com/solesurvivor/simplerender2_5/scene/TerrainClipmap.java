@@ -11,23 +11,21 @@ import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 public class TerrainClipmap implements Node {
 	
 	protected static final int MATRIX_SZ = 16;
-	protected static final int NUM_BLOCKS = 16;
-	protected static final int NUM_RING_FILL = 4;
-	protected static final int NUM_INTERIOR_TRIM = 1;
+	protected static final int NUM_BLOCKS = 12;
+	protected static final int NUM_FILL_BLOCKS = 4;
 	
 	@SuppressWarnings("unused")
 	private static final String TAG = TerrainClipmap.class.getSimpleName();
 	
 	protected Geometry mBlock;
-	protected Geometry mRingFill;
-	protected Geometry mInteriorTrim;
 	
 	protected float[] mBlockMat;
-	protected float[] mRingMat;
-	protected float[] mInteriorMat;
+	protected float[] mFillMat;	
 	
 	protected int mSideLength;
 	protected int mResolution;
+	protected float[] mMipMults;
+	protected int[] mMipRng;
 	
 	protected BaseRenderer mRenderer;
 	
@@ -39,21 +37,16 @@ public class TerrainClipmap implements Node {
 		mRenderer = RendererManager.getRenderer();
 		
 		mBlock = new Geometry(clipmap);
-		mRingFill = new Geometry(clipmap);
-		mInteriorTrim = new Geometry(clipmap);
-		
-		mRingFill.setElementOffset(data.mRingFillIndex);
-		mRingFill.setNumElements(data.mRingFillNumElements);
-		
-		mInteriorTrim.setElementOffset(data.mInteriorTrimIndex);
-		mInteriorTrim.setNumElements(data.mInteriorTrimNumElements);
 		
 		mSideLength = data.mSideLength;
 		mResolution = data.mResolution;
 		
+		mMipMults = new float[]{1.0f, 2.0f, 4.0f, 8.0f, 16.0f};
+		mMipRng = new int[]{0,5};
+		
 		mBlockMat = new float[NUM_BLOCKS * MATRIX_SZ];
-		mRingMat = new float[NUM_RING_FILL * MATRIX_SZ];
-		mInteriorMat = new float[NUM_INTERIOR_TRIM * MATRIX_SZ];
+		mFillMat =  new float[NUM_FILL_BLOCKS * MATRIX_SZ];
+		
 		
 		float nHalfSz = -(mSideLength/2.0f);
 		float quadWidth = ((float)mSideLength) / (((float)mResolution) - 1.0f);
@@ -118,64 +111,33 @@ public class TerrainClipmap implements Node {
 		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 		
 		//4 blocks to fill up the inside
-
+		idx = 0;
 		//1
-		System.arraycopy(getBlockFillMatrix(nHalfSz, 0, 0, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
+		System.arraycopy(getBlockFillMatrix(nHalfSz, 0, 0, blockDisp, quadWidth), 0, mFillMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 
 		//2
-		System.arraycopy(getBlockFillMatrix(nHalfSz, 1, 0, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
+		System.arraycopy(getBlockFillMatrix(nHalfSz, 1, 0, blockDisp, quadWidth), 0, mFillMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 
 		//3
-		System.arraycopy(getBlockFillMatrix(nHalfSz, 0, 1, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
+		System.arraycopy(getBlockFillMatrix(nHalfSz, 0, 1, blockDisp, quadWidth), 0, mFillMat, idx++ * MATRIX_SZ, MATRIX_SZ);
 
 		//4
-		System.arraycopy(getBlockFillMatrix(nHalfSz, 1, 1, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
+		System.arraycopy(getBlockFillMatrix(nHalfSz, 1, 1, blockDisp, quadWidth), 0, mFillMat, idx++ * MATRIX_SZ, MATRIX_SZ);
+
 		
-		
-		//Four ring fills
-		//1
-		idx = 0;
-		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);
-		Matrix.translateM(mRingMat, idx++ * MATRIX_SZ, -quadWidth, 0.0f, nHalfSz);
-		
-		//2
-		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
-		Matrix.translateM(mRingMat, idx * MATRIX_SZ, -nHalfSz - blockDisp, 0.0f, quadWidth);
-		Matrix.rotateM(mRingMat, idx++ * MATRIX_SZ, 90, 0.0f, 1.0f, 0.0f);
-		
-		
-		//3
-		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
-		Matrix.translateM(mRingMat, idx * MATRIX_SZ, quadWidth, 0.0f, -nHalfSz);
-		Matrix.rotateM(mRingMat, idx++ * MATRIX_SZ, 180, 0.0f, 1.0f, 0.0f);
-		
-		//4
-		Matrix.setIdentityM(mRingMat, idx * MATRIX_SZ);		
-		Matrix.translateM(mRingMat, idx * MATRIX_SZ, nHalfSz + blockDisp, 0.0f, -quadWidth);
-		Matrix.rotateM(mRingMat, idx * MATRIX_SZ, -90, 0.0f, 1.0f, 0.0f);
-		
-		//1 interior fill
-		idx = 0;
-		Matrix.setIdentityM(mInteriorMat, idx * MATRIX_SZ);		
-		float disp = (nHalfSz - quadWidth) / 2;
-		Matrix.translateM(mInteriorMat, idx * MATRIX_SZ, disp, 0.0f, disp);
-		
-//		Matrix.rotateM(mInteriorMat, idx * MATRIX_SZ, -90, 0.0f, 1.0f, 0.0f);
 	}
 	
 	private float[] getBlockMatrix(float nHalfSz, float xIdx, float zIdx, float blockDisp, float quadWidth) {
-		float centerDispX = xIdx > 1 ? 2.0f : 0.0f;
-		float centerDispZ = zIdx > 1 ? 2.0f : 0.0f;
 		float[] mat = new float[16];
 		Matrix.setIdentityM(mat, 0);
-		Matrix.translateM(mat, 0, nHalfSz + (xIdx * blockDisp) + (quadWidth * centerDispX), 0.0f, nHalfSz + (zIdx * blockDisp) + (quadWidth * centerDispZ));
+		Matrix.translateM(mat, 0, nHalfSz + (xIdx * blockDisp) + quadWidth, 0.0f, nHalfSz + (zIdx * blockDisp) + quadWidth);
 		return mat;
 	}
 	
 	private float[] getBlockFillMatrix(float nHalfSz, float xIdx, float zIdx, float blockDisp, float quadWidth) {
 		float[] mat = new float[16];
-		float x = (xIdx == 0 ? -blockDisp : 0.0f) - (quadWidth/2);
-		float z = (zIdx == 0 ? -blockDisp : 0.0f) + (quadWidth/2);
+		float x = (xIdx == 0 ? -blockDisp : 0.0f);
+		float z = (zIdx == 0 ? -blockDisp : 0.0f);
 		Matrix.setIdentityM(mat, 0);
 		Matrix.translateM(mat, 0, x, 0.0f, z);
 		return mat;
@@ -189,18 +151,18 @@ public class TerrainClipmap implements Node {
 
 	@Override
 	public void render() {
-		for(int i = 0; i < mBlockMat.length; i += MATRIX_SZ) {
-				mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mBlockMat, i, i + MATRIX_SZ), 1.0f);
-		}
-		
-		for(int i = 0; i < mRingMat.length; i += MATRIX_SZ) {
-			mRenderer.drawGeometryTristrips(mRingFill, ArrayUtils.subarray(mRingMat, i, i + MATRIX_SZ), 1.0f);
-		}
-		
-		for(int i = 0; i < mInteriorMat.length; i += MATRIX_SZ) {
-			mRenderer.drawGeometryTristrips(mInteriorTrim, ArrayUtils.subarray(mInteriorMat, i, i + MATRIX_SZ), 1.0f);
-		}
+		for(int h = mMipRng[0]; h < mMipRng[1]; h++) {
+			float mipScale = mMipMults[h];
+			for(int i = 0; i < mBlockMat.length; i += MATRIX_SZ) {
+				mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mBlockMat, i, i + MATRIX_SZ), mipScale);
+			}
 
+			if(h == 0) {
+				for(int i = 0; i < mFillMat.length; i += MATRIX_SZ) {
+					mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mFillMat, i, i + MATRIX_SZ), mipScale);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -210,11 +172,6 @@ public class TerrainClipmap implements Node {
 	}
 	
 	public static class ClipmapData {
-		public int mBlockIndex;
-		public int mRingFillIndex;
-		public int mRingFillNumElements;
-		public int mInteriorTrimIndex;
-		public int mInteriorTrimNumElements;
 		public int mSideLength;
 		public int mResolution;
 	}

@@ -21,7 +21,7 @@ import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.rendering.ShaderManager;
 import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
-import com.solesurvivor.simplerender2_5.scene.TerrainClipmap2;
+import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
 import com.solesurvivor.util.SSPropertyUtil;
 
 public class GeometryIO {
@@ -30,12 +30,12 @@ public class GeometryIO {
 	@SuppressWarnings("unused")
 	private static final String TAG = GeometryIO.class.getSimpleName();
 	
-	public static TerrainClipmap2 loadClipmap(int resId) throws IOException {
+	public static TerrainClipmap loadClipmap(int resId) throws IOException {
 		List<Geometry> geoList = new ArrayList<Geometry>();
 
 		IntermediateGeometry ig = parseIntermediateGeometry(resId);
 		BaseRenderer ren = RendererManager.getRenderer();
-		TerrainClipmap2.ClipmapData cmapData = new TerrainClipmap2.ClipmapData();
+		TerrainClipmap.ClipmapData cmapData = new TerrainClipmap.ClipmapData();
 		
 		for(String s : ig.mObjectNames) {
 			Map<String,String> desc = ig.mDescriptors.get(s);
@@ -71,7 +71,7 @@ public class GeometryIO {
 		
 		//Assume only 1 clipmap object
 		Geometry clipMesh = geoList.get(0);
-		TerrainClipmap2 clipmap = new TerrainClipmap2(clipMesh, cmapData);
+		TerrainClipmap clipmap = new TerrainClipmap(clipMesh, cmapData);
 		
 		return clipmap;
 	}
