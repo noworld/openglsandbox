@@ -42,7 +42,7 @@ public class TerrainClipmap2 implements Node {
 		mResolution = data.mResolution;
 		
 		mMipMults = new float[]{1.0f, 2.0f, 4.0f, 8.0f, 16.0f};
-		mMipRng = new int[]{0,1};
+		mMipRng = new int[]{0,5};
 		
 		mBlockMat = new float[NUM_BLOCKS * MATRIX_SZ];
 		mFillMat =  new float[NUM_FILL_BLOCKS * MATRIX_SZ];
@@ -130,14 +130,14 @@ public class TerrainClipmap2 implements Node {
 	private float[] getBlockMatrix(float nHalfSz, float xIdx, float zIdx, float blockDisp, float quadWidth) {
 		float[] mat = new float[16];
 		Matrix.setIdentityM(mat, 0);
-		Matrix.translateM(mat, 0, nHalfSz + (xIdx * blockDisp), 0.0f, nHalfSz + (zIdx * blockDisp));
+		Matrix.translateM(mat, 0, nHalfSz + (xIdx * blockDisp) + quadWidth, 0.0f, nHalfSz + (zIdx * blockDisp) + quadWidth);
 		return mat;
 	}
 	
 	private float[] getBlockFillMatrix(float nHalfSz, float xIdx, float zIdx, float blockDisp, float quadWidth) {
 		float[] mat = new float[16];
-		float x = (xIdx == 0 ? -blockDisp : 0.0f) - quadWidth;
-		float z = (zIdx == 0 ? -blockDisp : 0.0f) - quadWidth;
+		float x = (xIdx == 0 ? -blockDisp : 0.0f);
+		float z = (zIdx == 0 ? -blockDisp : 0.0f);
 		Matrix.setIdentityM(mat, 0);
 		Matrix.translateM(mat, 0, x, 0.0f, z);
 		return mat;
@@ -151,12 +151,17 @@ public class TerrainClipmap2 implements Node {
 
 	@Override
 	public void render() {
-		for(int i = 0; i < mBlockMat.length; i += MATRIX_SZ) {
-				mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mBlockMat, i, i + MATRIX_SZ), 1.0f);
-		}
-		
-		for(int i = 0; i < mFillMat.length; i += MATRIX_SZ) {
-			mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mFillMat, i, i + MATRIX_SZ), 1.0f);
+		for(int h = mMipRng[0]; h < mMipRng[1]; h++) {
+			float mipScale = mMipMults[h];
+			for(int i = 0; i < mBlockMat.length; i += MATRIX_SZ) {
+				mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mBlockMat, i, i + MATRIX_SZ), mipScale);
+			}
+
+			if(h == 0) {
+				for(int i = 0; i < mFillMat.length; i += MATRIX_SZ) {
+					mRenderer.drawGeometryTristrips(mBlock, ArrayUtils.subarray(mFillMat, i, i + MATRIX_SZ), mipScale);
+				}
+			}
 		}
 	}
 

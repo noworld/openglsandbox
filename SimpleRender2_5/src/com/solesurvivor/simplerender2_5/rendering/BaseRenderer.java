@@ -384,7 +384,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		drawGeometry(draw, mModelMatrix, mipMult, GLES20.GL_TRIANGLE_STRIP);
 	}
 
-	public void drawGeometry(Drawable draw, float[] mModelMatrix, float mipMult, int primType) {
+	public void drawGeometry(Drawable draw, float[] modelMatrix, float mipMult, int primType) {
 
 		float[] mvMatrix = new float[16];
 		float[] mvpMatrix = new float[16];
@@ -398,6 +398,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
 		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
+		int u_m = GLES20.glGetUniformLocation(shaderHandle, "u_MMatrix");
 		int u_lightpos = GLES20.glGetUniformLocation(shaderHandle, "u_LightPos");
 		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
 		int u_mipmult = GLES20.glGetUniformLocation(shaderHandle, "u_MipMult");
@@ -405,10 +406,6 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
 		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
 		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
-		
-		if(u_mipmult > -1 && mipMult > -1.0f) {
-			GLES20.glUniform3f(u_mipmult, mipMult, 1.0f, mipMult);
-		}
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
@@ -430,11 +427,18 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		}
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+		
+		// --M--
+		float[] temp = new float[16];
+		Matrix.setIdentityM(temp, 0);
+		Matrix.scaleM(temp, 0, mipMult, 1.0f, mipMult);
+		float[] newmm = new float[16];
+		Matrix.multiplyMM(newmm, 0, temp, 0, modelMatrix, 0);
 
 		// --MV--		
 		
 		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.multiplyMM(mvMatrix, 0, viewMatrix, 0, mModelMatrix, 0);
+		Matrix.multiplyMM(mvMatrix, 0, viewMatrix, 0, newmm, 0);
 
 		if(u_mv > -1) {
 			GLES20.glUniformMatrix4fv(u_mv, 1, false, mvMatrix, 0); //1282

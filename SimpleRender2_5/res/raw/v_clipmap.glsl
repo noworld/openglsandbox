@@ -1,6 +1,5 @@
 uniform mat4 u_MVPMatrix;	       
 uniform mat4 u_MVMatrix;
-uniform vec3 u_MipMult;
 		  			
 attribute vec4 a_Position; 							
 attribute vec3 a_Normal; 
@@ -13,9 +12,9 @@ varying vec2 v_TexCoordinate;
 void main()                                                 	
 {                                                         	
 	
-    v_Position = vec3(u_MVMatrix * a_Position) * u_MipMult;       		
+    v_Position = vec3(u_MVMatrix * a_Position);
     v_TexCoordinate = a_TexCoordinate;                                      
     v_Normal = vec3(u_MVMatrix * vec4(a_Normal, 0.0));
-    gl_Position =  u_MVPMatrix * a_Position;                    	
+    gl_Position = u_MVPMatrix * a_Position;                    	
 
 }                                                          
