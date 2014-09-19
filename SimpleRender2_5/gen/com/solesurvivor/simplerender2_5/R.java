@@ -92,8 +92,8 @@ public final class R {
         public static final int geomip=0x7f04000b;
         public static final int nightwatcher_bb=0x7f04000c;
         public static final int praetorium_bb_regular=0x7f04000d;
-        public static final int v_clipmap=0x7f04000e;
-        public static final int v_clipmap_bak=0x7f04000f;
+        public static final int v_clipmap_bak=0x7f04000e;
+        public static final int v_clipmap_w=0x7f04000f;
         public static final int v_ellipse=0x7f040010;
         public static final int v_heightmap=0x7f040011;
         public static final int v_heightmap2=0x7f040012;

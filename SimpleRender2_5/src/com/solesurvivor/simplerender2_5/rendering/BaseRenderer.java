@@ -18,6 +18,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Display;
 
@@ -386,6 +387,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
 		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
+		int u_nrm = GLES20.glGetUniformLocation(shaderHandle, "u_NrmMatrix");
 		int u_lightpos = GLES20.glGetUniformLocation(shaderHandle, "u_LightPos");
 		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
 
@@ -429,6 +431,13 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		if(u_mv > -1) {
 			GLES20.glUniformMatrix4fv(u_mv, 1, false, mvMatrix, 0); //1282
 		}
+		
+		// -- Create the Normal Matrix --
+		float[] normalMatrix = new float[16];
+		if(!Matrix.invertM(normalMatrix, 0, mvMatrix, 0)) {
+			Log.d(TAG,"Could not invert matrix.");
+		}
+		GLES20.glUniformMatrix4fv(u_nrm, 1, true, normalMatrix, 0); //Transpose
 
 		// --MVP--
 
@@ -452,6 +461,42 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
 			GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
 		}
+		
+		// -- WAVE --
+		int u_time = GLES20.glGetUniformLocation(shaderHandle, "u_Time");
+		double time = ((double)SystemClock.uptimeMillis()) / 1000.0;
+		GLES20.glUniform1f(u_time, (float)time);
+		
+		int u_watercol = GLES20.glGetUniformLocation(shaderHandle, "u_WaterColor");
+		GLES20.glUniform4f(u_watercol, 0.0f, 0.5411764705882353f, 0.90196078431372549019607843137255f, 1.0f);
+		
+		int u_numwaves = GLES20.glGetUniformLocation(shaderHandle, "u_NumWaves");
+		GLES20.glUniform1i(u_numwaves, 1);
+		
+		int u_wave_type = GLES20.glGetUniformLocation(shaderHandle, "u_Wave.wave_type");
+		int u_wave_amp = GLES20.glGetUniformLocation(shaderHandle, "u_Wave.amplitude");
+		int u_wave_dir = GLES20.glGetUniformLocation(shaderHandle, "u_Wave.direction");
+		int u_wave_wlen = GLES20.glGetUniformLocation(shaderHandle, "u_Wave.wavelength");
+		int u_wave_freq = GLES20.glGetUniformLocation(shaderHandle, "u_Wave.frequency");
+		int u_wave_speed = GLES20.glGetUniformLocation(shaderHandle, "u_Wave.speed");
+		int u_wave_phsco = GLES20.glGetUniformLocation(shaderHandle, "u_Wave.phase_const");
+		int u_wave_tims = GLES20.glGetUniformLocation(shaderHandle, "u_Wave.time_scale");
+		int u_wave_phssh = GLES20.glGetUniformLocation(shaderHandle, "u_Wave.phase_shift");
+		
+		float wavelen = 6.0f;
+		float freq = (float)Math.sqrt(DrawingConstants.GRAV * (DrawingConstants.TWO_PI/wavelen));
+		float speed = (wavelen / freq) + 0.25f;
+		float phaseco = wavelen * speed; 
+		
+		GLES20.glUniform1i(u_wave_type, 0);
+		GLES20.glUniform1f(u_wave_amp, 1.5f);
+		GLES20.glUniform3f(u_wave_dir, 0.0f, 0.0f, -1.0f);
+		GLES20.glUniform1f(u_wave_wlen, wavelen);
+		GLES20.glUniform1f(u_wave_freq, freq);
+		GLES20.glUniform1f(u_wave_speed, speed);
+		GLES20.glUniform1f(u_wave_phsco, phaseco);
+		GLES20.glUniform1f(u_wave_tims, 1.0f);
+		GLES20.glUniform1f(u_wave_phssh, 0.0f);
 
 		// Draw
 

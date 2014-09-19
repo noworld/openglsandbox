@@ -42,7 +42,7 @@ public class TerrainClipmap implements Node {
 		mResolution = data.mResolution;
 		
 		mMipMults = new float[]{1.0f, 2.0f, 4.0f, 8.0f, 16.0f, 32.0f};
-		mMipRng = new int[]{0,5};
+		mMipRng = new int[]{1,6};
 		
 		mBlockMat = new float[NUM_BLOCKS * MATRIX_SZ];
 		mFillMat =  new float[NUM_FILL_BLOCKS * MATRIX_SZ];
