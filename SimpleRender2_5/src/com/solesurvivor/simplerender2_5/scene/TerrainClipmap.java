@@ -45,7 +45,7 @@ public class TerrainClipmap implements Node {
 		mResolution = data.mResolution;
 		
 		//Mips must be powers of 2 that give at least a 2x2
-		mMipMults = new float[]{2.0f, 4.0f, 8.0f, 16.0f, 32.0f};
+		mMipMults = new float[]{2.0f, 4.0f, 8.0f, 16.0f, 32.0f, 64.0f};
 		mMipRng = new int[]{0,5};
 		
 		mRingBlocks = new ClipBlock[NUM_BLOCKS];

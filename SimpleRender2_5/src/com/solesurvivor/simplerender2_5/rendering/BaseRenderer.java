@@ -380,6 +380,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
 		float[] viewMatrix = mCurrentCamera.getViewMatrix();
+		float[] eyePos = mCurrentCamera.getEyePos();
 
 		int shaderHandle = draw.getShaderHandle();
 		int textureHandle = draw.getTextureHandle();
@@ -444,8 +445,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// --M--
 		float[] temp = new float[16];
 		Matrix.setIdentityM(temp, 0);
+		Matrix.translateM(temp, 0, eyePos[0], 0.0f, eyePos[2]);
 		Matrix.scaleM(temp, 0, mipMult, 1.0f, mipMult);
-		float[] newmm = new float[16];
+		float[] newmm = new float[16];		
 		Matrix.multiplyMM(newmm, 0, temp, 0, modelMatrix, 0);
 		
 		if(u_m > -1) {
@@ -515,7 +517,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		int u_wave_tims = GLES20.glGetUniformLocation(shaderHandle, "u_Wave.time_scale");
 		int u_wave_phssh = GLES20.glGetUniformLocation(shaderHandle, "u_Wave.phase_shift");
 		
-		float wavelen = 6.0f;
+		float wavelen = 100.0f;
 		float freq = (float)Math.sqrt(DrawingConstants.GRAV * (DrawingConstants.TWO_PI/wavelen));
 		float speed = (wavelen / freq) + 0.25f;
 		float phaseco = wavelen * speed; 
