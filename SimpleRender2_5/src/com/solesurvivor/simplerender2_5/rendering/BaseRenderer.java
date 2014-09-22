@@ -390,6 +390,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
 		int u_m = GLES20.glGetUniformLocation(shaderHandle, "u_MMatrix");
 		int u_v = GLES20.glGetUniformLocation(shaderHandle, "u_VMatrix");
+		int u_vp = GLES20.glGetUniformLocation(shaderHandle, "u_VPMatrix");		
 		int u_nrm = GLES20.glGetUniformLocation(shaderHandle, "u_NrmMatrix");
 		int u_eye_pos = GLES20.glGetUniformLocation(shaderHandle, "u_EyePos");
 		int u_lightdir = GLES20.glGetUniformLocation(shaderHandle, "u_LightDir");
@@ -449,6 +450,13 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		
 		if(u_m > -1) {
 			GLES20.glUniformMatrix4fv(u_m, 1, false, newmm, 0); //1282
+		}
+		
+		// --VP--
+		if(u_vp > -1) {
+			float[] vpMatrix = new float[16];
+			Matrix.multiplyMM(vpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+			GLES20.glUniformMatrix4fv(u_vp, 1, false, vpMatrix, 0); //1282
 		}
 
 		// --MV--		

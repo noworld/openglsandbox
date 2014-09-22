@@ -25,6 +25,7 @@ uniform mat4 u_MVPMatrix;
 uniform mat4 u_MVMatrix;
 uniform mat4 u_MMatrix;
 uniform mat4 u_VMatrix;
+uniform mat4 u_VPMatrix;
 uniform mat4 u_NrmMatrix;
 		  			
 attribute vec4 a_Position;
@@ -38,18 +39,20 @@ varying vec4 v_WaterColor;
 void main()                                                 	
 {          
 
-	float time = u_Time;
+	//float time = u_Time;
+	float time = 1.0;
     float height = 0.0;
 	float xDisp = 0.0;
 	float zDisp = 0.0;
 	vec3 normal = vec3(0.0, 0.0, 0.0);
+	vec4 newPos = u_MMatrix * a_Position;
 
 	//Sum the positions
 	float q = (1.0 / (u_Wave.frequency * u_Wave.amplitude * float(u_NumWaves)));
 	//vec3 normDir = normalize(u_Wave.direction);
 	vec3 normDir = u_Wave.direction;
 	float phase = (time * u_Wave.phase_const * u_Wave.time_scale) + u_Wave.phase_shift;
-	float angle = (u_Wave.frequency * dot(normDir.xz, a_Position.xz)) + phase;
+	float angle = (u_Wave.frequency * dot(normDir.xz, newPos.xz)) + phase;
 	float sinA = sin(angle);
 	float cosA = cos(angle);
 	
@@ -59,7 +62,7 @@ void main()
 	height = height + (u_Wave.amplitude * sinA);    
 	
 	//Set the height on the point
-	vec4 position = a_Position;
+	vec4 position = newPos;
 	position.y = height;	
 	position.x = position.x + xDisp;
 	position.z = position.z + zDisp;
@@ -90,9 +93,10 @@ void main()
 	float zTxDisp = u_ZPos * c_BlockDisp;
 	v_TexCoordinate = vec2((a_TexCoordinate.s + xTxDisp) * u_MipMult, (a_TexCoordinate.t + zTxDisp) * u_MipMult);
 	
-	v_Position = vec3(u_VMatrix * position);
+	v_Position = vec3(u_VMatrix * a_Position);
 	v_Normal = normalize(vec3(u_NrmMatrix * vec4(normal,1.0)));
 	
-	gl_Position = u_MVPMatrix * a_Position;                    	
+	//gl_Position = u_MVPMatrix * a_Position;
+	gl_Position = u_VPMatrix * position;                    	
 
 }                                                          
