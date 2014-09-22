@@ -43,8 +43,9 @@ public class TerrainClipmap implements Node {
 		mSideLength = data.mSideLength;
 		mResolution = data.mResolution;
 		
-		mMipMults = new float[]{1.0f, 2.0f, 4.0f, 8.0f, 16.0f, 32.0f};
-		mMipRng = new int[]{1,6};
+		//Mips must be powers of 2 that give at least a 2x2
+		mMipMults = new float[]{2.0f, 4.0f, 8.0f, 16.0f, 32.0f};
+		mMipRng = new int[]{0,5};
 		
 		mRingBlocks = new ClipBlock[NUM_BLOCKS];
 		mFillBlocks = new ClipBlock[NUM_FILL_BLOCKS];
@@ -137,25 +138,25 @@ public class TerrainClipmap implements Node {
 		//1
 		idx = 0;
 		mFillBlocks[idx] = new ClipBlock(1, 1, idx * MATRIX_SZ);
-		System.arraycopy(getBlockFillMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+		System.arraycopy(getBlockMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
 				mFillMat, mFillBlocks[idx].mMatrixOffset, MATRIX_SZ);
 
 		//2
 		idx++;
 		mFillBlocks[idx] = new ClipBlock(2, 1, idx * MATRIX_SZ);
-		System.arraycopy(getBlockFillMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+		System.arraycopy(getBlockMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
 				mFillMat, mFillBlocks[idx].mMatrixOffset, MATRIX_SZ);
 
 		//3
 		idx++;
 		mFillBlocks[idx] = new ClipBlock(1, 2, idx * MATRIX_SZ);
-		System.arraycopy(getBlockFillMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+		System.arraycopy(getBlockMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
 				mFillMat, mFillBlocks[idx].mMatrixOffset, MATRIX_SZ);
 
 		//4
 		idx++;
 		mFillBlocks[idx] = new ClipBlock(2, 2, idx * MATRIX_SZ);
-		System.arraycopy(getBlockFillMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+		System.arraycopy(getBlockMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
 				mFillMat, mFillBlocks[idx].mMatrixOffset, MATRIX_SZ);
 
 		
@@ -168,14 +169,14 @@ public class TerrainClipmap implements Node {
 		return mat;
 	}
 	
-	private float[] getBlockFillMatrix(float nHalfSz, float xIdx, float zIdx, float blockDisp, float quadWidth) {
-		float[] mat = new float[16];
-		float x = (xIdx == 1 ? -blockDisp : 0.0f);
-		float z = (zIdx == 1 ? -blockDisp : 0.0f);
-		Matrix.setIdentityM(mat, 0);
-		Matrix.translateM(mat, 0, x, 0.0f, z);
-		return mat;
-	}
+//	private float[] getBlockFillMatrix(float nHalfSz, float xIdx, float zIdx, float blockDisp, float quadWidth) {
+//		float[] mat = new float[16];
+//		float x = (xIdx == 1 ? -blockDisp : 0.0f);
+//		float z = (zIdx == 1 ? -blockDisp : 0.0f);
+//		Matrix.setIdentityM(mat, 0);
+//		Matrix.translateM(mat, 0, x, 0.0f, z);
+//		return mat;
+//	}
 	
 
 	@Override
@@ -199,13 +200,7 @@ public class TerrainClipmap implements Node {
 				}
 			}
 		}
-		
-//		for(int i = 0; i < 4; i++) {
-//			float mipScale = 1.0f;
-//			float[] mat = ArrayUtils.subarray(mFillMat, mFillBlocks[i].mMatrixOffset, mFillBlocks[i].mMatrixEnd);
-//			mRenderer.drawClipMap(mBlock, mat, mipScale, mFillBlocks[i].mXOffset, mFillBlocks[i].mZOffset);
-//		}
-		
+
 	}
 
 	@Override

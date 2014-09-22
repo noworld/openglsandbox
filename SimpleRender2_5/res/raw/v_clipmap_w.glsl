@@ -88,7 +88,7 @@ void main()
 	//v_TexCoordinate = vec4(u_MMatrix * vec4(a_TexCoordinate.s, 0.0, a_TexCoordinate.t, 1.0)).xz;
 	float xTxDisp = u_XPos * c_BlockDisp;
 	float zTxDisp = u_ZPos * c_BlockDisp;
-	v_TexCoordinate = vec2(a_TexCoordinate.s + xTxDisp, a_TexCoordinate.t + zTxDisp);
+	v_TexCoordinate = vec2((a_TexCoordinate.s + xTxDisp) * u_MipMult, (a_TexCoordinate.t + zTxDisp) * u_MipMult);
 	
 	v_Position = vec3(u_VMatrix * position);
 	v_Normal = normalize(vec3(u_NrmMatrix * vec4(normal,1.0)));
