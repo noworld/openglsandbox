@@ -21,9 +21,9 @@ bps = 2 #bytes per short
 
 #Paths
 home_path = "C:" + os.environ.get("HOMEPATH","\\Users\\nicholas.waun")
-proj_path = home_path + "\\git\\openglsandbox\\ModelConverter"
-out_path = home_path + "\\git\\openglsandbox\\SimpleRender2_5\\res\\raw\\"
-work_path = proj_path + "\\res\\work\\"
+proj_path = home_path + "\\git\\openglsandbox\\SimpleRender2_5"
+out_path = proj_path + "\\res\\raw\\"
+work_path = proj_path + "\\python\\work\\"
 
 #File extensions
 dsc_ext = ".dsc"
@@ -41,9 +41,7 @@ h_len = s_len / 2.0                #half the length
 blk_sz = int((e_res + 1) / 4)           #m block size of (n + 1)/4
 pos_step = s_len / (e_res - 1)  #distance between vertexes in the grid
 txc_step = 1 / (4*(blk_sz - 1))         #distance between texture coordinates
-
-#General object data
-file_name = "geoclip"
+#txc_step = 1 / (blk_sz-1)
 
 #Settings for reading geometry into the program
 pos_size = 3          #2 = XZ, 3 = XYZ
@@ -80,7 +78,7 @@ def write_geometry_data():
             v = z * txc_step
             print("VERT %i,%i: %.3f,%.3f / %.3f,%.3f" % (x,z,bx,bz,u,v))
             vboBytes += struct.pack(">fff",bx,by,bz)
-            vboBytes += struct.pack(">ff",u,1.0-v)
+            vboBytes += struct.pack(">ff",u,v)
             dat_ctr = dat_ctr + 5
 
     #generate block indexes

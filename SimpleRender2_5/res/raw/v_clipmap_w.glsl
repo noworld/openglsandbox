@@ -10,10 +10,16 @@ struct wave {
 	float phase_shift;
 };
 
+const float       c_BlockDisp = 0.25;
+
 uniform wave      u_Wave;
 uniform float     u_Time;
 uniform vec4      u_WaterColor;
 uniform int       u_NumWaves;
+uniform float     u_XPos;
+uniform float     u_ZPos;
+uniform float     u_MipMult;
+
 
 uniform mat4 u_MVPMatrix;	       
 uniform mat4 u_MVMatrix;
@@ -77,17 +83,13 @@ void main()
 	//Sum the normals
 	normal = normal + vec3(xDir,yDir,zDir);
 	
-	                                           	
-	//Set varying values
     normal = vec3(-normal.x, 1.0 - normal.y, -normal.z);
-
-	//Pass the color to the fragment shader
 	v_WaterColor = u_WaterColor;
-
-	//v_TexCoordinate = a_TexCoordinate;
-	v_TexCoordinate = vec4(u_MMatrix * vec4(a_TexCoordinate.s, 0.0, a_TexCoordinate.t, 1.0)).xz;
-
-	//Translate to view space and pass in the position and normal
+	//v_TexCoordinate = vec4(u_MMatrix * vec4(a_TexCoordinate.s, 0.0, a_TexCoordinate.t, 1.0)).xz;
+	float xTxDisp = u_XPos * c_BlockDisp;
+	float zTxDisp = u_ZPos * c_BlockDisp;
+	v_TexCoordinate = vec2(a_TexCoordinate.s + xTxDisp, a_TexCoordinate.t + zTxDisp);
+	
 	v_Position = vec3(u_VMatrix * position);
 	v_Normal = normalize(vec3(u_NrmMatrix * vec4(normal,1.0)));
 	

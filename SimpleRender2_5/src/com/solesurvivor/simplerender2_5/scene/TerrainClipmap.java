@@ -19,6 +19,8 @@ public class TerrainClipmap implements Node {
 	
 	protected Geometry mBlock;
 	
+	protected ClipBlock[] mRingBlocks;
+	protected ClipBlock[] mFillBlocks;
 	protected float[] mBlockMat;
 	protected float[] mFillMat;	
 	
@@ -44,6 +46,9 @@ public class TerrainClipmap implements Node {
 		mMipMults = new float[]{1.0f, 2.0f, 4.0f, 8.0f, 16.0f, 32.0f};
 		mMipRng = new int[]{1,6};
 		
+		mRingBlocks = new ClipBlock[NUM_BLOCKS];
+		mFillBlocks = new ClipBlock[NUM_FILL_BLOCKS];
+		
 		mBlockMat = new float[NUM_BLOCKS * MATRIX_SZ];
 		mFillMat =  new float[NUM_FILL_BLOCKS * MATRIX_SZ];
 		
@@ -55,74 +60,103 @@ public class TerrainClipmap implements Node {
 		
 		//12 blocks arranged like so
 		//http://http.developer.nvidia.com/GPUGems2/elementLinks/02_clipmaps_05.jpg
-		int idx = 0;
-		int xIdx = 0;
-		int zIdx = 0;
 		
+		//0
+		int idx = 0;
+		mRingBlocks[idx] = new ClipBlock(0, 0, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
+
 		//1
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
-		xIdx++;
+		idx++;
+		mRingBlocks[idx] = new ClipBlock(1, 0, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
 		
 		//2
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
-		xIdx++;
-		
+		idx++;
+		mRingBlocks[idx] = new ClipBlock(2, 0, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
+
 		//3
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
-		xIdx++;
+		idx++;
+		mRingBlocks[idx] = new ClipBlock(3, 0, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0,
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
 		
 		//4
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
-		xIdx = 0;
-		zIdx++;
+		idx++;
+		mRingBlocks[idx] = new ClipBlock(0, 1, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
 
 		//5
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
-		xIdx += 3;
-
-		//6
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
-		xIdx = 0;
-		zIdx++;
-
-		//7
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
-		xIdx += 3;
-
-		//8
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
-		xIdx = 0;
-		zIdx++;
-
-		//9
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
-		xIdx++;
-
-		//10
-	
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
-		xIdx++;
-
-		//11	
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
-		xIdx++;
-
-		//12
-		System.arraycopy(getBlockMatrix(nHalfSz, xIdx, zIdx, blockDisp, quadWidth), 0, mBlockMat, idx++ * MATRIX_SZ, MATRIX_SZ);
+		idx++;
+		mRingBlocks[idx] = new ClipBlock(3, 1, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
 		
-		//4 blocks to fill up the inside
-		idx = 0;
+		//6
+		idx++;
+		mRingBlocks[idx] = new ClipBlock(0, 2, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
+		
+		//7
+		idx++;
+		mRingBlocks[idx] = new ClipBlock(3, 2, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
+	
+		//8
+		idx++;
+		mRingBlocks[idx] = new ClipBlock(0, 3, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
+	
+		//9
+		idx++;
+		mRingBlocks[idx] = new ClipBlock(1, 3, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
+		
+		//10
+		idx++;
+		mRingBlocks[idx] = new ClipBlock(2, 3, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
+	
+		//11	
+		idx++;
+		mRingBlocks[idx] = new ClipBlock(3, 3, idx * MATRIX_SZ);
+		System.arraycopy(getBlockMatrix(nHalfSz, mRingBlocks[idx].mXOffset, mRingBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mBlockMat, mRingBlocks[idx].mMatrixOffset, MATRIX_SZ);
+		
+		//4 blocks to fill up the inside		
 		//1
-		System.arraycopy(getBlockFillMatrix(nHalfSz, 0, 0, blockDisp, quadWidth), 0, mFillMat, idx++ * MATRIX_SZ, MATRIX_SZ);
+		idx = 0;
+		mFillBlocks[idx] = new ClipBlock(1, 1, idx * MATRIX_SZ);
+		System.arraycopy(getBlockFillMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mFillMat, mFillBlocks[idx].mMatrixOffset, MATRIX_SZ);
 
 		//2
-		System.arraycopy(getBlockFillMatrix(nHalfSz, 1, 0, blockDisp, quadWidth), 0, mFillMat, idx++ * MATRIX_SZ, MATRIX_SZ);
+		idx++;
+		mFillBlocks[idx] = new ClipBlock(2, 1, idx * MATRIX_SZ);
+		System.arraycopy(getBlockFillMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mFillMat, mFillBlocks[idx].mMatrixOffset, MATRIX_SZ);
 
 		//3
-		System.arraycopy(getBlockFillMatrix(nHalfSz, 0, 1, blockDisp, quadWidth), 0, mFillMat, idx++ * MATRIX_SZ, MATRIX_SZ);
+		idx++;
+		mFillBlocks[idx] = new ClipBlock(1, 2, idx * MATRIX_SZ);
+		System.arraycopy(getBlockFillMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mFillMat, mFillBlocks[idx].mMatrixOffset, MATRIX_SZ);
 
 		//4
-		System.arraycopy(getBlockFillMatrix(nHalfSz, 1, 1, blockDisp, quadWidth), 0, mFillMat, idx++ * MATRIX_SZ, MATRIX_SZ);
+		idx++;
+		mFillBlocks[idx] = new ClipBlock(2, 2, idx * MATRIX_SZ);
+		System.arraycopy(getBlockFillMatrix(nHalfSz, mFillBlocks[idx].mXOffset, mFillBlocks[idx].mZOffset, blockDisp, quadWidth), 0, 
+				mFillMat, mFillBlocks[idx].mMatrixOffset, MATRIX_SZ);
 
 		
 	}
@@ -136,8 +170,8 @@ public class TerrainClipmap implements Node {
 	
 	private float[] getBlockFillMatrix(float nHalfSz, float xIdx, float zIdx, float blockDisp, float quadWidth) {
 		float[] mat = new float[16];
-		float x = (xIdx == 0 ? -blockDisp : 0.0f);
-		float z = (zIdx == 0 ? -blockDisp : 0.0f);
+		float x = (xIdx == 1 ? -blockDisp : 0.0f);
+		float z = (zIdx == 1 ? -blockDisp : 0.0f);
 		Matrix.setIdentityM(mat, 0);
 		Matrix.translateM(mat, 0, x, 0.0f, z);
 		return mat;
@@ -153,22 +187,46 @@ public class TerrainClipmap implements Node {
 	public void render() {
 		for(int h = mMipRng[0]; h < mMipRng[1]; h++) {
 			float mipScale = mMipMults[h];
-			for(int i = 0; i < mBlockMat.length; i += MATRIX_SZ) {
-				mRenderer.drawClipMap(mBlock, ArrayUtils.subarray(mBlockMat, i, i + MATRIX_SZ), mipScale);
+			for(int i = 0; i < mRingBlocks.length; i ++) {
+				float[] mat = ArrayUtils.subarray(mBlockMat, mRingBlocks[i].mMatrixOffset, mRingBlocks[i].mMatrixEnd);
+				mRenderer.drawClipMap(mBlock, mat, mipScale, mRingBlocks[i].mXOffset, mRingBlocks[i].mZOffset);
 			}
 
 			if(h == mMipRng[0]) {
-				for(int i = 0; i < mFillMat.length; i += MATRIX_SZ) {
-					mRenderer.drawClipMap(mBlock, ArrayUtils.subarray(mFillMat, i, i + MATRIX_SZ), mipScale);
+				for(int i = 0; i < mFillBlocks.length; i++) {
+					float[] mat = ArrayUtils.subarray(mFillMat, mFillBlocks[i].mMatrixOffset, mFillBlocks[i].mMatrixEnd);
+					mRenderer.drawClipMap(mBlock, mat, mipScale, mFillBlocks[i].mXOffset, mFillBlocks[i].mZOffset);
 				}
 			}
 		}
+		
+//		for(int i = 0; i < 4; i++) {
+//			float mipScale = 1.0f;
+//			float[] mat = ArrayUtils.subarray(mFillMat, mFillBlocks[i].mMatrixOffset, mFillBlocks[i].mMatrixEnd);
+//			mRenderer.drawClipMap(mBlock, mat, mipScale, mFillBlocks[i].mXOffset, mFillBlocks[i].mZOffset);
+//		}
+		
 	}
 
 	@Override
 	public void addChild(Node n) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private static class ClipBlock {
+		
+		public ClipBlock(int mXOffset, int mZOffset, int mMatrixOffset) {
+			this.mXOffset = mXOffset;
+			this.mZOffset = mZOffset;
+			this.mMatrixOffset = mMatrixOffset;
+			this.mMatrixEnd = mMatrixOffset + MATRIX_SZ;
+		}
+		
+		public int mXOffset;
+		public int mZOffset;
+		public int mMatrixOffset;
+		public int mMatrixEnd;
 	}
 	
 	public static class ClipmapData {

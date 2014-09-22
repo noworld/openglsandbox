@@ -374,7 +374,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		checkError();
 	}
 	
-	public void drawClipMap(Drawable draw, float[] modelMatrix, float mipMult) {
+	public void drawClipMap(Drawable draw, float[] modelMatrix, float mipMult, int xPos, int zPos) {
 
 		float[] mvMatrix = new float[16];
 		float[] mvpMatrix = new float[16];
@@ -394,6 +394,21 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		int u_eye_pos = GLES20.glGetUniformLocation(shaderHandle, "u_EyePos");
 		int u_lightdir = GLES20.glGetUniformLocation(shaderHandle, "u_LightDir");
 		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
+		int u_xpos = GLES20.glGetUniformLocation(shaderHandle, "u_XPos");
+		int u_zpos = GLES20.glGetUniformLocation(shaderHandle, "u_ZPos");
+		int u_mipmult = GLES20.glGetUniformLocation(shaderHandle, "u_MipMult");
+		
+		if(u_xpos > -1) {
+			GLES20.glUniform1f(u_xpos, (float)xPos);
+		}
+		
+		if(u_zpos > -1) {
+			GLES20.glUniform1f(u_zpos, (float)zPos);
+		}
+		
+		if(u_mipmult > -1) {
+			GLES20.glUniform1f(u_mipmult, mipMult);
+		}
 
 		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
 		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");

@@ -8,6 +8,7 @@
         <item>@drawable/dpad</item>
         <item>@drawable/uvgrid</item>
         <item>@drawable/water</item>
+        <item>@drawable/orient</item>
     </array>
     
     <array name="textures_cube">
