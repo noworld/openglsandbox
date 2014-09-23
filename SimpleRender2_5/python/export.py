@@ -4,11 +4,14 @@
 #object.hzg_type - type of object to be populated by the reading program
 #	- Defaults to "ENTITY"
 #	- GEO_MIPMAP - Used for terrain geometry
+#   - UI_ELEMENT - Drawn in the same position in front of the camera as UI elements
+#   - INPUT_AREA - Polygons drawn over UI area to detect input 
 #object.hzg_export_mode - how to export the data for this object
 #	- V   - Write tightly packed vertex position data, no normals or texture coordinates (VVV)
 #	- VC  - Write Vertex position and Texture Coordinates in VVVCC format.
 #	- VNC - Write packed Vertex/Normal/TexCoord data in VVVNNNCC format
 #object.hzg_round - integer, how many places to round decimals
+#object.hzg_texture - texture name to use
 
 import bpy
 import bmesh
@@ -35,7 +38,7 @@ ibo_ext = ".i"
 def write_mesh_files(obj, scene):
     scene.objects.active = obj
     file_name = obj.name
-    export_mode = obj["hzg_export_mode"] or "VNC" 
+    export_mode = (obj["hzg_export_mode"] or "VNC")
     print("HZG_EXPORT_MODE is",export_mode)
     bpy.ops.object.modifier_apply(modifier='Subsurf')
     round_verts = obj.get("hzg_round",0)
@@ -65,10 +68,11 @@ def write_mesh_files(obj, scene):
         txc_offset = 6 * bpf
         stride = 8 * bpf
         
-    vboBytes = bytearray(len(bm.faces)*3*stride)
+    vboBytes = bytearray()
     iboBytes = bytearray()
     dscString = "OBJECT_NAME=%s" % obj.name
-    dscString += "\nOBJECT_TYPE=%s" % (obj["hzg_type"] or "ENTITY")
+    dscString += "\nOBJECT_TYPE=%s" % obj.get("hzg_type","ENTITY")
+    dscString += "\nTEXTURE=%s" % obj.get("hzg_texture","uvgrid")
     dscString += "\nNUM_ELEMENTS=%i" % (len(bm.faces)*3)
     dscString += "\nPOS_OFFSET=0"
     dscString += "\nNRM_OFFSET=%i" % nrm_offset
@@ -77,6 +81,27 @@ def write_mesh_files(obj, scene):
     dscString += "\nNRM_SIZE=3"
     dscString += "\nPOS_SIZE=3"
     dscString += "\nTXC_SIZE=2"
+    
+    print("Object type for %s is %s" % (obj.name, obj["hzg_type"]))
+    if(obj["hzg_type"] == "INPUT_AREA"):
+        print("Generating convex hull for %s" % obj.name)
+        hull_points= ""
+        hull = bmesh.ops.convex_hull(bm, input=bm.verts)
+        vert_ctr = 0
+        vert_0 = "start"
+        vert_1 = "end"
+        for element in hull["geom"]:     
+            #print("Element is:",type(element))       
+            if(type(element) == bmesh.types.BMVert):
+                print("Vertex %s : %.5f,%.5f,%.5f" % (vert_ctr, element.co.x, element.co.y, element.co.z))
+                if(hull_points):
+                    hull_points = hull_points + ","
+                point_string = ("%f,%f") % (element.co.x, element.co.y)
+                hull_points = hull_points + point_string
+                vert_ctr = vert_ctr + 1
+                    
+        dscString += "\nHULL=%s" % hull_points 
+    
     print("**** STRIDE IS:",stride)
     ctr = 0
     for face in bm.faces:
@@ -86,19 +111,19 @@ def write_mesh_files(obj, scene):
             pos = bm.verts[loop.vert.index].co
 #            print("**** Vert: %.5f,%.5f,%.5f" % (pos.x,pos.y,pos.z))
             if(round_verts):
-                struct.pack_into(">fff", vboBytes, ctr * stride, round(pos.x,5), round(pos.y,5), round(pos.z,5))
+                vboBytes += struct.pack(">fff", round(pos.x,5), round(pos.y,5), round(pos.z,5))
             else:
-                struct.pack_into(">fff", vboBytes, ctr * stride, pos.x,pos.y,pos.z)
+                vboBytes += struct.pack(">fff", pos.x,pos.y,pos.z)
             
             if(export_mode == "VNC"):
                 nrm = bm.verts[loop.vert.index].normal
 #                print("**** Normal: %.4f,%.4f,%.4f" % (nrm.x, nrm.y, nrm.z))
-                struct.pack_into(">fff", vboBytes, (ctr * stride) + nrm_offset, nrm.x,nrm.y,nrm.z)
+                vboBytes += struct.pack(">fff",nrm.x,nrm.y,nrm.z)
             
             if(uv_lay is not None and export_mode != "V"):
                 txc = loop[uv_lay].uv
 #                print("**** Texture Coords:", txc.x, ",", txc.y)
-                struct.pack_into(">ff", vboBytes, (ctr * stride) + txc_offset, txc.x, 1-txc.y)
+                vboBytes += struct.pack(">ff", txc.x, 1-txc.y)
             
             iboBytes += struct.pack(">h",ctr)
             ctr += 1

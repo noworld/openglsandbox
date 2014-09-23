@@ -5,7 +5,9 @@
         <item>@drawable/btn_b</item>
         <item>@drawable/btn_x</item>
         <item>@drawable/btn_y</item>
-        <item>@drawable/dpad</item>
+        <item>@drawable/hzg_dpad</item>
+        <item>@drawable/hzg_zoom</item>
+        <item>@drawable/hzg_updn</item>
         <item>@drawable/uvgrid</item>
         <item>@drawable/water</item>
         <item>@drawable/orient</item>
