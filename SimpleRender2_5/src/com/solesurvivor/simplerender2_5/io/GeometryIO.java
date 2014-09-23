@@ -11,17 +11,22 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 
 import android.content.res.Resources;
 
 import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.game.GlobalKeysEnum;
+import com.solesurvivor.simplerender2_5.input.InputHandler;
+import com.solesurvivor.simplerender2_5.input.InputUiElement;
+import com.solesurvivor.simplerender2_5.input.Polygon2DInputArea;
 import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.rendering.ShaderManager;
 import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
+import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 
 public class GeometryIO {
@@ -76,6 +81,104 @@ public class GeometryIO {
 		return clipmap;
 	}
 	
+	public static List<InputHandler> loadInputHandlers(int resId) throws IOException {
+		List<InputHandler> inputList = new ArrayList<InputHandler>();
+
+		IntermediateGeometry ig = parseIntermediateGeometry(resId);
+		BaseRenderer ren = RendererManager.getRenderer();
+
+		for(String s : ig.mObjectNames) {
+			Map<String,String> desc = ig.mDescriptors.get(s);
+			String name = desc.get("OBJECT_NAME");
+			if(desc.get("OBJECT_TYPE").equals("INPUT_AREA")) {
+				int shader = ShaderManager.getShaderId(desc.get("SHADER"), "ui_shader");
+				int texture = TextureManager.getTextureId(desc.get("TEXTURE"), "uvgrid");
+				int numElements = Integer.valueOf(desc.get("NUM_ELEMENTS"));
+				int elementStride = Integer.valueOf(desc.get("ELEMENT_STRIDE"));
+				int posSize = Integer.valueOf(desc.get("POS_SIZE"));
+				int posOffset = Integer.valueOf(desc.get("POS_OFFSET"));
+				int nrmSize = Integer.valueOf(desc.get("NRM_SIZE"));
+				int nrmOffset = Integer.valueOf(desc.get("NRM_OFFSET"));
+				int txcSize = Integer.valueOf(desc.get("TXC_SIZE"));
+				int txcOffset = Integer.valueOf(desc.get("TXC_OFFSET"));
+				Integer.valueOf(desc.get("TXC_OFFSET"));
+
+				byte[] vboBytes = ig.mFiles.get(s + ".v");
+				byte[] iboBytes = ig.mFiles.get(s + ".i");
+
+				int datBufHandle = ren.loadToVbo(vboBytes);
+				int idxBufHandle = ren.loadToIbo(iboBytes);
+				
+				Geometry geo = new Geometry(name, shader, datBufHandle, idxBufHandle,
+						posSize, nrmSize, txcSize,
+						posOffset, nrmOffset, txcOffset,
+						numElements, elementStride, texture);
+
+				Polygon2DInputArea polyArea = new Polygon2DInputArea(parseHull(desc.get("HULL"), posSize));
+				
+				InputUiElement iue = new InputUiElement(name, geo, polyArea);
+				
+				inputList.add(iue);
+			}
+		}
+		
+		return inputList;
+	}
+	
+	private static List<Float[]> parseHull(String hullPointsString, int posSize) {
+		float[] hullPoints = SSArrayUtil.parseFloatArray(hullPointsString, ",");
+		Float[] hullArray = ArrayUtils.toObject(hullPoints);
+
+//		int posSize = Integer.parseInt(desc.get(DescriptorKeysEnum.POS_SIZE.toString()));
+
+		List<Float[]> hull = new ArrayList<Float[]>(hullArray.length/posSize);
+		for(int i = 0; i < hullArray.length; i += posSize) {
+			Float[] point = new Float[posSize];
+			System.arraycopy(hullArray, i, point, 0, posSize);	
+			hull.add(point);
+		}
+		
+		return hull;
+	}
+	
+	public static List<Geometry> loadUiElements(int resId) throws IOException {
+		List<Geometry> geoList = new ArrayList<Geometry>();
+
+		IntermediateGeometry ig = parseIntermediateGeometry(resId);
+		BaseRenderer ren = RendererManager.getRenderer();
+
+		for(String s : ig.mObjectNames) {
+			Map<String,String> desc = ig.mDescriptors.get(s);
+			String name = desc.get("OBJECT_NAME");
+			if(desc.get("OBJECT_TYPE").equals("UI_ELEMENT")) {
+				int shader = ShaderManager.getShaderId(desc.get("SHADER"), "ui_shader");
+				int texture = TextureManager.getTextureId(desc.get("TEXTURE"), "uvgrid");
+				int numElements = Integer.valueOf(desc.get("NUM_ELEMENTS"));
+				int elementStride = Integer.valueOf(desc.get("ELEMENT_STRIDE"));
+				int posSize = Integer.valueOf(desc.get("POS_SIZE"));
+				int posOffset = Integer.valueOf(desc.get("POS_OFFSET"));
+				int nrmSize = Integer.valueOf(desc.get("NRM_SIZE"));
+				int nrmOffset = Integer.valueOf(desc.get("NRM_OFFSET"));
+				int txcSize = Integer.valueOf(desc.get("TXC_SIZE"));
+				int txcOffset = Integer.valueOf(desc.get("TXC_OFFSET"));
+
+				byte[] vboBytes = ig.mFiles.get(s + ".v");
+				byte[] iboBytes = ig.mFiles.get(s + ".i");
+
+				int datBufHandle = ren.loadToVbo(vboBytes);
+				int idxBufHandle = ren.loadToIbo(iboBytes);
+
+				Geometry geo = new Geometry(name, shader, datBufHandle, idxBufHandle,
+						posSize, nrmSize, txcSize,
+						posOffset, nrmOffset, txcOffset,
+						numElements, elementStride, texture);
+				geoList.add(geo);
+			}
+		}
+		
+		return geoList;
+	}
+
 	public static List<Geometry> loadGeometry(int resId) throws IOException {
 		List<Geometry> geoList = new ArrayList<Geometry>();
 

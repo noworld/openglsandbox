@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.solesurvivor.simplerender2_5.commands.Command;
-import com.solesurvivor.simplerender2_5.scene.Drawable;
+import com.solesurvivor.simplerender2_5.scene.Geometry;
 
 public class InputUiElement extends UiElement implements InputHandler {
 	
@@ -18,7 +18,7 @@ public class InputUiElement extends UiElement implements InputHandler {
 	protected InputEvent mTouch;
 	protected boolean mPressed;
 
-	public InputUiElement(String name, Drawable geometry, InputArea inputArea) {
+	public InputUiElement(String name, Geometry geometry, InputArea inputArea) {
 		super(geometry);
 		this.mName = name;
 		this.mGeometry = geometry;

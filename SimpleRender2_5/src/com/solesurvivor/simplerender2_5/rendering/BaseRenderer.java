@@ -28,6 +28,7 @@ import com.solesurvivor.simplerender2_5.game.states.GameStateEnum;
 import com.solesurvivor.simplerender2_5.game.states.GameStateManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.Drawable;
+import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.Light;
 import com.solesurvivor.simplerender2_5.scene.ProceduralTexture2D;
 import com.solesurvivor.simplerender2_5.scene.RandomEllipse;
@@ -311,6 +312,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// Set the background clear color
 		GLES20.glClearColor(0.1f,0.3f,0.6f,1.0f);
 		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
 	}
 
@@ -1199,53 +1201,55 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	//		return newMat;
 	//	}
 	//
-	//	public void drawUI(Geometry geo) {
-	//
-	//		float[] mvpMatrix = new float[16];
-	//		float[] uiMatrix = GameWorld.inst().getUiMatrix();
-	//		float[] viewMatrix = GameWorld.inst().getViewMatrix();
-	//
-	//		GLES20.glUseProgram(geo.mShaderHandle);
-	//
-	//		int u_mvp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVPMatrix");
-	//		int u_texsampler = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Texture");
-	//
-	//		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
-	//		int a_txc = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_TexCoordinate");
-	//
-	//		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-	//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, geo.mTextureHandle);
-	//		GLES20.glUniform1i(u_texsampler, 0);
-	//
-	//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.mDatBufIndex);
-	//
-	//		GLES20.glEnableVertexAttribArray(a_pos);
-	//		GLES20.glVertexAttribPointer(a_pos, geo.mPosSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mPosOffset);
-	//
-	//		GLES20.glEnableVertexAttribArray(a_txc);
-	//		GLES20.glVertexAttribPointer(a_txc, geo.mTxcSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mTxcOffset);
-	//
-	//		// --MV--
-	//		//make mMVPMatrix MV
-	//		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, geo.mModelMatrix, 0);
-	//		//make mMVPMatrix MVP
-	//		Matrix.multiplyMM(mvpMatrix, 0, uiMatrix, 0, mvpMatrix, 0);
-	//		//MVP is MVP at this point
-	//		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
-	//
-	//		// Draw
-	//
-	//		/* Draw the arrays as triangles */
-	//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
-	//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
-	//
-	//		//unbind buffers
-	//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-	//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-	//
-	//		checkError();
-	//
-	//	}
+	public void drawUI(Geometry geo) {
+
+		float[] mvpMatrix = new float[16];
+		float[] uiMatrix = mCurrentCamera.getOrthoMatrix();
+		float[] viewMatrix = mCurrentCamera.getViewMatrix();
+
+		GLES20.glUseProgram(geo.getShaderHandle());
+
+		int u_mvp = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_MVPMatrix");
+		int u_texsampler = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_Texture");
+
+		int a_pos = GLES20.glGetAttribLocation(geo.getShaderHandle(), "a_Position");
+		int a_txc = GLES20.glGetAttribLocation(geo.getShaderHandle(), "a_TexCoordinate");
+
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, geo.getTextureHandle());
+		GLES20.glUniform1i(u_texsampler, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.getDatBufHandle());
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, geo.getPosSize(), GLES20.GL_FLOAT, false, geo.getElementStride(), geo.getPosOffset());
+
+		GLES20.glEnableVertexAttribArray(a_txc);
+		GLES20.glVertexAttribPointer(a_txc, geo.getTxcSize(), GLES20.GL_FLOAT, false, geo.getElementStride(), geo.getTxcOffset());
+
+		// --MV--
+		//make mMVPMatrix MV
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, geo.getWorldMatrix(), 0);
+		//make mMVPMatrix MVP
+		Matrix.multiplyMM(mvpMatrix, 0, uiMatrix, 0, mvpMatrix, 0);
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+
+		// Draw
+
+		/* Draw the arrays as triangles */
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.getIdxBufHandle());
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+
+		//unbind buffers
+		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		checkError();
+
+	}
 	//
 	//	public void drawLight(Light light) {
 	//

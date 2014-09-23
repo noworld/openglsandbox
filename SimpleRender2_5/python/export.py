@@ -91,12 +91,12 @@ def write_mesh_files(obj, scene):
         vert_0 = "start"
         vert_1 = "end"
         for element in hull["geom"]:     
-            #print("Element is:",type(element))       
+#            print("Element is:",type(element))       
             if(type(element) == bmesh.types.BMVert):
-                print("Vertex %s : %.5f,%.5f,%.5f" % (vert_ctr, element.co.x, element.co.y, element.co.z))
+#                print("Vertex %s : %.5f,%.5f,%.5f" % (vert_ctr, element.co.x, element.co.y, element.co.z))
                 if(hull_points):
                     hull_points = hull_points + ","
-                point_string = ("%f,%f") % (element.co.x, element.co.y)
+                point_string = ("%f,%f,%f") % (element.co.x, element.co.y, element.co.z)
                 hull_points = hull_points + point_string
                 vert_ctr = vert_ctr + 1
                     
