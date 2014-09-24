@@ -28,6 +28,7 @@ import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
+import com.solesurvivor.util.math.QuickHull;
 
 public class GeometryIO {
 	
@@ -129,14 +130,15 @@ public class GeometryIO {
 		float[] hullPoints = SSArrayUtil.parseFloatArray(hullPointsString, ",");
 		Float[] hullArray = ArrayUtils.toObject(hullPoints);
 
-//		int posSize = Integer.parseInt(desc.get(DescriptorKeysEnum.POS_SIZE.toString()));
-
-		List<Float[]> hull = new ArrayList<Float[]>(hullArray.length/posSize);
+		List<Float[]> points = new ArrayList<Float[]>(hullArray.length/posSize);
 		for(int i = 0; i < hullArray.length; i += posSize) {
 			Float[] point = new Float[posSize];
 			System.arraycopy(hullArray, i, point, 0, posSize);	
-			hull.add(point);
+			points.add(point);
 		}
+		
+		//XXX TODO: Pre-compute the hull when exporting
+		List<Float[]> hull = QuickHull.QuickHull2d(points);
 		
 		return hull;
 	}

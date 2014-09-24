@@ -3,8 +3,11 @@ package com.solesurvivor.simplerender2_5.input;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.PointF;
+
 import com.solesurvivor.simplerender2_5.commands.Command;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
+import com.solesurvivor.simplerender2_5.util.UiUtil;
 
 public class InputUiElement extends UiElement implements InputHandler {
 	
@@ -30,7 +33,8 @@ public class InputUiElement extends UiElement implements InputHandler {
 	@Override
 	public boolean testInput(InputEvent event) {
 		
-		boolean myEvent = mInputArea.isPressed(event.getCoords());
+		PointF view = UiUtil.screenToViewCoords(event.getCoords());
+		boolean myEvent = mInputArea.isPressed(view);
 
 		//XXX DEBUG STICKING INPUT
 //		PointF screen = UiUtil.viewToScreenCoords(event.getCoords());

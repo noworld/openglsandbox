@@ -13,6 +13,9 @@
 #object.hzg_round - integer, how many places to round decimals
 #object.hzg_texture - texture name to use
 
+import sysconfig
+print(sysconfig.get_config_h_filename())
+
 import bpy
 import bmesh
 import zipfile
@@ -20,6 +23,7 @@ import struct
 import sys
 import os
 import mathutils
+from scipy.spatial import ConvexHull
 
 try:
     import zlib
@@ -30,10 +34,10 @@ bpf = 4
 bpi = 4
 bps = 2
 clear_work_directory = True
-home_path = "C:" + os.environ.get("HOMEPATH","\\Users\\nicholas.waun")
-proj_path = home_path + "\\git\\openglsandbox\\SimpleRender2_5"
-out_path = proj_path + "\\res\\raw\\"
-work_path = proj_path + "\\python\\work\\"
+proj_path = os.environ.get("BLENDER_EXPORT_WORK", "C:\\Users\\nicholas.waun\\git\\openglsandbox\\ModelConverter")
+#out_path = proj_path+"\\res\\out\\"
+out_path = "C:\\Users\\nicholas.waun\\git\\openglsandbox\\SimpleRender2_5\\res\\raw\\"
+work_path = proj_path+"\\res\\work\\"
 dsc_ext = ".dsc"
 vbo_ext = ".v"
 ibo_ext = ".i"
@@ -95,11 +99,46 @@ def write_mesh_files(obj, scene):
         
         print("VERTS")
         vert_ctr = 0
-        for vert in bm.verts:
-            if(hull_points):
-                hull_points = hull_points + ","
-            point_string = ("%f,%f,%f") % (vert.co.x, vert.co.y, vert.co.z)
-            hull_points = hull_points + point_string
+        for edge in bm.edges:
+            for vert in edge.verts:
+                print("EDGE Vertex %s : %.5f,%.5f,%.5f" % (vert_ctr, vert.co.x, vert.co.y, vert.co.z))
+                #vert.co.z = 0.0
+                vert_ctr = vert_ctr + 1
+            print("")
+        
+        hull = bmesh.ops.convex_hull(bm, input=bm.verts, use_existing_faces=True)
+        vert_ctr = 0
+        vert_0 = "start"
+        vert_1 = "end"
+        points = []        
+        print("- - - - - - - - - - - - - - ")
+        print("HULL OBJECT: ",hull["geom"])
+        for element in hull["geom"]:     
+#            print("Element is:",type(element))       
+            if(type(element) == bmesh.types.BMVert):
+                vert_ctr = vert_ctr + 1
+                print("Vertex %s : %.5f,%.5f,%.5f" % (vert_ctr, element.co.x, element.co.y, element.co.z))
+                points.append(element.co)
+            elif(type(element) == bmesh.types.BMEdge):
+                for vert in element.verts:
+                    print("EDGE Vertex %s : %.5f,%.5f,%.5f" % (vert_ctr, vert.co.x, vert.co.y, vert.co.z))
+                print("")
+            
+        #Compare to see if clockwise or ccw
+        crossz = cross_z(points[0], points[1], points[2])
+        print("CROSS Z TEST: %.5f" % crossz)
+        if(crossz < 0):
+            for point in points:
+                if(hull_points):
+                    hull_points = hull_points + ","
+                point_string = ("%f,%f,%f") % (point.x, point.y, point.z)
+                hull_points = hull_points + point_string
+        else:
+            for i in range(len(points)-1, 0, -1):
+                if(hull_points):
+                    hull_points = hull_points + ","
+                point_string = ("%f,%f,%f") % (points[i].x, points[i].y, points[i].z)
+                hull_points = hull_points + point_string
         
         dscString += "\nHULL=%s" % hull_points 
     
