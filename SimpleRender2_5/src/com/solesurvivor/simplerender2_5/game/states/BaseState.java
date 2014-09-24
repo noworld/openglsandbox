@@ -15,7 +15,7 @@ import com.solesurvivor.simplerender2_5.scene.Scene;
 
 public abstract class BaseState implements GameState {
 	
-	public static final boolean RENDER_INPUT_AREAS = true;
+	public static final boolean RENDER_INPUT_AREAS = false;
 
 	@SuppressWarnings("unused")
 	private static final String TAG = BaseState.class.getSimpleName();

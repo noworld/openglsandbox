@@ -18,7 +18,7 @@ public class TouchFeedback {
 	
 	public static void vibPattern(long[] pattern) {
 		if(mVibrator.hasVibrator()) {
-			mVibrator.cancel();
+//			mVibrator.cancel();
 			mVibrator.vibrate(pattern,-1);
 		}
 	}

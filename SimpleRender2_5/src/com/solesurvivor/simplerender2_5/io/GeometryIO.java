@@ -51,7 +51,8 @@ public class GeometryIO {
 			if(desc.get("OBJECT_TYPE").equals("GEO_MIPMAP")) {
 				String name = desc.get("OBJECT_NAME");
 				int shader = ShaderManager.getShaderId(desc.get("SHADER"), "tex_shader");
-				int texture = TextureManager.getTextureId(desc.get("TEXTURE"), "orient");
+				//int texture = TextureManager.getTextureId(desc.get("TEXTURE"), "orient");
+				int texture = TextureManager.getTextureId(desc.get("TEXTURE"), "water");
 				int numElements = Integer.valueOf(desc.get("NUM_ELEMENTS"));
 				int elementStride = Integer.valueOf(desc.get("ELEMENT_STRIDE"));
 				int posSize = Integer.valueOf(desc.get("POS_SIZE"));

@@ -10,7 +10,8 @@ public class Camera {
 	
 	private static final String TAG = Camera.class.getSimpleName();
 
-	protected float[] mViewMatrix = new float[16];	
+	protected float[] mViewMatrix = new float[16];
+	protected float[] mAgentMatrix = new float[16];
 	protected boolean mViewDirty = false;
 	protected float[] mProjectionMatrix  = new float[16];
 	protected float[] mOrthoMatrix = new float[16];
@@ -19,11 +20,11 @@ public class Camera {
 	protected float[] mUpVector = {0.0f, 1.0f, 0.0f};	
 	protected Point mViewport = new Point(0,0);
 	protected float mNear = 0.5f;
-	protected float mFar = 400.0f; //200.0f;
+	protected float mFar = 10000.0f; //200.0f;
 	protected float mFov = 62.0f;
 	
 	protected float mRotAngle = 0.0f;
-	protected Vec3 mRotAxes = new Vec3(1.0f,1.0f,1.0f).normalizeClone();
+	protected Vec3 mRotAxes = new Vec3(0.0f,1.0f,0.0f);
 	protected Vec3 mTrans = new Vec3(0.0f,0.0f,0.0f);
 	protected float[] mVelocity = {0.0f, 0.0f, 0.0f};
 	
@@ -70,6 +71,13 @@ public class Camera {
 		return mViewMatrix;
 	}
 	
+	public float[] getAgentViewMatrix() {
+		if(mViewDirty) {
+			orient();
+		}
+		return mAgentMatrix;
+	}
+	
 	public float[] getProjectionMatrix() {
 		return mProjectionMatrix;
 	}
@@ -83,10 +91,12 @@ public class Camera {
 				mLookVector[0], mLookVector[1], mLookVector[2],
 				mUpVector[0], mUpVector[1], mUpVector[2]);
 		
-		float[] tempMatrix = new float[mViewMatrix.length];
-		Matrix.rotateM(tempMatrix, 0, mRotAngle, mRotAxes.getX(), mRotAxes.getY(), mRotAxes.getZ());		
-		Matrix.translateM(tempMatrix, 0, mTrans.getX(), mTrans.getY(), mTrans.getZ());
-		System.arraycopy(mViewMatrix, 0, tempMatrix, 0, tempMatrix.length);
+		float[] transforms = new float[mViewMatrix.length];
+		Matrix.setIdentityM(transforms, 0);
+		Matrix.rotateM(transforms, 0, mRotAngle, mRotAxes.getX(), mRotAxes.getY(), mRotAxes.getZ());		
+		Matrix.translateM(transforms, 0, mTrans.getX(), mTrans.getY(), mTrans.getZ());
+		
+		Matrix.multiplyMM(mAgentMatrix, 0, mViewMatrix, 0, transforms, 0);
 		
 		mViewDirty = false;
 	}
@@ -146,14 +156,20 @@ public class Camera {
 		mRotAxes.setX((axes.getX() + mRotAxes.getX())/2);
 		mRotAxes.setY((axes.getY() + mRotAxes.getY())/2);
 		mRotAxes.setZ((axes.getZ() + mRotAxes.getZ())/2);
+		mViewDirty = true;
 	}
 	
 	public void translate(Vec3 trans) {
-		mTrans.setX((float)(mTrans.getX() + trans.getZ() * Math.sin(Math.toRadians(mRotAngle)) * -1));
-		mTrans.setX((float)(mTrans.getX() + trans.getX() * Math.sin(Math.toRadians(mRotAngle + 90)) * -1));
-		mTrans.setY((float)(mTrans.getY() + trans.getY())); //y-up
-		mTrans.setZ((float)(mTrans.getZ() + trans.getZ() * Math.cos(Math.toRadians(mRotAngle))));
-		mTrans.setZ((float)(mTrans.getZ() + trans.getX() * Math.cos(Math.toRadians(mRotAngle + 90))));
+		mTrans.setX((float)(mTrans.getX() + (trans.getZ() * Math.sin(Math.toRadians(mRotAngle)) * -1)));
+		mTrans.setX((float)(mTrans.getX() + (trans.getX() * Math.sin(Math.toRadians(mRotAngle + 90)) * -1)));
+		mTrans.setY((float)(mTrans.getY() + (trans.getY()))); //y-up
+		mTrans.setZ((float)(mTrans.getZ() + (trans.getZ() * Math.cos(Math.toRadians(mRotAngle)))));
+		mTrans.setZ((float)(mTrans.getZ() + (trans.getX() * Math.cos(Math.toRadians(mRotAngle + 90)))));
+		mViewDirty = true;
+	}
+	
+	public Vec3 getAgentTranslation() {
+		return mTrans;
 	}
 
 }

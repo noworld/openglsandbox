@@ -10,7 +10,7 @@ public class FlyUp implements Command {
 	@SuppressWarnings("unused")
 	private static final String TAG = FlyUp.class.getSimpleName();
 	
-	protected float mYDisp = 0.1f;
+	protected float mYDisp = -0.5f;
 	
 	@Override
 	public void execute(InputEvent event) {

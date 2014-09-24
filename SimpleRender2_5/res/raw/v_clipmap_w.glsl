@@ -39,8 +39,8 @@ varying vec4 v_WaterColor;
 void main()                                                 	
 {          
 
-	//float time = u_Time;
-	float time = 1.0;
+	float time = u_Time;
+	//float time = 1.0;
     float height = 0.0;
 	float xDisp = 0.0;
 	float zDisp = 0.0;
@@ -96,7 +96,7 @@ void main()
 	v_Position = vec3(u_VMatrix * a_Position);
 	v_Normal = normalize(vec3(u_NrmMatrix * vec4(normal,1.0)));
 	
-	//gl_Position = u_MVPMatrix * a_Position;
-	gl_Position = u_VPMatrix * position;                    	
+	gl_Position = u_MVPMatrix * a_Position;
+	//gl_Position = u_VPMatrix * position;                    	
 
 }                                                          

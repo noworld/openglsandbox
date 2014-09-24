@@ -320,7 +320,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
-		float[] viewMatrix = mCurrentCamera.getViewMatrix();
+		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
 		int shaderHandle = skybox.getShaderHandle();
 		int textureHandle = skybox.getTextureHandle();
 
@@ -381,8 +381,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		float[] mvMatrix = new float[16];
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
-		float[] viewMatrix = mCurrentCamera.getViewMatrix();
-		float[] eyePos = mCurrentCamera.getEyePos();
+		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
+		Vec3 eyePos = mCurrentCamera.getAgentTranslation();
 
 		int shaderHandle = draw.getShaderHandle();
 		int textureHandle = draw.getTextureHandle();
@@ -447,7 +447,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		// --M--
 		float[] temp = new float[16];
 		Matrix.setIdentityM(temp, 0);
-		Matrix.translateM(temp, 0, eyePos[0], 0.0f, eyePos[2]);
+		Matrix.translateM(temp, 0, eyePos.getX(), 0.0f, eyePos.getZ());
 		Matrix.scaleM(temp, 0, mipMult, 1.0f, mipMult);
 		float[] newmm = new float[16];		
 		Matrix.multiplyMM(newmm, 0, temp, 0, modelMatrix, 0);
@@ -564,7 +564,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		float[] mvMatrix = new float[16];
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
-		float[] viewMatrix = mCurrentCamera.getViewMatrix();
+		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
 
 		int shaderHandle = draw.getShaderHandle();
 		int textureHandle = draw.getTextureHandle();

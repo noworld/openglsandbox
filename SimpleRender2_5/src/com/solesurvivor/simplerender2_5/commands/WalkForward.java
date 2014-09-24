@@ -9,7 +9,7 @@ public class WalkForward implements Command {
 	@SuppressWarnings("unused")
 	private static final String TAG = WalkForward.class.getSimpleName();
 	
-	protected float mZDisp = 0.1f;
+	protected float mZDisp = 0.5f;
 
 	@Override
 	public void execute(InputEvent event) {

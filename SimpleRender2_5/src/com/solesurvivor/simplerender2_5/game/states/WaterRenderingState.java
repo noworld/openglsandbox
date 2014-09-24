@@ -9,10 +9,8 @@ import com.solesurvivor.simplerender2_5.R;
 import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.game.GlobalKeysEnum;
-import com.solesurvivor.simplerender2_5.input.InputHandler;
 import com.solesurvivor.simplerender2_5.input.InputUiElement;
 import com.solesurvivor.simplerender2_5.io.GeometryIO;
-import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
@@ -61,12 +59,6 @@ public class WaterRenderingState extends BaseState {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-//		InputUiElement element = new InputUiElement("screen", new Plane("tex_shader","uvgrid",viewport), new ScreenInputArea());
-//		element.registerCommand(CommandEnum.ROTATE_VIEW.getCommand());
-//		mInputHandlers.add(element);
-		
-		
 	}
 
 	@Override
@@ -83,12 +75,6 @@ public class WaterRenderingState extends BaseState {
 	@Override
 	public void render() {		
 		super.render();
-		BaseRenderer ren = RendererManager.getRenderer();
-		for(InputHandler ih : mInputHandlers) {
-			if(ih instanceof InputUiElement) {
-				ren.drawUI(((InputUiElement)ih).getGeometry());
-			}
-		}
 	}
 	
 	@Override

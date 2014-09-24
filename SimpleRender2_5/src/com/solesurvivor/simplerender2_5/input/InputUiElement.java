@@ -33,8 +33,8 @@ public class InputUiElement extends UiElement implements InputHandler {
 	@Override
 	public boolean testInput(InputEvent event) {
 		
-		PointF view = UiUtil.screenToViewCoords(event.getCoords());
-		boolean myEvent = mInputArea.isPressed(view);
+//		PointF view = UiUtil.screenToViewCoords(event.getCoords());
+		boolean myEvent = mInputArea.isPressed(event.getViewCoords());
 
 		//XXX DEBUG STICKING INPUT
 //		PointF screen = UiUtil.viewToScreenCoords(event.getCoords());
