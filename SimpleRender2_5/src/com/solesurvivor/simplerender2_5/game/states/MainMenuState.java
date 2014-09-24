@@ -6,6 +6,7 @@ import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
+import com.solesurvivor.util.math.Vec3;
 
 public class MainMenuState extends BaseState {
 
@@ -43,6 +44,18 @@ public class MainMenuState extends BaseState {
 	@Override
 	public void resizeViewport(Point p) {
 		mCamera.resizeViewport(p);
+	}
+
+	@Override
+	public void rotateCurrentCamera(float angle, Vec3 rot) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void translateCurrentCamera(Vec3 trans) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

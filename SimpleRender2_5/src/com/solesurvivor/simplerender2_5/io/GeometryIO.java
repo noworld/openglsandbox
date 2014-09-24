@@ -12,9 +12,12 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import android.content.res.Resources;
 
+import com.solesurvivor.simplerender2_5.commands.Command;
+import com.solesurvivor.simplerender2_5.commands.CommandEnum;
 import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.game.GlobalKeysEnum;
 import com.solesurvivor.simplerender2_5.input.InputHandler;
@@ -82,8 +85,8 @@ public class GeometryIO {
 		return clipmap;
 	}
 	
-	public static List<InputHandler> loadInputHandlers(int resId) throws IOException {
-		List<InputHandler> inputList = new ArrayList<InputHandler>();
+	public static List<InputUiElement> loadInputUiElements(int resId) throws IOException {
+		List<InputUiElement> inputList = new ArrayList<InputUiElement>();
 
 		IntermediateGeometry ig = parseIntermediateGeometry(resId);
 		BaseRenderer ren = RendererManager.getRenderer();
@@ -116,8 +119,12 @@ public class GeometryIO {
 						numElements, elementStride, texture);
 
 				Polygon2DInputArea polyArea = new Polygon2DInputArea(parseHull(desc.get("HULL"), posSize));
-				
 				InputUiElement iue = new InputUiElement(name, geo, polyArea);
+				
+				if(StringUtils.isNotBlank(desc.get("COMMAND"))) {
+					Command command = CommandEnum.valueOf(desc.get("COMMAND")).getCommand();
+					iue.registerCommand(command);
+				}
 				
 				inputList.add(iue);
 			}

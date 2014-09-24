@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.opengl.Matrix;
 
 import com.solesurvivor.util.logging.SSLog;
+import com.solesurvivor.util.math.Vec3;
 
 public class Camera {
 	
@@ -20,7 +21,12 @@ public class Camera {
 	protected float mNear = 0.5f;
 	protected float mFar = 400.0f; //200.0f;
 	protected float mFov = 62.0f;
+	
+	protected float mRotAngle = 0.0f;
+	protected Vec3 mRotAxes = new Vec3(1.0f,1.0f,1.0f).normalizeClone();
+	protected Vec3 mTrans = new Vec3(0.0f,0.0f,0.0f);
 	protected float[] mVelocity = {0.0f, 0.0f, 0.0f};
+	
 	
 	public Camera() {		
 		orient();
@@ -76,6 +82,12 @@ public class Camera {
 		Matrix.setLookAtM(mViewMatrix, 0, mEyePos[0], mEyePos[1], mEyePos[2], 
 				mLookVector[0], mLookVector[1], mLookVector[2],
 				mUpVector[0], mUpVector[1], mUpVector[2]);
+		
+		float[] tempMatrix = new float[mViewMatrix.length];
+		Matrix.rotateM(tempMatrix, 0, mRotAngle, mRotAxes.getX(), mRotAxes.getY(), mRotAxes.getZ());		
+		Matrix.translateM(tempMatrix, 0, mTrans.getX(), mTrans.getY(), mTrans.getZ());
+		System.arraycopy(mViewMatrix, 0, tempMatrix, 0, tempMatrix.length);
+		
 		mViewDirty = false;
 	}
 	
@@ -120,6 +132,28 @@ public class Camera {
 	public void setVelocity(float[] mCameraVelocity) {
 		this.mVelocity = mCameraVelocity;
 		mViewDirty = true;
+	}
+	
+	public void rotate(float angle, Vec3 axes) {
+		mRotAngle += angle;
+
+		if(mRotAngle > 360.0f) {
+			mRotAngle = mRotAngle - 360.0f;
+		} else if(mRotAngle < 0.0f) {
+			mRotAngle = mRotAngle + 360.0f;
+		}
+
+		mRotAxes.setX((axes.getX() + mRotAxes.getX())/2);
+		mRotAxes.setY((axes.getY() + mRotAxes.getY())/2);
+		mRotAxes.setZ((axes.getZ() + mRotAxes.getZ())/2);
+	}
+	
+	public void translate(Vec3 trans) {
+		mTrans.setX((float)(mTrans.getX() + trans.getZ() * Math.sin(Math.toRadians(mRotAngle)) * -1));
+		mTrans.setX((float)(mTrans.getX() + trans.getX() * Math.sin(Math.toRadians(mRotAngle + 90)) * -1));
+		mTrans.setY((float)(mTrans.getY() + trans.getY())); //y-up
+		mTrans.setZ((float)(mTrans.getZ() + trans.getZ() * Math.cos(Math.toRadians(mRotAngle))));
+		mTrans.setZ((float)(mTrans.getZ() + trans.getX() * Math.cos(Math.toRadians(mRotAngle + 90))));
 	}
 
 }

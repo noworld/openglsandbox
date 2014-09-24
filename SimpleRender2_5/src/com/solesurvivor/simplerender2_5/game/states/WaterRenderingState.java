@@ -1,6 +1,7 @@
 package com.solesurvivor.simplerender2_5.game.states;
 
 import java.io.IOException;
+import java.util.List;
 
 import android.graphics.Point;
 
@@ -8,7 +9,10 @@ import com.solesurvivor.simplerender2_5.R;
 import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.game.GlobalKeysEnum;
+import com.solesurvivor.simplerender2_5.input.InputHandler;
+import com.solesurvivor.simplerender2_5.input.InputUiElement;
 import com.solesurvivor.simplerender2_5.io.GeometryIO;
+import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
@@ -42,9 +46,14 @@ public class WaterRenderingState extends BaseState {
 		try {
 			TerrainClipmap clipMap = GeometryIO.loadClipmap(R.raw.geoclip);
 			mScene.addChild(clipMap);
-			mInputHandlers.addAll(GeometryIO.loadInputHandlers(R.raw.blue_ui));
+			Vec3 pushback = new Vec3(0.0f, 0.0f, -5.0f);
+			List<InputUiElement> uiElements = GeometryIO.loadInputUiElements(R.raw.blue_ui);		
+			for(InputUiElement iu : uiElements) {
+				iu.translate(pushback.getX(), pushback.getY(), pushback.getZ());
+			}
+			mInputHandlers.addAll(uiElements);
 			mUi.addAll(GeometryIO.loadUiElements(R.raw.blue_ui));
-			Vec3 pushback = new Vec3(0.0f, 0.0f, -10.0f);
+			pushback = new Vec3(0.0f, 0.0f, -6.0f);
 			for(Geometry g : mUi) {
 				g.translate(pushback);
 			}
@@ -74,11 +83,27 @@ public class WaterRenderingState extends BaseState {
 	@Override
 	public void render() {		
 		super.render();
+		BaseRenderer ren = RendererManager.getRenderer();
+		for(InputHandler ih : mInputHandlers) {
+			if(ih instanceof InputUiElement) {
+				ren.drawUI(((InputUiElement)ih).getGeometry());
+			}
+		}
 	}
 	
 	@Override
 	public void resizeViewport(Point p) {
 		mCamera.resizeViewport(p);
+	}
+
+	@Override
+	public void rotateCurrentCamera(float angle, Vec3 rot) {
+		mCamera.rotate(angle, rot);
+	}
+
+	@Override
+	public void translateCurrentCamera(Vec3 trans) {
+		mCamera.translate(trans);
 	}
 	
 }

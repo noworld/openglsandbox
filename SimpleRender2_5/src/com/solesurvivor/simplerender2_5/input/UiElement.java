@@ -1,6 +1,5 @@
 package com.solesurvivor.simplerender2_5.input;
 
-import com.solesurvivor.simplerender2_5.scene.Drawable;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.util.math.Vec3;
 
@@ -12,7 +11,7 @@ public class UiElement {
 		this.mGeometry = geometry;
 	}
 
-	public Drawable getGeometry() {
+	public Geometry getGeometry() {
 		return mGeometry;
 	}
 

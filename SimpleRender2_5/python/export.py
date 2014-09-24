@@ -12,6 +12,7 @@
 #	- VNC - Write packed Vertex/Normal/TexCoord data in VVVNNNCC format
 #object.hzg_round - integer, how many places to round decimals
 #object.hzg_texture - texture name to use
+#object.hzg_command - command to link to an input area
 
 import bpy
 import bmesh
@@ -101,7 +102,8 @@ def write_mesh_files(obj, scene):
             point_string = ("%f,%f,%f") % (vert.co.x, vert.co.y, vert.co.z)
             hull_points = hull_points + point_string
         
-        dscString += "\nHULL=%s" % hull_points 
+        dscString += "\nHULL=%s" % hull_points
+        dscString += "\nCOMMAND=%s" % obj.get("hzg_command","")
     
     print("**** STRIDE IS:",stride)
     ctr = 0

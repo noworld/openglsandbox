@@ -1,3 +1,7 @@
++touch_area
+-touch_area.v
+-touch_area.i
+-touch_area.dsc
 +input_zoom_up
 -input_zoom_up.v
 -input_zoom_up.i

@@ -7,6 +7,7 @@ import android.os.SystemClock;
 
 import com.solesurvivor.simplerender2_5.input.InputEventBus;
 import com.solesurvivor.simplerender2_5.input.InputHandler;
+import com.solesurvivor.simplerender2_5.input.InputUiElement;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.Scene;
@@ -30,6 +31,7 @@ public abstract class BaseState implements GameState {
 		long tempT = SystemClock.uptimeMillis();
 		mDeltaT = tempT - mLastT;
 		mLastT = tempT;
+		InputEventBus.inst().executeCommands(mInputHandlers);
 		mScene.update();
 	}
 
@@ -42,7 +44,9 @@ public abstract class BaseState implements GameState {
 		
 		if(RENDER_INPUT_AREAS) {
 			for(InputHandler ih : mInputHandlers) {
-				
+				if(ih instanceof InputUiElement) {
+					RendererManager.getRenderer().drawUI(((InputUiElement)ih).getGeometry());
+				}
 			}
 		}
 	}
