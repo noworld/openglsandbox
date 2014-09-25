@@ -9,7 +9,7 @@ public class TurnLeftCommand implements Command {
 	@SuppressWarnings("unused")
 	private static final String TAG = TurnLeftCommand.class.getSimpleName();
 	
-	protected float mRot = 0.5f;
+	protected float mRot = -1.0f;
 
 	@Override
 	public void execute(InputEvent event) {		
