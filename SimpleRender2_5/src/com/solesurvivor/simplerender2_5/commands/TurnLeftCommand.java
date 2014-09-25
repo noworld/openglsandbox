@@ -4,15 +4,15 @@ import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.input.InputEvent;
 import com.solesurvivor.util.math.Vec3;
 
-public class TurnLeft implements Command {
+public class TurnLeftCommand implements Command {
 
 	@SuppressWarnings("unused")
-	private static final String TAG = TurnLeft.class.getSimpleName();
+	private static final String TAG = TurnLeftCommand.class.getSimpleName();
 	
-	protected float mYRot = -1.5f;
+	protected float mRot = 0.5f;
 
 	@Override
 	public void execute(InputEvent event) {		
-		GameWorld.inst().getCurrentState().rotateCurrentCamera(mYRot, new Vec3(0.0f, 1.0f, 0.0f));
+		GameWorld.inst().getCurrentState().rotateCurrentCamera(mRot, new Vec3(0.0f, 1.0f, 0.0f));
 	}
 }

@@ -4,10 +4,10 @@ import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.input.InputEvent;
 import com.solesurvivor.util.math.Vec3;
 
-public class StrafeLeft implements Command {
+public class StrafeLeftCommand implements Command {
 
 	@SuppressWarnings("unused")
-	private static final String TAG = StrafeLeft.class.getSimpleName();
+	private static final String TAG = StrafeLeftCommand.class.getSimpleName();
 	
 	protected float mXDisp = -0.5f;
 
