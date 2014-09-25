@@ -14,6 +14,7 @@ import com.solesurvivor.simplerender2_5.io.GeometryIO;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
+import com.solesurvivor.simplerender2_5.scene.GeometryNode;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
 import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
 import com.solesurvivor.util.math.Vec3;
@@ -55,6 +56,12 @@ public class WaterRenderingState extends BaseState {
 			for(Geometry g : mUi) {
 				g.translate(pushback);
 			}
+			
+			List<Geometry> ships = GeometryIO.loadGeometry(R.raw.ohp);
+			GeometryNode ohp = new GeometryNode(ships.get(0));
+			ohp.translate(new Vec3(0.0f, 0.0f, -50.0f));
+			mScene.addChild(ohp);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

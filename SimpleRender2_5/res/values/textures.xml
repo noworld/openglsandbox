@@ -11,6 +11,7 @@
         <item>@drawable/uvgrid</item>
         <item>@drawable/water</item>
         <item>@drawable/orient</item>
+        <item>@drawable/ohp1</item>
     </array>
     
     <array name="textures_cube">

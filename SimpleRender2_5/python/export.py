@@ -13,6 +13,7 @@
 #object.hzg_round - integer, how many places to round decimals
 #object.hzg_texture - texture name to use
 #object.hzg_command - command to link to an input area
+#object.hzg_transform_yup - 1 means that the object should be transformed from Z-Up coordinates to Y-Up coordinates
 
 import bpy
 import bmesh
@@ -45,6 +46,7 @@ def cross_z(p1, p2, p3):
 def write_mesh_files(obj, scene):
     scene.objects.active = obj
     file_name = obj.name
+    trans_yup = obj.get("hzg_transform_yup",0)
     export_mode = (obj["hzg_export_mode"] or "VNC")
     print("HZG_EXPORT_MODE is",export_mode)
     bpy.ops.object.modifier_apply(modifier='Subsurf')
@@ -114,9 +116,15 @@ def write_mesh_files(obj, scene):
             pos = bm.verts[loop.vert.index].co
 #            print("**** Vert: %.5f,%.5f,%.5f" % (pos.x,pos.y,pos.z))
             if(round_verts):
-                vboBytes += struct.pack(">fff", round(pos.x,5), round(pos.y,5), round(pos.z,5))
+                if(trans_yup == 1):
+                    vboBytes += struct.pack(">fff", round(pos.x,5), round(pos.z,5), round(pos.y,5))
+                else:
+                    vboBytes += struct.pack(">fff", round(pos.x,5), round(pos.y,5), round(pos.z,5))
             else:
-                vboBytes += struct.pack(">fff", pos.x,pos.y,pos.z)
+                if(trans_yup == 1):
+                    vboBytes += struct.pack(">fff", pos.x,pos.z,pos.y)
+                else:
+                    vboBytes += struct.pack(">fff", pos.x,pos.y,pos.z)
             
             if(export_mode == "VNC"):
                 nrm = bm.verts[loop.vert.index].normal

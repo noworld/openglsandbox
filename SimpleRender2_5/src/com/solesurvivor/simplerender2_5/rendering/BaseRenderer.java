@@ -245,6 +245,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			for(int i = 0; i < cubemap.length; i++) {
 				GLUtils.texImage2D(imageOrder[i], 0, cubemap[i], 0);
 			}
+			
+//			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
 
 		}
 
@@ -266,7 +268,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
 			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
-			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);		
+			
+//			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
 		}
 
 		if (textureHandle[0] == 0) {
@@ -313,6 +317,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClearColor(0.1f,0.3f,0.6f,1.0f);
 		GLES20.glEnable(GLES20.GL_CULL_FACE);
 		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		GLES20.glEnable( GLES20.GL_DEPTH_TEST );
+		GLES20.glDepthFunc( GLES20.GL_LEQUAL );
+		GLES20.glDepthMask( true );
 
 	}
 
