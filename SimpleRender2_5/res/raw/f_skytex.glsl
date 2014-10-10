@@ -1,6 +1,8 @@
 precision mediump float;
 
-const float c_SunAngle = 20.0;
+const float c_Dec = 45.0;
+const float c_LineW = 0.2; //gradient width
+const float c_MaxGrad = 0.9;
 
 uniform sampler2D u_Texture;
   
@@ -9,18 +11,19 @@ varying vec3 v_Normal;
 varying vec2 v_TexCoordinate;
 
 void main()                    		
-{                  
-	//txc is -pi -> pi
-    float sin_dec = sin(radians(c_SunAngle));
-    float sin_x = sin(v_TexCoordinate.s);
-    float sin_y = sin(v_TexCoordinate.t);
+{
+	float r = cos(radians(c_Dec));
+    float x = v_Position.x;
+    float y = v_Position.y;
     
-    if(sin_dec - (abs(sin_x) - abs(sin_y)) < 0.02) {
-        gl_FragColor = vec4(1.0,0.0,0.0,1.0);
-    } else {
-        gl_FragColor = vec4(1.0,1.0,1.0,1.0);
+    gl_FragColor = vec4(1.0,1.0,1.0,1.0);
+    
+    float c = r - ((x*x) + (y*y));
+    
+    if(c < c_LineW && c > -c_LineW) {
+        gl_FragColor = vec4(0.0,0.0,1.0,c_MaxGrad-(sqrt(abs(c)/c_LineW)));
     }
     
-     //gl_FragColor = texture2D(u_Texture, v_TexCoordinate);                     		
+    //gl_FragColor = texture2D(u_Texture, v_TexCoordinate);                     		
 }                                                                     	
 

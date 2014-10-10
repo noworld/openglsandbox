@@ -48,6 +48,16 @@ public abstract class Rectangle implements Drawable {
 					/*vvv*/ aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ npi,pi,
 					/*vvv*/-aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ pi,npi,
 					/*vvv*/ aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ npi,npi};
+		}  else if(textureSystem.equals(CoordinateSystemEnum.EXPERIMENTAL)) {
+			float pi = 3.2f;
+			pi = pi / 2.0f;
+			float npi = -pi;
+			//x = 0 is due west, y = 0 is due east
+			mVertices = new float[]{
+					/*vvv*/-aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ pi,pi,
+					/*vvv*/ aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ npi,pi,
+					/*vvv*/-aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ pi,npi,
+					/*vvv*/ aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ npi,npi};
 		}
 
 		BaseRenderer ren = RendererManager.getRenderer();

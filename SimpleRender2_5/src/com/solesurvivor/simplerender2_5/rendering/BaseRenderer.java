@@ -1021,7 +1021,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		/* Draw the arrays as triangles */
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, tex.getIdxBufHandle());
 		
-		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -1176,9 +1176,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			throw new RuntimeException("Frame buffer not ready.");
 		}
 
-		GLES20.glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+		GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
-		GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	}
 

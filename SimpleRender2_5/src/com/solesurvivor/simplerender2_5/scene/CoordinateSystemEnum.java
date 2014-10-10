@@ -4,5 +4,6 @@ public enum CoordinateSystemEnum {
 
 	CARTESIAN,
 	POLAR,
-	EQUITORIAL;
+	EQUITORIAL,
+	EXPERIMENTAL;
 }

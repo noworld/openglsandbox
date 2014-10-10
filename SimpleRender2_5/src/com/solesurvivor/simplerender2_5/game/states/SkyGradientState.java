@@ -28,10 +28,10 @@ public class SkyGradientState extends BaseState {
 		mCamera.setLookVector(lookVec);
 		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		
-		ProceduralTexture2D skyTex = new ProceduralTexture2D("skytex_shader", "skytex", viewport, CoordinateSystemEnum.EQUITORIAL);
+		ProceduralTexture2D skyTex = new ProceduralTexture2D("skytex_shader", "skytex", new Point(viewport.y,viewport.y), CoordinateSystemEnum.CARTESIAN);
 		mScene.addChild(skyTex);
 		
-		Plane plane = new Plane("plane_shader", "skytex", viewport);
+		Plane plane = new Plane("plane_shader", "skytex", new Point(viewport.y,viewport.y));
 		mScene.addChild(plane);
 		
 		BackButtonInputHandler bbih = new BackButtonInputHandler();
