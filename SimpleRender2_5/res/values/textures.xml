@@ -13,6 +13,7 @@
         <item>@drawable/orient</item>
         <item>@drawable/ohp1</item>
         <item>@drawable/hzg_rotb</item>
+        <item>@drawable/stars</item>
     </array>
     
     <array name="textures_cube">

@@ -9,7 +9,7 @@ public class WalkBackwardCommand implements Command {
 	@SuppressWarnings("unused")
 	private static final String TAG = WalkBackwardCommand.class.getSimpleName();
 	
-	protected float mZDisp = -0.5f;
+	protected float mZDisp = -0.05f;
 
 	@Override
 	public void execute(InputEvent event) {		

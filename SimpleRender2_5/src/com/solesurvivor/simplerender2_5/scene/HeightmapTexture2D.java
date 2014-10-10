@@ -19,7 +19,7 @@ public class HeightmapTexture2D extends ProceduralTexture2D implements Node {
 	protected float mMinHeight = 0.0f;
 	
 	public HeightmapTexture2D(String shaderName, String textureName, Point dim) {
-		super(shaderName, textureName, dim);
+		super(shaderName, textureName, dim, CoordinateSystemEnum.CARTESIAN);
 		RendererManager.getRenderer().renderEllipse(this);
 
 	}

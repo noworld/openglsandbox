@@ -6,12 +6,14 @@
 #	- GEO_MIPMAP - Used for terrain geometry
 #   - UI_ELEMENT - Drawn in the same position in front of the camera as UI elements
 #   - INPUT_AREA - Polygons drawn over UI area to detect input 
+#   - SKYDOME - Skydome
 #object.hzg_export_mode - how to export the data for this object
 #	- V   - Write tightly packed vertex position data, no normals or texture coordinates (VVV)
 #	- VC  - Write Vertex position and Texture Coordinates in VVVCC format.
 #	- VNC - Write packed Vertex/Normal/TexCoord data in VVVNNNCC format
 #object.hzg_round - integer, how many places to round decimals
 #object.hzg_texture - texture name to use
+#object.hzg_shader - shader name to use
 #object.hzg_command - command to link to an input area
 #object.hzg_transform_yup - 1 means that the object should be transformed from Z-Up coordinates to Y-Up coordinates
 
@@ -82,6 +84,7 @@ def write_mesh_files(obj, scene):
     dscString = "OBJECT_NAME=%s" % obj.name
     dscString += "\nOBJECT_TYPE=%s" % obj.get("hzg_type","ENTITY")
     dscString += "\nTEXTURE=%s" % obj.get("hzg_texture","uvgrid")
+    dscString += "\nSHADER=%s" % obj.get("hzg_shader","tex_shader")
     dscString += "\nNUM_ELEMENTS=%i" % (len(bm.faces)*3)
     dscString += "\nPOS_OFFSET=0"
     dscString += "\nNRM_OFFSET=%i" % nrm_offset

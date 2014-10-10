@@ -30,14 +30,25 @@ public abstract class Rectangle implements Drawable {
 	protected int mTxcOffset = 24;
 	protected float[] mModelMatrix = new float[16];
 	
-	public Rectangle(Point dim) {
+	public Rectangle(Point dim, CoordinateSystemEnum textureSystem) {
 		this.mDimension = dim;
 		float aspectWidth = ((float)dim.x)/((float)dim.y);
-		mVertices = new float[]{
-				/*vvv*/-aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,1.0f,
-				/*vvv*/ aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,1.0f,
-				/*vvv*/-aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,0.0f,
-				/*vvv*/ aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,0.0f};
+		if(textureSystem.equals(CoordinateSystemEnum.CARTESIAN)) {
+			mVertices = new float[]{
+					/*vvv*/-aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,1.0f,
+					/*vvv*/ aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,1.0f,
+					/*vvv*/-aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,0.0f,
+					/*vvv*/ aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,0.0f};
+		} else if(textureSystem.equals(CoordinateSystemEnum.EQUITORIAL)) {
+			float pi = (float)Math.PI;
+			float npi = -pi;
+			//x = 0 is due west, y = 0 is due east
+			mVertices = new float[]{
+					/*vvv*/-aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ pi,pi,
+					/*vvv*/ aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ npi,pi,
+					/*vvv*/-aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ pi,npi,
+					/*vvv*/ aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ npi,npi};
+		}
 
 		BaseRenderer ren = RendererManager.getRenderer();
 		mDatHandle = ren.loadToVbo(SSArrayUtil.floatToByteArray(mVertices));

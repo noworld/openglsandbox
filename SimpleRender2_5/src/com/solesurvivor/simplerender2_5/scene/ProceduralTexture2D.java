@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.Point;
-import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
@@ -28,8 +27,8 @@ public class ProceduralTexture2D extends Rectangle implements Node {
 	protected List<Node> mChildren;
 	protected String mTextureName;
 	
-	public ProceduralTexture2D(String shaderName, String textureName, Point dim) {
-		super(dim);
+	public ProceduralTexture2D(String shaderName, String textureName, Point dim, CoordinateSystemEnum texSystem) {
+		super(dim, texSystem);
 		mChildren = new ArrayList<Node>();
 		this.mShaderHandle = ShaderManager.getShaderId(shaderName);
 		BaseRenderer ren = RendererManager.getRenderer();

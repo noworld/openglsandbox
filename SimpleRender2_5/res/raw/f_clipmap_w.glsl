@@ -45,8 +45,8 @@ void main()
 	float light = totalDiffuse + AMBIENT + totalSpecular;
 	vec3 color = light * v_WaterColor.rgb;
 	
-	//gl_FragColor = vec4(color, v_WaterColor.a);                     
-    gl_FragColor = texture2D(u_Texture, v_TexCoordinate);
+	gl_FragColor = vec4(color, v_WaterColor.a);                     
+    //gl_FragColor = texture2D(u_Texture, v_TexCoordinate);
     //gl_FragColor = v_WaterColor;
     //gl_FragColor = vec4(0.0, 0.3, 0.6, 1.0);                      		
 }                                                                     	

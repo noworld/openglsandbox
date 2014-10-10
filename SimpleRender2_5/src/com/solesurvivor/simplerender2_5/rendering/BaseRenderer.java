@@ -81,6 +81,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		GameStateManager.init();
 		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.WATER_RENDERING));
+		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.SKY_GRADIENT));
 	}
 
 
@@ -383,6 +384,80 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		checkError();
 	}
 	
+	public void drawSkydome(Drawable dome) {
+
+		float[] mvpMatrix = new float[16];
+		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
+		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
+		int shaderHandle = dome.getShaderHandle();
+		int textureHandle = dome.getTextureHandle();
+
+		GLES20.glDepthMask(false);
+
+		GLES20.glUseProgram(shaderHandle);
+
+		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
+		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
+		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
+
+		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
+		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
+		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
+
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+		GLES20.glUniform1i(u_texsampler, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, dome.getDatBufHandle());
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, dome.getPosSize(), GLES20.GL_FLOAT, false, dome.getElementStride(), dome.getPosOffset());
+		
+
+		if(a_nrm > -1 && dome.getNrmOffset() > -1 && dome.getNrmSize() > -1) {
+			GLES20.glEnableVertexAttribArray(a_nrm);
+			GLES20.glVertexAttribPointer(a_nrm, dome.getNrmSize(), GLES20.GL_FLOAT, false, dome.getElementStride(), dome.getNrmOffset());
+		}
+
+		if(a_txc > -1 && dome.getTxcOffset() > -1 && dome.getTxcSize() > -1) {
+			GLES20.glEnableVertexAttribArray(a_txc);
+			GLES20.glVertexAttribPointer(a_txc, dome.getTxcSize(), GLES20.GL_FLOAT, false, dome.getElementStride(), dome.getTxcOffset());
+		}
+
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+		// --MV--
+
+		/* Get the MV Matrix: Multiply V * M  = MV */
+		float[] tempView = new float[16];
+		Matrix.setIdentityM(tempView, 0);
+		// Do not copy camera translation. It should always be 0,0 in the skybox
+		System.arraycopy(viewMatrix, 0, tempView, 0, 12);
+		Matrix.multiplyMM(mvpMatrix, 0, tempView, 0, dome.getWorldMatrix(), 0);
+		//MVP matrix is *actually MV* at this point
+		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
+
+		// --MVP--
+
+		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+
+		// Draw
+
+		/* Draw the arrays as triangles */		
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, dome.getIdxBufHandle());
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, dome.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		GLES20.glDepthMask(true);
+
+		checkError();
+	}
+	
 	public void drawClipMap(Drawable draw, float[] modelMatrix, float mipMult, int xPos, int zPos) {
 
 		float[] mvMatrix = new float[16];
@@ -651,77 +726,81 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 	}
 
-	public void renderTexture(ProceduralTexture2D tex) {
-
-		clearTexture(tex.getBuffers());
-
-		float[] mvpMatrix = new float[16];
-		float[] projectionMatrix = mCurrentCamera.getOrthoMatrix();
-		float[] viewMatrix = mCurrentCamera.getViewMatrix();
-
-		int textureHandle = tex.getTextureHandle();
-		int shaderHandle = tex.getShaderHandle();
-
-		GLES20.glUseProgram(shaderHandle);
-
-		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
-		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
-		int u_dim = GLES20.glGetUniformLocation(shaderHandle, "u_Dimensions");
-		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
-
-		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
-		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
-		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
-
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
-		GLES20.glUniform1i(u_texsampler, 0);
-		GLES20.glUniform2f(u_dim, tex.getDimension().x, tex.getDimension().y);
-
-
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, tex.getDatBufHandle());
-
-		GLES20.glEnableVertexAttribArray(a_pos);
-		GLES20.glVertexAttribPointer(a_pos, tex.getPosSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getPosOffset());
-
-		if(a_nrm > -1) {
-			GLES20.glEnableVertexAttribArray(a_nrm);
-			GLES20.glVertexAttribPointer(a_nrm, tex.getNrmSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getNrmOffset());
-		}
-
-		if(a_txc > -1) {
-			GLES20.glEnableVertexAttribArray(a_txc);
-			GLES20.glVertexAttribPointer(a_txc, tex.getTxcSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getTxcOffset());
-		}
-
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-
-		// --MV--
-
-		/* Get the MV Matrix: Multiply V * M  = MV */
-		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, tex.getWorldMatrix(), 0);
-		//MVP matrix is *actually MV* at this point
-		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
-
-		// --MVP--
-
-		/* Get the MVP Matrix: Multiply P * MV = MVP*/
-		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
-		//MVP is MVP at this point
-		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
-
-		// Draw
-
-		/* Draw the arrays as triangles */
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, tex.getIdxBufHandle());
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, tex.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
-
-		checkError();
-
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-		//		resetViewportToWorld();
-	}
+//	public void renderTexture(ProceduralTexture2D tex) {
+//
+//		clearTexture(tex.getBuffers());
+//
+//		float[] mvpMatrix = new float[16];
+//		float[] projectionMatrix = mCurrentCamera.getOrthoMatrix();
+//		float[] viewMatrix = mCurrentCamera.getViewMatrix();
+//
+//		int textureHandle = tex.getTextureHandle();
+//		int shaderHandle = tex.getShaderHandle();
+//
+//		GLES20.glUseProgram(shaderHandle);
+//
+//		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
+//		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
+//		int u_dim = GLES20.glGetUniformLocation(shaderHandle, "u_Dimensions");
+//		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
+//
+//		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
+//		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
+//		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
+//
+//		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+//		GLES20.glUniform1i(u_texsampler, 0);
+//		GLES20.glUniform2f(u_dim, tex.getDimension().x, tex.getDimension().y);
+//
+//
+//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, tex.getDatBufHandle());
+//
+//		GLES20.glEnableVertexAttribArray(a_pos);
+//		GLES20.glVertexAttribPointer(a_pos, tex.getPosSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getPosOffset());
+//
+//		if(a_nrm > -1) {
+//			GLES20.glEnableVertexAttribArray(a_nrm);
+//			GLES20.glVertexAttribPointer(a_nrm, tex.getNrmSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getNrmOffset());
+//		}
+//
+//		if(a_txc > -1) {
+//			GLES20.glEnableVertexAttribArray(a_txc);
+//			GLES20.glVertexAttribPointer(a_txc, tex.getTxcSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getTxcOffset());
+//		}
+//
+//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+//
+//		// --MV--
+//
+//		/* Get the MV Matrix: Multiply V * M  = MV */
+//		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, tex.getWorldMatrix(), 0);
+//		//MVP matrix is *actually MV* at this point
+//		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
+//
+//		// --MVP--
+//
+//		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+//		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
+//		//MVP is MVP at this point
+//		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+//
+//		// Draw
+//
+//		/* Draw the arrays as triangles */
+//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, tex.getIdxBufHandle());
+//		
+//		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex.getBuffers()[2]);
+//		
+//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, tex.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+//
+//		checkError();
+//
+//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+//		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+//		//		resetViewportToWorld();
+//	}
 	
 	public void renderHeightmapOld(ProceduralTexture2D tex, int numIterations, float maxHeight, float minHeight, int seed) {
 
@@ -900,6 +979,68 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		//		resetViewportToWorld();
 	}
+	
+
+	public void renderTexture(ProceduralTexture2D tex) {
+		clearTexture(tex.getBuffers());
+
+		int textureHandle = tex.getTextureHandle();
+		int shaderHandle = tex.getShaderHandle();
+
+		GLES20.glUseProgram(shaderHandle);
+
+		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
+		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
+		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
+		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, TextureManager.getTextureId("uvgrid"));
+		GLES20.glUniform1i(u_texsampler, 1);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, tex.getDatBufHandle());
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, tex.getPosSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getPosOffset());
+
+		if(a_nrm > -1) {
+			GLES20.glEnableVertexAttribArray(a_nrm);
+			GLES20.glVertexAttribPointer(a_nrm, tex.getNrmSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getNrmOffset());
+		}
+
+		if(a_txc > -1) {
+			GLES20.glEnableVertexAttribArray(a_txc);
+			GLES20.glVertexAttribPointer(a_txc, tex.getTxcSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getTxcOffset());
+		}
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+		// Draw
+		GLES20.glViewport(0, 0, tex.getDimension().x, tex.getDimension().y);		
+		
+		/* Draw the arrays as triangles */
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, tex.getIdxBufHandle());
+		
+		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex.getBuffers()[2]);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, tex.getBuffers()[1]);
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, tex.getBuffers()[0]);
+
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, tex.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+		checkError();
+
+		Point viewport = GameWorld.inst().getViewport();
+		GLES20.glViewport(0, 0,viewport.x, viewport.y);	
+		
+		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+	}
 
 	public void renderEllipse(ProceduralTexture2D tex) {
 
@@ -1035,8 +1176,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			throw new RuntimeException("Frame buffer not ready.");
 		}
 
-		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		GLES20.glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
+		GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 
 	}
 

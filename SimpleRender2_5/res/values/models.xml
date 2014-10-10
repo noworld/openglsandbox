@@ -3,6 +3,7 @@
     <array name="models">
         <item>@raw/gamepad_ui</item>
         <item>@raw/geoclip</item>
+        <item>@raw/skydome</item>
     </array>
 
 </resources>

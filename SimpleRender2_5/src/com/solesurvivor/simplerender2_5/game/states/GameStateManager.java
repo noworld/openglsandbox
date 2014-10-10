@@ -15,6 +15,7 @@ public class GameStateManager {
 		
 		states.put(GameStateEnum.MAIN_MENU, new MainMenuState());
 		states.put(GameStateEnum.WATER_RENDERING, new WaterRenderingState());
+		states.put(GameStateEnum.SKY_GRADIENT, new SkyGradientState());
 
 		sGameStates = Collections.unmodifiableMap(states);
 	}

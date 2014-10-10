@@ -9,23 +9,25 @@ package com.solesurvivor.simplerender2_5;
 
 public final class R {
     public static final class array {
-        public static final int citadella_cube=0x7f08000d;
-        public static final int clipmap_shader=0x7f080007;
+        public static final int citadella_cube=0x7f08000f;
+        public static final int clipmap_shader=0x7f080009;
         /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
          */
         public static final int fonts=0x7f080000;
         public static final int global=0x7f080001;
-        public static final int hm_shader=0x7f080008;
+        public static final int hm_shader=0x7f08000a;
         public static final int models=0x7f080002;
-        public static final int plane_shader=0x7f080005;
+        public static final int plane_shader=0x7f080007;
         public static final int shaderPrograms=0x7f080003;
-        public static final int skybox_cube=0x7f08000c;
+        public static final int skybox_cube=0x7f08000e;
         public static final int skybox_shader=0x7f080004;
-        public static final int tenerife_cube=0x7f08000e;
-        public static final int tex_shader=0x7f080006;
-        public static final int textures_2d=0x7f08000a;
-        public static final int textures_cube=0x7f08000b;
-        public static final int ui_shader=0x7f080009;
+        public static final int skydome_shader=0x7f080005;
+        public static final int skytex_shader=0x7f080006;
+        public static final int tenerife_cube=0x7f080010;
+        public static final int tex_shader=0x7f080008;
+        public static final int textures_2d=0x7f08000c;
+        public static final int textures_cube=0x7f08000d;
+        public static final int ui_shader=0x7f08000b;
     }
     public static final class attr {
     }
@@ -67,14 +69,16 @@ public final class R {
         public static final int skybox3=0x7f020018;
         public static final int skybox4=0x7f020019;
         public static final int skybox5=0x7f02001a;
-        public static final int tenerife0=0x7f02001b;
-        public static final int tenerife1=0x7f02001c;
-        public static final int tenerife2=0x7f02001d;
-        public static final int tenerife3=0x7f02001e;
-        public static final int tenerife4=0x7f02001f;
-        public static final int tenerife5=0x7f020020;
-        public static final int uvgrid=0x7f020021;
-        public static final int water=0x7f020022;
+        public static final int stars=0x7f02001b;
+        public static final int stars_old=0x7f02001c;
+        public static final int tenerife0=0x7f02001d;
+        public static final int tenerife1=0x7f02001e;
+        public static final int tenerife2=0x7f02001f;
+        public static final int tenerife3=0x7f020020;
+        public static final int tenerife4=0x7f020021;
+        public static final int tenerife5=0x7f020022;
+        public static final int uvgrid=0x7f020023;
+        public static final int water=0x7f020024;
     }
     public static final class id {
         public static final int action_settings=0x7f0a0000;
@@ -95,23 +99,28 @@ public final class R {
         public static final int f_heightmap2=0x7f040006;
         public static final int f_plane=0x7f040007;
         public static final int f_skybox=0x7f040008;
-        public static final int f_tex=0x7f040009;
-        public static final int f_ui=0x7f04000a;
-        public static final int gamepad_ui=0x7f04000b;
-        public static final int geoclip=0x7f04000c;
-        public static final int geomip=0x7f04000d;
-        public static final int nightwatcher_bb=0x7f04000e;
-        public static final int ohp=0x7f04000f;
-        public static final int praetorium_bb_regular=0x7f040010;
-        public static final int v_clipmap_bak=0x7f040011;
-        public static final int v_clipmap_w=0x7f040012;
-        public static final int v_ellipse=0x7f040013;
-        public static final int v_heightmap=0x7f040014;
-        public static final int v_heightmap2=0x7f040015;
-        public static final int v_plane=0x7f040016;
-        public static final int v_skybox=0x7f040017;
-        public static final int v_tex=0x7f040018;
-        public static final int v_ui=0x7f040019;
+        public static final int f_skydome=0x7f040009;
+        public static final int f_skytex=0x7f04000a;
+        public static final int f_tex=0x7f04000b;
+        public static final int f_ui=0x7f04000c;
+        public static final int gamepad_ui=0x7f04000d;
+        public static final int geoclip=0x7f04000e;
+        public static final int geomip=0x7f04000f;
+        public static final int nightwatcher_bb=0x7f040010;
+        public static final int ohp=0x7f040011;
+        public static final int praetorium_bb_regular=0x7f040012;
+        public static final int skydome=0x7f040013;
+        public static final int v_clipmap_bak=0x7f040014;
+        public static final int v_clipmap_w=0x7f040015;
+        public static final int v_ellipse=0x7f040016;
+        public static final int v_heightmap=0x7f040017;
+        public static final int v_heightmap2=0x7f040018;
+        public static final int v_plane=0x7f040019;
+        public static final int v_skybox=0x7f04001a;
+        public static final int v_skydome=0x7f04001b;
+        public static final int v_skytex=0x7f04001c;
+        public static final int v_tex=0x7f04001d;
+        public static final int v_ui=0x7f04001e;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;

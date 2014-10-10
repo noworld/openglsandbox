@@ -6,16 +6,18 @@ import java.util.List;
 import android.graphics.Point;
 
 import com.solesurvivor.simplerender2_5.R;
+import com.solesurvivor.simplerender2_5.commands.CommandEnum;
 import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.game.GlobalKeysEnum;
+import com.solesurvivor.simplerender2_5.input.BackButtonInputHandler;
 import com.solesurvivor.simplerender2_5.input.InputUiElement;
 import com.solesurvivor.simplerender2_5.io.GeometryIO;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.GeometryNode;
-import com.solesurvivor.simplerender2_5.scene.Skybox;
+import com.solesurvivor.simplerender2_5.scene.Skydome;
 import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
 import com.solesurvivor.util.math.Vec3;
 
@@ -39,10 +41,13 @@ public class WaterRenderingState extends BaseState {
 		mCamera.setLookVector(lookVec);
 		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		
-		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
-		mScene.addChild(skybox);
+//		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
+//		mScene.addChild(skybox);		
 		
 		try {
+			Skydome dome = new Skydome(GeometryIO.loadGeometry(R.raw.skydome).get(0));
+			mScene.addChild(dome);
+			
 			TerrainClipmap clipMap = GeometryIO.loadClipmap(R.raw.geoclip);
 			mScene.addChild(clipMap);
 			Vec3 pushback = new Vec3(0.0f, 0.0f, -5.0f);
@@ -59,8 +64,12 @@ public class WaterRenderingState extends BaseState {
 			
 			List<Geometry> ships = GeometryIO.loadGeometry(R.raw.ohp);
 			GeometryNode ohp = new GeometryNode(ships.get(0));
-			ohp.translate(new Vec3(0.0f, 0.0f, -50.0f));
+			ohp.translate(new Vec3(0.0f, 0.0f, -1.0f));
 			mScene.addChild(ohp);
+			
+			BackButtonInputHandler bbih = new BackButtonInputHandler();
+			bbih.registerCommand(CommandEnum.REVERT_STATE.getCommand());
+			mInputHandlers.add(bbih);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

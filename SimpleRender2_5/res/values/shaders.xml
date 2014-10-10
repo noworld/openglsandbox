@@ -7,11 +7,22 @@
         <item>@array/hm_shader</item>
         <item>@array/clipmap_shader</item>
         <item>@array/ui_shader</item>
+        <item>@array/skytex_shader</item>
     </array>
     
     <array name="skybox_shader">
         <item >@raw/v_skybox</item> 
         <item >@raw/f_skybox</item>  
+    </array>
+    
+    <array name="skydome_shader">
+        <item >@raw/v_skydome</item> 
+        <item >@raw/f_skydome</item>  
+    </array>
+    
+    <array name="skytex_shader">
+        <item >@raw/v_skytex</item> 
+        <item >@raw/f_skytex</item>  
     </array>
     
     <array name="plane_shader">

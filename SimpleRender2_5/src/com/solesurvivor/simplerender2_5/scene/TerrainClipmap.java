@@ -46,7 +46,7 @@ public class TerrainClipmap implements Node {
 		
 		//Mips must be powers of 2 that give at least a 2x2
 		mMipMults = new float[]{2.0f, 4.0f, 8.0f, 16.0f, 32.0f, 64.0f};
-		mMipRng = new int[]{0,6};
+		mMipRng = new int[]{1,2};
 		
 		mRingBlocks = new ClipBlock[NUM_BLOCKS];
 		mFillBlocks = new ClipBlock[NUM_FILL_BLOCKS];
@@ -188,7 +188,7 @@ public class TerrainClipmap implements Node {
 			if(h == mMipRng[0]) {
 				for(int i = 0; i < mFillBlocks.length; i++) {
 					float[] mat = ArrayUtils.subarray(mFillMat, mFillBlocks[i].mMatrixOffset, mFillBlocks[i].mMatrixEnd);
-					mRenderer.drawClipMap(mBlock, mat, mipScale, mFillBlocks[i].mXOffset, mFillBlocks[i].mZOffset);
+					//mRenderer.drawClipMap(mBlock, mat, mipScale, mFillBlocks[i].mXOffset, mFillBlocks[i].mZOffset);
 				}
 			}
 		}

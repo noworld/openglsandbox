@@ -21,12 +21,13 @@ public class Plane extends Rectangle implements Node {
 	protected List<Node> mChildren;
 	
 	public Plane(String shaderName, String textureName, Point dim) {
-		super(dim);
+		super(dim, CoordinateSystemEnum.CARTESIAN);
 		mChildren = new ArrayList<Node>();
 		this.mShaderHandle = ShaderManager.getShaderId(shaderName);
 		this.mTextureHandle = TextureManager.getTextureId(textureName);	
 		Matrix.setIdentityM(mModelMatrix, 0);
-		Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -2.0f);
+		Matrix.translateM(mModelMatrix, 0, 0.0f, 2.0f, -5.0f);
+		Matrix.scaleM(mModelMatrix, 0, 2.0f, 2.0f, 1.0f);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ public class StrafeLeftCommand implements Command {
 	@SuppressWarnings("unused")
 	private static final String TAG = StrafeLeftCommand.class.getSimpleName();
 	
-	protected float mXDisp = -0.5f;
+	protected float mXDisp = -0.05f;
 
 	@Override
 	public void execute(InputEvent event) {		

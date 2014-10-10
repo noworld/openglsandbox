@@ -19,9 +19,9 @@ public class Camera {
 	protected float[] mLookVector = {0.0f, 2.0f, -1.0f};
 	protected float[] mUpVector = {0.0f, 1.0f, 0.0f};	
 	protected Point mViewport = new Point(0,0);
-	protected float mNear = 0.5f;
-	protected float mFar = 10000.0f; //200.0f;
-	protected float mFov = 62.0f;
+	protected float mNear = 1.0f;
+	protected float mFar = 1000.0f; //200.0f;
+	protected float mFov = 50.0f;
 	
 	protected float mRotAngle = 0.0f;
 	protected Vec3 mRotAxes = new Vec3(0.0f,1.0f,0.0f);
