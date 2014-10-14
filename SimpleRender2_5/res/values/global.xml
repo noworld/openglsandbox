@@ -15,5 +15,6 @@
             
             <!-- CAMERA -->
             <item>INITIAL_CAMERA_HEIGHT|2.0f</item>   
+            <item>START_DATE_TIME|10/14/2014 13:00:00</item>
         </string-array>    
     </resources>

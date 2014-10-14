@@ -18,5 +18,8 @@ public enum GlobalKeysEnum {
 	BACK_BUTTON_INPUT_HANDLER,
 	
 	//Camera
-	INITIAL_CAMERA_HEIGHT;
+	INITIAL_CAMERA_HEIGHT,
+	
+	//GameWorld
+	START_DATE_TIME;
 }
