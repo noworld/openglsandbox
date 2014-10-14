@@ -15,8 +15,10 @@ import com.solesurvivor.simplerender2_5.input.InputUiElement;
 import com.solesurvivor.simplerender2_5.io.GeometryIO;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
+import com.solesurvivor.simplerender2_5.scene.CoordinateSystemEnum;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.GeometryNode;
+import com.solesurvivor.simplerender2_5.scene.ProceduralTexture2D;
 import com.solesurvivor.simplerender2_5.scene.Skydome;
 import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
 import com.solesurvivor.util.math.Vec3;
@@ -45,7 +47,11 @@ public class WaterRenderingState extends BaseState {
 //		mScene.addChild(skybox);		
 		
 		try {
+			ProceduralTexture2D skyTex = new ProceduralTexture2D("skytex_shader", "skytex", new Point(viewport.y,viewport.y), CoordinateSystemEnum.CARTESIAN);
+			mScene.addChild(skyTex);
+			
 			Skydome dome = new Skydome(GeometryIO.loadGeometry(R.raw.skydome).get(0));
+			dome.switchTexture("skytex");
 			mScene.addChild(dome);
 			
 			TerrainClipmap clipMap = GeometryIO.loadClipmap(R.raw.geoclip);

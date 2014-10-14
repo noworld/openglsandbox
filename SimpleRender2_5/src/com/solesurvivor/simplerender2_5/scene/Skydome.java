@@ -2,6 +2,7 @@ package com.solesurvivor.simplerender2_5.scene;
 
 import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
+import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 
 public class Skydome extends Geometry implements Node {
 	
@@ -28,5 +29,8 @@ public class Skydome extends Geometry implements Node {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
+	public void switchTexture(String name) {
+		this.mTextureHandle = TextureManager.getTextureId(name);
+	}
 }

@@ -1,8 +1,8 @@
 precision mediump float;
 
-const float c_Dec = 45.0;
-const float c_LineW = 0.2; //gradient width
-const float c_MaxGrad = 0.9;
+const float c_Dec = 0.0;
+const float c_LineW = 1.0; //gradient width
+const float c_MaxGrad = 1.0;
 
 uniform sampler2D u_Texture;
   
@@ -16,12 +16,12 @@ void main()
     float x = v_Position.x;
     float y = v_Position.y;
     
-    gl_FragColor = vec4(1.0,1.0,1.0,1.0);
+    //gl_FragColor = vec4(1.0,1.0,1.0,1.0);
     
     float c = r - ((x*x) + (y*y));
     
     if(c < c_LineW && c > -c_LineW) {
-        gl_FragColor = vec4(0.0,0.0,1.0,c_MaxGrad-(sqrt(abs(c)/c_LineW)));
+        gl_FragColor = vec4(0.6,0.8,1.0,c_MaxGrad-(sqrt(abs(c)/c_LineW)));
     }
     
     //gl_FragColor = texture2D(u_Texture, v_TexCoordinate);                     		
