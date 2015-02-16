@@ -84,6 +84,10 @@ public class Geometry implements Drawable {
 		this.mElementStride = elementStride;
 		this.mTextureHandle = textureHandle;
 	}
+	
+	public String getName() {
+		return mName;
+	}
 
 	@Override
 	public int getShaderHandle() {
@@ -157,6 +161,10 @@ public class Geometry implements Drawable {
 		}
 		return mWorldMatrix;
 	}
+	
+	public void addLight(Light l) {
+		mLights.add(l);
+	}
 
 	@Override
 	public List<Light> getLights() {
@@ -224,4 +232,5 @@ public class Geometry implements Drawable {
 
 		mDirty = false;
 	}
+
 }

@@ -24,6 +24,14 @@ public class SSArrayUtil {
 		
 	}
 	
+	public static ByteBuffer bytesToByteBufBigEndian(byte[] bytes) {
+		byte[] floats = new byte[bytes.length];
+		ByteBuffer bBuf = ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN);
+		bBuf.rewind();
+		return bBuf;
+		
+	}
+	
 	public static ShortBuffer bytesToShortBufBigEndian(byte[] bytes) {
 		short[] ibo = new short[bytes.length / BYTES_PER_SHORT];
 		ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).asShortBuffer().get(ibo);		

@@ -33,4 +33,16 @@ public class Skydome extends Geometry implements Node {
 	public void switchTexture(String name) {
 		this.mTextureHandle = TextureManager.getTextureId(name);
 	}
+
+	@Override
+	public boolean isDirty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public float[] getTransMatrix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

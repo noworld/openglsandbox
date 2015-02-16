@@ -17,4 +17,16 @@ public class ShowMainMenu implements Command {
 		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.MAIN_MENU));
 	}
 
+	@Override
+	public void onStateChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void release(InputEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

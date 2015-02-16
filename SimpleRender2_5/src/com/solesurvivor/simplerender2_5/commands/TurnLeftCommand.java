@@ -15,4 +15,16 @@ public class TurnLeftCommand implements Command {
 	public void execute(InputEvent event) {		
 		GameWorld.inst().getCurrentState().rotateCurrentCamera(mRot, new Vec3(0.0f, 1.0f, 0.0f));
 	}
+
+	@Override
+	public void onStateChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void release(InputEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
 }

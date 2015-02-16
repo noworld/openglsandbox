@@ -19,4 +19,5 @@ public interface Drawable {
 	public int getTxcOffset();
 	public float[] getWorldMatrix();
 	public List<Light> getLights();
+
 }

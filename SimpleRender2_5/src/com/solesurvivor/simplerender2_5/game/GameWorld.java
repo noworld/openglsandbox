@@ -71,6 +71,7 @@ public class GameWorld {
 		
 		mCurrentState = state;
 
+		if(mViewport == null){SSLog.e("VIEWPORT ERROR", "VIEWPORT WAS NULL!!!");}
 		mCurrentState.resizeViewport(mViewport);
 		mCurrentState.enter();
 

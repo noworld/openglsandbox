@@ -18,6 +18,7 @@ public class Polygon2DInputArea implements InputArea {
 	private List<Float[]> mHull;
 	private PointF mTopLeft;
 	private PointF mBottomRight;
+	private PointF mCenter;
 	private float[] mModelMatrix;
 	private boolean mDirty = true;
 	
@@ -54,6 +55,11 @@ public class Polygon2DInputArea implements InputArea {
 	public void reset() {
 		Matrix.setIdentityM(mModelMatrix, 0);
 		mDirty = true;
+	}
+	
+	@Override
+	public PointF getInputCenter() {		
+		return mCenter;
 	}
 
 	private boolean inBoundingBox(PointF p) {
@@ -128,6 +134,12 @@ public class Polygon2DInputArea implements InputArea {
 		
 		mTopLeft = new PointF(left, top);
 		mBottomRight = new PointF(right, bottom);
+		
+		float cx = (mBottomRight.x - mTopLeft.x) / 2.0f;
+		cx = mTopLeft.x + cx;
+		float cy = (mBottomRight.y - mTopLeft.y) / 2.0f;
+		cy = mBottomRight.y - cy;
+		mCenter = new PointF(cx, cy);
 	}
 
 }

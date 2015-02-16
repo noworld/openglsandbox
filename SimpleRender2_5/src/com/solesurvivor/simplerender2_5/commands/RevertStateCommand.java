@@ -15,4 +15,16 @@ public class RevertStateCommand implements Command {
 		GameWorld.inst().revertState();
 	}
 
+	@Override
+	public void onStateChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void release(InputEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

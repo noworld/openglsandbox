@@ -14,6 +14,11 @@
         <item>@drawable/ohp1</item>
         <item>@drawable/hzg_rotb</item>
         <item>@drawable/stars</item>
+        <item>@drawable/wavenormals</item>
+        <item>@drawable/greybutton</item>
+        <item>@drawable/ghostring</item>
+        <item>@drawable/red</item>
+        <item>@drawable/dirt</item>
     </array>
     
     <array name="textures_cube">

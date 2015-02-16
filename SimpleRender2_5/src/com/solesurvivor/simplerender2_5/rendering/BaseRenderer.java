@@ -27,12 +27,15 @@ import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.game.states.GameStateEnum;
 import com.solesurvivor.simplerender2_5.game.states.GameStateManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
+import com.solesurvivor.simplerender2_5.scene.CameraNode;
 import com.solesurvivor.simplerender2_5.scene.Drawable;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.Light;
 import com.solesurvivor.simplerender2_5.scene.ProceduralTexture2D;
+import com.solesurvivor.simplerender2_5.scene.ProceduralWater2D;
 import com.solesurvivor.simplerender2_5.scene.RandomEllipse;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
+import com.solesurvivor.simplerender2_5.scene.Wave;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
 import com.solesurvivor.util.math.Vec3;
@@ -42,6 +45,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = BaseRenderer.class.getSimpleName();
 
 	protected Camera mCurrentCamera;
+	protected float[] clearColor = new float[]{0.1f,0.3f,0.6f,1.0f};
 
 	/* --------------------------------- */
 	/* Event Methods that drive the game */
@@ -67,6 +71,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+		
 		ShaderManager.init();
 		TextureManager.init();
 		//		FontManager.init();
@@ -80,8 +85,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		}
 
 		GameStateManager.init();
-		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.WATER_RENDERING));
-		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.SKY_GRADIENT));
+		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.GRID_MAP));
+//		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.WATER_RENDERING));
+//		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.SKY_GRADIENT));
 	}
 
 
@@ -110,34 +116,18 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 	}
 
-	//	public int loadToDynamicIbo(byte[] iboBytes) {
-	//		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes, GLES20.GL_DYNAMIC_DRAW);
-	//	}
-
 	public int loadToIbo(byte[] iboBytes) {
 		return loadGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes, GLES20.GL_STATIC_DRAW);
 	}
 
-	//	public int reloadDynamicIbo(byte[] iboBytes, int bufIdx) {
-	//		return reloadIbo(iboBytes, bufIdx, GLES20.GL_DYNAMIC_DRAW);
-	//	}
-	//
-	//	public int reloadIbo(byte[] iboBytes, int bufIdx, int usage) {
-	//		return loadExistingGLBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes, bufIdx, usage);
-	//	}
-	//
-	//	public int loadToIboReverse(byte[] iboBytes) {
-	//		return loadGLBufferReverse(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLES20.GL_UNSIGNED_SHORT, iboBytes);
-	//	}
-
 	public int loadToVbo(byte[] vboBbytes) {
 		return loadGLBuffer(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes, GLES20.GL_STATIC_DRAW);
 	}
+	
+	public int loadMixedDataToVbo(byte[] vboBbytes) {
+		return loadGLBuffer(GLES20.GL_ARRAY_BUFFER, -1, vboBbytes, GLES20.GL_STATIC_DRAW);
+	}
 
-	//	public int loadToVboReverse(byte[] vboBbytes) {
-	//		return loadGLBufferReverse(GLES20.GL_ARRAY_BUFFER, GLES20.GL_FLOAT, vboBbytes);
-	//	}
-	//
 	public int loadGLBuffer(int glTarget, int glType, byte[] bytes, int usage) {
 		int bufIdx = -1;
 
@@ -169,6 +159,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			buf = vboBuf;
 			dataSize = DrawingConstants.BYTES_PER_FLOAT;
 
+		} else {
+			ByteBuffer byteBuf = SSArrayUtil.bytesToByteBufBigEndian(bytes);
+			buf = byteBuf;
+			dataSize = 1;
 		}
 
 		GLES20.glBindBuffer(glTarget, bufIdx);
@@ -177,48 +171,6 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		return bufIdx;
 	}
-
-	//	public int loadGLBufferReverse(int glTarget, int glType, byte[] bytes) {
-	//		int bufIdx = -1;
-	//
-	//		final int buffers[] = new int[1];
-	//		GLES20.glGenBuffers(1, buffers, 0);		
-	//		if(buffers[0] < 1) {
-	//			Log.e(TAG, "IBO buffer could not be created.");
-	//		}
-	//
-	//		bufIdx = buffers[0];
-	//		Buffer buf = null;
-	//		int dataSize = -1;
-	//
-	//		if(glType == GLES20.GL_UNSIGNED_SHORT) {
-	//
-	//			short[] backwards = SSArrayUtil.byteToShortArray(bytes);
-	//			ArrayUtils.reverse(backwards);
-	//			byte[] reverse = SSArrayUtil.shortToByteArray(backwards);
-	//
-	//			ShortBuffer iboBuf = SSArrayUtil.bytesToShortBufBigEndian(reverse);			
-	//			buf = iboBuf;
-	//			dataSize = DrawingConstants.BYTES_PER_SHORT;
-	//
-	//		} else if(glType == GLES20.GL_FLOAT) {
-	//
-	//			float[] backwards = SSArrayUtil.byteToFloatArray(bytes);
-	//			ArrayUtils.reverse(backwards);
-	//			byte[] reverse = SSArrayUtil.floatToByteArray(backwards);
-	//
-	//			FloatBuffer vboBuf = SSArrayUtil.bytesToFloatBufBigEndian(reverse);
-	//			buf = vboBuf;
-	//			dataSize = DrawingConstants.BYTES_PER_FLOAT;
-	//
-	//		}
-	//
-	//		GLES20.glBindBuffer(glTarget, bufIdx);
-	//		GLES20.glBufferData(glTarget, buf.capacity() * dataSize, buf, GLES20.GL_STATIC_DRAW);
-	//		GLES20.glBindBuffer(glTarget, 0);
-	//
-	//		return bufIdx;
-	//	}
 
 	public int loadShaderProgram(String[] vertCode, String[] fragCode) {
 
@@ -266,11 +218,11 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		if (textureHandle[0] != 0) {
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
 
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
 
 			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);		
-			
+			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
 //			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
 		}
 
@@ -315,7 +267,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		Log.d(TAG, "Renderer.initOpenGL");
 
 		// Set the background clear color
-		GLES20.glClearColor(0.1f,0.3f,0.6f,1.0f);
+		GLES20.glClearColor(clearColor[0],clearColor[1],clearColor[2],clearColor[3]);
 		GLES20.glEnable(GLES20.GL_CULL_FACE);
 		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		GLES20.glEnable( GLES20.GL_DEPTH_TEST );
@@ -633,12 +585,12 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		drawGeometry(draw, draw.getWorldMatrix(), GLES20.GL_TRIANGLES);
 	}
 	
-	public void drawGeometry(Drawable draw, float[] mModelMatrix) {
-		drawGeometry(draw, mModelMatrix, GLES20.GL_TRIANGLES);
+	public void drawGeometry(Drawable draw, float[] modelMatrix) {
+		drawGeometry(draw, modelMatrix, GLES20.GL_TRIANGLES);
 	}
 	
-	public void drawGeometryTristrips(Drawable draw, float[] mModelMatrix) {
-		drawGeometry(draw, mModelMatrix, GLES20.GL_TRIANGLE_STRIP);
+	public void drawGeometryTristrips(Drawable draw, float[] modelMatrix) {
+		drawGeometry(draw, modelMatrix, GLES20.GL_TRIANGLE_STRIP);
 	}
 
 	public void drawGeometry(Drawable draw, float[] modelMatrix, int primType) {
@@ -725,82 +677,163 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		checkError();
 
 	}
+	
+	public void drawWater(Drawable geo, float[] modelMatrix, List<Wave> waves) {
+		
+//		Geometry geo = water.getGeometry();
 
-//	public void renderTexture(ProceduralTexture2D tex) {
-//
-//		clearTexture(tex.getBuffers());
-//
-//		float[] mvpMatrix = new float[16];
-//		float[] projectionMatrix = mCurrentCamera.getOrthoMatrix();
-//		float[] viewMatrix = mCurrentCamera.getViewMatrix();
-//
-//		int textureHandle = tex.getTextureHandle();
-//		int shaderHandle = tex.getShaderHandle();
-//
-//		GLES20.glUseProgram(shaderHandle);
-//
-//		int u_mvp = GLES20.glGetUniformLocation(shaderHandle, "u_MVPMatrix");
-//		int u_mv = GLES20.glGetUniformLocation(shaderHandle, "u_MVMatrix");
-//		int u_dim = GLES20.glGetUniformLocation(shaderHandle, "u_Dimensions");
-//		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
-//
-//		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
-//		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
-//		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
-//
-//		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
-//		GLES20.glUniform1i(u_texsampler, 0);
-//		GLES20.glUniform2f(u_dim, tex.getDimension().x, tex.getDimension().y);
-//
-//
-//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, tex.getDatBufHandle());
-//
-//		GLES20.glEnableVertexAttribArray(a_pos);
-//		GLES20.glVertexAttribPointer(a_pos, tex.getPosSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getPosOffset());
-//
-//		if(a_nrm > -1) {
-//			GLES20.glEnableVertexAttribArray(a_nrm);
-//			GLES20.glVertexAttribPointer(a_nrm, tex.getNrmSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getNrmOffset());
-//		}
-//
-//		if(a_txc > -1) {
-//			GLES20.glEnableVertexAttribArray(a_txc);
-//			GLES20.glVertexAttribPointer(a_txc, tex.getTxcSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getTxcOffset());
-//		}
-//
-//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-//
-//		// --MV--
-//
-//		/* Get the MV Matrix: Multiply V * M  = MV */
-//		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, tex.getWorldMatrix(), 0);
-//		//MVP matrix is *actually MV* at this point
-//		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
-//
-//		// --MVP--
-//
-//		/* Get the MVP Matrix: Multiply P * MV = MVP*/
-//		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
-//		//MVP is MVP at this point
-//		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
-//
-//		// Draw
-//
-//		/* Draw the arrays as triangles */
-//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, tex.getIdxBufHandle());
+		float[] mvpMatrix = new float[16];
+		float[] mvMatrix = new float[16];
+		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
+		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
+
+		GLES20.glUseProgram(geo.getShaderHandle());
+
+		int u_mvp = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_MVPMatrix");
+		int u_mv = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_MVMatrix");
+		int u_nrm = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_NrmMatrix");		
+		int u_time = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_Time");
+		int u_w_col = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_WaterColor");
+		int u_s_col = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_SkyColor");
+//		int u_numwaves = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_NumWaves");
+		int u_num_li = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_NumLights");
+		int u_eye_pos = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_EyePos");
+		int u_texsampler = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_Texture");
+
+		int a_pos = GLES20.glGetAttribLocation(geo.getShaderHandle(), "a_Position");
+		int a_txc = GLES20.glGetAttribLocation(geo.getShaderHandle(), "a_TexCoordinate");
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, TextureManager.getTextureId("wavenormals"));
+		GLES20.glUniform1i(u_texsampler, 1);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.getDatBufHandle());
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, geo.getPosSize(), GLES20.GL_FLOAT, false, geo.getElementStride(), geo.getPosOffset());
+		
+		GLES20.glEnableVertexAttribArray(a_txc);
+		GLES20.glVertexAttribPointer(a_txc, geo.getTxcSize(), GLES20.GL_FLOAT, false, geo.getElementStride(), geo.getTxcOffset());
+
+		// --MV--
+
+		/* Get the MV Matrix: Multiply V * M  = MV */
+		Matrix.multiplyMM(mvMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+		//MVP matrix is *actually MV* at this point
+		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvMatrix, 0); //1282
+		
+		
+		
+		// -- Create the Normal Matrix --
+		float[] normalMatrix = new float[16];
+		if(!Matrix.invertM(normalMatrix, 0, mvMatrix, 0)) {
+			Log.d(TAG,"Could not invert matrix.");
+		}
+		GLES20.glUniformMatrix4fv(u_nrm, 1, true, normalMatrix, 0); //Transpose
+
+		
+		
+		// --MVP--
+		
+		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvMatrix, 0);
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+		
+		//Camera Position
+		GLES20.glUniform3fv(u_eye_pos, 1, viewMatrix, 12);
+
+		//Lights
+//		GLES20.glUniform1i(u_num_li, lights.size());
+//		GLES20.glUniform1i(u_num_li, 1);
 //		
-//		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex.getBuffers()[2]);
+//		List<Light> lights = geo.getLights();
 //		
-//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, tex.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+//		for(int i = 0; i < lights.size(); i++) {
+//			Light light = lights.get(i);
+//			int u_lightpos = GLES20.glGetUniformLocation(geo.getShaderHandle(), String.format("u_LightPositons[%s]",i));
+//			float[] lightPosWorldSpace = new float[4];
+//			float[] lightPosEyeSpace = new float[4];
+//			Matrix.multiplyMV(lightPosWorldSpace, 0, light.mModelMatrix, 0, light.mPosition, 0);
+//			Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
+//			lightPosEyeSpace[3] = 0.0f;
+//			//GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
+//			GLES20.glUniform4fv(u_lightpos, 1, lightPosEyeSpace, 0);
+//		}
+		
+		int u_lightvec = GLES20.glGetUniformLocation(geo.getShaderHandle(), "u_LightVec");
+		GLES20.glUniform3f(u_lightvec, 0.0f, -1.0f, -1.0f);
+
+		//Time
+		double time = ((double)SystemClock.uptimeMillis()) / 1000.0;
+		GLES20.glUniform1f(u_time, (float)time);
+
+		//Water & Sky Color
+		GLES20.glUniform4f(u_w_col, 0.3f, 0.34f, 0.33f, 1.0f);
+		GLES20.glUniform4f(u_s_col, 0.6f, 0.8f, 1.0f, 1.0f);
+		
+		
+		//Waves
+//		GLES20.glUniform1i(u_numwaves, waves.size());
 //
-//		checkError();
+//		
+//		for(int i = 0; i < waves.size(); i++) { 
+//			
+//			Wave w = waves.get(i);
+//			
+//			int u_w_typ = GLES20.glGetUniformLocation(geo.getShaderHandle(), String.format("u_Waves[%s].wave_type",i));
+//			int u_w_amp = GLES20.glGetUniformLocation(geo.getShaderHandle(), String.format("u_Waves[%s].amplitude",i));
+//			int u_w_dir = GLES20.glGetUniformLocation(geo.getShaderHandle(), String.format("u_Waves[%s].direction",i));
+//			int u_w_frq = GLES20.glGetUniformLocation(geo.getShaderHandle(), String.format("u_Waves[%s].frequency",i));
+//			int u_w_spd = GLES20.glGetUniformLocation(geo.getShaderHandle(), String.format("u_Waves[%s].speed",i));
+//			int u_w_phc = GLES20.glGetUniformLocation(geo.getShaderHandle(), String.format("u_Waves[%s].phase_const",i));
+//			int u_w_tms = GLES20.glGetUniformLocation(geo.getShaderHandle(), String.format("u_Waves[%s].time_scale",i));
+//			int u_w_phs = GLES20.glGetUniformLocation(geo.getShaderHandle(), String.format("u_Waves[%s].phase_shift",i));
 //
-//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-//		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-//		//		resetViewportToWorld();
-//	}
+//			GLES20.glUniform1i(u_w_typ, w.getWaveType());
+//			GLES20.glUniform1f(u_w_amp, w.getAmplitude());
+//			GLES20.glUniform3f(u_w_dir, w.getDirection().getX(),w.getDirection().getY(),w.getDirection().getZ());
+//			GLES20.glUniform1f(u_w_frq, w.getFrequency());
+//			GLES20.glUniform1f(u_w_spd, w.getSpeed());
+//			GLES20.glUniform1f(u_w_phc, w.getPhaseConst());
+//			GLES20.glUniform1f(u_w_tms, w.getTimeScale());
+//			GLES20.glUniform1f(u_w_phs, w.getPhaseShift());
+//		}
+
+		// Draw	
+//		opaqueWaterOn();
+//		multiplyWaterOn();
+		waterOn();
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.getIdxBufHandle());
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);		
+		waterOff();
+		
+		checkError();
+		
+	}
+	
+	public void waterOn() {
+		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
+		GLES20.glDisable(GLES20.GL_DITHER);
+		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+	}
+	
+	public void waterOff() {
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDepthFunc(GLES20.GL_LESS);
+		GLES20.glDepthMask(true);
+		GLES20.glEnable(GLES20.GL_DITHER);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
+		GLES20.glBlendEquation(GLES20.GL_FUNC_ADD);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+	}
 	
 	public void renderHeightmapOld(ProceduralTexture2D tex, int numIterations, float maxHeight, float minHeight, int seed) {
 
@@ -984,7 +1017,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void renderTexture(ProceduralTexture2D tex) {
 		clearTexture(tex.getBuffers());
 
-		int textureHandle = tex.getTextureHandle();
+//		int textureHandle = tex.getTextureHandle();
 		int shaderHandle = tex.getShaderHandle();
 
 		GLES20.glUseProgram(shaderHandle);
@@ -1023,6 +1056,157 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex.getBuffers()[2]);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, tex.getBuffers()[1]);
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, tex.getBuffers()[0]);
+
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, tex.getNumElements(), GLES20.GL_UNSIGNED_SHORT, 0);
+		checkError();
+
+		Point viewport = GameWorld.inst().getViewport();
+		GLES20.glViewport(0, 0,viewport.x, viewport.y);	
+		
+		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+	}
+	
+	public void renderWaterTexture(ProceduralWater2D tex) {
+		clearTexture(tex.getBuffers());
+
+		float[] viewMatrix = new float[16];
+		Matrix.setLookAtM(viewMatrix, 0, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
+		float[] projectionMatrix = mCurrentCamera.getOrthoMatrix();
+		float[] mvpMatrix = new float[16];
+		float[] modelMatrix = new float[16];
+		Matrix.setIdentityM(modelMatrix, 0);
+		int shaderHandle = tex.getShaderHandle();
+
+		GLES20.glUseProgram(shaderHandle);
+
+		int a_pos = GLES20.glGetAttribLocation(shaderHandle, "a_Position");
+		int a_nrm = GLES20.glGetAttribLocation(shaderHandle, "a_Normal");
+		int a_txc = GLES20.glGetAttribLocation(shaderHandle, "a_TexCoordinate");
+		int u_texsampler = GLES20.glGetUniformLocation(shaderHandle, "u_Texture");
+		int u_mvp = GLES20.glGetUniformLocation(tex.getShaderHandle(), "u_MVPMatrix");
+		int u_mv = GLES20.glGetUniformLocation(tex.getShaderHandle(), "u_MVMatrix");
+		int u_nrm = GLES20.glGetUniformLocation(tex.getShaderHandle(), "u_NrmMatrix");		
+		int u_time = GLES20.glGetUniformLocation(tex.getShaderHandle(), "u_Time");
+		int u_w_col = GLES20.glGetUniformLocation(tex.getShaderHandle(), "u_WaterColor");
+		int u_numwaves = GLES20.glGetUniformLocation(tex.getShaderHandle(), "u_NumWaves");
+		int u_num_li = GLES20.glGetUniformLocation(tex.getShaderHandle(), "u_NumLights");
+		int u_eye_pos = GLES20.glGetUniformLocation(tex.getShaderHandle(), "u_EyePos");
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, TextureManager.getTextureId("uvgrid"));
+		GLES20.glUniform1i(u_texsampler, 1);
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, tex.getDatBufHandle());
+
+		GLES20.glEnableVertexAttribArray(a_pos);
+		GLES20.glVertexAttribPointer(a_pos, tex.getPosSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getPosOffset());
+
+		if(a_nrm > -1) {
+			GLES20.glEnableVertexAttribArray(a_nrm);
+			GLES20.glVertexAttribPointer(a_nrm, tex.getNrmSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getNrmOffset());
+		}
+
+		if(a_txc > -1) {
+			GLES20.glEnableVertexAttribArray(a_txc);
+			GLES20.glVertexAttribPointer(a_txc, tex.getTxcSize(), GLES20.GL_FLOAT, false, tex.getElementStride(), tex.getTxcOffset());
+		}
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+		// Draw
+		GLES20.glViewport(0, 0, tex.getDimension().x, tex.getDimension().y);		
+		
+		/* Draw the arrays as triangles */
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, tex.getIdxBufHandle());
+		
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		
+		// --MV--
+
+		/* Get the MV Matrix: Multiply V * M  = MV */
+		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+		//MVP matrix is *actually MV* at this point
+		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
+		
+		
+		
+		// -- Create the Normal Matrix --
+		float[] normalMatrix = new float[16];
+		if(!Matrix.invertM(normalMatrix, 0, mvpMatrix, 0)) {
+			Log.d(TAG,"Could not invert matrix.");
+		}
+		GLES20.glUniformMatrix4fv(u_nrm, 1, true, normalMatrix, 0); //Transpose
+
+		
+		
+		// --MVP--
+		
+		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+		
+		//Camera Position
+		GLES20.glUniform3fv(u_eye_pos, 1, viewMatrix, 12);
+		
+		GLES20.glUniform1i(u_num_li, 1);
+		
+		List<Light> lights = tex.getLights();
+		
+		for(int i = 0; i < lights.size(); i++) {
+			Light light = lights.get(i);
+			int u_lightpos = GLES20.glGetUniformLocation(tex.getShaderHandle(), String.format("u_LightPositons[%s]",i));
+			float[] lightPosWorldSpace = new float[4];
+			float[] lightPosEyeSpace = new float[4];
+			Matrix.multiplyMV(lightPosWorldSpace, 0, light.mModelMatrix, 0, light.mPosition, 0);
+			Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
+			//GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
+			GLES20.glUniform3fv(u_lightpos, 1, lightPosEyeSpace, 0);
+		}
+		
+		List<Wave> waves = tex.getWaves();
+		
+		//Waves
+		double time = ((double)SystemClock.uptimeMillis()) / 1000.0;
+		GLES20.glUniform1f(u_time, (float)time);
+		
+		GLES20.glUniform4f(u_w_col, 0.0f, 0.5411764705882353f, 0.90196078431372549019607843137255f, 1.0f);
+		
+		GLES20.glUniform1i(u_numwaves, waves.size());
+
+
+		for(int i = 0; i < waves.size(); i++) { 
+
+			Wave w = waves.get(i);
+
+			int u_w_typ = GLES20.glGetUniformLocation(tex.getShaderHandle(), String.format("u_Waves[%s].wave_type",i));
+			int u_w_amp = GLES20.glGetUniformLocation(tex.getShaderHandle(), String.format("u_Waves[%s].amplitude",i));
+			int u_w_dir = GLES20.glGetUniformLocation(tex.getShaderHandle(), String.format("u_Waves[%s].direction",i));
+			int u_w_frq = GLES20.glGetUniformLocation(tex.getShaderHandle(), String.format("u_Waves[%s].frequency",i));
+			int u_w_spd = GLES20.glGetUniformLocation(tex.getShaderHandle(), String.format("u_Waves[%s].speed",i));
+			int u_w_phc = GLES20.glGetUniformLocation(tex.getShaderHandle(), String.format("u_Waves[%s].phase_const",i));
+			int u_w_tms = GLES20.glGetUniformLocation(tex.getShaderHandle(), String.format("u_Waves[%s].time_scale",i));
+			int u_w_phs = GLES20.glGetUniformLocation(tex.getShaderHandle(), String.format("u_Waves[%s].phase_shift",i));
+
+			GLES20.glUniform1i(u_w_typ, w.getWaveType());
+			GLES20.glUniform1f(u_w_amp, w.getAmplitude());
+			GLES20.glUniform3f(u_w_dir, w.getDirection().getX(),w.getDirection().getY(),w.getDirection().getZ());
+			GLES20.glUniform1f(u_w_frq, w.getFrequency());
+			GLES20.glUniform1f(u_w_spd, w.getSpeed());
+			GLES20.glUniform1f(u_w_phc, w.getPhaseConst());
+			GLES20.glUniform1f(u_w_tms, w.getTimeScale());
+			GLES20.glUniform1f(u_w_phs, w.getPhaseShift());
+		}
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex.getBuffers()[2]);
@@ -1179,177 +1363,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClearColor(0.0f, 0.2f, 0.6f, 1.0f);
 		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
 	}
 
-	//	public void waterOn() {
-	//		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-	//		GLES20.glDisable(GLES20.GL_DITHER);
-	//		GLES20.glDisable(GLES20.GL_CULL_FACE);
-	//		GLES20.glEnable(GLES20.GL_BLEND);
-	//		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-	//	}
-	//
-	//	public void multiplyWaterOn() {
-	//		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-	//		GLES20.glDisable(GLES20.GL_DITHER);
-	//		GLES20.glDisable(GLES20.GL_CULL_FACE);
-	//		GLES20.glDepthMask(false);
-	////		GLES20.glBlendFuncSeparate(GLES20.GL_CONSTANT_COLOR, GLES20.GL_SRC_COLOR, GLES20.GL_ONE, GLES20.GL_ZERO);
-	//		GLES20.glBlendFunc(GLES20.GL_ZERO, GLES20.GL_SRC_COLOR);
-	//	}
-	//
-	//	public void opaqueWaterOn() {
-	//		GLES20.glDisable(GLES20.GL_CULL_FACE);
-	//		GLES20.glDisable(GLES20.GL_BLEND);
-	//	}
-	//
-	//	public void addWaterOn() {
-	//		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-	//		GLES20.glDisable(GLES20.GL_DITHER);
-	//		GLES20.glDisable(GLES20.GL_CULL_FACE);
-	//		GLES20.glDepthMask(true);
-	//		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE); 
-	//	}
-	//
-	//	public void waterOff() {
-	//		GLES20.glEnable(GLES20.GL_BLEND);
-	//		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-	//		GLES20.glDepthFunc(GLES20.GL_LESS);
-	//		GLES20.glDepthMask(true);
-	//		GLES20.glEnable(GLES20.GL_DITHER);
-	//		GLES20.glEnable(GLES20.GL_CULL_FACE);
-	//		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
-	//		GLES20.glBlendEquation(GLES20.GL_FUNC_ADD);
-	//		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-	//	}
-	//
-	//	public void drawWater(Water water, List<Light> lights) {
-	//
-	//		Geometry geo = water.getGeometry();
-	//
-	//		float[] mvpMatrix = new float[16];
-	//		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
-	//		float[] viewMatrix = GameWorld.inst().getAgentViewMatrix();
-	//
-	//		GLES20.glUseProgram(geo.mShaderHandle);
-	//
-	//		int u_mvp = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVPMatrix");
-	//		int u_mv = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_MVMatrix");
-	//		int u_nrm = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NrmMatrix");		
-	//		int u_time = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_Time");
-	//		int u_w_col = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_WaterColor");
-	//		int u_numwaves = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NumWaves");
-	//		int u_num_li = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_NumLights");
-	//		int u_eye_pos = GLES20.glGetUniformLocation(geo.mShaderHandle, "u_EyePos");
-	//
-	//		int a_pos = GLES20.glGetAttribLocation(geo.mShaderHandle, "a_Position");
-	//
-	//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geo.mDatBufIndex);
-	//
-	//		GLES20.glEnableVertexAttribArray(a_pos);
-	//		GLES20.glVertexAttribPointer(a_pos, geo.mPosSize, GLES20.GL_FLOAT, false, geo.mElementStride, geo.mPosOffset);
-	//
-	//		// --MV--
-	//
-	//		/* Get the MV Matrix: Multiply V * M  = MV */
-	//		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, geo.mModelMatrix, 0);
-	//		//MVP matrix is *actually MV* at this point
-	//		GLES20.glUniformMatrix4fv(u_mv, 1, false, mvpMatrix, 0); //1282
-	//		
-	//		
-	//		
-	//		// -- Create the Normal Matrix --
-	//		float[] normalMatrix = new float[16];
-	//		if(!Matrix.invertM(normalMatrix, 0, mvpMatrix, 0)) {
-	//			Log.d(TAG,"Could not invert matrix.");
-	//		}
-	//		GLES20.glUniformMatrix4fv(u_nrm, 1, true, normalMatrix, 0); //Transpose
-	//
-	//		
-	//		
-	//		// --MVP--
-	//		
-	//		/* Get the MVP Matrix: Multiply P * MV = MVP*/
-	//		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
-	//		//MVP is MVP at this point
-	//		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
-	//		
-	//		//Camera Position
-	//		GLES20.glUniform3fv(u_eye_pos, 1, viewMatrix, 12);
-	//
-	//		//Lights
-	////		GLES20.glUniform1i(u_num_li, lights.size());
-	//		GLES20.glUniform1i(u_num_li, 1);
-	//		
-	//		for(int i = 0; i < lights.size(); i++) {
-	//			Light light = lights.get(i);
-	//			int u_lightpos = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_LightPositons[%s]",i));
-	//			float[] lightPosWorldSpace = new float[4];
-	//			float[] lightPosEyeSpace = new float[4];
-	//			Matrix.multiplyMV(lightPosWorldSpace, 0, light.mModelMatrix, 0, light.mPosition, 0);
-	//			Matrix.multiplyMV(lightPosEyeSpace, 0, viewMatrix, 0, lightPosWorldSpace, 0);   
-	//			//GLES20.glUniform3f(u_lightpos, lightPosEyeSpace[0], lightPosEyeSpace[1], lightPosEyeSpace[2]);
-	//			GLES20.glUniform3fv(u_lightpos, 1, lightPosEyeSpace, 0);
-	//		}
-	//
-	//		//Time
-	//		double time = ((double)SystemClock.uptimeMillis()) / 1000.0;
-	//		GLES20.glUniform1f(u_time, (float)time);
-	//
-	//		//Water Color
-	//		GLES20.glUniform4f(u_w_col, 0.1098f, 0.2549f, 0.3216f, 1.0f);
-	//		
-	//		//Waves
-	//		GLES20.glUniform1i(u_numwaves, water.getWaves().size());
-	//
-	//		for(int i = 0; i < water.getWaves().size(); i++) { 
-	//			Wave w = water.getWaves().get(i);			
-	//			int u_w_typ = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].wave_type",i));
-	//			int u_w_amp = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].amplitude",i));
-	//			int u_w_dir = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].direction",i));
-	//			int u_w_frq = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].frequency",i));
-	//			int u_w_spd = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].speed",i));
-	//			int u_w_phc = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].phase_const",i));
-	//			int u_w_tms = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].time_scale",i));
-	//			int u_w_phs = GLES20.glGetUniformLocation(geo.mShaderHandle, String.format("u_Waves[%s].phase_shift",i));
-	//
-	//			GLES20.glUniform1i(u_w_typ, w.getWaveType());
-	//			GLES20.glUniform1f(u_w_amp, w.getAmplitude());
-	//			GLES20.glUniform3f(u_w_dir, w.getDirection().getX(),w.getDirection().getY(),w.getDirection().getZ());
-	//			GLES20.glUniform1f(u_w_frq, w.getFrequency());
-	//			GLES20.glUniform1f(u_w_spd, w.getSpeed());
-	//			GLES20.glUniform1f(u_w_phc, w.getPhaseConst());
-	//			GLES20.glUniform1f(u_w_tms, w.getTimeScale());
-	//			GLES20.glUniform1f(u_w_phs, w.getPhaseShift());
-	//		}
-	//
-	//		// Draw	
-	////		opaqueWaterOn();
-	////		multiplyWaterOn();
-	//		waterOn();
-	//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, geo.mIdxBufIndex);
-	//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, geo.mNumElements, GLES20.GL_UNSIGNED_SHORT, 0);
-	//
-	//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-	//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);		
-	//		waterOff();
-	//		
-	//		checkError();
-	//	}
-	//
-	//	private float[] getLowerOrderMatrix(float[] matrix) {
-	//		float[] newMat = null;
-	//		if(matrix.length == 16) {
-	//			newMat = new float[]{matrix[0],matrix[4],matrix[8],
-	//					             matrix[1],matrix[5],matrix[9],
-	//					             matrix[2],matrix[6],matrix[10]};
-	//		} else {
-	//			newMat = matrix;
-	//		}
-	//		return newMat;
-	//	}
-	//
 	public void drawUI(Geometry geo) {
 
 		float[] mvpMatrix = new float[16];
@@ -1399,82 +1414,6 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		checkError();
 
 	}
-	//
-	//	public void drawLight(Light light) {
-	//
-	//		float[] mvpMatrix = new float[16];
-	//		float[] projectionMatrix = GameWorld.inst().getProjectionMatrix();
-	//		float[] viewMatrix = GameWorld.inst().getAgentViewMatrix();
-	//
-	//		GLES20.glUseProgram(light.mShaderHandle);  
-	//		final int u_mvp = GLES20.glGetUniformLocation(light.mShaderHandle, "u_MVPMatrix");
-	//		final int u_li_col = GLES20.glGetUniformLocation(light.mShaderHandle, "u_LightCol");
-	//		final int a_pos = GLES20.glGetAttribLocation(light.mShaderHandle, "a_Position");
-	//
-	//		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, light.mModelMatrix, 0);
-	//		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
-	//
-	//		GLES20.glUniform4fv(u_li_col, 1, light.mRGBAColor, 0);
-	//		GLES20.glVertexAttrib3f(a_pos, light.mPosition[0], light.mPosition[1], light.mPosition[2]);
-	//		GLES20.glDisableVertexAttribArray(a_pos);
-	//		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
-	//		GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
-	//
-	//		checkError();
-	//	}
-	//
-	//	public void drawText(Cursor cursor) {
-	//		if(cursor == null || cursor.getFont() == null) return;
-	//
-	//		float[] mvpMatrix = new float[16];
-	//		float[] uiMatrix = GameWorld.inst().getUiMatrix();
-	//		float[] viewMatrix = GameWorld.inst().getViewMatrix();
-	//
-	//		Font font = cursor.getFont();
-	//
-	//		GLES20.glUseProgram(font.mShaderHandle);
-	//
-	//		int u_mvp = GLES20.glGetUniformLocation(font.mShaderHandle, "u_MVPMatrix");
-	//		int u_texsampler = GLES20.glGetUniformLocation(font.mShaderHandle, "u_Texture");
-	//
-	//		int a_pos = GLES20.glGetAttribLocation(font.mShaderHandle, "a_Position");
-	//		int a_txc = GLES20.glGetAttribLocation(font.mShaderHandle, "a_TexCoordinate");
-	//
-	//		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-	//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, font.mTextureHandle);
-	//		GLES20.glUniform1i(u_texsampler, 0);
-	//
-	//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, font.mVboIndex);
-	//
-	//		GLES20.glEnableVertexAttribArray(a_pos);
-	//		GLES20.glVertexAttribPointer(a_pos, font.mPosSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.POS_OFFSET);
-	//
-	//		GLES20.glEnableVertexAttribArray(a_txc);
-	//		GLES20.glVertexAttribPointer(a_txc, font.mTxcSize, GLES20.GL_FLOAT, false, Font.ELEMENTS_STRIDE, Font.TXC_OFFSET);
-	//
-	//		// Draw
-	//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, font.mIboIndex);
-	//
-	//		for(Cursor.CursorPosition cp : cursor) {
-	//			// --MV--
-	//			//make mMVPMatrix MV
-	//			Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, cp.mModelMatrix, 0);
-	//			//make mMVPMatrix MVP
-	//			Matrix.multiplyMM(mvpMatrix, 0, uiMatrix, 0, mvpMatrix, 0);
-	//			//MVP is MVP at this point
-	//			GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
-	//			GLES20.glDrawElements(GLES20.GL_TRIANGLES, Font.NUM_ELEMENTS, GLES20.GL_UNSIGNED_SHORT, cp.mGlyphIndex);
-	//		}
-	//
-	//		//Unbind buffers
-	//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-	//		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-	//
-	//	}
-
-	//	/* ------------------------------ */
-	//	/*        Utility Methods         */
-	//	/* ------------------------------ */
 
 	protected int compileShader(final int shaderType, final String shaderSource) 
 	{

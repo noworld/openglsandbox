@@ -2,7 +2,9 @@ package com.solesurvivor.simplerender2_5.game.states;
 
 import android.graphics.Point;
 
+import com.solesurvivor.simplerender2_5.commands.CommandEnum;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
+import com.solesurvivor.simplerender2_5.input.BackButtonInputHandler;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
@@ -23,6 +25,10 @@ public class MainMenuState extends BaseState {
 		
 		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
 		mScene.addChild(skybox);
+		
+		BackButtonInputHandler bbih = new BackButtonInputHandler();
+		bbih.registerCommand(CommandEnum.REVERT_STATE.getCommand());
+		mInputHandlers.add(bbih);
 	}
 
 	@Override

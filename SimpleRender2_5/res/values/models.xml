@@ -4,6 +4,8 @@
         <item>@raw/gamepad_ui</item>
         <item>@raw/geoclip</item>
         <item>@raw/skydome</item>
+        <item>@raw/gray_ui</item>
+        <item>@raw/rigged</item>
     </array>
 
 </resources>

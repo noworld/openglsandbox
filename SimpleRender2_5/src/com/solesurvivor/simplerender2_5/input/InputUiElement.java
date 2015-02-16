@@ -3,11 +3,8 @@ package com.solesurvivor.simplerender2_5.input;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.graphics.PointF;
-
 import com.solesurvivor.simplerender2_5.commands.Command;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
-import com.solesurvivor.simplerender2_5.util.UiUtil;
 
 public class InputUiElement extends UiElement implements InputHandler {
 	
@@ -20,6 +17,7 @@ public class InputUiElement extends UiElement implements InputHandler {
 	protected InputEvent mPreviousTouch;
 	protected InputEvent mTouch;
 	protected boolean mPressed;
+	protected boolean mReleased;
 
 	public InputUiElement(String name, Geometry geometry, InputArea inputArea) {
 		super(geometry);
@@ -28,6 +26,10 @@ public class InputUiElement extends UiElement implements InputHandler {
 		this.mInputArea = inputArea;
 		this.mCommands = new ArrayList<Command>();
 		quiet();
+	}
+	
+	public String getName() {
+		return mName;
 	}
 
 	@Override
@@ -40,6 +42,10 @@ public class InputUiElement extends UiElement implements InputHandler {
 //		PointF screen = UiUtil.viewToScreenCoords(event.getCoords());
 		
 		if(myEvent) {
+			
+			mReleased = mPressed && (event.getEvent().equals(InputEventEnum.UP)
+					|| event.getEvent().equals(InputEventEnum.MOVE_OFF));
+			
 			mPressed = event.getEvent().equals(InputEventEnum.DOWN)
 					|| event.getEvent().equals(InputEventEnum.MOVE_ON);
 			
@@ -61,16 +67,22 @@ public class InputUiElement extends UiElement implements InputHandler {
 		if(mPressed) {
 //			Log.d(TAG, String.format("SCREEN button firing on %s at %s,%s", mTouch.getEvent().toString(), mTouch.getCoords().x, mTouch.getCoords().y));
 			//Vibrate when changing state to pressed 
-			if(mPreviousTouch == null
-					|| mPreviousTouch.getEvent().equals(InputEventEnum.UP)
-					|| mPreviousTouch.getEvent().equals(InputEventEnum.MOVE_OFF)) {
-				TouchFeedback.touch();
-			}
+//			if(mPreviousTouch == null
+//					|| mPreviousTouch.getEvent().equals(InputEventEnum.UP)
+//					|| mPreviousTouch.getEvent().equals(InputEventEnum.MOVE_OFF)) {
+//				TouchFeedback.touch();
+//			}
 			
 			for(Command c : mCommands) {
+				mTouch.setControlCenter(mInputArea.getInputCenter());
 				c.execute(mTouch);
 			}
 			
+		} else if(mReleased) {
+			for(Command c : mCommands) {
+				mTouch.setControlCenter(mInputArea.getInputCenter());
+				c.release(mTouch);
+			}
 		}
 		
 		mPreviousTouch = mTouch;

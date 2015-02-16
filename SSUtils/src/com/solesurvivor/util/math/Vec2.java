@@ -6,6 +6,7 @@ public class Vec2 {
 	private static final String TAG = Vec2.class.getSimpleName();
 	
 	protected static final String COMMA = ",";
+	protected static final float ZERO_F = 0.0f;
 	
 	float x = 1.0f;
 	float y = 1.0f;
@@ -35,8 +36,17 @@ public class Vec2 {
 		this.y = y;
 	}
 	
+	public float getMag() {
+		return (float)Math.sqrt(getMagSq());
+	}
+	
 	public float getMagSq() {
 		return (x*x)+(y*y);
+	}	
+	
+	public void subtract(Vec2 other) {
+		this.x -= other.getX();
+		this.y -= other.getY();
 	}
 	
 	public String prettyString() {
@@ -44,7 +54,7 @@ public class Vec2 {
 	}
 	
 	public void normalize() {
-		if(x != 0.0f || y != 0.0f) { //Cannot normalize 0 vector
+		if(x != ZERO_F || y != ZERO_F) { //Cannot normalize 0 vector
 			float len = (float)Math.sqrt((x*x) + (y*y));
 			x /= len;
 			y /= len;
@@ -52,7 +62,7 @@ public class Vec2 {
 	}
 	
 	public Vec2 normalizeClone() {
-		if(x != 0.0f || y != 0.0f) { //Cannot normalize 0 vector
+		if(x != ZERO_F || y != ZERO_F) { //Cannot normalize 0 vector
 			float len = (float)Math.sqrt((x*x) + (y*y));
 			return new Vec2(x/len, y/len);
 		}

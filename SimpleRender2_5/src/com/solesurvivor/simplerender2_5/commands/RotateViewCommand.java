@@ -36,8 +36,20 @@ public class RotateViewCommand implements Command {
 		float[] eye = cam.getEyePos();
 //		float[] look = cam.getLookVector();
 //		cam.setEyePos(new float[]{eye[0], eye[1]+DELTA_H, eye[2]});
-		cam.setEyePos(new float[]{eye[0], eye[1], eye[2] + DELTA_Z});
+		//cam.setEyePos(new float[]{eye[0], eye[1], eye[2] + DELTA_Z});
 //		cam.setLookVector(new float[]{0.0f, 2.0f, -1.0f});
+	}
+
+	@Override
+	public void onStateChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void release(InputEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -27,4 +27,10 @@ public class ScreenInputArea implements InputArea {
 		
 	}
 
+	@Override
+	public PointF getInputCenter() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

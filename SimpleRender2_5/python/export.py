@@ -15,6 +15,7 @@
 #object.hzg_texture - texture name to use
 #object.hzg_shader - shader name to use
 #object.hzg_command - command to link to an input area
+#object.hzg_z_offset - Z offset adjustments for tuning UI controls
 #object.hzg_transform_yup - 1 means that the object should be transformed from Z-Up coordinates to Y-Up coordinates
 
 import bpy
@@ -41,6 +42,7 @@ work_path = proj_path + "\\python\\work\\"
 dsc_ext = ".dsc"
 vbo_ext = ".v"
 ibo_ext = ".i"
+game_prefix = "hzg_"
     
 def cross_z(p1, p2, p3):
     return ((p2.x-p1.x) * (p3.y-p1.y)) - ((p2.y-p1.y) * (p3.x-p1.x));
@@ -48,8 +50,10 @@ def cross_z(p1, p2, p3):
 def write_mesh_files(obj, scene):
     scene.objects.active = obj
     file_name = obj.name
-    trans_yup = obj.get("hzg_transform_yup",0)
-    export_mode = (obj["hzg_export_mode"] or "VNC")
+    trans_yup = obj.get("hzg_transform_yup",1)
+    #export_mode = (obj["hzg_export_mode"] or "VNC")
+    export_mode = obj.get("hzg_export_mode","VNC")
+    z_offset = obj.get("hzg_z_offset",0.0)
     print("HZG_EXPORT_MODE is",export_mode)
     bpy.ops.object.modifier_apply(modifier='Subsurf')
     round_verts = obj.get("hzg_round",0)
@@ -93,9 +97,11 @@ def write_mesh_files(obj, scene):
     dscString += "\nNRM_SIZE=3"
     dscString += "\nPOS_SIZE=3"
     dscString += "\nTXC_SIZE=2"
+    dscString += "\nZ_OFFSET=%d" % z_offset
     
-    print("Object type for %s is %s" % (obj.name, obj["hzg_type"]))
-    if(obj["hzg_type"] == "INPUT_AREA"):
+    objType = obj.get("hzg_type","ENTITY")
+    print("Object type for %s is %s" % (obj.name, objType))
+    if(objType == "INPUT_AREA"):
         print("Generating convex hull for %s" % obj.name)
         hull_points= ""
         
@@ -120,12 +126,12 @@ def write_mesh_files(obj, scene):
 #            print("**** Vert: %.5f,%.5f,%.5f" % (pos.x,pos.y,pos.z))
             if(round_verts):
                 if(trans_yup == 1):
-                    vboBytes += struct.pack(">fff", round(pos.x,5), round(pos.z,5), round(pos.y,5))
+                    vboBytes += struct.pack(">fff", round(pos.x,5), round(pos.z,5), -round(pos.y,5))
                 else:
                     vboBytes += struct.pack(">fff", round(pos.x,5), round(pos.y,5), round(pos.z,5))
             else:
                 if(trans_yup == 1):
-                    vboBytes += struct.pack(">fff", pos.x,pos.z,pos.y)
+                    vboBytes += struct.pack(">fff", pos.x,pos.z,-pos.y)
                 else:
                     vboBytes += struct.pack(">fff", pos.x,pos.y,pos.z)
             
@@ -186,6 +192,8 @@ for scene in bpy.data.scenes:
                 zf.write(work_path + file_name + vbo_ext, file_name + vbo_ext, compress_type=compression)
                 zf.write(work_path + file_name + ibo_ext, file_name + ibo_ext, compress_type=compression)
                 print("")
+            elif(obj.type == "ARMATURE" and obj.is_visible(scene)):
+                print("Future use: ",obj.name,"type is",obj.type,"visibility is",obj.is_visible(scene))
             else:
                 print("Not including",obj.name,"type is",obj.type,"visibility is",obj.is_visible(scene))
         zf.write(work_path + "index", "index", compress_type=compression)

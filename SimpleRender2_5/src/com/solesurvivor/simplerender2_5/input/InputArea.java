@@ -11,4 +11,6 @@ public interface InputArea {
 	public void translate(float x, float y, float z);
 	
 	public void reset();
+	
+	public PointF getInputCenter();
 }

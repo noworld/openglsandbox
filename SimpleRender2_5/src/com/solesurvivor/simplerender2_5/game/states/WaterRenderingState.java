@@ -20,7 +20,7 @@ import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.GeometryNode;
 import com.solesurvivor.simplerender2_5.scene.ProceduralTexture2D;
 import com.solesurvivor.simplerender2_5.scene.Skydome;
-import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
+import com.solesurvivor.simplerender2_5.scene.Water;
 import com.solesurvivor.util.math.Vec3;
 
 public class WaterRenderingState extends BaseState {
@@ -38,6 +38,7 @@ public class WaterRenderingState extends BaseState {
 		float[] eyePos = mCamera.getEyePos();
 		float[] lookVec = mCamera.getLookVector();
 		eyePos[1] += camHeight;
+		eyePos[2] += 10.0f;
 		lookVec[1] += camHeight;
 		mCamera.setEyePos(eyePos);
 		mCamera.setLookVector(lookVec);
@@ -54,8 +55,13 @@ public class WaterRenderingState extends BaseState {
 			dome.switchTexture("skytex");
 			mScene.addChild(dome);
 			
-			TerrainClipmap clipMap = GeometryIO.loadClipmap(R.raw.geoclip);
-			mScene.addChild(clipMap);
+//			TerrainClipmap clipMap = GeometryIO.loadClipmap(R.raw.geoclip);
+//			mScene.addChild(clipMap);
+			
+			Water water = new Water();
+			mScene.addChild(water);
+			
+			
 			Vec3 pushback = new Vec3(0.0f, 0.0f, -5.0f);
 			List<InputUiElement> uiElements = GeometryIO.loadInputUiElements(R.raw.blue_ui);		
 			for(InputUiElement iu : uiElements) {
@@ -91,7 +97,7 @@ public class WaterRenderingState extends BaseState {
 	
 	@Override
 	public void execute() {
-		
+		super.execute();
 	}
 	
 	@Override

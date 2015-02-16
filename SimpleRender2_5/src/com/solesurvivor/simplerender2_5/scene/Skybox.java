@@ -11,6 +11,7 @@ import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.rendering.ShaderManager;
 import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 import com.solesurvivor.util.SSArrayUtil;
+import com.solesurvivor.util.math.Vec3;
 
 public class Skybox implements Node, Drawable {
 
@@ -185,6 +186,36 @@ public class Skybox implements Node, Drawable {
 	public int getElementOffset() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public void scale(Vec3 axes) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void rotate(float angle, Vec3 axes) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void translate(Vec3 trans) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isDirty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public float[] getTransMatrix() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

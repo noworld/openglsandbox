@@ -1,17 +1,20 @@
 package com.solesurvivor.simplerender2_5.game.states;
 
+import java.io.IOException;
+import java.util.List;
+
 import android.graphics.Point;
 
 import com.solesurvivor.simplerender2_5.commands.CommandEnum;
-import com.solesurvivor.simplerender2_5.game.GameGlobal;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
-import com.solesurvivor.simplerender2_5.game.GlobalKeysEnum;
 import com.solesurvivor.simplerender2_5.input.BackButtonInputHandler;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
 import com.solesurvivor.simplerender2_5.scene.CoordinateSystemEnum;
+import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.Plane;
 import com.solesurvivor.simplerender2_5.scene.ProceduralTexture2D;
+import com.solesurvivor.simplerender2_5.scene.ProceduralWater2D;
 import com.solesurvivor.util.math.Vec3;
 
 public class SkyGradientState extends BaseState {
@@ -28,10 +31,21 @@ public class SkyGradientState extends BaseState {
 		mCamera.setLookVector(lookVec);
 		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		
-		ProceduralTexture2D skyTex = new ProceduralTexture2D("skytex_shader", "skytex", new Point(viewport.y,viewport.y), CoordinateSystemEnum.CARTESIAN);
-		mScene.addChild(skyTex);
+//		ProceduralTexture2D skyTex = new ProceduralTexture2D("skytex_shader", "skytex", new Point(viewport.y,viewport.y), CoordinateSystemEnum.CARTESIAN);
+//		mScene.addChild(skyTex);
+//		Plane plane = new Plane("plane_shader", "skytex", new Point(viewport.y,viewport.y));
 		
-		Plane plane = new Plane("plane_shader", "skytex", new Point(viewport.y,viewport.y));
+		ProceduralTexture2D waterTex;
+		try {
+			waterTex = new ProceduralWater2D("watertex_shader", "watertex", new Point(viewport.y,viewport.y), CoordinateSystemEnum.CARTESIAN);
+			mScene.addChild(waterTex);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Plane plane = new Plane("plane_shader", "watertex", new Point(viewport.y,viewport.y));
+		
 		mScene.addChild(plane);
 		
 		BackButtonInputHandler bbih = new BackButtonInputHandler();
@@ -60,5 +74,6 @@ public class SkyGradientState extends BaseState {
 	public void translateCurrentCamera(Vec3 trans) {
 		mCamera.translate(trans);
 	}
+
 
 }

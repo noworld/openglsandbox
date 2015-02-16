@@ -1,5 +1,7 @@
 package com.solesurvivor.simplerender2_5.scene;
 
+import android.opengl.Matrix;
+
 
 public class Light {
 
@@ -14,5 +16,9 @@ public class Light {
 	public float[] mPosition = {0.0f,0.0f,0.0f,1.0f};
 	public float[] mModelMatrix = new float[16];
 	public int mShaderHandle;
+	
+	public Light() {
+		Matrix.setIdentityM(mModelMatrix, 0);
+	}
 		
 }

@@ -39,7 +39,7 @@ public class SeaTilesManager implements Node {
 					GeometryNode gn = new GeometryNode(geoMipPlane);
 					gn.translate(new Vec3(startX + (mTileSize.x * i), 0.0f, startZ + (mTileSize.y * j)));
 					gn.rotate(270, new Vec3(1.0f, 0.0f, 0.0f));
-					gn.applyTransforms();
+//					gn.applyTransforms();
 					this.addChild(gn);
 				}
 			}
@@ -63,6 +63,42 @@ public class SeaTilesManager implements Node {
 	@Override
 	public void addChild(Node n) {
 		mChildren.add(n);
+	}
+
+	@Override
+	public void scale(Vec3 axes) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void rotate(float angle, Vec3 axes) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void translate(Vec3 trans) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isDirty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public float[] getWorldMatrix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public float[] getTransMatrix() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

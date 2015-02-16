@@ -55,10 +55,20 @@ public class Vec3 extends Vec2 {
 		return new Vec3(x,y,z);
 	}
 	
+	public Vec3 clone() {
+		return new Vec3(x,y,z);
+	}
+	
 	public void add(Vec3 other) {
 		this.x += other.x;
 		this.y += other.y;
 		this.z += other.z;
+	}
+	
+	public void subtract(Vec3 other) {
+		this.x -= other.x;
+		this.y -= other.y;
+		this.z -= other.z;
 	}
 	
 	public void scale(float fac) {
@@ -71,6 +81,19 @@ public class Vec3 extends Vec2 {
 		this.x *= other.x;
 		this.y *= other.y;
 		this.z *= other.z;
+	}
+	
+	@Override
+	public float getMag() {
+		return (float)Math.sqrt(getMagSq());
+	}
+
+	public float getMagXZ() {
+		return (float)Math.sqrt(getMagXZSq());
+	}
+	
+	public float getMagXZSq() {
+		return (x*x)+(z*z);
 	}
 	
 	@Override
@@ -106,6 +129,10 @@ public class Vec3 extends Vec2 {
 	public static Vec3 valueOf(String s) {
 		String[] vals = s.split(COMMA);
 		return new Vec3(Float.valueOf(vals[0]), Float.valueOf(vals[1]), Float.valueOf(vals[2]));
+	}
+	
+	public static Vec3 createZeroVec3() {
+		return new Vec3(0.0f, 0.0f, 0.0f);
 	}
 
 }

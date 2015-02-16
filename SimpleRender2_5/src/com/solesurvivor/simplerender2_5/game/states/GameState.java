@@ -5,10 +5,11 @@ import java.util.List;
 import android.graphics.Point;
 
 import com.solesurvivor.simplerender2_5.input.InputHandler;
+import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.util.math.Vec3;
 
 public interface GameState {
-
+	
 	public void enter();
 	
 	public void execute();
@@ -22,6 +23,8 @@ public interface GameState {
 	public void resizeViewport(Point p);
 	
 	public List<InputHandler> getInputs();
+	
+	public List<Geometry> getUiElements();
 	
 	public void rotateCurrentCamera(float angle, Vec3 rot);
 	

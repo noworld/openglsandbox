@@ -15,7 +15,7 @@ public class RendererManager {
 	public static void init() {
 		mGLSurfaceView = new SimpleRender25SurfaceView(GameGlobal.inst().getContext());
 		mGLSurfaceView.setEGLContextClientVersion(2);
-		mRenderer = new BaseRenderer();
+		mRenderer = new GridMapRenderer();
 		mGLSurfaceView.setRenderer(mRenderer);
 		SSLog.d(TAG, "RendererManager created.");	
 	}
@@ -27,5 +27,10 @@ public class RendererManager {
 	public static BaseRenderer getRenderer() {
 		return mRenderer;
 	}
+	
+	public static GridMapRenderer getGridMapRenderer() {
+		return (GridMapRenderer)mRenderer;
+	}
+	
 	
 }

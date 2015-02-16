@@ -69,5 +69,10 @@ public abstract class BaseState implements GameState {
 	public List<InputHandler> getInputs() {
 		return mInputHandlers;
 	}
+	
+	@Override
+	public List<Geometry> getUiElements() {
+		return mUi;
+	}
 
 }

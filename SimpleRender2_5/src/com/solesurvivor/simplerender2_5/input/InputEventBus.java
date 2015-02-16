@@ -50,7 +50,7 @@ public class InputEventBus {
 			for(InputEvent event : mEventList) {
 				
 				for(InputHandler ih : inputs) {
-					if(ih.testInput(event)) break;
+					if(ih.testInput(event)) break; //TODO: Make some overlap but not others
 				}
 			}
 			

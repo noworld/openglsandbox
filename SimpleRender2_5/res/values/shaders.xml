@@ -8,6 +8,10 @@
         <item>@array/clipmap_shader</item>
         <item>@array/ui_shader</item>
         <item>@array/skytex_shader</item>
+        <item>@array/watertex_shader</item>
+        <item>@array/water_shader</item>
+        <item>@array/fog_shader</item>
+        <item>@array/bones_shader</item>
     </array>
     
     <array name="skybox_shader">
@@ -25,14 +29,34 @@
         <item >@raw/f_skytex</item>  
     </array>
     
+    <array name="water_shader">
+        <item >@raw/v_water_nrms</item> 
+        <item >@raw/f_water_nrms</item>  
+    </array>
+    
+    <array name="watertex_shader">
+        <item >@raw/v_water_exp_peak</item> 
+        <item >@raw/f_water_exp_peak</item>  
+    </array>
+    
     <array name="plane_shader">
         <item >@raw/v_plane</item> 
         <item >@raw/f_plane</item>  
     </array>
-    
+     
     <array name="tex_shader">
         <item >@raw/v_tex</item> 
         <item >@raw/f_tex</item>  
+    </array>
+    
+    <array name="fog_shader">
+        <item >@raw/v_tex_pervfog</item> 
+        <item >@raw/f_tex_pervfog</item>  
+    </array>
+    
+    <array name="bones_shader">
+        <item >@raw/v_bones</item> 
+        <item >@raw/f_bones</item>  
     </array>
     
     <array name="clipmap_shader">

@@ -21,8 +21,8 @@ public enum CommandEnum {
 	TURN_RIGHT(new TurnRightCommand()),
 	FLY_UP(new FlyUpCommand()),
 	FLY_DOWN(new FlyDownCommand()),
-	ROTATE_VIEW(new RotateViewCommand())	
-	;
+	ROTATE_VIEW(new RotateViewCommand()),	
+	DIR_CONTROL(new DirControlCommand());
 	
 	private Command mCommand;
 	

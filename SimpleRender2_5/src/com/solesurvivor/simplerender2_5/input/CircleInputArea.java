@@ -40,4 +40,10 @@ public class CircleInputArea implements InputArea {
 		mScale = 1.0f;
 	}
 
+	@Override
+	public PointF getInputCenter() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

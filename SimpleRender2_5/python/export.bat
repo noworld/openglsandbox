@@ -2,4 +2,7 @@
 REM blue_ui.blend
 REM ohp1.blend
 REM skydome.blend
-"C:\nick\blender-2.71-windows64\blender.exe" "C:%HOMEPATH%\git\openglsandbox\SimpleRender2_5\blend\skydome.blend" --background --python "C:%HOMEPATH%\git\openglsandbox\SimpleRender2_5\python\export.py"
+REM tiles.blend
+REM gray_ui.blend
+REM rigged_chars.blend
+"C:\nick\blender-2.71-windows64\blender.exe" "C:%HOMEPATH%\git\openglsandbox\SimpleRender2_5\blend\rigged_chars.blend" --background --python "C:%HOMEPATH%\git\openglsandbox\SimpleRender2_5\python\export_bones.py"
