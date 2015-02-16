@@ -1,0 +1,12 @@
+<resources>
+    
+     <array name="shaderPrograms">
+        <item>@array/tex_shader</item>
+    </array>
+
+    <array name="tex_shader">
+        <item >@raw/v_tex</item> 
+        <item >@raw/f_tex</item>  
+    </array>
+
+</resources>

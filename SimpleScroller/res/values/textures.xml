@@ -1,0 +1,8 @@
+<resources>
+    
+    <array name="textures_2d">
+        <item>@drawable/spritesheet</item>
+        <item>@drawable/waves</item>
+    </array>
+
+</resources>
