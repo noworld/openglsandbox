@@ -18,7 +18,7 @@ import android.content.res.Resources;
 
 import com.solesurvivor.simplescroller.commands.Command;
 import com.solesurvivor.simplescroller.commands.CommandEnum;
-import com.solesurvivor.simplescroller.game.GameWorld;
+import com.solesurvivor.simplescroller.game.GameGlobal;
 import com.solesurvivor.simplescroller.game.GlobalKeysEnum;
 import com.solesurvivor.simplescroller.input.InputUiElement;
 import com.solesurvivor.simplescroller.input.Polygon2DInputArea;
@@ -221,7 +221,7 @@ public class GeometryIO {
 
 	private static IntermediateGeometry parseIntermediateGeometry(int resId) throws IOException {
 		
-		Resources res = GameWorld.inst().getContext().getResources();
+		Resources res = RendererManager.getContext().getResources();
 		String resourceName = res.getResourceEntryName(resId);			
 		InputStream is = res.openRawResource(resId);
 		
@@ -245,12 +245,12 @@ public class GeometryIO {
 	private static List<String> parseObjectNames(IntermediateGeometry ig) {
 		List<String> objNames = new ArrayList<String>();
 
-		String indexFileName = GameWorld.inst().getVal(GlobalKeysEnum.INDEX_FILE_NAME);
+		String indexFileName = GameGlobal.getVal(GlobalKeysEnum.INDEX_FILE_NAME);
 		String index = new String(ig.mFiles.get(indexFileName));
-		String[] files = index.split(GameWorld.NEWLINE);
+		String[] files = index.split(GameGlobal.NEWLINE);
 
 		for(String s : files) {			
-			if(s.startsWith(GameWorld.PLUS)) {
+			if(s.startsWith(GameGlobal.PLUS)) {
 				objNames.add(s.substring(1)); //chop off the +
 			}
 		}
@@ -261,7 +261,7 @@ public class GeometryIO {
 	private static Map<String, Map<String, String>> parseDescriptors(IntermediateGeometry ig) {
 		Map<String,Map<String,String>> descriptors = new HashMap<String, Map<String,String>>();
 
-		String descExt = GameWorld.inst().getVal(GlobalKeysEnum.DESCRIPTOR_FILE_EXT);
+		String descExt = GameGlobal.getVal(GlobalKeysEnum.DESCRIPTOR_FILE_EXT);
 
 		for(String s : ig.mObjectNames) {						
 			String descName = s + descExt;

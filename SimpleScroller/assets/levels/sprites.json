@@ -1,0 +1,29 @@
+{
+"frames": {
+    "player_ac":
+    {
+        "frame": {"x":4,"y":6,"w":26,"h":16}
+    },
+    
+    "one_bullet":
+    {
+        "frame": {"x":92,"y":84,"w":2,"h":10}
+    },
+    
+    "pow_1":
+    {
+        "frame": {"x":5,"y":139,"w":15,"h":12}
+    },
+    
+    "enemy_1":
+    {
+        "frame": {"x":5,"y":161,"w":15,"h":13}
+    }
+},
+
+"meta": {
+	"texture": "spritesheet",
+	"size": {"w":327,"h":786},
+	"scale": 1.0
+}
+}

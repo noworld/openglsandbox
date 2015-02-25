@@ -3,12 +3,15 @@ package com.solesurvivor.simplescroller.game.states;
 import java.util.List;
 
 import android.graphics.Point;
+import android.util.SparseArray;
 
+import com.solesurvivor.simplescroller.game.messaging.MessageReceiver;
 import com.solesurvivor.simplescroller.input.InputHandler;
 import com.solesurvivor.simplescroller.scene.Geometry;
+import com.solesurvivor.simplescroller.scene.Node;
 import com.solesurvivor.util.math.Vec3;
 
-public interface GameState {
+public interface GameState extends MessageReceiver {
 	
 	public void enter();
 	
@@ -33,5 +36,11 @@ public interface GameState {
 	public void translateCurrentCamera(Vec3 trans);
 	
 	public void setZoom(float zoom);
+	
+	public SparseArray<MessageReceiver> getDirectory();
+	
+	public Node getScene();
+	
+	public void cullObject(Node n);
 
 }

@@ -1,0 +1,37 @@
+[
+    {
+        "type":"level",
+        "name":"TestLevel",
+    },
+   
+    {
+        "type":"object",
+        "loc":"0.0,1.0"
+    },
+    
+    {
+        "type":"enemy",
+        "loc":"0.0,2.0"
+    },
+    
+    {
+        "type":"event",
+        "loc":"0.0,3.0"
+    },
+    
+    {
+        "type":"script",
+        "id":"zig_zag"
+        "path":"/assets/scripts/ai_script_1.js"
+    },
+    
+    {
+        "type":"sprite",
+        "loc":"0.0,1.0"
+    },
+    
+    {
+        "type":"animation",
+        "loc":"0.0,1.0"
+    },
+]

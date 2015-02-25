@@ -13,7 +13,8 @@ public class GameStateManager {
 	public static void init() {
 		Map<GameStateEnum,GameState> states = new HashMap<GameStateEnum,GameState>();
 		
-		states.put(GameStateEnum.DEFAULT, new MainMenuState());
+//		states.put(GameStateEnum.DEFAULT, new MainMenuState());
+		states.put(GameStateEnum.DEFAULT, new PlayState());
 		states.put(GameStateEnum.MAIN_MENU, new MainMenuState());
 		states.put(GameStateEnum.PLAY, new PlayState());
 

@@ -9,21 +9,37 @@ package com.solesurvivor.simplescroller;
 
 public final class R {
     public static final class array {
-        public static final int global=0x7f060000;
-        public static final int shaderPrograms=0x7f060001;
-        public static final int tex_shader=0x7f060002;
-        public static final int textures_2d=0x7f060003;
+        public static final int game_levels=0x7f060001;
+        public static final int global=0x7f060002;
+        public static final int shaderPrograms=0x7f060003;
+        public static final int sprites=0x7f060000;
+        public static final int tex_shader=0x7f060004;
+        public static final int textures_2d=0x7f060007;
+        public static final int twodee_shader=0x7f060005;
+        public static final int ui_shader=0x7f060006;
     }
     public static final class attr {
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
-        public static final int spritesheet=0x7f020001;
-        public static final int waves=0x7f020002;
+        public static final int bit_water=0x7f020000;
+        public static final int firebutton=0x7f020001;
+        public static final int ghostring=0x7f020002;
+        public static final int greybutton=0x7f020003;
+        public static final int ic_launcher=0x7f020004;
+        public static final int realwater=0x7f020005;
+        public static final int spritesheet=0x7f020006;
+        public static final int testpattern=0x7f020007;
+        public static final int uvgrid=0x7f020008;
+        public static final int waterplain=0x7f020009;
     }
     public static final class raw {
         public static final int f_tex=0x7f030000;
-        public static final int v_tex=0x7f030001;
+        public static final int f_twodee=0x7f030001;
+        public static final int f_ui=0x7f030002;
+        public static final int gray_ui=0x7f030003;
+        public static final int v_tex=0x7f030004;
+        public static final int v_twodee=0x7f030005;
+        public static final int v_ui=0x7f030006;
     }
     public static final class string {
         public static final int app_name=0x7f040000;

@@ -3,7 +3,7 @@ package com.solesurvivor.simplescroller.input;
 import android.content.Context;
 import android.os.Vibrator;
 
-import com.solesurvivor.simplescroller.game.GameWorld;
+import com.solesurvivor.simplescroller.rendering.RendererManager;
 
 public class TouchFeedback {
 
@@ -12,7 +12,7 @@ public class TouchFeedback {
 	private static Vibrator vibrator;
 	
 	public static void init() {
-		Context context = GameWorld.inst().getContext();
+		Context context = RendererManager.getContext();
 		vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
 	}
 	

@@ -2,11 +2,23 @@
     
      <array name="shaderPrograms">
         <item>@array/tex_shader</item>
+        <item>@array/twodee_shader</item>
+        <item>@array/ui_shader</item>
     </array>
 
     <array name="tex_shader">
         <item >@raw/v_tex</item> 
         <item >@raw/f_tex</item>  
+    </array>
+    
+    <array name="twodee_shader">
+        <item >@raw/v_twodee</item> 
+        <item >@raw/f_twodee</item>  
+    </array>
+    
+    <array name="ui_shader">
+        <item >@raw/v_ui</item> 
+        <item >@raw/f_ui</item>  
     </array>
 
 </resources>

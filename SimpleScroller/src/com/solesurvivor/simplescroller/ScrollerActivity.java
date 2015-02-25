@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.solesurvivor.simplescroller.game.GameWorld;
+import com.solesurvivor.simplescroller.game.GameGlobal;
 import com.solesurvivor.simplescroller.input.InputEvent;
 import com.solesurvivor.simplescroller.input.InputEventBus;
 import com.solesurvivor.simplescroller.input.InputEventEnum;
@@ -35,9 +35,9 @@ public class ScrollerActivity extends Activity {
 			final boolean es2 = activityManager.getDeviceConfigurationInfo().reqGlEsVersion >= GL_VERSION;
 			if (es2) {
 				Context c = getApplicationContext();
-				RendererManager.init(c);
-				setContentView(RendererManager.getSurfaceView());	
-				GameWorld.init(c, getWindowManager());
+				GameGlobal.init(c);
+				RendererManager.init(c, getWindowManager(), getAssets());
+				setContentView(RendererManager.getSurfaceView());					
 			}
 			
 			initialized = true;

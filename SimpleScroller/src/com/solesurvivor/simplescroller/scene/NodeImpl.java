@@ -1,14 +1,17 @@
 package com.solesurvivor.simplescroller.scene;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import android.opengl.Matrix;
 
+import com.solesurvivor.simplescroller.game.messaging.GameMessage;
 import com.solesurvivor.util.math.Vec3;
 
 public class NodeImpl implements Node {
 
+	protected String name;
 	protected List<Node> children;
 	protected Vec3 position;
 	protected float[] transMatrix;
@@ -17,11 +20,13 @@ public class NodeImpl implements Node {
 	protected float[] worldMatrix;
 	protected float[] tempMatrix;
 	protected boolean dirty = true;
+	protected boolean alive = true;
 	protected Node parent;
 
 	public NodeImpl() {		
+		name = java.util.UUID.randomUUID().toString();
 		position = Vec3.createZeroVec3();
-		children = new ArrayList<Node>();
+		children = Collections.synchronizedList(new ArrayList<Node>());
 		transMatrix = new float[16];
 		rotMatrix = new float[16];
 		scaleMatrix = new float[16];
@@ -39,10 +44,16 @@ public class NodeImpl implements Node {
 		this.parent = parent;
 	}
 	
+	public NodeImpl(String name) {
+		this();
+		this.name = name;
+	}
+	
 	public Vec3 getPosition() {
 		return position;
 	}
 	
+	@Override
 	public Node getParent() {
 		return parent;
 	}
@@ -63,8 +74,10 @@ public class NodeImpl implements Node {
 			this.dirty = true;
 		}
 
-		for(Node n : children) {
-			n.update();
+		synchronized(children) {
+			for(Node n : children) {
+				n.update();
+			}
 		}
 		
 		//e.g. postUpdate();
@@ -77,10 +90,20 @@ public class NodeImpl implements Node {
 		renderChildren();
 	}
 
-	//XXX Change to also link up the parent
 	@Override
 	public void addChild(Node n) {
-		children.add(n);
+		synchronized(children) {
+			children.add(n);
+			n.setParent(this);
+		}
+	}
+	
+	@Override
+	public void removeChild(Node n) {
+		synchronized(children) {
+			children.remove(n);
+			n.setParent(null);
+		}
 	}
 
 	@Override
@@ -98,7 +121,8 @@ public class NodeImpl implements Node {
 	@Override
 	public void translate(Vec3 trans) {
 		position.add(trans);
-		Matrix.translateM(transMatrix, 0, trans.getX(), trans.getY(), trans.getZ());
+		Matrix.setIdentityM(transMatrix, 0);
+		Matrix.translateM(transMatrix, 0, position.getX(), position.getY(), position.getZ());
 		dirty = true;
 	}
 
@@ -116,10 +140,9 @@ public class NodeImpl implements Node {
 	@Override
 	public float[] getTransMatrix() {
 		
-		if(dirty) {
-			recalcMatrix();
-//			mDirty = false;
-		}
+//		if(dirty) {
+//			recalcMatrix();
+//		}
 		
 		return transMatrix;
 	}
@@ -127,6 +150,15 @@ public class NodeImpl implements Node {
 	@Override
 	public boolean isDirty() {
 		return dirty;
+	}
+	
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	protected void renderChildren() {
@@ -148,5 +180,21 @@ public class NodeImpl implements Node {
 		} else {
 			System.arraycopy(tempMatrix, 0, worldMatrix, 0, tempMatrix.length);
 		}
+	}
+
+	@Override
+	public void receive(GameMessage message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isAlive() {
+		return alive;
+	}
+
+	@Override
+	public void setAlive(boolean alive) {
+		this.alive = alive;
 	}
 }

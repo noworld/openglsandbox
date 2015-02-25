@@ -1,195 +1,131 @@
 package com.solesurvivor.simplescroller.scene.water;
 
-import java.util.List;
-
 import android.graphics.Point;
 import android.opengl.Matrix;
+import android.os.SystemClock;
 
-import com.solesurvivor.simplescroller.rendering.BaseRenderer;
+import com.solesurvivor.simplescroller.game.messaging.GameMessage;
+import com.solesurvivor.simplescroller.rendering.DrawingConstants;
 import com.solesurvivor.simplescroller.rendering.RendererManager;
+import com.solesurvivor.simplescroller.rendering.ScrollerRenderer;
 import com.solesurvivor.simplescroller.rendering.ShaderManager;
 import com.solesurvivor.simplescroller.rendering.TextureManager;
-import com.solesurvivor.simplescroller.scene.Drawable;
-import com.solesurvivor.simplescroller.scene.Light;
-import com.solesurvivor.simplescroller.scene.Node;
-import com.solesurvivor.util.SSArrayUtil;
+import com.solesurvivor.simplescroller.scene.Rectangle;
+import com.solesurvivor.util.logging.SSLog;
 import com.solesurvivor.util.math.Vec3;
 
-public class Water implements Node {
+public class Water extends Rectangle {
 
-	
-	float[] verts;
-	int datHandle;
-	int idxHandle;
-	protected short[] indexes = {0,2,1,1,2,3};
+	private static final String TAG = Water.class.getSimpleName();
+	private static final String TEXTURE_NAME = "bit_water";
+	private static final float WATER_SIZE = 150.0f;	
+	private static final Vec3 PUSHBACK = new Vec3(0, 0, -5.0f);
+	private static final Vec3 WATER_SCALE = new Vec3(WATER_SIZE, WATER_SIZE, 0.0f);
+
 	protected boolean dirty = true;
-	protected float[] matrix;
-	protected Point dim;
-	
 	protected int texture;
 	protected int shader;
-	protected BaseRenderer ren;
-	protected Drawable draw;
-	
-	public Water(Point dimensions) {
-		this.dim = dimensions;
-		matrix = new float[dim.x * dim.y * 16];
-		float aspectWidth = ((float)dim.x)/((float)dim.y);
-		verts = new float[]{
-				/*vvv*/-aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,1.0f,
-				/*vvv*/ aspectWidth,  1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,1.0f,
-				/*vvv*/-aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 1.0f,0.0f,
-				/*vvv*/ aspectWidth, -1.0f, 0.0f, /*nnn*/ 0.0f,0.0f,-1.0f, /*cc*/ 0.0f,0.0f};
+	protected float[] gridMatrix;
+	protected ScrollerRenderer ren;
+	private double totalTrans = 0;
+	int scrollRow = 0;
+	int numRows = -1;
+	int numColumns = -1;
+
+	public Water(Point dim) {
+		super(dim);
 		ren = RendererManager.getRenderer();
-		datHandle = ren.loadToVbo(SSArrayUtil.floatToByteArray(verts));
-		idxHandle = ren.loadToIbo(SSArrayUtil.shortToByteArray(indexes));
-		texture = TextureManager.getTextureId("waves");
-		shader = ShaderManager.getShaderId("tex_shader");
-		Matrix.setIdentityM(matrix, 0);
-		draw = new Drawable(){
-			
-			protected int posSize = 3;
-			protected int nrmSize = 3;
-			protected int txcSize = 2;
-			protected int numElements = 6;
-			protected int elementStride = 32;
-			protected int posOffset = 0;
-			protected int nrmOffset = 12;
-			protected int txcOffset = 24;
-			protected int shaderHandle = shader;
-			protected int textureHandle = texture;
-			protected int datBufHandle = datHandle;
-			protected int idxBufHandle = idxHandle;
-			
-			@Override
-			public int getShaderHandle() {
-				return shaderHandle;
-			}
+		shader = ShaderManager.getShaderId("twodee_shader");
+		texture = TextureManager.getTextureId(TEXTURE_NAME,"uvgrid");
+		this.scale(WATER_SCALE);
+		this.translate(getTransalation());
+		this.changeState(new WaterAnimationState());		
+		gridMatrix = createGridMatrix();
 
-			@Override
-			public int getTextureHandle() {
-				return textureHandle;
-			}
+	}	
 
-			@Override
-			public int getDatBufHandle() {
-				return datBufHandle;
-			}
-
-			@Override
-			public int getIdxBufHandle() {
-				return idxBufHandle;
-			}
-
-			@Override
-			public int getPosSize() {
-				return posSize;
-			}
-
-			@Override
-			public int getNrmSize() {
-				return nrmSize;
-			}
-
-			@Override
-			public int getTxcSize() {
-				return txcSize;
-			}
-
-			@Override
-			public int getNumElements() {
-				return numElements;
-			}
-
-			@Override
-			public int getElementStride() {
-				return elementStride;
-			}
-
-			@Override
-			public int getElementOffset() {
-				return 0;
-			}
-
-			@Override
-			public int getPosOffset() {
-				return posOffset;
-			}
-
-			@Override
-			public int getNrmOffset() {
-				return nrmOffset;
-			}
-
-			@Override
-			public int getTxcOffset() {
-				return txcOffset;
-			}
-
-			@Override
-			public float[] getWorldMatrix() {
-				return null;
-			}
-
-			@Override
-			public List<Light> getLights() {
-				return null;
-			}
-			
-		};
+	protected Vec3 getTransalation() {
+		Point view = RendererManager.getViewport();
+		Vec3 trans = new Vec3(-view.x/2, -view.y/2, 0);
+		trans.add(PUSHBACK);
+		return trans;
 	}
-	
+
+	public float[] getGridMatrix() {
+		return gridMatrix;
+	}
+
 	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-		
+	public void receive(GameMessage message) {
+		SSLog.d(TAG, "Received message: %s at %s", message.getData(), SystemClock.uptimeMillis());
+	}
+
+	@Override
+	public int getShaderHandle() {
+		return shader;
+	}
+
+	@Override
+	public int getTextureHandle() {
+		return texture;
+	}
+
+	@Override
+	public int getElementOffset() {
+		return 0;
 	}
 
 	@Override
 	public void render() {
-		ren.drawGeometry(draw, matrix);	
+		ren.drawWater(this);
+		super.render();
+	}
+	
+	public void translateAnimation(Vec3 trans) {
+		totalTrans += trans.getY();
+		double watersz = WATER_SIZE * 2.0;
+		if(totalTrans > watersz) {
+			super.translate(new Vec3(0.0f,(float)-totalTrans,0.0f));
+			totalTrans = totalTrans % watersz;
+			super.translate(new Vec3(0.0f,(float)totalTrans,0.0f));
+		} else if(totalTrans < -watersz) {
+			super.translate(new Vec3(0.0f,(float)-totalTrans,0.0f));
+			totalTrans = totalTrans % watersz;
+			super.translate(new Vec3(0.0f,(float)totalTrans,0.0f));
+		}else {
+			super.translate(trans);
+		}
 	}
 
 	@Override
-	public void scale(Vec3 axes) {
-		// TODO Auto-generated method stub
+	protected void recalcMatrix() {
+		Matrix.multiplyMM(worldMatrix, 0, transMatrix, 0, scaleMatrix, 0);
+	}
+
+	protected float[] createGridMatrix() {
+
+		Point view = RendererManager.getViewport();
+
+		numRows = (view.x / ((int)WATER_SIZE));
+		numColumns = (view.y / ((int)WATER_SIZE));
+
+		int size =  numRows * numColumns;
 		
-	}
+		SSLog.d(TAG, "Grid Size (RxC): %s x %s", numRows, numColumns);
 
-	@Override
-	public void rotate(float angle, Vec3 axes) {
-		// TODO Auto-generated method stub
-		
-	}
+		float[] matrix = new float[DrawingConstants.MATRIX_SIZE * size];
 
-	@Override
-	public void translate(Vec3 trans) {
-		// TODO Auto-generated method stub
-		
-	}
+		for(int i = 0; i < numRows; i++) {
+			for(int j = 0; j < numColumns; j++) {
+				int index = (i * numColumns * DrawingConstants.MATRIX_SIZE) + (j * DrawingConstants.MATRIX_SIZE);
+				Matrix.setIdentityM(matrix, index);
+				float x = i * WATER_SIZE * 2.0f;
+				float y = j * WATER_SIZE * 2.0f;
+				Matrix.translateM(matrix, index, x, y, 0);
+			}
+		}
 
-	@Override
-	public void addChild(Node n) {
-		// TODO Auto-generated method stub
-		
+		return matrix;
 	}
-
-	@Override
-	public boolean isDirty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public float[] getWorldMatrix() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public float[] getTransMatrix() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 }

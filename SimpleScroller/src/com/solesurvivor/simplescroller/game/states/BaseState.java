@@ -5,13 +5,17 @@ import java.util.List;
 
 import android.graphics.Point;
 import android.os.SystemClock;
+import android.util.SparseArray;
 
+import com.solesurvivor.simplescroller.game.messaging.GameMessage;
+import com.solesurvivor.simplescroller.game.messaging.MessageReceiver;
 import com.solesurvivor.simplescroller.input.InputEventBus;
 import com.solesurvivor.simplescroller.input.InputHandler;
 import com.solesurvivor.simplescroller.input.InputUiElement;
 import com.solesurvivor.simplescroller.rendering.RendererManager;
 import com.solesurvivor.simplescroller.scene.Camera;
 import com.solesurvivor.simplescroller.scene.Geometry;
+import com.solesurvivor.simplescroller.scene.Node;
 import com.solesurvivor.simplescroller.scene.StatefulNodeImpl;
 import com.solesurvivor.util.math.Vec3;
 
@@ -24,17 +28,19 @@ public class BaseState implements GameState {
 	private static final String TAG = BaseState.class.getSimpleName();
 	private static final Vec3 BG_COLOR = new Vec3(0.7f, 0.7f, 0.7f);
 	
+	protected final String name = java.util.UUID.randomUUID().toString();
 	protected Vec3 bgColor = BG_COLOR;
 	protected Camera camera;
 	protected float zoom;
 	protected Long deltaT;
 	protected Long lastT = SystemClock.uptimeMillis();
+	protected SparseArray<MessageReceiver> gameObjects = new SparseArray<MessageReceiver>();	
 	protected StatefulNodeImpl scene = new StatefulNodeImpl();
 	protected List<InputHandler> inputHandlers = new ArrayList<InputHandler>();
 	protected List<Geometry> ui = new ArrayList<Geometry>();
 	
 	public BaseState() {
-		camera = new Camera();
+		camera = new Camera();		
 	}
 	
 	@Override
@@ -51,6 +57,7 @@ public class BaseState implements GameState {
 		lastT = tempT;
 		InputEventBus.inst().executeCommands(inputHandlers);
 		scene.update();
+		cullDeadObjects();
 	}
 
 	@Override
@@ -117,6 +124,45 @@ public class BaseState implements GameState {
 	@Override
 	public void translateCurrentCamera(Vec3 trans) {
 		this.camera.translate(trans);
+	}
+	
+	@Override
+	public Node getScene() {
+		return scene;
+	}	
+
+	@Override
+	public SparseArray<MessageReceiver> getDirectory() {
+		return gameObjects;
+	}
+
+	@Override
+	public void cullObject(Node n) {
+		gameObjects.remove(n.getName().hashCode());
+		n.getParent().removeChild(n);
+	}
+	
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	@Override
+	public void receive(GameMessage message) {
+		// TODO Auto-generated method stub
+	}
+
+	protected void cullDeadObjects() {
+		for(int i = 0; i < gameObjects.size(); i++) {
+			int key = gameObjects.keyAt(i);
+			MessageReceiver mr = gameObjects.get(key);
+			if(mr instanceof Node) {
+				Node n = (Node)mr;
+				if(!n.isAlive()) {
+					cullObject(n);
+				}
+			}
+		}
 	}
 
 }

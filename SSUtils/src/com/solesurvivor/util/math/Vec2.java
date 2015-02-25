@@ -1,5 +1,7 @@
 package com.solesurvivor.util.math;
 
+import android.graphics.Point;
+
 public class Vec2 {
 
 	@SuppressWarnings("unused")
@@ -109,4 +111,11 @@ public class Vec2 {
 		return new Vec2(f[0],f[1]);
 	}
 
+	public static Vec2 createZeroVec2() {
+		return new Vec2(0.0f,0.0f);
+	}
+	
+	public static Vec2 fromPoint(Point p) {
+		return new Vec2(p.x, p.y);
+	}
 }

@@ -15,8 +15,11 @@ public class Camera {
 	protected boolean viewDirty = false;
 	protected float[] projectionMatrix  = new float[16];
 	protected float[] orthoMatrix = new float[16];
-	protected float[] eyePos = {0.0f, 2.0f, 0.0f};
-	protected float[] lookVector = {0.0f, 2.0f, -1.0f};
+//	protected float[] eyePos = {0.0f, 2.0f, 0.0f};
+//	protected float[] lookVector = {0.0f, 2.0f, -1.0f};
+//	protected float[] upVector = {0.0f, 1.0f, 0.0f};
+	protected float[] eyePos = {0.0f, 0.0f, 1.0f};
+	protected float[] lookVector = {0.0f, 0.0f, -1.0f};
 	protected float[] upVector = {0.0f, 1.0f, 0.0f};	
 	protected Point viewport = new Point(0,0);
 	protected float near = 1.0f;

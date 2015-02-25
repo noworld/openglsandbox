@@ -1,16 +1,18 @@
 package com.solesurvivor.simplescroller.scene;
 
+import com.solesurvivor.simplescroller.scene.gameobjects.behavior.NodeState;
+
 
 public class StatefulNodeImpl extends NodeImpl {
 	
-	protected NodeState<NodeImpl> currentState;
-	protected NodeState<NodeImpl> previousState;
+	protected NodeState currentState;
+	protected NodeState previousState;
 	
-	public NodeState<? extends NodeImpl> getCurrentState() {
+	public NodeState getCurrentState() {
 		return currentState;
 	}
 	
-	public boolean changeState(NodeState<NodeImpl> state) {
+	public boolean changeState(NodeState state) {
 
 		if(currentState != null) {
 			currentState.exit(this);
@@ -31,20 +33,21 @@ public class StatefulNodeImpl extends NodeImpl {
 	@Override
 	public void update() {
 
-		if(dirty || (parent != null && parent.isDirty())) {
-			recalcMatrix();
-			this.dirty = true;
-		}
-		
 		if(currentState != null) {
 			currentState.execute(this);
 		}
 
-		for(Node n : children) {
-			n.update();
+		synchronized(this) {
+			for(Node n : children) {
+				n.update();
+			}
 		}
 		
-		this.dirty = false;
+		if(dirty || (parent != null && parent.isDirty())) {
+			this.dirty = false;
+			recalcMatrix();			
+		}
+		
 	}
 
 }

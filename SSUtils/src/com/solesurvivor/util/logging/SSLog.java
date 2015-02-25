@@ -104,7 +104,7 @@ public class SSLog {
 		return w(tag, String.format(msg, params));
 	}
 	
-	public static int d(String tag, String msg, Throwable tr, Object... params) {
+	public static int w(String tag, String msg, Throwable tr, Object... params) {
 		return d(tag, String.format(msg, params), tr);
 	}
 	

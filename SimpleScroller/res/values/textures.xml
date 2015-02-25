@@ -2,7 +2,14 @@
     
     <array name="textures_2d">
         <item>@drawable/spritesheet</item>
-        <item>@drawable/waves</item>
+        <item>@drawable/uvgrid</item>
+        <item>@drawable/bit_water</item>
+        <item>@drawable/realwater</item>
+        <item>@drawable/testpattern</item>
+        <item>@drawable/waterplain</item>
+        <item>@drawable/ghostring</item>
+        <item>@drawable/greybutton</item>
+        <item>@drawable/firebutton</item>
     </array>
 
 </resources>

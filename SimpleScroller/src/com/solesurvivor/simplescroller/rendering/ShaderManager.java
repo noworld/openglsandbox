@@ -13,7 +13,6 @@ import android.content.res.TypedArray;
 import android.util.Log;
 
 import com.solesurvivor.simplescroller.R;
-import com.solesurvivor.simplescroller.game.GameWorld;
 
 public class ShaderManager {
 	
@@ -61,7 +60,7 @@ public class ShaderManager {
 	}
 	
 	private static void loadShaders() {
-		Resources res = GameWorld.inst().getContext().getResources();
+		Resources res = RendererManager.getContext().getResources();
 		BaseRenderer ren = RendererManager.getRenderer();
 		
 		TypedArray shaderPrograms = res.obtainTypedArray(R.array.shaderPrograms);		

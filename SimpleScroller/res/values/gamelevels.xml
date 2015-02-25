@@ -1,0 +1,11 @@
+<resources>
+    
+    <array name="sprites">
+        <item>levels/sprites.json</item>
+    </array>
+    
+    <array name="game_levels">
+        <item>levels/level001.json</item>
+    </array>
+
+</resources>

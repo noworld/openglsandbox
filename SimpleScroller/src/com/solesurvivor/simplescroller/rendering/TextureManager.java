@@ -13,7 +13,6 @@ import android.opengl.ETC1Util;
 import android.util.Log;
 
 import com.solesurvivor.simplescroller.R;
-import com.solesurvivor.simplescroller.game.GameWorld;
 
 public class TextureManager {
 	
@@ -63,7 +62,7 @@ public class TextureManager {
 
 	private static void load2DTextures() {
 
-		Resources res =  GameWorld.inst().getContext().getResources();
+		Resources res =  RendererManager.getContext().getResources();
 		BaseRenderer ren = RendererManager.getRenderer();
 
 		TypedArray textureResources = res.obtainTypedArray(R.array.textures_2d);

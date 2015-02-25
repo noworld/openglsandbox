@@ -50,5 +50,5 @@ public class InputEvent {
 	public void setControlCenter(PointF controlCenter) {
 		this.controlCenter = controlCenter;
 	}
-	
+
 }

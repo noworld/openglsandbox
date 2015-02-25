@@ -5,9 +5,12 @@ import java.util.List;
 
 import android.opengl.Matrix;
 
+import com.solesurvivor.simplescroller.game.messaging.GameMessage;
+import com.solesurvivor.simplescroller.game.messaging.GameMessageEnum;
+import com.solesurvivor.simplescroller.game.messaging.MessageReceiver;
 import com.solesurvivor.util.math.Vec3;
 
-public class Geometry implements Drawable {
+public class Geometry implements Drawable, MessageReceiver {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = Geometry.class.getSimpleName();
@@ -231,6 +234,16 @@ public class Geometry implements Drawable {
 		Matrix.scaleM(worldMatrix, 0, scaleFac.getX(), scaleFac.getY(), scaleFac.getZ());
 
 		mDirty = false;
+	}
+
+	@Override
+	public void receive(GameMessage message) {
+		if(message.getMessage().equals(GameMessageEnum.RESET_TRANSFORMS)) {
+			this.resetTransforms();
+			if(message.getData() != null && message.getData() instanceof Vec3) {
+				this.translate((Vec3)message.getData());
+			}
+		}
 	}
 
 }

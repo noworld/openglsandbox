@@ -22,6 +22,7 @@ import com.solesurvivor.simplescroller.game.GameWorld;
 import com.solesurvivor.simplescroller.scene.Camera;
 import com.solesurvivor.simplescroller.scene.Drawable;
 import com.solesurvivor.simplescroller.scene.Geometry;
+import com.solesurvivor.simplescroller.scene.gameobjects.SpriteManager;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.logging.SSLog;
 import com.solesurvivor.util.math.Vec3;
@@ -63,6 +64,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceCreated(GL10 arg0, EGLConfig arg1) {
 		ShaderManager.init();
 		TextureManager.init();
+		SpriteManager.init();
+		GameWorld.init();		
 		GameWorld.inst().enter();
 	}
 	
