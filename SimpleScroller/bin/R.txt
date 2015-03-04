@@ -14,8 +14,9 @@ int drawable ic_launcher 0x7f020004
 int drawable realwater 0x7f020005
 int drawable spritesheet 0x7f020006
 int drawable testpattern 0x7f020007
-int drawable uvgrid 0x7f020008
-int drawable waterplain 0x7f020009
+int drawable tex_water 0x7f020008
+int drawable uvgrid 0x7f020009
+int drawable waterplain 0x7f02000a
 int raw f_tex 0x7f030000
 int raw f_twodee 0x7f030001
 int raw f_ui 0x7f030002

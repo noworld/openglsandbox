@@ -29,8 +29,9 @@ public final class R {
         public static final int realwater=0x7f020005;
         public static final int spritesheet=0x7f020006;
         public static final int testpattern=0x7f020007;
-        public static final int uvgrid=0x7f020008;
-        public static final int waterplain=0x7f020009;
+        public static final int tex_water=0x7f020008;
+        public static final int uvgrid=0x7f020009;
+        public static final int waterplain=0x7f02000a;
     }
     public static final class raw {
         public static final int f_tex=0x7f030000;
