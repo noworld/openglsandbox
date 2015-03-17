@@ -15,7 +15,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import android.content.res.Resources;
-import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2_5.commands.Command;
 import com.solesurvivor.simplerender2_5.commands.CommandEnum;
@@ -32,6 +31,8 @@ import com.solesurvivor.simplerender2_5.scene.GeometryBones;
 import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
 import com.solesurvivor.simplerender2_5.scene.animation.Armature;
 import com.solesurvivor.simplerender2_5.scene.animation.Bone;
+import com.solesurvivor.simplerender2_5.scene.animation.Pose;
+import com.solesurvivor.simplerender2_5.scene.animation.PoseLibrary;
 import com.solesurvivor.util.SSArrayUtil;
 import com.solesurvivor.util.SSPropertyUtil;
 import com.solesurvivor.util.logging.SSLog;
@@ -310,6 +311,51 @@ public class GeometryIO {
 		return geoList;
 	}
 	
+	public static Map<String,PoseLibrary> lodePoseLibrary(int resId) throws IOException {
+		
+		Map<String,PoseLibrary> poseLibs = new HashMap<String,PoseLibrary>();
+		Map<String,IntermediateArmature> interArms = parseIntermediateArmature(resId); 
+		
+		for(String key : interArms.keySet()) {
+			IntermediateArmature interArm = interArms.get(key);
+			Map<String,Pose> poses = new HashMap<String,Pose>();
+			
+			for(String poseKey : interArm.boneData.keySet()) {
+				String data = interArm.boneData.get(poseKey);
+				if(data != null) {
+					float[] poseMatrix = SSArrayUtil.parseFloatArray(data, ",");
+					Pose p = new Pose(poseKey, poseMatrix);
+					poses.put(poseKey, p);
+				}
+			}
+			
+			Pose restPose = poses.get("Rest");
+			poses.remove("Rest");
+			Pose restPoseInv = poses.get("RestInv");
+			poses.remove("RestInv");
+			
+			if(DEBUG) {
+				SSLog.d(TAG, "\nBONE INV BIND MATRIX: %s", "REST POSE");
+				for(int i = 0; i < restPose.getBones().length; i++) {
+					if(i % 16 == 0) {
+						SSLog.d(TAG, "----------------------------\n");
+					}
+					SSLog.d(TAG, "MATRIX INDEX %s: %s", i, restPose.getBones()[i]);					
+				}
+				SSLog.d(TAG, "----------------------------\n");
+			}
+			
+			PoseLibrary poseLib = new PoseLibrary(interArm.name, restPose, restPoseInv);
+			for(String poseKey : poses.keySet()) {
+				Pose p = poses.get(poseKey);
+				poseLib.addPose(poseKey, p);
+			}
+			poseLibs.put(key, poseLib);
+		}
+		
+		return poseLibs;
+	}
+	
 	public static Map<String,Armature> loadArmatureMap(int resId) throws IOException {
 		Map<String,Armature> armList = new HashMap<String,Armature>();
 
@@ -352,13 +398,13 @@ public class GeometryIO {
 					}
 					
 
-					if(DEBUG) {
-						SSLog.d(TAG, "\nBONE MATRIX: %s", b.getName());
-						for(int i = 0; i < tempM.length; i++) {
-							SSLog.d(TAG, "MATRIX INDEX %s: %s", i, tempM[i]);
-						}
-						SSLog.d(TAG, "----------------------------\n");
-					}
+//					if(DEBUG) {
+//						SSLog.d(TAG, "\nBONE MATRIX: %s", b.getName());
+//						for(int i = 0; i < tempM.length; i++) {
+//							SSLog.d(TAG, "MATRIX INDEX %s: %s", i, tempM[i]);
+//						}
+//						SSLog.d(TAG, "----------------------------\n");
+//					}
 					
 					b.setMatrix(tempM);
 			
@@ -370,9 +416,9 @@ public class GeometryIO {
 					
 					Vec3 head = Vec3.fromFloatArray(loc);
 
-					if(DEBUG) {
-						SSLog.d(TAG, "\nBONE HEAD %s: %s", b.getName(), head.prettyString());
-					}
+//					if(DEBUG) {
+//						SSLog.d(TAG, "\nBONE HEAD %s: %s", b.getName(), head.prettyString());
+//					}
 					
 					b.setHead(head);
 				}  else if(boneKey.endsWith("_BIND")) {
@@ -382,13 +428,13 @@ public class GeometryIO {
 					}
 					
 
-					if(DEBUG) {
-						SSLog.d(TAG, "\nBONE BIND MATRIX: %s", b.getName());
-						for(int i = 0; i < tempM.length; i++) {
-							SSLog.d(TAG, "MATRIX INDEX %s: %s", i, tempM[i]);
-						}
-						SSLog.d(TAG, "----------------------------\n");
-					}
+//					if(DEBUG) {
+//						SSLog.d(TAG, "\nBONE BIND MATRIX: %s", b.getName());
+//						for(int i = 0; i < tempM.length; i++) {
+//							SSLog.d(TAG, "MATRIX INDEX %s: %s", i, tempM[i]);
+//						}
+//						SSLog.d(TAG, "----------------------------\n");
+//					}
 					
 					b.setBindMatrix(tempM);
 				} else if(boneKey.endsWith("_INVBIND")) {
@@ -455,28 +501,28 @@ public class GeometryIO {
 		return armList;
 	}
 	
-	private static Map<String, Bone> rotateBones(Map<String, Bone> bones) {
-	
-		for(String s: bones.keySet()) {
-			Bone b = bones.get(s);
-			
-			if(b.getMatrix() == null) {
-				SSLog.e(TAG, "NULL MATRIX FOUND FOR BONE %s", b.getName());
-			} else if(b.getHead() == null) {
-				SSLog.e(TAG, "NULL HEAD FOUND FOR BONE %s", b.getName());
-			}
-			
-			float[] tempM = new float[16];			
-			Matrix.setIdentityM(tempM, 0);
-			Matrix.translateM(tempM, 0, b.getHead().getX(), b.getHead().getY(), b.getHead().getZ());
-			
-			float[] matrix = new float[16];
-			Matrix.multiplyMM(matrix, 0, tempM, 0, b.getMatrix(), 0);
-			b.setMatrix(matrix);
-		}
-		
-		return bones;
-	}
+//	private static Map<String, Bone> rotateBones(Map<String, Bone> bones) {
+//	
+//		for(String s: bones.keySet()) {
+//			Bone b = bones.get(s);
+//			
+//			if(b.getMatrix() == null) {
+//				SSLog.e(TAG, "NULL MATRIX FOUND FOR BONE %s", b.getName());
+//			} else if(b.getHead() == null) {
+//				SSLog.e(TAG, "NULL HEAD FOUND FOR BONE %s", b.getName());
+//			}
+//			
+//			float[] tempM = new float[16];			
+//			Matrix.setIdentityM(tempM, 0);
+//			Matrix.translateM(tempM, 0, b.getHead().getX(), b.getHead().getY(), b.getHead().getZ());
+//			
+//			float[] matrix = new float[16];
+//			Matrix.multiplyMM(matrix, 0, tempM, 0, b.getMatrix(), 0);
+//			b.setMatrix(matrix);
+//		}
+//		
+//		return bones;
+//	}
 
 	private static Bone[] convertToBoneArray(Map<String, Bone> bones) {
 		Bone[] boneArray = new Bone[bones.size()];
@@ -558,10 +604,31 @@ public class GeometryIO {
 		return zipFiles;
 	}
 	
+//	private static Map<String,IntermediateArmature> parseIntermediateArmature(int resId) throws IOException {
+//		Map<String,IntermediateArmature> interArms = new HashMap<String,IntermediateArmature>();
+//		Resources res = GameGlobal.inst().getContext().getResources();
+////		String resourceName = res.getResourceEntryName(resId);			
+//		InputStream is = res.openRawResource(resId);
+//		Map<String, byte[]> files = parseFiles(is);
+//		
+//		for(String key : files.keySet()) {
+//			if(key.endsWith(".arm")) {
+//				Map<String,String> boneData = SSPropertyUtil.parseFromString(new String(files.get(key)));
+//				String name = boneData.get("ARMATURE");
+//				boneData.remove("ARMATURE");
+//				IntermediateArmature ia = new IntermediateArmature();
+//				ia.name = name;
+//				ia.boneData = boneData;
+//				interArms.put(name, ia);
+//			}
+//		}
+//		
+//		return interArms;
+//	}
+	
 	private static Map<String,IntermediateArmature> parseIntermediateArmature(int resId) throws IOException {
 		Map<String,IntermediateArmature> interArms = new HashMap<String,IntermediateArmature>();
-		Resources res = GameGlobal.inst().getContext().getResources();
-//		String resourceName = res.getResourceEntryName(resId);			
+		Resources res = GameGlobal.inst().getContext().getResources();	
 		InputStream is = res.openRawResource(resId);
 		Map<String, byte[]> files = parseFiles(is);
 		

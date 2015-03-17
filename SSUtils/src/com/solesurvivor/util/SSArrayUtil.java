@@ -25,7 +25,6 @@ public class SSArrayUtil {
 	}
 	
 	public static ByteBuffer bytesToByteBufBigEndian(byte[] bytes) {
-		byte[] floats = new byte[bytes.length];
 		ByteBuffer bBuf = ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN);
 		bBuf.rewind();
 		return bBuf;

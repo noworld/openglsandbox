@@ -19,6 +19,7 @@ import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.GeometryBones;
 import com.solesurvivor.simplerender2_5.scene.MapGrid;
 import com.solesurvivor.simplerender2_5.scene.animation.Armature;
+import com.solesurvivor.simplerender2_5.scene.animation.PoseLibrary;
 import com.solesurvivor.simplerender2_5.scene.nodestates.MatchHeadingWithDirectionState;
 import com.solesurvivor.util.math.Vec3;
 
@@ -84,13 +85,18 @@ public class GridMapState extends BaseState {
 			MapGrid mapGrid = new MapGrid();
 			mScene.addChild(mapGrid);
 			
-			Map<String,Armature> arms = GeometryIO.loadArmatureMap(R.raw.rigged);
+			Map<String,PoseLibrary> animLibs = GeometryIO.lodePoseLibrary(R.raw.rigged);
+			PoseLibrary poseLib = animLibs.get("Armature.003");
+			Map<String,Armature> arms = GeometryIO.loadArmatureMap(R.raw.rigged2);
 			Armature arm = arms.get("Armature.003");
 //			Armature arm = arms.get("Arm.Cube");
 //			Armature arm = arms.get("Arm.Box");
 			
 //			arm.updateBones();
 			((GeometryBones)arrow).setArmature(arm);
+			((GeometryBones)arrow).setPose(poseLib.getPose("ArmUp"));
+			((GeometryBones)arrow).setRestPose(poseLib.getRestPose());
+			((GeometryBones)arrow).setRestPoseInv(poseLib.getRestPoseInv());
 			
 //			float[] mat = new float[16];
 //			Matrix.setIdentityM(mat, 0);

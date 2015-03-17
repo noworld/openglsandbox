@@ -55,13 +55,100 @@ rot_y_up = mathutils.Matrix.Rotation(math.radians(90.0),4,'X')
 def cross_z(p1, p2, p3):
     return ((p2.x-p1.x) * (p3.y-p1.y)) - ((p2.y-p1.y) * (p3.x-p1.x));
     
-def write_armature_files(obj, scene, childMesh):
+def write_armature_pose_files(obj, scene, childMesh):
     file_name = obj.name
+    print("File name is: ",file_name)
     scene.objects.active = obj
     arm = obj.data
     armDesc = ""
+    poseNames = ""
     bone_indexes = {}
     armDesc += "ARMATURE=%s\n" % arm.name
+    
+    for i in range(len(obj.pose_library.pose_markers)):
+        if(poseNames != ""):
+            poseNames += ","        
+        poseName =  obj.pose_library.pose_markers[i].name
+        poseNames += poseName
+        bpy.ops.poselib.apply_pose(pose_index=i)
+        poseStr = ""
+        for j in range(len(arm.bones)):
+            if(poseStr != ""):
+                poseStr += ","
+            boneMatrix = (obj.pose.bones[j].matrix)
+            print("Bone: ",obj.pose.bones[j].name)
+            boneMatrix = boneMatrix.transposed() * rot_y_up
+            bone_matrix_str = str(boneMatrix).replace("\n","").replace("<Matrix 4x4 ","")       
+            bone_matrix_str = bone_matrix_str.replace(">","").replace(" ","").replace(")(",",")
+            bone_matrix_str = bone_matrix_str.replace("(","").replace(")","") 
+            poseStr += bone_matrix_str
+        armDesc += "%s=%s\n" % (poseName,poseStr)
+        
+    #armDesc += "POSE_NAMES=%s\n" % poseNames
+    
+    restPoseStr = ""
+    restPoseInvStr = ""
+    for i in range(len(arm.bones)):
+        bone = arm.bones[i]
+        print("Rest Bone: ",arm.bones[i].name)
+        bone_indexes[bone.name] = i
+        if(restPoseStr != ""):
+            restPoseStr += ","
+            restPoseInvStr += ","   
+                 
+        boneBindMatrixTransp = (bone.matrix_local.transposed()) * rot_y_up
+        boneBindMatrixTranspInv = boneBindMatrixTransp.inverted()
+        
+        #boneBindMatrixTransp = bone.matrix_local.transposed() * rot_y_up
+        bone_bind_str = str(boneBindMatrixTransp).replace("\n","").replace("<Matrix 4x4 ","")      
+        bone_bind_str = bone_bind_str.replace(">","").replace(" ","").replace(")(",",")
+        bone_bind_str = bone_bind_str.replace("(","").replace(")","")
+        restPoseStr += bone_bind_str
+        #boneBindMatrixTranspInv = boneBindMatrixTransp.inverted()
+        bone_inv_bind_str = str(boneBindMatrixTranspInv).replace("\n","").replace("<Matrix 4x4 ","")      
+        bone_inv_bind_str = bone_inv_bind_str.replace(">","").replace(" ","").replace(")(",",")
+        bone_inv_bind_str = bone_inv_bind_str.replace("(","").replace(")","")
+        restPoseInvStr += bone_inv_bind_str
+        print("\n----------- BONE: %s -----------" % bone.name)
+        print("BONE NAME %s // PBONE NAME %s" % (bone.name, obj.pose.bones[i].name))     
+        print("Is deform enabled:",bone.use_deform)
+        print("Rot Y UP Matrix:              %s" % rot_y_up)
+        print("Bind Matrix:                  %s" % boneBindMatrixTranspInv)
+        print("Pose Matrix:                  %s" % boneMatrix)
+       
+        print("--------------------------------\n")
+        
+    armDesc += "Rest=%s\n" % restPoseStr
+    armDesc += "RestInv=%s\n" % restPoseInvStr
+
+    
+    root_bone = None
+    found = False
+    for i in range(0,len(arm.bones)):
+        bone = arm.bones[i]
+        if(bone.parent is None and not found):
+            root_bone = bone
+            print("Root bone:", bone.name)
+            found = True
+            
+    fileArm = open(work_path + file_name + arm_ext, 'w')
+    fileArm.write(armDesc)
+    fileArm.close()
+
+    armatures[obj.name] = bone_indexes;
+    
+    return file_name
+    
+def write_armature_files(obj, scene, childMesh):
+    file_name = obj.name
+    print("File name is: ",file_name)
+    scene.objects.active = obj
+    arm = obj.data
+    armDesc = ""
+    poseNames = ""
+    bone_indexes = {}
+    armDesc += "ARMATURE=%s\n" % arm.name
+    
     root_bone = None
     found = False
     for i in range(0,len(arm.bones)):
@@ -258,7 +345,7 @@ def write_mesh_files(obj, scene):
         dscString += "\nB_CT_OFFSET=%i" % bones_count_offset
         dscString += "\nB_ID_OFFSET=%i" % bones_index_offset
         dscString += "\nB_WT_OFFSET=%i" % bones_weights_offset
-        dscString += "\nARMATURE_NAME=%s" % "I_Rig.003"
+        dscString += "\nARMATURE_NAME=%s" % obj.parent.pose_library.name
         dscString += "\nBONES=true"
     
     objType = obj.get("hzg_type","ENTITY")
@@ -393,7 +480,7 @@ for scene in bpy.data.scenes:
                 #write armature
                 if(obj.parent.type == "ARMATURE"):
                     print("*** Writing ",obj.parent.name,"type is",obj.parent.type,"visibility is",obj.parent.is_visible(scene))
-                    file_name = write_armature_files(obj.parent, scene, obj)
+                    file_name = write_armature_pose_files(obj.parent, scene, obj)
                     zf.write(work_path + file_name + arm_ext, file_name + arm_ext, compress_type=compression)
                 
                 print("** Writing",obj.name)
@@ -403,7 +490,10 @@ for scene in bpy.data.scenes:
                 zf.write(work_path + file_name + ibo_ext, file_name + ibo_ext, compress_type=compression)
                 print("")
             else:
-                print("Not including",obj.name,"type is",obj.type,"visibility is",obj.is_visible(scene))
+                if(obj.type == "ARMATURE"):
+                    print("Armatures are written as parents of animated objects: ",obj.name)
+                else:
+                    print("Not including",obj.name,"type is",obj.type,"visibility is",obj.is_visible(scene))
         zf.write(work_path + "index", "index", compress_type=compression)
         zf.close()
 if(clear_work_directory):

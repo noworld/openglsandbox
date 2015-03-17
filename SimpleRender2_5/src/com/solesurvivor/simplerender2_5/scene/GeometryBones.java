@@ -1,6 +1,7 @@
 package com.solesurvivor.simplerender2_5.scene;
 
 import com.solesurvivor.simplerender2_5.scene.animation.Armature;
+import com.solesurvivor.simplerender2_5.scene.animation.Pose;
 
 public class GeometryBones extends Geometry implements DrawableBones {
 	
@@ -13,6 +14,9 @@ public class GeometryBones extends Geometry implements DrawableBones {
 	protected int boneWeightSize;
 	protected int boneWeightOffset;
 	protected Armature armature;
+	protected Pose pose;
+	protected Pose restPose;
+	protected Pose restPoseInv;
 	
 	public GeometryBones(Geometry geo) {
 		super();
@@ -108,12 +112,38 @@ public class GeometryBones extends Geometry implements DrawableBones {
 
 	@Override
 	public Armature getArmature() {
-		// TODO Auto-generated method stub
 		return armature;
 	}
 	
 	public void setArmature(Armature arm) {
 		this.armature = arm;
+	}
+
+	@Override
+	public Pose getPose() {
+		return pose;
+	}
+	
+	public void setPose(Pose p) {
+		this.pose = p;
+	}
+
+	@Override
+	public Pose getRestPose() {
+		return restPose;
+	}
+	
+	public void setRestPose(Pose p) {
+		this.restPose = p;
+	}
+
+	@Override
+	public Pose getRestPoseInv() {
+		return restPoseInv;
+	}
+	
+	public void setRestPoseInv(Pose p) {
+		this.restPoseInv = p;
 	}
 
 }
