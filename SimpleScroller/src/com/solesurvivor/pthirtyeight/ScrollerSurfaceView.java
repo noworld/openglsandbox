@@ -10,12 +10,10 @@ import android.opengl.GLSurfaceView;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 
 import com.solesurvivor.pthirtyeight.input.InputEvent;
 import com.solesurvivor.pthirtyeight.input.InputEventBus;
 import com.solesurvivor.pthirtyeight.input.InputEventEnum;
-import com.solesurvivor.pthirtyeight.rendering.RendererManager;
 
 public class ScrollerSurfaceView extends GLSurfaceView {
 
@@ -26,6 +24,8 @@ private static final String TAG = ScrollerSurfaceView.class.getSimpleName();
 	public ScrollerSurfaceView(Context context) {
 		super(context);
 		setEGLContextClientVersion(2);
+		//DEPTH BUFFER SETTINGS
+		//http://stackoverflow.com/questions/11866686/opengl-es-depth-buffer-android-cant-get-to-work
 		Log.d(TAG, "GLSurfaceView created.");
 	}
 
@@ -54,38 +54,6 @@ private static final String TAG = ScrollerSurfaceView.class.getSimpleName();
 		}
 
 		return true;
-	}
-
-	
-	
-	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-	}
-
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
-
-	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-		super.surfaceChanged(holder, format, w, h);
-		RendererManager.getRenderer().resizeViewport(w, h);
-	}
-
-	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
-		// TODO Auto-generated method stub
-		super.surfaceCreated(holder);
-	}
-
-	@Override
-	public void surfaceDestroyed(SurfaceHolder holder) {
-		// TODO Auto-generated method stub
-		super.surfaceDestroyed(holder);
 	}
 
 	public void handlePointerEvent(MotionEvent event, InputEventEnum eventType) {

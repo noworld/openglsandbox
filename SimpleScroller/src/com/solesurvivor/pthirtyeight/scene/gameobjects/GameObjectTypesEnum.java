@@ -4,5 +4,7 @@ public enum GameObjectTypesEnum {
 	PLAYER,
 	ENEMY,
 	SELF_BULLET,
-	MESSAGE;
+	MESSAGE, 
+	TERRAIN,
+	MAP_CELL;
 }

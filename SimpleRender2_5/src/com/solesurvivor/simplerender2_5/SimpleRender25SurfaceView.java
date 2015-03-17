@@ -55,7 +55,7 @@ public class SimpleRender25SurfaceView extends GLSurfaceView {
 
 		return true;
 	}
-
+	
 	public void handlePointerEvent(MotionEvent event, InputEventEnum eventType) {
 
 		int index = MotionEventCompat.getActionIndex(event);

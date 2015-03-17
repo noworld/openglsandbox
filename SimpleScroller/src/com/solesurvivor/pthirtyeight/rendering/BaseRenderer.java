@@ -17,6 +17,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
+import android.view.Display;
 
 import com.solesurvivor.pthirtyeight.game.GameWorld;
 import com.solesurvivor.pthirtyeight.scene.Camera;
@@ -54,11 +55,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		this.resizeViewport(width, height);
-		synchronized(GameWorld.inst()) {						
+		synchronized(GameWorld.inst()) {			
+			this.resizeViewport(width, height);
 			GameWorld.inst().resizeViewport(new Point(width, height));
 		}
-		SSLog.d(TAG, "Surface Changed.");
 	}
 
 	@Override
@@ -66,14 +66,18 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		ShaderManager.init();
 		TextureManager.init();
 		SpriteManager.init();
-		GameWorld.init();		
+		GameWorld.init();
 		GameWorld.inst().enter();
-		SSLog.d(TAG, "Surface Created.");
+		synchronized(GameWorld.inst()) {
+			Display d = RendererManager.getWindowManager().getDefaultDisplay();
+			Point p = new Point(0,0);
+			d.getSize(p); //Requires API 13+			
+			GameWorld.inst().resizeViewport(new Point(p.x, p.y));			
+		}
 	}
 	
 	public void resizeViewport(int width, int height) {
 		GLES20.glViewport(0, 0, width, height);
-		SSLog.d(TAG, "Viewport Resized. (renderer)");
 	}
 	
 	public void initOpenGLDefault() {

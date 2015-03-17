@@ -14,6 +14,7 @@ import com.solesurvivor.pthirtyeight.scene.StatefulNodeImpl;
 import com.solesurvivor.pthirtyeight.scene.gameobjects.GameObjectTypesEnum;
 import com.solesurvivor.pthirtyeight.scene.gameobjects.SpriteManager;
 import com.solesurvivor.pthirtyeight.scene.gameobjects.SpriteNode;
+import com.solesurvivor.util.logging.SSLog;
 import com.solesurvivor.util.math.Vec2;
 import com.solesurvivor.util.math.Vec3;
 
@@ -24,7 +25,7 @@ public class PlayerFlying implements NodeState, MessageReceiver {
 	@SuppressWarnings("unused")
 	private static final String TAG = PlayerFlying.class.getSimpleName();
 	private static final float PIXELS_PER_SEC = 125;
-	private static final float BUFFER = 10.0f;
+	private static final float BUFFER = 20.0f;
 
 	private Point view;
 	private Vec2 dir = Vec2.createZeroVec2();
@@ -52,15 +53,15 @@ public class PlayerFlying implements NodeState, MessageReceiver {
 		SpriteNode pa = (SpriteNode)target;
 		Vec3 animTrans = pa.getAnimTransScale();		
 		
-		if(Math.abs(animTrans.getX() + trans.getX()) >= (view.x / 2.0f) - BUFFER) {
-			trans.setX(trans.getX() - Math.copySign(BUFFER, animTrans.getX()));
-		}
+//		if(Math.abs(animTrans.getX() + trans.getX()) >= (view.x / 2.0f) - BUFFER) {
+//			trans.setX(trans.getX() - Math.copySign(BUFFER, animTrans.getX()));
+//		}
+//		
+//		if(Math.abs(animTrans.getY() + trans.getY()) >= (view.y / 2.0f) - BUFFER) {
+//			trans.setY(trans.getY() - Math.copySign(BUFFER, animTrans.getY()));
+//		}
 		
-		if(Math.abs(animTrans.getY() + trans.getY()) >= (view.y / 2.0f) - BUFFER) {
-			trans.setY(trans.getY() - Math.copySign(BUFFER, animTrans.getY()));
-		}
-		
-		pa.translateAnimation(trans);		
+		pa.translateAnimation(trans);
 
 		if(fire) {
 			fire = false;
@@ -93,14 +94,12 @@ public class PlayerFlying implements NodeState, MessageReceiver {
 				break;
 			case TRANSLATE: dir = ((Vec2)message.getData()).normalizeClone();
 				break;
+			case FIRE:
+				fire = true;
+				break;
 			default:
 				break;
-			 
 			 }
-		}
-		
-		if(message.getMessage().equals(GameMessageEnum.FIRE)) {
-			fire = true;
 		}
 	}
 

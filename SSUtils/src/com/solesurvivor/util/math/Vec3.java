@@ -103,7 +103,7 @@ public class Vec3 extends Vec2 {
 	
 	@Override
 	public String prettyString() {
-		return String.format("(%s,%s,%s)",x,y,z);
+		return String.format("Vec3(%s,%s,%s)",x,y,z);
 	}
 	
 	@Override

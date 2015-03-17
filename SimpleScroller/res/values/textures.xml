@@ -2,6 +2,7 @@
     
     <array name="textures_2d">
         <item>@drawable/spritesheet</item>
+        <item>@drawable/ground</item>
         <item>@drawable/uvgrid</item>
         <item>@drawable/bit_water</item>
         <item>@drawable/realwater</item>

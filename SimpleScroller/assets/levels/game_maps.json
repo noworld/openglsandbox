@@ -1,0 +1,174 @@
+{
+"maps": {
+    "map_01": {
+    	"size":{"x":5,"y":11},
+    	"cells":[
+			{
+	        	"row_index":0,
+	        	"cells": [
+	        		{"cell_index":0, "id":"alpha", "sprite":"grass"},
+	        		{"cell_index":1, "id":"bravo", "sprite":"grass"},
+	        		{"cell_index":2, "id":"charlie", "sprite":"grass"},
+	        		{"cell_index":3, "id":"delta", "sprite":"grass"},
+	        		{"cell_index":4, "id":"echo", "sprite":"grass"}
+	        	]
+	        },
+        
+	         {
+	        	"row_index":1,
+	        	"cells": [
+	        		{"cell_index":0, "id":"foxtrot", "sprite":"grass"},
+	        		{"cell_index":1, "id":"golf", "sprite":"grass"},
+	        		{"cell_index":2, "id":"hotel", "sprite":"grass"},
+	        		{"cell_index":3, "id":"india", "sprite":"grass"},
+	        		{"cell_index":4, "id":"juliet", "sprite":"grass"}
+	        	]
+	        },
+        
+	         {
+	        	"row_index":2,
+	        	"cells": [
+	        		{"cell_index":0, "id":"foxtrot", "sprite":"grass"},
+	        		{"cell_index":1, "id":"golf", "sprite":"grass"},
+	        		{"cell_index":2, "id":"hotel", "sprite":"grass"},
+	        		{"cell_index":3, "id":"india", "sprite":"grass"},
+	        		{"cell_index":4, "id":"juliet", "sprite":"grass"}
+	        	]
+	        },
+        
+	         {
+	        	"row_index":3,
+	        	"cells": [
+	        		{"cell_index":0, "id":"foxtrot", "sprite":"grass"},
+	        		{"cell_index":1, "id":"golf", "sprite":"grass"},
+	        		{"cell_index":2, "id":"hotel", "sprite":"grass"},
+	        		{"cell_index":3, "id":"india", "sprite":"grass"},
+	        		{"cell_index":4, "id":"juliet", "sprite":"grass"}
+	        	]
+	        },
+        
+	         {
+	        	"row_index":4,
+	        	"cells": [
+	        		{"cell_index":0, "id":"foxtrot", "sprite":"grass"},
+	        		{"cell_index":1, "id":"golf", "sprite":"grass"},
+	        		{"cell_index":2, "id":"hotel", "sprite":"grass"},
+	        		{"cell_index":3, "id":"india", "sprite":"grass"},
+	        		{"cell_index":4, "id":"juliet", "sprite":"grass"}
+	        	]
+	        },
+        
+	         {
+	        	"row_index":5,
+	        	"cells": [
+	        		{"cell_index":0, "id":"foxtrot", "sprite":"grass"},
+	        		{"cell_index":1, "id":"golf", "sprite":"grass"},
+	        		{"cell_index":2, "id":"hotel", "sprite":"grass"},
+	        		{"cell_index":3, "id":"india", "sprite":"grass"},
+	        		{"cell_index":4, "id":"juliet", "sprite":"grass"}
+	        	]
+	        },
+        
+	         {
+	        	"row_index":6,
+	        	"cells": [
+	        		{"cell_index":0, "id":"foxtrot", "sprite":"grass"},
+	        		{"cell_index":1, "id":"golf", "sprite":"grass"},
+	        		{"cell_index":2, "id":"hotel", "sprite":"grass"},
+	        		{"cell_index":3, "id":"india", "sprite":"grass"},
+	        		{"cell_index":4, "id":"juliet", "sprite":"grass"}
+	        	]
+	        },
+        
+	         {
+	        	"row_index":7,
+	        	"cells": [
+	        		{"cell_index":0, "id":"foxtrot", "sprite":"grass"},
+	        		{"cell_index":1, "id":"golf", "sprite":"grass"},
+	        		{"cell_index":2, "id":"hotel", "sprite":"grass"},
+	        		{"cell_index":3, "id":"india", "sprite":"grass"},
+	        		{"cell_index":4, "id":"juliet", "sprite":"grass"}
+	        	]
+	        },
+        
+	         {
+	        	"row_index":8,
+	        	"cells": [
+	        		{"cell_index":0, "id":"foxtrot", "sprite":"grass"},
+	        		{"cell_index":1, "id":"golf", "sprite":"grass"},
+	        		{"cell_index":2, "id":"hotel", "sprite":"grass"},
+	        		{"cell_index":3, "id":"india", "sprite":"grass"},
+	        		{"cell_index":4, "id":"juliet", "sprite":"grass"}
+	        	]
+	        },
+        
+	         {
+	        	"row_index":9,
+	        	"cells": [
+	        		{"cell_index":0, "id":"foxtrot", "sprite":"grass"},
+	        		{"cell_index":1, "id":"golf", "sprite":"grass"},
+	        		{"cell_index":2, "id":"hotel", "sprite":"grass"},
+	        		{"cell_index":3, "id":"india", "sprite":"grass"},
+	        		{"cell_index":4, "id":"juliet", "sprite":"grass"}
+	        	]
+	        },
+        
+	        {
+	        	"row_index":10,
+	        	"cells": [
+	        		{"cell_index":0, "id":"kilo", "sprite":"grass"},
+	        		{"cell_index":1, "id":"lima", "sprite":"grass"},
+	        		{"cell_index":2, "id":"mike", "sprite":"grass"},
+	        		{"cell_index":3, "id":"november", "sprite":"grass"},
+	        		{"cell_index":4, "id":"oscar", "sprite":"grass"}
+	        	]
+	        }
+		]
+	},
+    
+    "map_02": {
+    	"size":{"x":5,"y":3},
+    	"cells":[
+			{
+	        	"row_index":0,
+	        	"cells": [
+	        		{"cell_index":0, "id":"papa", "sprite":"grass"},
+	        		{"cell_index":1, "id":"quebec", "sprite":"grass"},
+	        		{"cell_index":2, "id":"romeo", "sprite":"grass"},
+	        		{"cell_index":3, "id":"siera", "sprite":"grass"},
+	        		{"cell_index":4, "id":"tango", "sprite":"grass"}
+	        	]
+	        },
+	        
+	         {
+	        	"row_index":1,
+	        	"cells": [
+	        		{"cell_index":0, "id":"uniform", "sprite":"grass"},
+	        		{"cell_index":1, "id":"victor", "sprite":"grass"},
+	        		{"cell_index":2, "id":"whiskey", "sprite":"grass"},
+	        		{"cell_index":3, "id":"x-ray", "sprite":"grass"},
+	        		{"cell_index":4, "id":"yankee", "sprite":"grass"}
+	        	]
+	        },
+	        
+	        {
+	        	"row_index":2,
+	        	"cells": [
+	        		{"cell_index":0, "id":"zulu", "sprite":"grass"},
+	        		{"cell_index":1, "id":"wah-on", "sprite":"grass"},
+	        		{"cell_index":2, "id":"too", "sprite":"grass"},
+	        		{"cell_index":3, "id":"tree", "sprite":"grass"},
+	        		{"cell_index":4, "id":"fo-wer", "sprite":"grass"}
+	        	]
+	        }
+		]
+	}
+       
+},
+
+"meta": {
+	"mapset": "p-38",
+	"campaign":"solomons",
+	"scale": 1.0
+}
+}

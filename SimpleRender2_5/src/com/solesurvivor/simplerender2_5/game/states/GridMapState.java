@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import android.graphics.Point;
-import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2_5.R;
 import com.solesurvivor.simplerender2_5.commands.CommandEnum;
@@ -21,7 +20,6 @@ import com.solesurvivor.simplerender2_5.scene.GeometryBones;
 import com.solesurvivor.simplerender2_5.scene.MapGrid;
 import com.solesurvivor.simplerender2_5.scene.animation.Armature;
 import com.solesurvivor.simplerender2_5.scene.nodestates.MatchHeadingWithDirectionState;
-import com.solesurvivor.util.logging.SSLog;
 import com.solesurvivor.util.math.Vec3;
 
 public class GridMapState extends BaseState {
@@ -66,8 +64,12 @@ public class GridMapState extends BaseState {
 //			mScene.addChild(gn2);
 			
 //			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.gray_ui).get("circle_arrow");
-			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Macho");
 //			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("TestObj");
+			
+			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Macho");
+//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Cube");
+//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Box");
+			
 			mActor = new Actor(arrow);
 			mActor.changeState(new MatchHeadingWithDirectionState());
 			
@@ -84,16 +86,18 @@ public class GridMapState extends BaseState {
 			
 			Map<String,Armature> arms = GeometryIO.loadArmatureMap(R.raw.rigged);
 			Armature arm = arms.get("Armature.003");
-//			Armature arm = arms.get("Armature.007");
+//			Armature arm = arms.get("Arm.Cube");
+//			Armature arm = arms.get("Arm.Box");
+			
 //			arm.updateBones();
 			((GeometryBones)arrow).setArmature(arm);
 			
-			float[] mat = new float[16];
-			Matrix.setIdentityM(mat, 0);
-			Matrix.translateM(mat, 0, 0.02583f, -0.63138f, -0.30472f);
-			for(int i = 0; i < mat.length; i++) {
-				SSLog.d(TAG, "MATRIX INDEX %s: %s", i, mat[i]);
-			}
+//			float[] mat = new float[16];
+//			Matrix.setIdentityM(mat, 0);
+//			Matrix.translateM(mat, 0, 0.02583f, -0.63138f, -0.30472f);
+//			for(int i = 0; i < mat.length; i++) {
+//				SSLog.d(TAG, "MATRIX INDEX %s: %s", i, mat[i]);
+//			}
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

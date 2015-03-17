@@ -50,7 +50,7 @@ arm_ext = ".arm"
 game_prefix = "hzg_"
 default_bone_weight_count = 6
 armatures = {}
-rot_y_up = mathutils.Matrix.Rotation(math.radians(-90.0),4,'X')
+rot_y_up = mathutils.Matrix.Rotation(math.radians(90.0),4,'X')
     
 def cross_z(p1, p2, p3):
     return ((p2.x-p1.x) * (p3.y-p1.y)) - ((p2.y-p1.y) * (p3.x-p1.x));
@@ -90,10 +90,11 @@ def write_armature_files(obj, scene, childMesh):
         else:
             root_bone = True
 
-        boneMatrix = (obj.pose.bones[i].matrix) * rot_y_up
-        boneMatrix = boneMatrix.transposed()
+        boneMatrix = (obj.pose.bones[i].matrix) # * rot_y_up
+        boneMatrix = boneMatrix.transposed() * rot_y_up
 
-        boneBindMatrixTransp = (bone.matrix_local * rot_y_up).transposed()
+        boneBindMatrixTransp = (bone.matrix_local.transposed()) * rot_y_up
+        ### THIS ONE SETS TO IDENTITY??
         boneBindMatrixTranspInv = boneBindMatrixTransp.inverted()
         #boneBindMatrixTranspInv = bone_combined_mats[i].inverted()
         

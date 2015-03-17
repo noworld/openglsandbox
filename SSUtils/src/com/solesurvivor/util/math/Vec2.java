@@ -52,7 +52,7 @@ public class Vec2 {
 	}
 	
 	public String prettyString() {
-		return String.format("(%s,%s)",x,y);
+		return String.format("Vec2(%s,%s)",x,y);
 	}
 	
 	public void normalize() {

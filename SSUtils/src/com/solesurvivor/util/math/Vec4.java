@@ -89,6 +89,11 @@ public class Vec4 extends Vec3 {
 	}
 	
 	@Override
+	public String prettyString() {
+		return String.format("Vec4(%s,%s,%s,%s)",x,y,z,w);
+	}
+	
+	@Override
 	public boolean equals(Object o) {
 		if(o == null || !(o instanceof Vec4)) return false;
 		Vec4 other = (Vec4)o;

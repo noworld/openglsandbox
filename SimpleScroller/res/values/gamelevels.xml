@@ -2,11 +2,11 @@
     
     <array name="sprites">
         <item>levels/sprites.json</item>
-        <item>levels/terrain_sprites.json</item>
+        <item>levels/ground_sprites.json</item>
     </array>
     
     <array name="game_levels">
-        <item>levels/level001.json</item>
+        <item>levels/game_maps.json</item>
     </array>
 
 </resources>

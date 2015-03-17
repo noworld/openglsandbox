@@ -430,17 +430,21 @@ public class GeometryIO {
 			Bone[] boneArray = convertToBoneArray(bones);
 			
 //			for(Bone b : boneArray) {
-//				if(b.getName().equals("I_Hand.L")) {
-//					float[] transf = new float[]{
-//							-0.0497f, -0.9981f,  0.0352f, 0.0000f,
-//				             0.9884f, -0.0542f, -0.1418f, 0.0000f,s
-//				             0.1435f,  0.0277f,  0.9893f, 0.0000f,
-//				             0.7275f,  0.0068f,  0.5818f, 1.0000f
-//					};					
-//					Matrix.translateM(transf, 0, 0.2f, 0.0f, 0.0f);
-//					Matrix.rotateM(transf, 0, 45.0f, 0, 0, 1.0f);
-//					b.setMatrix(transf);
-//				}
+//				float[] testing = new float[16];
+//				Matrix.setIdentityM(testing, 0);
+//				b.setMatrix(testing);
+////				if(b.getName().equals("I_Arm_Upper.L")) {
+////					float[] transf = new float[]{
+////							-0.0497f, -0.9981f,  0.0352f, 0.0000f,
+////				             0.9884f, -0.0542f, -0.1418f, 0.0000f,
+////				             0.1435f,  0.0277f,  0.9893f, 0.0000f,
+////				             0.7275f,  0.0068f,  0.5818f, 1.0000f
+////					};					
+////					Matrix.translateM(transf, 0, 0.2f, 0.0f, 0.0f);
+////					Matrix.rotateM(transf, 0, 45.0f, 0, 0, 1.0f);
+////					Matrix.setIdentityM(transf, 0);
+////					b.setMatrix(transf);
+////				}
 //			}
 			
 			Armature arm = new Armature(interArm.name, boneArray);

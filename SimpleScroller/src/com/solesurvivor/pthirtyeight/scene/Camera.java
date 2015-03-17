@@ -119,7 +119,8 @@ public class Camera {
 			return;
 		} else if(!viewport.equals(newViewport)) {
 			SSLog.d(TAG, "Resizing camera viewport: %s,%s", newViewport.x, newViewport.y);
-			this.viewport = newViewport;
+			this.viewport.x = newViewport.x;
+			this.viewport.y = newViewport.y;
 
 			final float ratio = (float) viewport.x / viewport.y;
 

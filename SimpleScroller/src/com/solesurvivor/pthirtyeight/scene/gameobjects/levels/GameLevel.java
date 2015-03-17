@@ -1,4 +1,4 @@
-package com.solesurvivor.pthirtyeight.scene.gameobjects;
+package com.solesurvivor.pthirtyeight.scene.gameobjects.levels;
 
 import com.solesurvivor.pthirtyeight.scene.StatefulNodeImpl;
 

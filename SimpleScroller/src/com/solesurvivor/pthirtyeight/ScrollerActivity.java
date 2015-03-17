@@ -26,24 +26,23 @@ public class ScrollerActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		if(!initialized) {
+			this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		final ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+			final ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 
-		final boolean es2 = activityManager.getDeviceConfigurationInfo().reqGlEsVersion >= GL_VERSION;
-		if (es2) {
-			Context c = getApplicationContext();
-			
-			if(!initialized) {
+			final boolean es2 = activityManager.getDeviceConfigurationInfo().reqGlEsVersion >= GL_VERSION;
+			if (es2) {
+				Context c = getApplicationContext();
 				GameGlobal.init(c);
-				initialized = true;
+				RendererManager.init(c, getWindowManager(), getAssets());
+				setContentView(RendererManager.getSurfaceView());					
 			}
 			
-			RendererManager.init(c, getWindowManager(), getAssets());
-			setContentView(RendererManager.getSurfaceView());					
+			initialized = true;
 		}
-
+		
 		SSLog.d(TAG, "Activity created.");
 	}
 	

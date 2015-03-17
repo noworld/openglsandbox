@@ -19,6 +19,7 @@ import android.util.JsonToken;
 
 import com.solesurvivor.pthirtyeight.rendering.RendererManager;
 import com.solesurvivor.simplescroller.R;
+import com.solesurvivor.util.json.JsonUtils;
 import com.solesurvivor.util.logging.SSLog;
 import com.solesurvivor.util.math.Vec2;
 
@@ -43,10 +44,7 @@ public class SpriteManager {
 	private static Map<String,Sprite> sprites = new HashMap<String,Sprite>();
 
 	public static void init() {		
-		//if(sprites.size() < 1) {
-			loadSprites();
-		//}
-
+		loadSprites();
 	}
 	
 	private static void loadSprites() {
@@ -60,11 +58,12 @@ public class SpriteManager {
 			JsonReader reader = null;
 			List<IntermediateSprite> isl = new ArrayList<IntermediateSprite>();
 			try {
+				SSLog.d(TAG, "Reading sprites: %s", spriteResources[i]);
 				is = assets.open(spriteResources[i]);
 				reader = new JsonReader(new InputStreamReader(is));
 				
 				while(reader.hasNext()) {
-					beginJson(reader);
+					JsonUtils.beginJson(reader);
 					JsonToken token = reader.peek();
 					if(token.equals(JsonToken.NAME)) {
 						String name = reader.nextName();
@@ -78,9 +77,9 @@ public class SpriteManager {
 						}
 					}
 
-					endJson(reader); //endJson is inside while() to iterate over multiple objects
+					JsonUtils.endJson(reader); //endJson is inside while() to iterate over multiple objects
 					
-					if(endJsonDocument(reader)) {
+					if(JsonUtils.endJsonDocument(reader)) {
 						break;
 					}
 				}
@@ -89,6 +88,7 @@ public class SpriteManager {
 				
 			} catch (IOException e) {
 				SSLog.w(TAG, "Could not open sprite resource: %s", e, spriteResources[i]);
+				e.printStackTrace();
 			} finally {
 				IOUtils.closeQuietly(reader);
 				IOUtils.closeQuietly(is);
@@ -111,56 +111,6 @@ public class SpriteManager {
 		return sprites.get(name);
 	}
 
-
-	private static boolean endJsonDocument(JsonReader reader) throws IOException {
-		return reader.peek().equals(JsonToken.END_DOCUMENT);
-	}
-
-	private static boolean beginJson(JsonReader reader) throws IOException {
-		JsonToken token = reader.peek();
-		boolean success = false;
-		
-		switch(token) {
-		case BEGIN_ARRAY: reader.beginArray(); 
-			success = true;
-			break;
-		case BEGIN_OBJECT: reader.beginObject(); 
-			success = true;
-			break;
-		default: success = false;
-			break;
-		}
-		
-//		if(!success) {
-//			SSLog.w(TAG, "BEGIN_x JSON token expected but found %s", token.toString());
-//		}
-		
-		return success;
-	}
-	
-	private static boolean endJson(JsonReader reader) throws IOException {
-		JsonToken token = reader.peek();
-		boolean success = false;
-		
-		switch(token) {
-		case END_ARRAY: reader.endArray();
-			success = true;
-			break;
-		case END_OBJECT: reader.endObject(); 
-			success = true;
-			break;
-		default: success = false;
-			break;
-		}
-		
-//		if(!success) {
-//			SSLog.w(TAG, "END_x JSON token expected but found %s", token.toString());
-//		}
-		
-		return success;
-	}
-
-
 	private static void parseSpriteSheet(JsonReader reader) throws IOException {
 		
 		Point dim = null;
@@ -168,7 +118,7 @@ public class SpriteManager {
 		double scale = 1.0;
 		
 		while(reader.hasNext()) {			
-			beginJson(reader);
+			JsonUtils.beginJson(reader);
 			JsonToken token = reader.peek();
 			switch(token) {
 			case NAME:
@@ -191,7 +141,7 @@ public class SpriteManager {
 				break;
 			}			
 		}
-		endJson(reader); //endJson is outside while() to read a single object
+		JsonUtils.endJson(reader); //endJson is outside while() to read a single object
 		
 		sheet = new SpriteSheet(dim, textureName, scale);
 
@@ -202,7 +152,7 @@ public class SpriteManager {
 		int w = 0,h = 0;
 		
 		while(reader.hasNext()) {			
-			beginJson(reader);
+			JsonUtils.beginJson(reader);
 			JsonToken token = reader.peek();
 			switch(token) {
 			case NAME:
@@ -223,7 +173,7 @@ public class SpriteManager {
 				break;
 			}			
 		}
-		endJson(reader);				
+		JsonUtils.endJson(reader);				
 
 		return new Point(w,h);
 	}
@@ -234,10 +184,10 @@ public class SpriteManager {
 		List<IntermediateSprite> isl = new ArrayList<IntermediateSprite>();
 		
 		while(reader.hasNext()) {
-			beginJson(reader);
+			JsonUtils.beginJson(reader);
 			isl.add(parseSprite(reader));			
 		}		
-		endJson(reader);
+		JsonUtils.endJson(reader);
 		
 		return isl;
 	}
@@ -247,7 +197,7 @@ public class SpriteManager {
 		IntermediateSprite is = new IntermediateSprite();
 		
 		while(reader.hasNext()) {
-			beginJson(reader);
+			JsonUtils.beginJson(reader);
 			JsonToken token = reader.peek();
 			switch(token) {
 			case NAME:
@@ -256,7 +206,7 @@ public class SpriteManager {
 
 
 					while(reader.hasNext()) {
-						beginJson(reader);
+						JsonUtils.beginJson(reader);
 						token = reader.peek();
 						switch(token) {
 						case NAME:
@@ -278,7 +228,7 @@ public class SpriteManager {
 						break;
 						}						
 					}
-					endJson(reader);
+					JsonUtils.endJson(reader);
 				} else {
 					is.name = name;
 				}
@@ -287,7 +237,7 @@ public class SpriteManager {
 			break;
 			}
 		}
-		endJson(reader);
+		JsonUtils.endJson(reader);
 
 		return is;
 		

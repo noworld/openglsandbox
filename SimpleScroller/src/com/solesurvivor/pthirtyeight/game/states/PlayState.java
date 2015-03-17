@@ -17,12 +17,16 @@ import com.solesurvivor.pthirtyeight.input.InputUiElement;
 import com.solesurvivor.pthirtyeight.physics.CollisionPhysicsProcessor;
 import com.solesurvivor.pthirtyeight.physics.PhysicsProcessor;
 import com.solesurvivor.pthirtyeight.physics.PlayerPhysics;
+import com.solesurvivor.pthirtyeight.rendering.RendererManager;
 import com.solesurvivor.pthirtyeight.scene.Geometry;
 import com.solesurvivor.pthirtyeight.scene.Node;
 import com.solesurvivor.pthirtyeight.scene.gameobjects.GameObjectTypesEnum;
+import com.solesurvivor.pthirtyeight.scene.gameobjects.MapManager;
 import com.solesurvivor.pthirtyeight.scene.gameobjects.SpriteNode;
 import com.solesurvivor.pthirtyeight.scene.gameobjects.behavior.CountdownAnimation;
 import com.solesurvivor.pthirtyeight.scene.gameobjects.behavior.PlayerFlying;
+import com.solesurvivor.pthirtyeight.scene.gameobjects.levels.GameMap;
+import com.solesurvivor.pthirtyeight.scene.gameobjects.levels.MapCell;
 import com.solesurvivor.pthirtyeight.scene.gameobjects.spawn.EnemySpawner;
 import com.solesurvivor.pthirtyeight.scene.water.Water;
 import com.solesurvivor.simplescroller.R;
@@ -38,6 +42,7 @@ public class PlayState extends BaseState {
 	protected List<SpriteNode> physicsObjects;
 	protected PhysicsProcessor pp;
 	protected EnemySpawner enemySpawner = null;
+	protected GameMap map = null;
 	
 	public PlayState() {
 		super();
@@ -106,6 +111,7 @@ public class PlayState extends BaseState {
 	public void enter() {
 		spawnPlayer();
 		enableSpawner();
+//		map = MapManager.getGameMap("map_01");
 		super.enter();
 	}
 	
@@ -113,11 +119,21 @@ public class PlayState extends BaseState {
 	public void execute() {
 		enemySpawner.update();
 		pp.processPhysics(physicsObjects);
+		Point viewport = RendererManager.getViewport();
+		viewport.x = viewport.x/2;
+		viewport.y = viewport.y/2;
+//		map.calcViewable(viewport);
 		super.execute();		
 	}
 	
 	@Override
-	public void render() {		
+	public void render() {
+//		List<MapCell> mapCells = map.getViewable();
+//		
+//		for(MapCell mc : mapCells) {
+//			RendererManager.getRenderer().drawSprite(mc);
+//		}
+		
 		super.render();
 	}
 	

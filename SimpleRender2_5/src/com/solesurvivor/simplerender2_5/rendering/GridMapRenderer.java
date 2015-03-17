@@ -260,7 +260,7 @@ public class GridMapRenderer extends BaseRenderer {
 				int u_Bone = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Bones[%s]",i));
 				float[] animatedBone = new float[16];
 				Matrix.multiplyMM(animatedBone, 0, b.getMatrix(), 0, b.getInvBindMatrix(), 0);
-//				Matrix.multiplyMM(animatedBone, 0, b.getMatrix(), 0, b.getInvCombinedBindMatrix(), 0);
+
 				GLES20.glUniformMatrix4fv(u_Bone, 1, false, animatedBone, 0);
 			}
 		}

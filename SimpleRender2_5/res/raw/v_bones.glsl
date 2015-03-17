@@ -20,7 +20,8 @@ varying vec2 v_TexCoordinate;
 void main()                                                 	
 {   
 	vec4 bonePos = vec4(0.0);
-	vec4 boneNrm = vec4(0.0);                                     	
+	vec4 boneNrm = vec4(0.0);        
+	mat4 transformMat = mat4(0.0);                          	
 	int count = int(a_BonesCount);
 	
 	if(count < 1) {
@@ -56,21 +57,27 @@ void main()
 		
 		if(index > -1) {
 		    mat4 boneMat = u_Bones[index];
+		    
+		    transformMat += (boneMat * weight);
+		    
 		    //bonePos = ((boneMat * weight) * a_Position) + bonePos;
 			//boneNrm = ((boneMat * weight)) * vec4(v_Normal,0.0) + boneNrm;
-			bonePos = ((boneMat * a_Position) * weight) + bonePos;
-			boneNrm = ((boneMat * vec4(v_Normal,0.0)) * weight) + boneNrm;
+			//bonePos = ((boneMat * a_Position) * weight) + bonePos;
+			//boneNrm = ((boneMat * vec4(v_Normal,0.0)) * weight) + boneNrm;
 		}
 	}  
 
 	//v_Position = vec3(u_MVMatrix * a_Position);       		
 	//v_TexCoordinate = a_TexCoordinate;                                      
     //v_Normal = vec3(u_MVMatrix * vec4(a_Normal, 0.0));
-	//gl_Position =  u_MVPMatrix * a_Position;     
+	//gl_Position =  u_MVPMatrix * a_Position; 
+	
+	vec4 finalPos = transformMat * a_Position;
+	vec4 finalNrm = transformMat * vec4(a_Normal,0.0);
 	       
-	v_Position = vec3(u_MVMatrix * bonePos);  
+	v_Position = vec3(u_MVMatrix * finalPos);  
 	v_TexCoordinate = a_TexCoordinate;
-	v_Normal = vec3(u_MVMatrix * boneNrm);
-	gl_Position = u_MVPMatrix * bonePos;
+	v_Normal = vec3(u_MVMatrix * finalNrm);
+	gl_Position = u_MVPMatrix * finalPos;
 
 }                                                          
