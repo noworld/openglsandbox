@@ -41,7 +41,7 @@ import com.solesurvivor.util.math.Vec3;
 
 public class GeometryIO {
 	
-	protected static final boolean DEBUG = true;
+	protected static final boolean DEBUG = false;
 	
 	
 	@SuppressWarnings("unused")

@@ -4,13 +4,20 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.graphics.Interpolator;
+import android.graphics.Interpolator.Result;
 import android.graphics.Point;
+import android.os.SystemClock;
+import android.view.animation.LinearInterpolator;
 
 import com.solesurvivor.simplerender2_5.R;
 import com.solesurvivor.simplerender2_5.commands.CommandEnum;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.input.InputUiElement;
 import com.solesurvivor.simplerender2_5.io.GeometryIO;
+import com.solesurvivor.simplerender2_5.rendering.DrawingConstants;
 import com.solesurvivor.simplerender2_5.rendering.GridMapRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Actor;
@@ -19,8 +26,11 @@ import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.GeometryBones;
 import com.solesurvivor.simplerender2_5.scene.MapGrid;
 import com.solesurvivor.simplerender2_5.scene.animation.Armature;
+import com.solesurvivor.simplerender2_5.scene.animation.Pose;
 import com.solesurvivor.simplerender2_5.scene.animation.PoseLibrary;
 import com.solesurvivor.simplerender2_5.scene.nodestates.MatchHeadingWithDirectionState;
+import com.solesurvivor.util.logging.SSLog;
+import com.solesurvivor.util.math.MatrixUtils;
 import com.solesurvivor.util.math.Vec3;
 
 public class GridMapState extends BaseState {
@@ -31,6 +41,10 @@ public class GridMapState extends BaseState {
 	protected CameraNode mCamera;
 	protected Actor mActor;
 	protected MapGrid mMapGrid;
+	protected Pose startPose;
+	protected Pose endPose;
+	long startTime;
+	long duration;
 	
 	public GridMapState() {
 		
@@ -66,14 +80,16 @@ public class GridMapState extends BaseState {
 			
 //			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.gray_ui).get("circle_arrow");
 //			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("TestObj");
-			
-			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Macho");
 //			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Cube");
 //			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Box");
 			
+//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Macho");
+			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.lightning).get("Lightning");
+			
 			mActor = new Actor(arrow);
 			mActor.changeState(new MatchHeadingWithDirectionState());
-			
+			mActor.rotate(180.0f, new Vec3(0,1.0f,0));
+		
 			mCamera = new CameraNode(eye, look, up, near, far, fov, mActor);		
 			mCamera.resizeViewport(GameWorld.inst().getViewport());
 			GridMapRenderer gmr = (GridMapRenderer)RendererManager.getRenderer();
@@ -84,7 +100,7 @@ public class GridMapState extends BaseState {
 			
 			MapGrid mapGrid = new MapGrid();
 			mScene.addChild(mapGrid);
-			
+			/*
 			Map<String,PoseLibrary> animLibs = GeometryIO.lodePoseLibrary(R.raw.rigged);
 			PoseLibrary poseLib = animLibs.get("Armature.003");
 			Map<String,Armature> arms = GeometryIO.loadArmatureMap(R.raw.rigged2);
@@ -94,7 +110,9 @@ public class GridMapState extends BaseState {
 			
 //			arm.updateBones();
 			((GeometryBones)arrow).setArmature(arm);
-			((GeometryBones)arrow).setPose(poseLib.getPose("ArmUp"));
+			((GeometryBones)arrow).setPose(poseLib.getPose("ArmDown"));
+			startPose = poseLib.getRestPose();
+			endPose = poseLib.getPose("ArmUp");
 			((GeometryBones)arrow).setRestPose(poseLib.getRestPose());
 			((GeometryBones)arrow).setRestPoseInv(poseLib.getRestPoseInv());
 			
@@ -104,6 +122,7 @@ public class GridMapState extends BaseState {
 //			for(int i = 0; i < mat.length; i++) {
 //				SSLog.d(TAG, "MATRIX INDEX %s: %s", i, mat[i]);
 //			}
+			*/
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -118,11 +137,45 @@ public class GridMapState extends BaseState {
 		for(CommandEnum ce : CommandEnum.values()) {
 			ce.getCommand().onStateChanged();
 		}
+		
+		startTime = SystemClock.uptimeMillis();
+		duration = 5000L;
+	
 	}
 	
 	@Override
 	public void execute() {
 		super.execute();
+/*
+		if(SystemClock.uptimeMillis() - startTime >= duration) {
+			startTime = SystemClock.uptimeMillis();
+			((GeometryBones)mActor.getGeometry()).setPose(endPose);
+			Pose temp = endPose;
+			endPose = startPose;
+			startPose = temp;
+		}
+		
+		float[] animBones = new float[startPose.getBones().length];
+
+		float dt = Math.min(1.0f, ((float)(SystemClock.uptimeMillis() - startTime)) / ((float)duration));
+
+		for(int i = 0; i < startPose.getBones().length; i += DrawingConstants.FOURX_MATRIX_SIZE) {
+			float[] m1 = new float[DrawingConstants.FOURX_MATRIX_SIZE];
+			float[] m2 = new float[DrawingConstants.FOURX_MATRIX_SIZE];
+			System.arraycopy(startPose.getBones(), i, m1, 0, DrawingConstants.FOURX_MATRIX_SIZE);
+			System.arraycopy(endPose.getBones(), i, m2, 0, DrawingConstants.FOURX_MATRIX_SIZE);
+
+			//			if(m1.equals(m2)) {
+			//				System.arraycopy(m1, 0, animBones, i, DrawingConstants.FOURX_MATRIX_SIZE);
+			//				continue;
+			//			}
+
+			float[] lerp = MatrixUtils.lerpMatrix(m1, m2, dt);
+			System.arraycopy(lerp, 0, animBones, i, DrawingConstants.FOURX_MATRIX_SIZE);
+		}
+
+		((GeometryBones)mActor.getGeometry()).setPose(new Pose("Now",animBones));
+*/
 	}
 	
 	@Override
@@ -146,3 +199,4 @@ public class GridMapState extends BaseState {
 	}
 
 }
+

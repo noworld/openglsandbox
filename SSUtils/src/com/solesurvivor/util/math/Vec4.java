@@ -47,6 +47,10 @@ public class Vec4 extends Vec3 {
 		return new Vec4(x,y,z,w);
 	}
 	
+	public Vec3 getAsVec3() {
+		return new Vec3(x/w, y/w, z/w);
+	}
+	
 	public void add(Vec4 other) {
 		this.x += other.x;
 		this.y += other.y;
@@ -66,6 +70,11 @@ public class Vec4 extends Vec3 {
 		this.y *= other.y;
 		this.z *= other.z;
 		this.w *= other.w;
+	}
+	
+	public void negate() {
+		super.negate();
+		this.w = -w;
 	}
 
 	public static Vec4 valueOf(String s) {

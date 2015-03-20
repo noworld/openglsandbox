@@ -14,4 +14,8 @@ public class Actor extends GeometryNode {
 //		this.resetTransforms();
 	}
 	
+	public Geometry getGeometry() {
+		return mGeometry;
+	}
+	
 }

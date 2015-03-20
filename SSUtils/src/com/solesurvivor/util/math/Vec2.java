@@ -87,6 +87,11 @@ public class Vec2 {
 		this.y *= other.y;
 	}
 	
+	public void negate() {
+		this.x = -x;
+		this.y = -y;		
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if(o == null || !(o instanceof Vec2)) return false;
@@ -118,4 +123,5 @@ public class Vec2 {
 	public static Vec2 fromPoint(Point p) {
 		return new Vec2(p.x, p.y);
 	}
+
 }

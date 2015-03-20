@@ -70,4 +70,12 @@ public class VectorMath {
 		return (v1.getX()*v2.getX()) + (v1.getY()*v2.getY()) + (v1.getZ()*v2.getZ());
 	}
 	
+	public static float compDot(Vec4 v1, Vec4 v2) {
+//		Vec3 v1 = vf1.getAsVec3();
+//		Vec3 v2 = vf2.getAsVec3();
+//		return (v1.getX()*v2.getX()) + (v1.getY()*v2.getY()) + (v1.getZ()*v2.getZ());
+		
+		return (v1.getX()*v2.getX()) + (v1.getY()*v2.getY()) + (v1.getZ()*v2.getZ() + (v1.getW()*v2.getW()));
+	}
+	
 }

@@ -96,6 +96,11 @@ public class Vec3 extends Vec2 {
 		return (x*x)+(z*z);
 	}
 	
+	public void negate() {
+		super.negate();
+		this.z = -z;
+	}
+	
 	@Override
 	public float getMagSq() {
 		return super.getMagSq()+(z*z);
@@ -134,5 +139,7 @@ public class Vec3 extends Vec2 {
 	public static Vec3 createZeroVec3() {
 		return new Vec3(0.0f, 0.0f, 0.0f);
 	}
+
+	
 
 }

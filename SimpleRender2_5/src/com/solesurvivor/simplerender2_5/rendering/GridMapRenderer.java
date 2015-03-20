@@ -251,65 +251,17 @@ public class GridMapRenderer extends BaseRenderer {
 		}
 		
 		// --Bones--
-//		if(draw.getArmature() != null) {
-//			for(int i = 0, j = 0; i < draw.getArmature().getBones().length; i++, j += DrawingConstants.FOURX_MATRIX_SIZE) {
-//				Bone b = draw.getArmature().getBones()[i];
-//				if(i != b.getIndex()) {
-//					SSLog.w("BONE WARNING", "Bone index did not match array index: %s / %s", i, b.getIndex());
-//				}
-//				int u_Bone = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Bones[%s]",i));
-//				float[] animatedBone = new float[16];
-//				Matrix.multiplyMM(animatedBone, 0, b.getMatrix(), 0, b.getInvBindMatrix(), 0);
-//				
-////				for(int k = 0; k < 16; k++) {
-////					SSLog.d("MATRIX COMP!","MATRIX COMP: %s // %s", String.valueOf(b.getInvBindMatrix()[k]), String.valueOf(draw.getRestPose().getBones()[j+k]));
-////				}
-//
-//				GLES20.glUniformMatrix4fv(u_Bone, 1, false, animatedBone, 0);
-//			}
-//		}  else 
-			
+		
 		if(draw.getPose() != null && draw.getRestPoseInv() != null) {
-
-			for(int i = 0, j = 0; i < draw.getArmature().getBones().length; i++, j += DrawingConstants.FOURX_MATRIX_SIZE) {
-				Bone b = draw.getArmature().getBones()[i];
-
-				float[] testBone = new float[16];
-				Matrix.multiplyMM(testBone, 0, b.getMatrix(), 0, b.getInvBindMatrix(), 0);
-				float[] animatedBone = new float[16];
-				Matrix.multiplyMM(animatedBone, 0, draw.getPose().getBones(), j, draw.getRestPoseInv().getBones(), j);
-
-				for(int k = 0; k < 16; k++) {
-					if(b.getMatrix()[k] - draw.getPose().getBones()[j+k] != 0) {
-						SSLog.d("MATRIX MISMATCH!","BONE INFORMATION: %s // %s, %s // %s, %s, %s", b.getName(), b.getMatrix()[k], draw.getPose().getBones()[j+k], i, j, j+k);
-						break;
-					}
-
-					if(b.getInvBindMatrix()[k] - draw.getRestPoseInv().getBones()[j+k] != 0) {
-						SSLog.d("BIND MATRIX MISMATCH!","BONE INFORMATION: %s // %s, %s // %s, %s, %s", b.getName(), b.getInvBindMatrix()[k], draw.getRestPoseInv().getBones()[j+k], i, j, j+k);
-						break;
-					}
-					
-					if(testBone[k] - animatedBone[k] != 0) {
-						SSLog.d("FINAL MATRIX MISMATCH!","FINAL INFORMATION: %s // %s, %s // %s, %s, %s", b.getName(), testBone[k], animatedBone[k], i, j, j+k);
-						break;
-					}
-
-				}
-			}
-
 			for(int i = 0; i < draw.getPose().getBones().length; i += DrawingConstants.FOURX_MATRIX_SIZE) {
-
 				int u_Bone = GLES20.glGetUniformLocation(shaderHandle, String.format("u_Bones[%s]",i / DrawingConstants.FOURX_MATRIX_SIZE));
-
 				float[] animatedBone = new float[16];
 				Matrix.multiplyMM(animatedBone, 0, draw.getPose().getBones(), i, draw.getRestPoseInv().getBones(), i);
-
 				GLES20.glUniformMatrix4fv(u_Bone, 1, false, animatedBone, 0);
 			}
 		}
 
-		// Draw
+		// --Draw--
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, draw.getIdxBufHandle());
 		GLES20.glDrawElements(primType, draw.getNumElements(), GLES20.GL_UNSIGNED_SHORT, draw.getElementOffset());

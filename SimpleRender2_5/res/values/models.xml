@@ -6,6 +6,7 @@
         <item>@raw/skydome</item>
         <item>@raw/gray_ui</item>
         <item>@raw/rigged</item>
+        <item>@raw/lightning</item>
     </array>
 
 </resources>

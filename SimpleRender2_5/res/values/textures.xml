@@ -19,6 +19,7 @@
         <item>@drawable/ghostring</item>
         <item>@drawable/red</item>
         <item>@drawable/dirt</item>
+        <item>@drawable/lightning</item>
     </array>
     
     <array name="textures_cube">

@@ -75,6 +75,7 @@ def write_armature_pose_files(obj, scene, childMesh):
         for j in range(len(arm.bones)):
             if(poseStr != ""):
                 poseStr += ","
+            bone = obj.pose.bones[j]
             boneMatrix = (obj.pose.bones[j].matrix)
             print("Bone: ",obj.pose.bones[j].name)
             boneMatrix = boneMatrix.transposed() * rot_y_up
@@ -82,6 +83,12 @@ def write_armature_pose_files(obj, scene, childMesh):
             bone_matrix_str = bone_matrix_str.replace(">","").replace(" ","").replace(")(",",")
             bone_matrix_str = bone_matrix_str.replace("(","").replace(")","") 
             poseStr += bone_matrix_str
+            print("\n----------- BONE: %s -----------" % poseName)
+            print("BONE NAME %s // PBONE NAME %s" % (bone.name, obj.pose.bones[i].name))     
+            print("Pose Matrix:                  %s" % boneMatrix)
+            print("Pose Quaternion:                  %s" % boneMatrix.to_quaternion())
+            print("Pose Translation:                  %s" % boneMatrix.to_translation())       
+            print("--------------------------------\n")
         armDesc += "%s=%s\n" % (poseName,poseStr)
         
     #armDesc += "POSE_NAMES=%s\n" % poseNames
@@ -109,14 +116,6 @@ def write_armature_pose_files(obj, scene, childMesh):
         bone_inv_bind_str = bone_inv_bind_str.replace(">","").replace(" ","").replace(")(",",")
         bone_inv_bind_str = bone_inv_bind_str.replace("(","").replace(")","")
         restPoseInvStr += bone_inv_bind_str
-        print("\n----------- BONE: %s -----------" % bone.name)
-        print("BONE NAME %s // PBONE NAME %s" % (bone.name, obj.pose.bones[i].name))     
-        print("Is deform enabled:",bone.use_deform)
-        print("Rot Y UP Matrix:              %s" % rot_y_up)
-        print("Bind Matrix:                  %s" % boneBindMatrixTranspInv)
-        print("Pose Matrix:                  %s" % boneMatrix)
-       
-        print("--------------------------------\n")
         
     armDesc += "Rest=%s\n" % restPoseStr
     armDesc += "RestInv=%s\n" % restPoseInvStr
@@ -478,7 +477,7 @@ for scene in bpy.data.scenes:
             if(obj.type == "MESH" and obj.is_visible(scene)):
                 
                 #write armature
-                if(obj.parent.type == "ARMATURE"):
+                if(obj.parent is not None and obj.parent.type == "ARMATURE"):
                     print("*** Writing ",obj.parent.name,"type is",obj.parent.type,"visibility is",obj.parent.is_visible(scene))
                     file_name = write_armature_pose_files(obj.parent, scene, obj)
                     zf.write(work_path + file_name + arm_ext, file_name + arm_ext, compress_type=compression)
