@@ -101,4 +101,10 @@ public class SeaTilesManager implements Node {
 		return null;
 	}
 
+	@Override
+	public void resetTranslation() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

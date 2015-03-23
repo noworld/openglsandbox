@@ -1,5 +1,7 @@
 package com.solesurvivor.simplerender2_5.rendering;
 
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Stack;
 
@@ -10,21 +12,22 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2_5.scene.CameraNode;
+import com.solesurvivor.simplerender2_5.scene.Curve;
 import com.solesurvivor.simplerender2_5.scene.Drawable;
 import com.solesurvivor.simplerender2_5.scene.DrawableBones;
 import com.solesurvivor.simplerender2_5.scene.GeometryBones;
 import com.solesurvivor.simplerender2_5.scene.Light;
-import com.solesurvivor.simplerender2_5.scene.animation.Bone;
-import com.solesurvivor.util.logging.SSLog;
+import com.solesurvivor.util.SSArrayUtil;
 
 public class GridMapRenderer extends BaseRenderer {
 	
 	protected CameraNode currentCamera;
 	protected Stack<float[]> matrixStack;
+	
 	boolean bonesUninit = true;
 	
 	public GridMapRenderer() {
-		clearColor = new float[]{0.5f,0.5f,0.5f,1.0f};
+		clearColor = new float[]{0.5f,0.5f,0.5f,1.0f};		
 	}
 
 	@Override
@@ -58,6 +61,43 @@ public class GridMapRenderer extends BaseRenderer {
 			drawGeometry(draw, modelMatrix, GLES20.GL_TRIANGLES);
 		}
 		
+	}
+	
+	public void drawCurve(Curve c) {
+		float[] mvMatrix = new float[16];
+		float[] mvpMatrix = new float[16];
+		float[] projectionMatrix = currentCamera.getProjectionMatrix();
+		float[] viewMatrix = currentCamera.getViewMatrix();
+
+		GLES20.glUseProgram(pointShader);
+
+		int u_mvp = GLES20.glGetUniformLocation(pointShader, "u_MVPMatrix");
+		int u_lightpos = GLES20.glGetUniformLocation(pointShader, "u_LightCol");
+		int a_pos = GLES20.glGetAttribLocation(pointShader, "a_Position");
+
+		// --MV--		
+		float[] modelMatrix = c.getWorldMatrix();
+		
+		/* Get the MV Matrix: Multiply V * M  = MV */
+		Matrix.multiplyMM(mvMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+
+		// --MVP--
+
+		/* Get the MVP Matrix: Multiply P * MV = MVP*/
+		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvMatrix, 0);
+		
+		//MVP is MVP at this point
+		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
+
+		// Draw
+		Buffer b = SSArrayUtil.arrayToFloatBuffer(c.getPoints());
+		GLES20.glVertexAttribPointer(a_pos, 3, GLES20.GL_FLOAT, false, 3*4, b);      
+		GLES20.glEnableVertexAttribArray(a_pos); 
+		GLES20.glUniform4f(u_lightpos, 1.0f, 0.179f, 0.009f, 1.0f);
+		
+		GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, b.capacity() / 3);
+
+		checkError();
 	}
 	
 	public void drawGeometry(Drawable draw, float[] modelMatrix, int primType) {

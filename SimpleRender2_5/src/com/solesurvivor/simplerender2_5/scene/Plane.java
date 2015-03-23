@@ -98,4 +98,10 @@ public class Plane extends Rectangle implements Node {
 		return null;
 	}
 
+	@Override
+	public void resetTranslation() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

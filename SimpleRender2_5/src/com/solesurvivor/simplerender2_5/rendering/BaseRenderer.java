@@ -27,7 +27,6 @@ import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.game.states.GameStateEnum;
 import com.solesurvivor.simplerender2_5.game.states.GameStateManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
-import com.solesurvivor.simplerender2_5.scene.CameraNode;
 import com.solesurvivor.simplerender2_5.scene.Drawable;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.Light;
@@ -46,6 +45,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 	protected Camera mCurrentCamera;
 	protected float[] clearColor = new float[]{0.1f,0.3f,0.6f,1.0f};
+	protected int pointShader = -1;
 
 	/* --------------------------------- */
 	/* Event Methods that drive the game */
@@ -83,11 +83,12 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			d.getSize(p); //Requires API 13+			
 			GameWorld.inst().resizeViewport(new Point(p.x, p.y));			
 		}
+		
+		this.pointShader = ShaderManager.getShaderId("point_shader");
 
 		GameStateManager.init();
-		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.GRID_MAP));
-//		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.WATER_RENDERING));
-//		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.SKY_GRADIENT));
+		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.TANK_TRACK));
+
 	}
 
 

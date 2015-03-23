@@ -131,6 +131,11 @@ public class Vec3 extends Vec2 {
 		return new Vec3(f[0],f[1],f[2]);
 	}
 	
+	public static Vec3 fromFloatArray(float[] f, int offset) {
+		if(f == null || f.length < 3) throw new IllegalArgumentException("Could not load Vec3 from insufficient float array.");
+		return new Vec3(f[0+offset],f[1+offset],f[2+offset]);
+	}
+	
 	public static Vec3 valueOf(String s) {
 		String[] vals = s.split(COMMA);
 		return new Vec3(Float.valueOf(vals[0]), Float.valueOf(vals[1]), Float.valueOf(vals[2]));

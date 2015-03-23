@@ -26,6 +26,7 @@ import com.solesurvivor.simplerender2_5.rendering.BaseRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.rendering.ShaderManager;
 import com.solesurvivor.simplerender2_5.rendering.TextureManager;
+import com.solesurvivor.simplerender2_5.scene.Curve;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.GeometryBones;
 import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
@@ -195,6 +196,34 @@ public class GeometryIO {
 		}
 		
 		return geoList;
+	}
+	
+	public static Map<String,Curve> loadCurves(int resId) throws IOException {
+		Map<String,Curve> curves = new HashMap<String,Curve>();
+		
+		Resources res = GameGlobal.inst().getContext().getResources();
+//		String resourceName = res.getResourceEntryName(resId);	
+		InputStream is = res.openRawResource(resId);
+		Map<String,byte[]> curveFiles = parseFiles(is);
+		
+		for(String key : curveFiles.keySet()) {
+			if(key.toLowerCase().endsWith(".cv")) {
+				String curveFile = new String(curveFiles.get(key));
+				Map<String,String> properties = SSPropertyUtil.parseFromString(curveFile);
+				String name = properties.get("NAME");
+				float[] points = SSArrayUtil.parseFloatArray(properties.get("POINTS"), ",");
+								
+				Curve c = new Curve(name, points);
+				
+				if(properties.get("CLOSED") != null) {
+					c.setClosed(Boolean.parseBoolean(properties.get("CLOSED")));
+				}
+				
+				curves.put(name,c);
+			}
+		}
+		
+		return curves;
 	}
 
 	public static List<Geometry> loadGeometry(int resId) throws IOException {

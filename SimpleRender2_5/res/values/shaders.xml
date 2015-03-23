@@ -12,8 +12,14 @@
         <item>@array/water_shader</item>
         <item>@array/fog_shader</item>
         <item>@array/bones_shader</item>
+        <item>@array/point_shader</item>
     </array>
     
+    <array name="point_shader">
+        <item >@raw/v_point</item> 
+        <item >@raw/f_point</item>  
+    </array>
+     
     <array name="skybox_shader">
         <item >@raw/v_skybox</item> 
         <item >@raw/f_skybox</item>  

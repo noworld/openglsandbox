@@ -151,5 +151,11 @@ public class Water implements Node {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void resetTranslation() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

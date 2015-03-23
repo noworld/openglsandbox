@@ -155,7 +155,7 @@ public class SSArrayUtil {
 	
 	public static FloatBuffer arrayToFloatBuffer(float[] inputArray) {
 		FloatBuffer fBuf = ByteBuffer.allocateDirect(inputArray.length * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		fBuf.put(inputArray).position(0);
+		fBuf.put(inputArray).rewind();
 		return fBuf;
 	}
 	

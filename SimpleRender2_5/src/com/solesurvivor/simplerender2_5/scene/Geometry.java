@@ -88,10 +88,18 @@ public class Geometry implements Drawable {
 	public String getName() {
 		return mName;
 	}
+	
+	public void setShaderHandle(int shaderHandle) {
+		this.mShaderHandle = shaderHandle;
+	}
 
 	@Override
 	public int getShaderHandle() {
 		return mShaderHandle;
+	}
+	
+	public void setTextureHandle(int texHandle) {
+		this.mTextureHandle = texHandle;
 	}
 
 	@Override
@@ -231,6 +239,10 @@ public class Geometry implements Drawable {
 		Matrix.scaleM(mWorldMatrix, 0, mScaleFac.getX(), mScaleFac.getY(), mScaleFac.getZ());
 
 		mDirty = false;
+	}
+	
+	public Geometry clone() {
+		return new Geometry(this);
 	}
 
 }

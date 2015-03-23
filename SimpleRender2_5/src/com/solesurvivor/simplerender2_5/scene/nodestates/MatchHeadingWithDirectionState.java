@@ -1,14 +1,13 @@
 package com.solesurvivor.simplerender2_5.scene.nodestates;
 
-import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.scene.NodeImpl;
 import com.solesurvivor.simplerender2_5.scene.NodeState;
 import com.solesurvivor.util.math.Vec3;
 
 public class MatchHeadingWithDirectionState implements NodeState<NodeImpl> {
 	
-	private static final float ROTATION_SPEED = 90.0f; //90 degrees per second
-	private static final float STOP_SENSITIVITY = 0.01f;
+	private static final float ROTATION_SPEED = 3.0f; //3 degrees per frame
+	private static final float STOP_SENSITIVITY = ROTATION_SPEED + 0.01f;
 	private static final Vec3 AXES = new Vec3(0.0f, 1.0f, 0.0f); //Rotate on the Y (up) axis
 	
 	protected Vec3 previousPos; //Previous position
@@ -55,7 +54,7 @@ public class MatchHeadingWithDirectionState implements NodeState<NodeImpl> {
 		//we were given and continue to rotate towards that
 		if(compareVec.getMagSq() > 0.0) {
 			//Find the target angle from the vector
-			targetA = (float)Math.toDegrees(Math.atan2(compareVec.getZ(), compareVec.getX())) - 180.0f;
+			targetA = (float)Math.toDegrees(Math.atan2(compareVec.getZ(), compareVec.getX()));
 		}
 		
 		//Find the current facing angle from the world matrix
@@ -85,25 +84,17 @@ public class MatchHeadingWithDirectionState implements NodeState<NodeImpl> {
 			//Choose which way to turn based on 
 			//if the difference was positive or
 			//negative
-			
-			float dt = ((float)GameWorld.inst().getDeltaT())/1000.0f;
-			float da = dt * ROTATION_SPEED;
-			
-			if(da > diff && da < diff + STOP_SENSITIVITY) {
-				da = diff;
-			}
-			
 			if(diff > 0.0f) {
-				target.rotate(da, AXES);
+				target.rotate(ROTATION_SPEED, AXES);
 			} else {
-				target.rotate(-da, AXES);
-			}
+				target.rotate(-ROTATION_SPEED, AXES);
+			}			
 			
 			//XXX Need Event Bus... Character Stopped event
 		}
 
 		//Only if the position is changing.
-		if(compareVec.getMagSq() > STOP_SENSITIVITY) {
+		if(compareVec.getMagSq() > 0.0) {
 			//If we are moving, save the 
 			//position change
 			previousPos = currentPos;

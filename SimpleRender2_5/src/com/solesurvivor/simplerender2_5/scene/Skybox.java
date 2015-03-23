@@ -218,4 +218,10 @@ public class Skybox implements Node, Drawable {
 		return null;
 	}
 
+	@Override
+	public void resetTranslation() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

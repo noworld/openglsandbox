@@ -17,6 +17,7 @@ public class GameStateManager {
 		states.put(GameStateEnum.WATER_RENDERING, new WaterRenderingState());
 		states.put(GameStateEnum.SKY_GRADIENT, new SkyGradientState());
 		states.put(GameStateEnum.GRID_MAP, new GridMapState());
+		states.put(GameStateEnum.TANK_TRACK, new TankTrackState());
 
 		sGameStates = Collections.unmodifiableMap(states);
 	}

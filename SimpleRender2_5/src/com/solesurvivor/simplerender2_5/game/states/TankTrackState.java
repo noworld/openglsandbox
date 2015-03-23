@@ -17,12 +17,14 @@ import com.solesurvivor.simplerender2_5.rendering.GridMapRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 import com.solesurvivor.simplerender2_5.scene.Actor;
+import com.solesurvivor.simplerender2_5.scene.AnimatedNodeImpl;
 import com.solesurvivor.simplerender2_5.scene.CameraNode;
 import com.solesurvivor.simplerender2_5.scene.Curve;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.GeometryBones;
 import com.solesurvivor.simplerender2_5.scene.GeometryNode;
 import com.solesurvivor.simplerender2_5.scene.MapGrid;
+import com.solesurvivor.simplerender2_5.scene.PathAnimation;
 import com.solesurvivor.simplerender2_5.scene.animation.Armature;
 import com.solesurvivor.simplerender2_5.scene.animation.Pose;
 import com.solesurvivor.simplerender2_5.scene.animation.PoseLibrary;
@@ -30,10 +32,10 @@ import com.solesurvivor.simplerender2_5.scene.nodestates.MatchHeadingWithDirecti
 import com.solesurvivor.util.math.MatrixUtils;
 import com.solesurvivor.util.math.Vec3;
 
-public class GridMapState extends BaseState {
+public class TankTrackState extends BaseState {
 
 	@SuppressWarnings("unused")
-	private static final String TAG = GridMapState.class.getSimpleName();
+	private static final String TAG = TankTrackState.class.getSimpleName();
 	
 	protected CameraNode mCamera;
 	protected Actor mActor;
@@ -43,7 +45,7 @@ public class GridMapState extends BaseState {
 	long startTime;
 	long duration;
 	
-	public GridMapState() {
+	public TankTrackState() {
 		
 		Vec3 eye = new Vec3(0.0f, 4.0f, 6.0f);
 		Vec3 look = new Vec3(0.0f, 2.0f, -1.0f);
@@ -65,35 +67,29 @@ public class GridMapState extends BaseState {
 			for(Geometry g : mUi) {
 				g.translate(pushback);
 			}
+						
 			
 			Curve trackCurve = GeometryIO.loadCurves(R.raw.trackcurve).get("track_path");
 			trackCurve.translate(new Vec3(0,1.4f,0));
+			PathAnimation anim = new PathAnimation(trackCurve, 10 * 1000);
+			anim.setDrawPath(true);
 			
+			//TODO: Get the length of the curve in Python
+			//and distribute evenly
+			float displacement = 1.25f;
 			Geometry trackLink = GeometryIO.loadGeometryMap(R.raw.trackcurve).get("track_link");
 			trackLink.setTextureHandle(TextureManager.getTextureId("track_tex"));
-			GeometryNode trackLinkNode = new GeometryNode(trackLink);
-			trackCurve.addChild(trackLinkNode);
-			trackLinkNode.setParent(trackCurve);
-			mScene.addChild(trackCurve);
+			for(int i = 0; i < 73; i++) {				
+				AnimatedNodeImpl trackLinkNode = new AnimatedNodeImpl(trackLink);
+				trackLinkNode.setParent(anim);
+				anim.addChild(trackLinkNode, i*displacement);
+			}
 
-//			Map<String,Geometry> tiles = GeometryIO.loadGeometryMap(R.raw.tile1);
-//			
-//			GeometryNode gn = new GeometryNode(tiles.get("tile"));
-//			mScene.addChild(gn);
-//			
-//			GeometryNode gn2 = new GeometryNode(tiles.get("tile"));
-//			gn2.translate(new Vec3(0.0f,0.0f,2.0f));
-//			mScene.addChild(gn2);
-			
-//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.gray_ui).get("circle_arrow");
-//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("TestObj");
-//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Cube");
-//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Box");
-			
-			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Macho");
-//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.trackcurve).get("track_link");
-			
-			mActor = new Actor(arrow);
+			mScene.addChild(anim);
+
+			Geometry actor = GeometryIO.loadGeometryMap(R.raw.rigged).get("Macho");
+
+			mActor = new Actor(actor);
 			mActor.changeState(new MatchHeadingWithDirectionState());
 			mActor.rotate(180.0f, new Vec3(0,1.0f,0));
 		
@@ -116,12 +112,12 @@ public class GridMapState extends BaseState {
 //			Armature arm = arms.get("Arm.Box");
 			
 //			arm.updateBones();
-			((GeometryBones)arrow).setArmature(arm);
-			((GeometryBones)arrow).setPose(poseLib.getPose("ArmDown"));
+			((GeometryBones)actor).setArmature(arm);
+			((GeometryBones)actor).setPose(poseLib.getPose("ArmDown"));
 			startPose = poseLib.getRestPose();
 			endPose = poseLib.getPose("ArmUp");
-			((GeometryBones)arrow).setRestPose(poseLib.getRestPose());
-			((GeometryBones)arrow).setRestPoseInv(poseLib.getRestPoseInv());
+			((GeometryBones)actor).setRestPose(poseLib.getRestPose());
+			((GeometryBones)actor).setRestPoseInv(poseLib.getRestPoseInv());
 			
 //			float[] mat = new float[16];
 //			Matrix.setIdentityM(mat, 0);

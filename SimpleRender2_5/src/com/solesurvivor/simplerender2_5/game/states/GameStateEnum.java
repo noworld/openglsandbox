@@ -5,5 +5,6 @@ public enum GameStateEnum {
 	MAIN_MENU,
 	WATER_RENDERING,
 	SKY_GRADIENT,
-	GRID_MAP;
+	GRID_MAP,
+	TANK_TRACK;
 }

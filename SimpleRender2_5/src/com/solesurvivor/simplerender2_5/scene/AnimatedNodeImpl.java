@@ -1,42 +1,17 @@
 package com.solesurvivor.simplerender2_5.scene;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.opengl.Matrix;
 
 import com.solesurvivor.util.math.Vec3;
 
-public class NodeImpl implements Node {
+public class AnimatedNodeImpl extends GeometryNode {
 
-	protected List<Node> children;
-	protected Vec3 position;
-	protected float[] mTransMatrix;
-	protected float[] mRotMatrix;
-	protected float[] mScaleMatrix;
-	protected float[] mWorldMatrix;
-	protected float[] mTempMatrix;
-	protected boolean mDirty = true;
-	protected Node parent;
+	protected float[] animMatrix;
 
-	public NodeImpl() {		
-		position = Vec3.createZeroVec3();
-		children = new ArrayList<Node>();
-		mTransMatrix = new float[16];
-		mRotMatrix = new float[16];
-		mScaleMatrix = new float[16];
-		mWorldMatrix = new float[16];
-		mTempMatrix = new float[16];
-		Matrix.setIdentityM(mTransMatrix, 0);
-		Matrix.setIdentityM(mRotMatrix, 0);
-		Matrix.setIdentityM(mScaleMatrix, 0);
-		Matrix.setIdentityM(mWorldMatrix, 0);
-		Matrix.setIdentityM(mTempMatrix, 0);
-	}
-
-	public NodeImpl(Node parent) {
-		this();
-		this.parent = parent;
+	public AnimatedNodeImpl(Geometry g) {
+		super(g);
+		this.animMatrix = new float[16];
+		Matrix.setIdentityM(animMatrix, 0);
 	}
 	
 	public Vec3 getPosition() {
@@ -72,11 +47,6 @@ public class NodeImpl implements Node {
 //		this.mDirty = false;
 	}
 
-	@Override
-	public void render() {
-		renderChildren();
-	}
-
 	//XXX Change to also link up the parent
 	@Override
 	public void addChild(Node n) {
@@ -99,6 +69,20 @@ public class NodeImpl implements Node {
 	public void translate(Vec3 trans) {
 		position.add(trans);
 		Matrix.translateM(mTransMatrix, 0, trans.getX(), trans.getY(), trans.getZ());
+		mDirty = true;
+	}
+	
+	public void resetAnimation() {
+		Matrix.setIdentityM(animMatrix, 0);
+	}
+	
+	public void translateAnimation(Vec3 trans) {
+		Matrix.translateM(animMatrix, 0, trans.getX(), trans.getY(), trans.getZ());
+		mDirty = true;
+	}
+	
+	public void rotateAnimation(float angle, Vec3 axes) {
+		Matrix.rotateM(animMatrix, 0, angle, axes.getX(), axes.getY(), axes.getZ());
 		mDirty = true;
 	}
 
@@ -141,6 +125,8 @@ public class NodeImpl implements Node {
 		Matrix.setIdentityM(mTempMatrix, 0);
 		Matrix.multiplyMM(mTempMatrix, 0, mWorldMatrix, 0, mScaleMatrix, 0);		
 		Matrix.multiplyMM(mWorldMatrix, 0, mTempMatrix, 0, mTransMatrix, 0);
+		System.arraycopy(mWorldMatrix, 0, mTempMatrix, 0, mTempMatrix.length);
+		Matrix.multiplyMM(mWorldMatrix, 0, mTempMatrix, 0, animMatrix, 0);
 		Matrix.multiplyMM(mTempMatrix, 0, mWorldMatrix, 0, mRotMatrix, 0);
 
 		if(parent != null) {
@@ -148,6 +134,7 @@ public class NodeImpl implements Node {
 		} else {
 			System.arraycopy(mTempMatrix, 0, mWorldMatrix, 0, mTempMatrix.length);
 		}
+		
 	}
 
 	@Override
