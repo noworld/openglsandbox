@@ -9,6 +9,7 @@
         <item>@array/ui_shader</item>
         <item>@array/skytex_shader</item>
         <item>@array/watertex_shader</item>
+        <item>@array/clearwater_shader</item>
         <item>@array/water_shader</item>
         <item>@array/fog_shader</item>
         <item>@array/bones_shader</item>
@@ -38,6 +39,11 @@
     <array name="water_shader">
         <item >@raw/v_water_nrms</item> 
         <item >@raw/f_water_nrms</item>  
+    </array>
+    
+    <array name="clearwater_shader">
+        <item >@raw/v_water_clear</item> 
+        <item >@raw/f_water_clear</item>  
     </array>
     
     <array name="watertex_shader">

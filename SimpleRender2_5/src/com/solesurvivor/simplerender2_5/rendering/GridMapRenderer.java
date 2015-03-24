@@ -1,7 +1,6 @@
 package com.solesurvivor.simplerender2_5.rendering;
 
 import java.nio.Buffer;
-import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Stack;
 
@@ -60,6 +59,25 @@ public class GridMapRenderer extends BaseRenderer {
 		} else {
 			drawGeometry(draw, modelMatrix, GLES20.GL_TRIANGLES);
 		}
+		
+	}
+	
+	public void drawGeometryTransparent(Drawable draw, float[] modelMatrix) {
+		//XXX Need to make a proper dispatcher
+		
+		GLES20.glBlendEquation(GLES20.GL_FUNC_ADD);
+		GLES20.glBlendFunc(GLES20.GL_ZERO, GLES20.GL_SRC_COLOR);
+		GLES20.glEnable(GLES20.GL_BLEND);
+		if(draw instanceof GeometryBones
+				&& ((GeometryBones)draw).getBones()) {
+			drawGeometryBones((DrawableBones)draw, modelMatrix, GLES20.GL_TRIANGLES);
+		} else {
+			drawGeometry(draw, modelMatrix, GLES20.GL_TRIANGLES);
+		}
+		
+		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glBlendEquation(GLES20.GL_FUNC_ADD);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		
 	}
 	

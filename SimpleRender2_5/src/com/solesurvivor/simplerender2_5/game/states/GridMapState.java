@@ -12,21 +12,17 @@ import com.solesurvivor.simplerender2_5.commands.CommandEnum;
 import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.input.InputUiElement;
 import com.solesurvivor.simplerender2_5.io.GeometryIO;
-import com.solesurvivor.simplerender2_5.rendering.DrawingConstants;
 import com.solesurvivor.simplerender2_5.rendering.GridMapRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
 import com.solesurvivor.simplerender2_5.scene.Actor;
 import com.solesurvivor.simplerender2_5.scene.CameraNode;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
-import com.solesurvivor.simplerender2_5.scene.GeometryBones;
 import com.solesurvivor.simplerender2_5.scene.GeometryNode;
 import com.solesurvivor.simplerender2_5.scene.MapGrid;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
-import com.solesurvivor.simplerender2_5.scene.animation.Armature;
+import com.solesurvivor.simplerender2_5.scene.WaterNode;
 import com.solesurvivor.simplerender2_5.scene.animation.Pose;
-import com.solesurvivor.simplerender2_5.scene.animation.PoseLibrary;
 import com.solesurvivor.simplerender2_5.scene.nodestates.MatchHeadingWithDirectionState;
-import com.solesurvivor.util.math.MatrixUtils;
 import com.solesurvivor.util.math.Vec3;
 
 public class GridMapState extends BaseState {
@@ -88,7 +84,7 @@ public class GridMapState extends BaseState {
 			mScene.addChild(new GeometryNode(terrain));
 			
 			Geometry ocean = island.get("Water");
-			mScene.addChild(new GeometryNode(ocean));
+			mScene.addChild(new WaterNode(ocean));
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -37,7 +37,7 @@ public class WaterNode extends StatefulNodeImpl {
 
 	@Override
 	public void render() {
-		mRen.drawGeometry(mGeometry, this.getWorldMatrix());
+		mRen.drawGeometryTransparent(mGeometry, this.getWorldMatrix());
 		renderChildren();
 	}
 	

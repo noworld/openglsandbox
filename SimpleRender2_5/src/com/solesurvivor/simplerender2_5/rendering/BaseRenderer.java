@@ -14,12 +14,8 @@ import java.util.Random;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import org.apache.commons.io.IOUtils;
-
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.opengl.ETC1;
-import android.opengl.ETC1Util.ETC1Texture;
 import android.opengl.ETC1Util;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
