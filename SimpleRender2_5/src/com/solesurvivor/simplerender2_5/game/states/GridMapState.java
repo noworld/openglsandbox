@@ -15,14 +15,13 @@ import com.solesurvivor.simplerender2_5.io.GeometryIO;
 import com.solesurvivor.simplerender2_5.rendering.DrawingConstants;
 import com.solesurvivor.simplerender2_5.rendering.GridMapRenderer;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
-import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 import com.solesurvivor.simplerender2_5.scene.Actor;
 import com.solesurvivor.simplerender2_5.scene.CameraNode;
-import com.solesurvivor.simplerender2_5.scene.Curve;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.GeometryBones;
 import com.solesurvivor.simplerender2_5.scene.GeometryNode;
 import com.solesurvivor.simplerender2_5.scene.MapGrid;
+import com.solesurvivor.simplerender2_5.scene.Skybox;
 import com.solesurvivor.simplerender2_5.scene.animation.Armature;
 import com.solesurvivor.simplerender2_5.scene.animation.Pose;
 import com.solesurvivor.simplerender2_5.scene.animation.PoseLibrary;
@@ -66,33 +65,9 @@ public class GridMapState extends BaseState {
 				g.translate(pushback);
 			}
 			
-			Curve trackCurve = GeometryIO.loadCurves(R.raw.trackcurve).get("track_path");
-			trackCurve.translate(new Vec3(0,1.4f,0));
-			
-			Geometry trackLink = GeometryIO.loadGeometryMap(R.raw.trackcurve).get("track_link");
-			trackLink.setTextureHandle(TextureManager.getTextureId("track_tex"));
-			GeometryNode trackLinkNode = new GeometryNode(trackLink);
-			trackCurve.addChild(trackLinkNode);
-			trackLinkNode.setParent(trackCurve);
-			mScene.addChild(trackCurve);
+			Map<String,Geometry> island = GeometryIO.loadGeometryMap(R.raw.island); 
+			Geometry arrow = island.get("Arrow");
 
-//			Map<String,Geometry> tiles = GeometryIO.loadGeometryMap(R.raw.tile1);
-//			
-//			GeometryNode gn = new GeometryNode(tiles.get("tile"));
-//			mScene.addChild(gn);
-//			
-//			GeometryNode gn2 = new GeometryNode(tiles.get("tile"));
-//			gn2.translate(new Vec3(0.0f,0.0f,2.0f));
-//			mScene.addChild(gn2);
-			
-//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.gray_ui).get("circle_arrow");
-//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("TestObj");
-//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Cube");
-//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Box");
-			
-			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.rigged).get("Macho");
-//			Geometry arrow = GeometryIO.loadGeometryMap(R.raw.trackcurve).get("track_link");
-			
 			mActor = new Actor(arrow);
 			mActor.changeState(new MatchHeadingWithDirectionState());
 			mActor.rotate(180.0f, new Vec3(0,1.0f,0));
@@ -101,36 +76,20 @@ public class GridMapState extends BaseState {
 			mCamera.resizeViewport(GameWorld.inst().getViewport());
 			GridMapRenderer gmr = (GridMapRenderer)RendererManager.getRenderer();
 			gmr.setCurrentCamera(mCamera);			
+			mCamera.setParent(mActor);
 			
 			mActor.addChild(mCamera);
 			mScene.addChild(mActor);
 			
-			MapGrid mapGrid = new MapGrid();
-			mScene.addChild(mapGrid);
+			Skybox skybox = new Skybox("skybox_shader", "tenerife_etc1");
+			mScene.addChild(skybox);	
 			
-			Map<String,PoseLibrary> animLibs = GeometryIO.lodePoseLibrary(R.raw.rigged);
-			PoseLibrary poseLib = animLibs.get("Armature.003");
-			Map<String,Armature> arms = GeometryIO.loadArmatureMap(R.raw.rigged2);
-			Armature arm = arms.get("Armature.003");
-//			Armature arm = arms.get("Arm.Cube");
-//			Armature arm = arms.get("Arm.Box");
+			Geometry terrain = island.get("Landscape");
+			mScene.addChild(new GeometryNode(terrain));
 			
-//			arm.updateBones();
-			((GeometryBones)arrow).setArmature(arm);
-			((GeometryBones)arrow).setPose(poseLib.getPose("ArmDown"));
-			startPose = poseLib.getRestPose();
-			endPose = poseLib.getPose("ArmUp");
-			((GeometryBones)arrow).setRestPose(poseLib.getRestPose());
-			((GeometryBones)arrow).setRestPoseInv(poseLib.getRestPoseInv());
-			
-//			float[] mat = new float[16];
-//			Matrix.setIdentityM(mat, 0);
-//			Matrix.translateM(mat, 0, 0.02583f, -0.63138f, -0.30472f);
-//			for(int i = 0; i < mat.length; i++) {
-//				SSLog.d(TAG, "MATRIX INDEX %s: %s", i, mat[i]);
-//			}
-			
-			
+			Geometry ocean = island.get("Water");
+			mScene.addChild(new GeometryNode(ocean));
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -139,11 +98,13 @@ public class GridMapState extends BaseState {
 
 	@Override
 	public void enter() {
-//		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		RendererManager.getRenderer().initOpenGLDefault();
 		for(CommandEnum ce : CommandEnum.values()) {
 			ce.getCommand().onStateChanged();
 		}
+		
+		GridMapRenderer gmr = (GridMapRenderer)RendererManager.getRenderer();
+		gmr.setCurrentCamera(mCamera);
 		
 		startTime = SystemClock.uptimeMillis();
 		duration = 5000L;
@@ -153,36 +114,6 @@ public class GridMapState extends BaseState {
 	@Override
 	public void execute() {
 		super.execute();
-
-		if(SystemClock.uptimeMillis() - startTime >= duration) {
-			startTime = SystemClock.uptimeMillis();
-			((GeometryBones)mActor.getGeometry()).setPose(endPose);
-			Pose temp = endPose;
-			endPose = startPose;
-			startPose = temp;
-		}
-		
-		float[] animBones = new float[startPose.getBones().length];
-
-		float dt = Math.min(1.0f, ((float)(SystemClock.uptimeMillis() - startTime)) / ((float)duration));
-
-		for(int i = 0; i < startPose.getBones().length; i += DrawingConstants.FOURX_MATRIX_SIZE) {
-			float[] m1 = new float[DrawingConstants.FOURX_MATRIX_SIZE];
-			float[] m2 = new float[DrawingConstants.FOURX_MATRIX_SIZE];
-			System.arraycopy(startPose.getBones(), i, m1, 0, DrawingConstants.FOURX_MATRIX_SIZE);
-			System.arraycopy(endPose.getBones(), i, m2, 0, DrawingConstants.FOURX_MATRIX_SIZE);
-
-			//			if(m1.equals(m2)) {
-			//				System.arraycopy(m1, 0, animBones, i, DrawingConstants.FOURX_MATRIX_SIZE);
-			//				continue;
-			//			}
-
-			float[] lerp = MatrixUtils.lerpMatrix(m1, m2, dt);
-			System.arraycopy(lerp, 0, animBones, i, DrawingConstants.FOURX_MATRIX_SIZE);
-		}
-
-		((GeometryBones)mActor.getGeometry()).setPose(new Pose("Now",animBones));
-
 	}
 	
 	@Override

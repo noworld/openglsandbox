@@ -40,6 +40,7 @@ public class Geometry implements Drawable {
 	protected float mRotAngle;	
 	
 	protected boolean mDirty = true;
+	protected NodeType intendedType = NodeType.ENTITY;
 	
 	protected Geometry() {
 		super();
@@ -197,6 +198,14 @@ public class Geometry implements Drawable {
 	
 	public void setNumElements(int numElements) {
 		this.mNumElements = numElements;
+	}
+	
+	public void setIntendedType(NodeType t) {
+		this.intendedType = t;
+	}
+	
+	public NodeType getIntendedType() {
+		return intendedType;
 	}
 	
 	public void rotate(float angle, Vec3 dir) {

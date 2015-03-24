@@ -16,15 +16,24 @@
         <item>@drawable/stars</item>
         <item>@drawable/wavenormals</item>
         <item>@drawable/greybutton</item>
-        <item>@drawable/ghostring</item>
-        <item>@drawable/red</item>
-        <item>@drawable/dirt</item>
+        <item>@drawable/ghostring</item>        
         <item>@drawable/lightning</item>
         <item>@drawable/track_tex</item>
+        <item>@drawable/realwater</item>
+    </array>
+    
+    <array name="textures_2d_etc1">
+        <item>@drawable/grass</item>
+        <item>@drawable/red</item>
+        <item>@drawable/dirt</item>
     </array>
     
     <array name="textures_cube">
-        <item>@array/tenerife_cube</item>
+        <!-- <item>@array/tenerife_cube</item> -->
+    </array>
+    
+    <array name="textures_cube_etc1">
+        <item>@array/tenerife_etc1</item>
     </array>
     
     <array name="skybox_cube">
@@ -52,6 +61,15 @@
         <item>@drawable/tenerife3</item>
         <item>@drawable/tenerife4</item>
         <item>@drawable/tenerife5</item>
+    </array>
+    
+    <array name="tenerife_etc1">
+        <item>@drawable/tenerife6</item>
+        <item>@drawable/tenerife7</item>
+        <item>@drawable/tenerife8</item>
+        <item>@drawable/tenerife9</item>
+        <item>@drawable/tenerife10</item>
+        <item>@drawable/tenerife11</item>
     </array>
 
 </resources>

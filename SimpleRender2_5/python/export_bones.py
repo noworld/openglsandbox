@@ -497,5 +497,3 @@ for scene in bpy.data.scenes:
         zf.close()
 if(clear_work_directory):
     print("not implemented")
-    #print(mathutils.Quaternion((0.89, -0.455, -0.025, 0.013)).to_matrix().transposed())
-    print(mathutils.Quaternion((0.89, -0.455, 0.013, 0.025)).to_matrix().to_4x4().transposed())

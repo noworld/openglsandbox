@@ -1,5 +1,7 @@
 package com.solesurvivor.simplerender2_5.rendering;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -12,8 +14,13 @@ import java.util.Random;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import org.apache.commons.io.IOUtils;
+
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.opengl.ETC1;
+import android.opengl.ETC1Util.ETC1Texture;
+import android.opengl.ETC1Util;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
@@ -87,7 +94,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		this.pointShader = ShaderManager.getShaderId("point_shader");
 
 		GameStateManager.init();
-		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.TANK_TRACK));
+		GameWorld.inst().changeState(GameStateManager.getState(GameStateEnum.GRID_MAP));
 
 	}
 
@@ -182,6 +189,42 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		return shaderHandle;
 	}
+	
+	public int loadCubeMapEtc1(InputStream[] imageStreams, int[] imageOrder, String[] resourceNames) {
+		int[] textureHandle = new int[1];
+
+		GLES20.glGenTextures(1, textureHandle, 0);
+
+		if (textureHandle[0] != 0) {
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureHandle[0]);
+
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+
+			for(int i = 0; i < imageStreams.length; i++) {
+				try {
+					ETC1Util.loadTexture(imageOrder[i], 0, 0, GLES20.GL_RGB, GLES20.GL_UNSIGNED_SHORT_5_6_5, imageStreams[i]);
+				} catch (IOException e) {
+					GLES20.glDeleteTextures(1, textureHandle, 0);
+					textureHandle[0] = 0;
+					SSLog.w(TAG, String.format("Exception encountered trying to load PKM cube map image: %s", resourceNames[i]), e);
+					break;
+				}
+			}
+			
+			//Unbind
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, 0);
+
+		}
+
+		if (textureHandle[0] == 0) {
+			throw new RuntimeException("Error loading texture.");
+		}
+
+		return textureHandle[0];
+	}
 
 	public int loadCubeMap(Bitmap[] cubemap, int[] imageOrder) {
 		int[] textureHandle = new int[1];
@@ -191,7 +234,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		if (textureHandle[0] != 0) {
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureHandle[0]);
 
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 			GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
 			GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
 			GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
@@ -200,8 +243,40 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 				GLUtils.texImage2D(imageOrder[i], 0, cubemap[i], 0);
 			}
 			
-//			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
+			//Unbind
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, 0);
 
+		}
+
+		if (textureHandle[0] == 0) {
+			throw new RuntimeException("Error loading texture.");
+		}
+
+		return textureHandle[0];
+	}
+	
+	public int loadTextureEtc1(InputStream pkmStream, String resourceName) {
+
+		int[] textureHandle = new int[1];
+
+		GLES20.glGenTextures(1, textureHandle, 0);
+
+		if (textureHandle[0] != 0) {
+			
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+
+			try {
+				ETC1Util.loadTexture(GLES20.GL_TEXTURE_2D, 0, 0, GLES20.GL_RGB, GLES20.GL_UNSIGNED_SHORT_5_6_5, pkmStream);
+			} catch (IOException e) {
+				GLES20.glDeleteTextures(1, textureHandle, 0);
+				textureHandle[0] = 0;
+				SSLog.w(TAG, String.format("Exception encountered trying to load PKM image: %s", resourceName), e);
+			}
+			
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);			
 		}
 
 		if (textureHandle[0] == 0) {
@@ -220,11 +295,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
 
 			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
 
 			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);		
 			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
-//			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
 		}
 
 		if (textureHandle[0] == 0) {

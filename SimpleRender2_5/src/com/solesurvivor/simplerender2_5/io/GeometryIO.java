@@ -29,6 +29,7 @@ import com.solesurvivor.simplerender2_5.rendering.TextureManager;
 import com.solesurvivor.simplerender2_5.scene.Curve;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.GeometryBones;
+import com.solesurvivor.simplerender2_5.scene.NodeType;
 import com.solesurvivor.simplerender2_5.scene.TerrainClipmap;
 import com.solesurvivor.simplerender2_5.scene.animation.Armature;
 import com.solesurvivor.simplerender2_5.scene.animation.Bone;
@@ -302,6 +303,7 @@ public class GeometryIO {
 			int nrmOffset = Integer.valueOf(desc.get("NRM_OFFSET"));
 			int txcSize = Integer.valueOf(desc.get("TXC_SIZE"));
 			int txcOffset = Integer.valueOf(desc.get("TXC_OFFSET"));
+			String nodeType = desc.get("OBJECT_TYPE");
 			boolean bones = Boolean.valueOf(desc.get("BONES"));
 
 			byte[] vboBytes = ig.mFiles.get(s + ".v");
@@ -332,6 +334,10 @@ public class GeometryIO {
 						posSize, nrmSize, txcSize,
 						posOffset, nrmOffset, txcOffset,
 						numElements, elementStride, texture);
+			}
+			
+			if(nodeType != null && (nodeType.equals("ENTITY") || nodeType.equals("WATER"))) {
+				geo.setIntendedType(NodeType.valueOf(nodeType));
 			}
 			
 			geoList.put(name,geo);

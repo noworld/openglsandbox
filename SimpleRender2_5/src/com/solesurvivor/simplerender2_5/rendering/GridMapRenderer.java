@@ -165,7 +165,7 @@ public class GridMapRenderer extends BaseRenderer {
 		//Switching to view space...
 		//TODO: Handle multiple lights
 		List<Light> lights = draw.getLights();
-		if(lights != null && lights.size() > 0) {
+		if(lights != null && lights.size() > 0 && u_lightpos > -1) {
 			Light light = lights.get(0);
 			float[] lightPosWorldSpace = new float[4];
 			float[] lightPosEyeSpace = new float[4];
