@@ -11,6 +11,8 @@
         <item>@array/watertex_shader</item>
         <item>@array/clearwater_shader</item>
         <item>@array/water_shader</item>
+        <item>@array/water_reflect_shader</item>
+        <item>@array/water_refract_shader</item>
         <item>@array/fog_shader</item>
         <item>@array/bones_shader</item>
         <item>@array/point_shader</item>
@@ -41,9 +43,19 @@
         <item >@raw/f_water_nrms</item>  
     </array>
     
+    <array name="water_reflect_shader">
+        <item >@raw/v_water_reflect</item> 
+        <item >@raw/f_water_reflect</item>  
+    </array>
+    
+    <array name="water_refract_shader">
+        <item >@raw/v_water_reflect</item> 
+        <item >@raw/f_water_reflect</item>  
+    </array>
+    
     <array name="clearwater_shader">
-        <item >@raw/v_water_clear</item> 
-        <item >@raw/f_water_clear</item>  
+        <item >@raw/v_water_reflect</item> 
+        <item >@raw/f_water_reflect</item>  
     </array>
     
     <array name="watertex_shader">

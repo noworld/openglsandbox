@@ -42,7 +42,7 @@ public class WaterRenderingState extends BaseState {
 		lookVec[1] += camHeight;
 		mCamera.setEyePos(eyePos);
 		mCamera.setLookVector(lookVec);
-		RendererManager.getRenderer().setCurrentCamera(mCamera);
+//		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		
 //		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
 //		mScene.addChild(skybox);		
@@ -91,7 +91,7 @@ public class WaterRenderingState extends BaseState {
 
 	@Override
 	public void enter() {
-		RendererManager.getRenderer().setCurrentCamera(mCamera);
+//		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		RendererManager.getRenderer().initOpenGLDefault();
 	}
 	

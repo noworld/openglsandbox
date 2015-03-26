@@ -30,6 +30,7 @@ import com.solesurvivor.simplerender2_5.game.GameWorld;
 import com.solesurvivor.simplerender2_5.game.states.GameStateEnum;
 import com.solesurvivor.simplerender2_5.game.states.GameStateManager;
 import com.solesurvivor.simplerender2_5.scene.Camera;
+import com.solesurvivor.simplerender2_5.scene.CameraNode;
 import com.solesurvivor.simplerender2_5.scene.Drawable;
 import com.solesurvivor.simplerender2_5.scene.Geometry;
 import com.solesurvivor.simplerender2_5.scene.Light;
@@ -46,7 +47,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 	private static final String TAG = BaseRenderer.class.getSimpleName();
 
-	protected Camera mCurrentCamera;
+	protected CameraNode mCurrentCamera;
 	protected float[] clearColor = new float[]{0.1f,0.3f,0.6f,1.0f};
 	protected int pointShader = -1;
 
@@ -99,11 +100,11 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 	/* Methods for loading drawables to be called externally */
 	/* ----------------------------------------------------- */
 
-	public void setCurrentCamera(Camera cam) {
+	public void setCurrentCamera(CameraNode cam) {
 		this.mCurrentCamera = cam;
 	}
 	
-	public Camera getCurrentCamera() {
+	public CameraNode getCurrentCamera() {
 		return mCurrentCamera;
 	}
 
@@ -351,7 +352,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
-		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
+//		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
+		float[] viewMatrix = mCurrentCamera.getViewMatrix();
 		int shaderHandle = skybox.getShaderHandle();
 		int textureHandle = skybox.getTextureHandle();
 
@@ -411,7 +413,8 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
-		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
+//		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
+		float[] viewMatrix = mCurrentCamera.getViewMatrix();
 		int shaderHandle = dome.getShaderHandle();
 		int textureHandle = dome.getTextureHandle();
 
@@ -486,8 +489,10 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		float[] mvMatrix = new float[16];
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
-		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
-		Vec3 eyePos = mCurrentCamera.getAgentTranslation();
+//		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
+		float[] viewMatrix = mCurrentCamera.getViewMatrix();
+//		Vec3 eyePos = mCurrentCamera.getAgentTranslation();
+		Vec3 eyePos = mCurrentCamera.getEyePos();
 
 		int shaderHandle = draw.getShaderHandle();
 		int textureHandle = draw.getTextureHandle();
@@ -669,7 +674,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		float[] mvMatrix = new float[16];
 		float[] mvpMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
-		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
+		float[] viewMatrix = mCurrentCamera.getViewMatrix();
 
 		int shaderHandle = draw.getShaderHandle();
 		int textureHandle = draw.getTextureHandle();
@@ -756,7 +761,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 		float[] mvpMatrix = new float[16];
 		float[] mvMatrix = new float[16];
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
-		float[] viewMatrix = mCurrentCamera.getAgentViewMatrix();
+		float[] viewMatrix = mCurrentCamera.getViewMatrix();
 
 		GLES20.glUseProgram(geo.getShaderHandle());
 
@@ -1440,7 +1445,6 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		float[] mvpMatrix = new float[16];
 		float[] uiMatrix = mCurrentCamera.getOrthoMatrix();
-		float[] viewMatrix = mCurrentCamera.getViewMatrix();
 
 		GLES20.glUseProgram(geo.getShaderHandle());
 
@@ -1464,9 +1468,9 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
 		// --MV--
 		//make mMVPMatrix MV
-		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, geo.getWorldMatrix(), 0);
+//		Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, geo.getWorldMatrix(), 0);
 		//make mMVPMatrix MVP
-		Matrix.multiplyMM(mvpMatrix, 0, uiMatrix, 0, mvpMatrix, 0);
+		Matrix.multiplyMM(mvpMatrix, 0, uiMatrix, 0, geo.getWorldMatrix(), 0);
 		//MVP is MVP at this point
 		GLES20.glUniformMatrix4fv(u_mvp, 1, false, mvpMatrix, 0);
 

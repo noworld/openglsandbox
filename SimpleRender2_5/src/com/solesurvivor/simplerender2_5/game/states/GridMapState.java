@@ -74,6 +74,8 @@ public class GridMapState extends BaseState {
 			gmr.setCurrentCamera(mCamera);			
 			mCamera.setParent(mActor);
 			
+//			mCamera.rotate(-30.0f, new Vec3(1.0f,0.0f,0.0f));
+			
 			mActor.addChild(mCamera);
 			mScene.addChild(mActor);
 			
@@ -84,7 +86,9 @@ public class GridMapState extends BaseState {
 			mScene.addChild(new GeometryNode(terrain));
 			
 			Geometry ocean = island.get("Water");
-			mScene.addChild(new WaterNode(ocean));
+			WaterNode wn = new WaterNode(ocean);
+			wn.setSkybox(skybox);
+			mScene.addChild(wn);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -9,36 +9,38 @@ package com.solesurvivor.simplerender2_5;
 
 public final class R {
     public static final class array {
-        public static final int bones_shader=0x7f08000e;
-        public static final int citadella_cube=0x7f080017;
-        public static final int clearwater_shader=0x7f080009;
-        public static final int clipmap_shader=0x7f08000f;
-        public static final int fog_shader=0x7f08000d;
+        public static final int bones_shader=0x7f080010;
+        public static final int citadella_cube=0x7f080019;
+        public static final int clearwater_shader=0x7f08000b;
+        public static final int clipmap_shader=0x7f080011;
+        public static final int fog_shader=0x7f08000f;
         /**  Must be in specific order: Position, Color, Normal, (optional) Texcoord 
          */
         public static final int fonts=0x7f080000;
         public static final int global=0x7f080001;
-        public static final int hm_shader=0x7f080010;
+        public static final int hm_shader=0x7f080012;
         public static final int models=0x7f080002;
-        public static final int plane_shader=0x7f08000b;
+        public static final int plane_shader=0x7f08000d;
         public static final int point_shader=0x7f080004;
         public static final int shaderPrograms=0x7f080003;
-        public static final int skybox_cube=0x7f080016;
+        public static final int skybox_cube=0x7f080018;
         public static final int skybox_shader=0x7f080005;
         public static final int skydome_shader=0x7f080006;
         public static final int skytex_shader=0x7f080007;
-        public static final int tenerife_cube=0x7f080018;
-        public static final int tenerife_etc1=0x7f080019;
-        public static final int tex_shader=0x7f08000c;
-        public static final int textures_2d=0x7f080012;
-        public static final int textures_2d_etc1=0x7f080013;
+        public static final int tenerife_cube=0x7f08001a;
+        public static final int tenerife_etc1=0x7f08001b;
+        public static final int tex_shader=0x7f08000e;
+        public static final int textures_2d=0x7f080014;
+        public static final int textures_2d_etc1=0x7f080015;
         /**  <item>@array/tenerife_cube</item> 
          */
-        public static final int textures_cube=0x7f080014;
-        public static final int textures_cube_etc1=0x7f080015;
-        public static final int ui_shader=0x7f080011;
+        public static final int textures_cube=0x7f080016;
+        public static final int textures_cube_etc1=0x7f080017;
+        public static final int ui_shader=0x7f080013;
+        public static final int water_reflect_shader=0x7f080009;
+        public static final int water_refract_shader=0x7f08000a;
         public static final int water_shader=0x7f080008;
-        public static final int watertex_shader=0x7f08000a;
+        public static final int watertex_shader=0x7f08000c;
     }
     public static final class attr {
     }
@@ -142,10 +144,10 @@ public final class R {
         public static final int f_ui=0x7f040011;
         public static final int f_water3=0x7f040012;
         public static final int f_water4=0x7f040013;
-        public static final int f_water_clear=0x7f040014;
-        public static final int f_water_exp_peak=0x7f040015;
-        public static final int f_water_exp_peak_point=0x7f040016;
-        public static final int f_water_nrms=0x7f040017;
+        public static final int f_water_exp_peak=0x7f040014;
+        public static final int f_water_exp_peak_point=0x7f040015;
+        public static final int f_water_nrms=0x7f040016;
+        public static final int f_water_reflect=0x7f040017;
         public static final int f_watertex=0x7f040018;
         public static final int gamepad_ui=0x7f040019;
         public static final int geoclip=0x7f04001a;
@@ -179,10 +181,10 @@ public final class R {
         public static final int v_ui=0x7f040036;
         public static final int v_water3=0x7f040037;
         public static final int v_water4=0x7f040038;
-        public static final int v_water_clear=0x7f040039;
-        public static final int v_water_exp_peak=0x7f04003a;
-        public static final int v_water_exp_peak_point=0x7f04003b;
-        public static final int v_water_nrms=0x7f04003c;
+        public static final int v_water_exp_peak=0x7f040039;
+        public static final int v_water_exp_peak_point=0x7f04003a;
+        public static final int v_water_nrms=0x7f04003b;
+        public static final int v_water_reflect=0x7f04003c;
         public static final int v_watertex=0x7f04003d;
         public static final int water=0x7f04003e;
     }

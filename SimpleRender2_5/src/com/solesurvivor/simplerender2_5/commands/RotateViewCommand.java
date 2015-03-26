@@ -4,7 +4,8 @@ import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2_5.input.InputEvent;
 import com.solesurvivor.simplerender2_5.rendering.RendererManager;
-import com.solesurvivor.simplerender2_5.scene.Camera;
+import com.solesurvivor.simplerender2_5.scene.CameraNode;
+import com.solesurvivor.util.math.Vec3;
 
 public class RotateViewCommand implements Command {
 	
@@ -32,8 +33,8 @@ public class RotateViewCommand implements Command {
 	
 	@Override
 	public void execute(InputEvent event) {
-		Camera cam = RendererManager.getRenderer().getCurrentCamera();
-		float[] eye = cam.getEyePos();
+		CameraNode cam = RendererManager.getRenderer().getCurrentCamera();
+		Vec3 eye = cam.getEyePos();
 //		float[] look = cam.getLookVector();
 //		cam.setEyePos(new float[]{eye[0], eye[1]+DELTA_H, eye[2]});
 		//cam.setEyePos(new float[]{eye[0], eye[1], eye[2] + DELTA_Z});

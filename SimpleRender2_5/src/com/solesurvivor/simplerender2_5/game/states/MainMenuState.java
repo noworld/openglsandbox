@@ -21,7 +21,7 @@ public class MainMenuState extends BaseState {
 		Point viewport = GameWorld.inst().getViewport();
 		mCamera = new Camera();
 		mCamera.resizeViewport(viewport);
-		RendererManager.getRenderer().setCurrentCamera(mCamera);
+//		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		
 		Skybox skybox = new Skybox("skybox_shader", "tenerife_cube");
 		mScene.addChild(skybox);
@@ -33,7 +33,7 @@ public class MainMenuState extends BaseState {
 
 	@Override
 	public void enter() {
-		RendererManager.getRenderer().setCurrentCamera(mCamera);
+//		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		RendererManager.getRenderer().initOpenGLDefault();
 	}
 	

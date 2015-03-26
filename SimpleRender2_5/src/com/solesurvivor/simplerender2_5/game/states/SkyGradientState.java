@@ -29,7 +29,7 @@ public class SkyGradientState extends BaseState {
 		float[] lookVec = mCamera.getLookVector();
 		mCamera.setEyePos(eyePos);
 		mCamera.setLookVector(lookVec);
-		RendererManager.getRenderer().setCurrentCamera(mCamera);
+//		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		
 //		ProceduralTexture2D skyTex = new ProceduralTexture2D("skytex_shader", "skytex", new Point(viewport.y,viewport.y), CoordinateSystemEnum.CARTESIAN);
 //		mScene.addChild(skyTex);
@@ -56,7 +56,7 @@ public class SkyGradientState extends BaseState {
 
 	@Override
 	public void enter() {
-		RendererManager.getRenderer().setCurrentCamera(mCamera);
+//		RendererManager.getRenderer().setCurrentCamera(mCamera);
 		RendererManager.getRenderer().initOpenGLDefault();
 	}
 

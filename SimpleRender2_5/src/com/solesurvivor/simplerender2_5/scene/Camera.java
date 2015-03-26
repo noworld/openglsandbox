@@ -32,6 +32,21 @@ public class Camera {
 	public Camera() {		
 		orient();
 	}
+	
+	public Camera(float[] eyePos, float[] lookVector, float[] upVector) {
+		this.mEyePos = eyePos;
+		this.mLookVector = lookVector;
+		this.mUpVector = upVector;
+		orient();
+	}
+	
+	public Camera(float[] eyePos, float[] lookVector, float[] upVector,
+			float rotAngle, Vec3 rotAxes, Vec3 trans) {
+		this.mEyePos = eyePos;
+		this.mLookVector = lookVector;
+		this.mUpVector = upVector;
+		orient();
+	}
 
 	public float[] getEyePos() {
 		return mEyePos;
@@ -170,6 +185,16 @@ public class Camera {
 	
 	public Vec3 getAgentTranslation() {
 		return mTrans;
+	}
+
+	public float[] getReflectionMatrix(float[] targetMatrix) {
+		float[] camMatrix = getAgentViewMatrix();
+		
+		float[] reflection = new float[16];
+		
+		Matrix.setLookAtM(reflection, 0, mEyePos[0],-mEyePos[1],mEyePos[2], mLookVector[0], -mLookVector[1], mLookVector[2], mUpVector[0], mUpVector[1], mUpVector[2]);
+		
+		return reflection;
 	}
 
 }
