@@ -11,12 +11,14 @@ public class CameraNode extends StatefulNodeImpl {
 
 	private static final String TAG = CameraNode.class.getSimpleName();
 
-	protected float[] baseMatrix;
+	protected float[] lookAtMatrix;
 	protected float[] viewMatrix;
 	protected float[] reflectMatrix;
 	protected float[] projMatrix;
 	protected float[] orthoMatrix;
 	protected Vec3 eyePos;
+	protected Vec3 look;
+	protected Vec3 up;
 	protected Point viewport = new Point(0,0);
 	protected float near = 1.0f;
 	protected float far = 1000.0f; //200.0f;
@@ -44,9 +46,11 @@ public class CameraNode extends StatefulNodeImpl {
 		reflectMatrix = new float[16];
 		orthoMatrix = new float[16];
 		projMatrix = new float[16];
-		baseMatrix = new float[16];
+		lookAtMatrix = new float[16];
 		this.eyePos = eyePos;
-		Matrix.setLookAtM(baseMatrix, 0, eyePos.getX(), eyePos.getY(), eyePos.getZ(), 
+		this.look = look;
+		this.up = up;
+		Matrix.setLookAtM(lookAtMatrix, 0, eyePos.getX(), eyePos.getY(), eyePos.getZ(), 
 				look.getX(), look.getY(), look.getZ(),
 				up.getX(), up.getY(), up.getZ());
 		recalcMatrix();
@@ -57,7 +61,8 @@ public class CameraNode extends StatefulNodeImpl {
 	}
 
 	public float[] getViewMatrix() {
-		return viewMatrix;
+//		return viewMatrix;
+		return getReflectionMatrix();
 	}
 
 	public float[] getOrthoMatrix() {
@@ -67,21 +72,6 @@ public class CameraNode extends StatefulNodeImpl {
 	public float[] getProjectionMatrix() {
 		return projMatrix;
 	}
-
-//	@Override
-//	public void update() {
-//
-//		if(parent != null && parent.isDirty()) {
-//			this.recalcMatrix();
-//			this.mDirty = true;
-//		}
-//
-//		for(Node n : children) {
-//			n.update();
-//		}
-//
-//		this.mDirty = false;
-//	}
 
 	public void resizeViewport(Point newViewport) {
 		if(newViewport == null) {
@@ -114,27 +104,7 @@ public class CameraNode extends StatefulNodeImpl {
 
 		float[] inv = new float[16];
 		Matrix.invertM(inv, 0, mWorldMatrix, 0);
-		Matrix.multiplyMM(viewMatrix, 0, baseMatrix, 0, inv, 0);
-	}
-	
-	protected void recalcMatrixReflect() {
-
-		Matrix.setIdentityM(mWorldMatrix, 0);
-		Matrix.setIdentityM(mTempMatrix, 0);
-		Matrix.multiplyMM(mTempMatrix, 0, mWorldMatrix, 0, mScaleMatrix, 0);
-		Matrix.multiplyMM(mWorldMatrix, 0, mTempMatrix, 0, mRotMatrix, 0);
-		Matrix.multiplyMM(mTempMatrix, 0, mWorldMatrix, 0, mTransMatrix, 0);
-
-		if(parent != null) {
-			//Only want to follow translation
-			Matrix.multiplyMM(mWorldMatrix, 0, parent.getTransMatrix(), 0, mTempMatrix, 0);
-		} else {
-			System.arraycopy(mTempMatrix, 0, mWorldMatrix, 0, mTempMatrix.length);
-		}
-
-		float[] inv = new float[16];
-		Matrix.invertM(inv, 0, mWorldMatrix, 0);
-		Matrix.multiplyMM(viewMatrix, 0, baseMatrix, 0, inv, 0);
+		Matrix.multiplyMM(viewMatrix, 0, lookAtMatrix, 0, inv, 0);
 	}
 
 	protected void recalcProjMatrix() {
@@ -150,34 +120,42 @@ public class CameraNode extends StatefulNodeImpl {
 		Matrix.orthoM(orthoMatrix, 0, left_ortho, right_ortho, bottom_ortho, top_ortho, near, far);
 	}
 	
-	public float[] getReflectionMatrix(float[] targetMatrix) {
-		float[] camMatrix = getViewMatrix();
+	public float[] getReflectionMatrix() {
+		float[] reflection = new float[16];
+		float[] reflectionView = new float[16];
 		
-		float[] reflection = new float[]{
-				camMatrix[0],
-				camMatrix[1],
-				camMatrix[2],
-				camMatrix[3],
-				
-				camMatrix[4],
-				camMatrix[5],
-				camMatrix[6],
-				camMatrix[7],
-				
-				camMatrix[8],
-				camMatrix[9],
-				camMatrix[10],
-				camMatrix[11],
-				
-				camMatrix[12],
-				-camMatrix[13],
-				camMatrix[14],
-				camMatrix[15],
-		};
+		float eyeX = eyePos.getX();
+		float eyeY = -eyePos.getY();
+		float eyeZ = eyePos.getZ();
 		
-		Matrix.rotateM(reflection, 0, 180.0f, 1.0f, 0, 0);
+		float lookX = look.getX();
+		float lookY = -look.getY();
+		float lookZ = look.getZ();
+		
+		float upX = up.getX();
+		float upY = up.getY();
+		float upZ = up.getZ();
+		
+		Matrix.setLookAtM(reflection, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
+		
+		Matrix.setIdentityM(mWorldMatrix, 0);
+		Matrix.setIdentityM(mTempMatrix, 0);
+		Matrix.multiplyMM(mTempMatrix, 0, mWorldMatrix, 0, mScaleMatrix, 0);
+		Matrix.multiplyMM(mWorldMatrix, 0, mTempMatrix, 0, mRotMatrix, 0);
+		Matrix.multiplyMM(mTempMatrix, 0, mWorldMatrix, 0, mTransMatrix, 0);
 
-		return reflection;
+		if(parent != null) {
+			//Only want to follow translation
+			Matrix.multiplyMM(mWorldMatrix, 0, parent.getTransMatrix(), 0, mTempMatrix, 0);
+		} else {
+			System.arraycopy(mTempMatrix, 0, mWorldMatrix, 0, mTempMatrix.length);
+		}
+
+		float[] inv = new float[16];
+		Matrix.invertM(inv, 0, mWorldMatrix, 0);
+		Matrix.multiplyMM(reflectionView, 0, reflection, 0, inv, 0);
+		
+		return reflectionView;
 	}
 
 }

@@ -95,9 +95,23 @@ public class SSArrayUtil {
 		byte[] bytes = new byte[data.length * BYTES_PER_SHORT];
 		
 		for(int i = 0, j = 0; i < data.length; i++) {
-			byte[] onefloat = ByteBuffer.allocate(BYTES_PER_SHORT).putShort(data[i]).array();
-			bytes[j++] = onefloat[0];
-			bytes[j++] = onefloat[1];
+			byte[] oneShort = ByteBuffer.allocate(BYTES_PER_SHORT).putShort(data[i]).array();
+			bytes[j++] = oneShort[0];
+			bytes[j++] = oneShort[1];
+		}
+
+		return bytes;
+	}
+	
+	public static byte[] intToByteArray(int[] data) {
+		byte[] bytes = new byte[data.length * BYTES_PER_INT];
+		
+		for(int i = 0, j = 0; i < data.length; i++) {
+			byte[] oneInt = ByteBuffer.allocate(BYTES_PER_INT).putInt(data[i]).array();
+			bytes[j++] = oneInt[0];
+			bytes[j++] = oneInt[1];
+			bytes[j++] = oneInt[2];
+			bytes[j++] = oneInt[3];
 		}
 
 		return bytes;

@@ -54,8 +54,8 @@
     </array>
     
     <array name="clearwater_shader">
-        <item >@raw/v_water_reflect</item> 
-        <item >@raw/f_water_reflect</item>  
+        <item >@raw/v_clearwater</item> 
+        <item >@raw/f_clearwater</item>  
     </array>
     
     <array name="watertex_shader">

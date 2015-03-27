@@ -12,13 +12,11 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 import com.solesurvivor.simplerender2_5.game.GameWorld;
-import com.solesurvivor.simplerender2_5.scene.CoordinateSystemEnum;
 import com.solesurvivor.simplerender2_5.scene.Curve;
 import com.solesurvivor.simplerender2_5.scene.Drawable;
 import com.solesurvivor.simplerender2_5.scene.DrawableBones;
 import com.solesurvivor.simplerender2_5.scene.GeometryBones;
 import com.solesurvivor.simplerender2_5.scene.Light;
-import com.solesurvivor.simplerender2_5.scene.ProceduralTexture2D;
 import com.solesurvivor.simplerender2_5.scene.Skybox;
 import com.solesurvivor.simplerender2_5.scene.WaterNode;
 import com.solesurvivor.util.SSArrayUtil;
@@ -174,7 +172,7 @@ public class GridMapRenderer extends BaseRenderer {
 		
 		int[] buffers = wNode.getReflectionTexture().getBuffers();
 		Skybox skybox = wNode.getSkybox();
-		Point size = wNode.getReflectionTexture().getDimension();
+		Point size = wNode.getSize();
 		Drawable textureTarget = wNode.getReflectionTexture();
 		
 		clearTexture(buffers);
@@ -183,11 +181,7 @@ public class GridMapRenderer extends BaseRenderer {
 		float[] projectionMatrix = mCurrentCamera.getProjectionMatrix();
 		float[] viewMatrix = mCurrentCamera.getViewMatrix();
 		
-		if(reflectionShader < 0) {
-			reflectionShader = ShaderManager.getShaderId("clearwater_shader");
-		}
-		
-		int shaderHandle = reflectionShader;
+		int shaderHandle = ShaderManager.getShaderId("skybox_shader");;
 
 		GLES20.glUseProgram(shaderHandle);
 
@@ -220,7 +214,7 @@ public class GridMapRenderer extends BaseRenderer {
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
-		GLES20.glViewport(0, 0, size.x, size.y);
+//		GLES20.glViewport(0, 0, size.x, size.y);
 		
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, textureTarget.getIdxBufHandle());
 		
